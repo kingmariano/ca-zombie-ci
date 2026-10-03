@@ -1,0 +1,46 @@
+{
+  "finding": "C-37",
+  "title": "DeadDeFi.com recovery adapters + 13 underlying zombie protocols (Ethereum)",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 19940000, "P": 0, "S": 0},
+  "latest_block": 26111363,
+  "block_numbers": {"ethereum": 26111363},
+  "targets_checked": 26,
+  "live_targets": 26,
+  "closed_reasons": [
+    "All 13 DeadDeFi adapters and the shared router hold 0 ETH and 0 ERC-20 at blocks 26111005-26111363 (direct balanceOf + full tokentx history + GoldRush scans); the live output-token sweep primitive has nothing to take",
+    "Rari Fuse: exhaustive CI scan of all 201 pools / 787 markets found 0 markets with totalSupply==0 that are listed, mintable and have collateralFactor>0 (empty-market donation class precondition absent)",
+    "dForce: all 32 iTokens scanned; every empty market has supplyCapacity==0 (beforeMint blocks the first deposit); the custom iTokenV2BLP rounds redeemUnderlying up (rdivup) and enforces a min totalSupply threshold, defeating the Sonne truncation variant",
+    "No non-holder extraction path found in Aave V1 (aToken redeem), Index Coop (BasicIssuanceModule), Set V1 (module redeem; owner is a contract with 7-day timelock), PieDAO (exitPool), BasketDAO (burn), Pickle (Merkle claim root verified), Yam EMP (sponsor settlement), Indexed Finance (pools nearly empty), Domani (module never used), Cook Finance (module redeem)"
+  ],
+  "poc": {
+    "tests_passed": 7,
+    "tests_total": 7,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37117319119",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37117094077"
+    ]
+  },
+  "key_facts": [
+    "DeadDeFiRouter 0x121D5A2791791A62d0bE62C51459b1d3777701aF (owner EOA 0xD9319dD23c3d0E37949CCFFB98764A1B4B095C38, feeBps=0, not paused) has no output-token allowlist; each adapter's BaseAdapter._sweep(outputTokens) transfers the adapter's entire balance of any caller-named token to the router, which pays the caller",
+    "Direct-call adapters (PieDAO/Pickle/AaveV1/RariFuse/dForce/PowerPool/IndexedFinance) are sweepable with a fake zero-op input token and amount=0 (zero capital); module adapters need 1 wei of a real protocol token",
+    "The earlier v1 contracts (DeadDeFiRedemption 0xd8cd4ee1..., AaveV1Redemption 0xa013e840..., both paused) DID validate outputs against per-protocol allowlists - v2 dropped that check (security regression)",
+    "DeadDeFiRouter._forwardETH forwards the router's whole ETH balance to any redeem() caller; AaveV1Adapter and dForceAdapter wrap their whole ETH balance to WETH before sweeping",
+    "Fork PoC test_E proves an unprivileged attacker back-runs a 10 DPI redemption whose outputTokens list omits 7 of 8 components and captures the MKR/UNI/AAVE/LDO/RPL/PENDLE/ENA leftovers with 1 wei of DPI",
+    "Live user activity on the router is tiny: 4 successful redemptions by 3 users, total flow a few hundred dollars; fee was 300bps then set to 0 at block 25174832",
+    "H-O value mapped on-chain ~= $19.9M: Aave V1 core $8.04M / aToken claims $7.66M (926.0015 ETH + 238,905 LINK + stables), DPI components $7.01M, Set V1 vault $1.675M, dForce General Pool cash ~$1.90M, PieDAO DEFI++ $236k, BasketDAO BDI ~$121k, PickleDistribution 100,200 USDC unclaimed, Yam uSTONKS EMP 95,838 USDC, PowerPool PIPT $47k, Cook CLI $31k, Rari Fuse (DefiLlama) $1.06M",
+    "Aave V1 anomaly: aSUSD supply 114,213 has zero sUSD cash in LendingPoolCore (fully borrowed or migrated); aETH supply 933.08 vs core 926.00 ETH (small shortfall)",
+    "Pickle Merkle root recomputed from distribution.json matches the on-chain root 0x420170658c93d3834821062d8b11d1e36a14f0d742a5794e99943a461771fa7a and proofs verify; owner EOA can emergencyWithdraw unclaimed USDC (privileged)"
+  ],
+  "caveats": [
+    "E-U headline is $0 because the adapters/router are empty; the sweep primitive is live and latent - any value that lands there is instantly permissionlessly stealable",
+    "Aave V1 borrower positions were not enumerated (~$150k residual borrows; permissionless liquidation may exist if any position is unhealthy)",
+    "Indexed Finance pool set and Pickle jar set were not exhaustively enumerated; Domani product set unknown (its module has never been used); Rari Fuse figure is DefiLlama's, not a full on-chain valuation",
+    "Alchemy MCP over monthly quota and GoldRush token_balances returned empty for all addresses (bug); all balances read directly via JSON-RPC",
+    "Fuse per-pool cash sums contain scam-token decimal artifacts; only the empty-market precondition scan is authoritative",
+    "Owner/admin powers exist (router pause/fee/rescue by EOA; Set V1 owner can authorize a drainer after a 7-day timelock; Pickle owner can sweep) - classified P, not attacker-reachable"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live: the DeadDeFi v2 router/adapters have a real permissionless output-token sweep primitive (fork-proven, no allowlist) but all 14 contracts hold zero today; the ~$20M of value sits in the underlying protocols as holder-redemption only, and the Compound-fork empty-market hypothesis was exhaustively falsified (787 Fuse markets / 32 dForce iTokens, 0 candidates)."
+}
