@@ -34,7 +34,7 @@ Owner-recoverable custody in the live diamonds: **$1,671,489.65** (Base $1,018,7
 | role | address | notes |
 |---|---|---|
 | SYMMIO diamond (collateral USDC) | `0x91Cf2D8Ed503EC52768999aA6D8DBeA6e52dbe43` | 29 facets / 382 selectors; balance **1,018,722.777883 USDC** @ block 52,127,402 |
-| MultiAccount proxy | `0x8Ab178C07184ffD44F0ADfF4eA2ce6cFc33F3b86` | impl `0x54a870306b2ed367d135c43f2c2dafa9061bb887` (owner check present) |
+| MultiAccount proxy | `0x8Ab178C07184ffD44F0ADfF4eA2ce6cFc33F3b86` | impl `0x54a870306b2ed367d135c43f2c2dafa9061bb887` (owner check present); the Base diamond is **shared** — 22 MultiAccount factories (IntentX/Befi/Privex/Carbon lineage), 7,562 depositing accounts, 20,580 accounts created |
 | Muon signature verifier | `0x0Ae899A702b9a7E6fbAd661117F0b1B002eD18F1` | `MuonSignatureVerifier` (Schnorr Muon-v0.4 + gateway ECDSA + per-function key permissions) |
 | InstantLayer | `0x0825435285ac0E5c02c7a7c443F631f3e07fE375` | 46,427 B; `nextTemplateId=7`; never executed a batch (all observed calls = `grantDelegation`) |
 | AccountLayer diamond | `0x56caf00c6C5cB5478570Bb23807B9d1D697863DC` | `setSigner` gated by SIGNER_SETTER_ROLE (InstantLayer only) |
@@ -82,10 +82,10 @@ The team fixed this on **2026-09-22** (commit `0def5ea` "Fix Party B") by checki
 | metric | Base | Arbitrum | Mantle | Blast |
 |---|---|---|---|---|
 | diamond collateral balance | 1,018,722.777883 USDC | 591,107.969626 USDC | 61,658.902999059175503421 USDe | 40.5175384338934146 USDB |
-| lifetime deposits (event-sum) | 25,397,915.60 | 1,692,999.02 | n/a | n/a |
-| lifetime withdrawals | 16,902,105.08 | 815,958.71 | n/a | n/a |
+| lifetime deposits (event-sum) | 25,397,915.60 (IntentX MA) | 1,692,999.02 | n/a | n/a |
+| lifetime withdrawals | 16,902,105.08 (IntentX MA) | 815,958.71 | n/a | n/a |
 | registered PartyBs | 14 | 6 | 5 | 1 |
-| accounts created | 10,394 | 2,864 | n/a | n/a |
+| accounts created | 10,394 (IntentX MA) / 20,580 (all MAs) | 2,864 | n/a | n/a |
 | accounting paused | no | no | no | **yes** |
 | top historical depositors' current balance | ~0 (they exited; top-8 all ≈0) | ~0 (sampled partyAs ≈ dust) | n/a | n/a |
 | PartyB free balances measured | ≈103,961.7 USDC (largest: `0x6015e7e0…` 34,985.57; `0x9206d9d8…` 51,999.13; `0xf49d0089…` 9,993.14) | vault solver holds ~401,425 in allocated balance | n/a | n/a |

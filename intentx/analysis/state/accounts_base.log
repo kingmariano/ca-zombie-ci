@@ -1,6 +1,11 @@
-[base] block 52128336: 10394 partyA accounts to read
-  pass1 10 batches, 1000/10394
-  pass1 20 batches, 2000/10394
-  pass1 30 batches, 3000/10394
-  pass1 40 batches, 4000/10394
-  pass1 50 batches, 5000/10394
+[base] block 52128740: 10394 partyA accounts to read
+Traceback (most recent call last):
+  File "/tmp/opencode/ca-zombie-ci-intentx/intentx/analysis/state/reads_accounts.py", line 180, in <module>
+    run(chain, topn)
+  File "/tmp/opencode/ca-zombie-ci-intentx/intentx/analysis/state/reads_accounts.py", line 56, in run
+    res = r.batch_call(calls, bh)
+  File "/tmp/opencode/ca-zombie-ci-intentx/intentx/analysis/state/rpc.py", line 144, in batch_call
+    resp = self._post(chunk)
+  File "/tmp/opencode/ca-zombie-ci-intentx/intentx/analysis/state/rpc.py", line 120, in _post
+    raise RuntimeError("429")
+RuntimeError: 429

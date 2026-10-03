@@ -32,6 +32,7 @@ SIGS = {
     "balanceInfoOfPartyA": (["address"], ["uint256"] * 9),
     "partyAStats": (["address"], ["bool"] + ["uint256"] * 13),
     "allocatedBalanceOfPartyB": (["address", "address"], ["uint256"]),
+    "allocatedBalanceOfPartyBs": (["address", "address[]"], ["uint256[]"]),
     "balanceInfoOfPartyB": (["address", "address"], ["uint256"] * 9),
     "balanceInfoOfCrossPartyB": (["address"], ["uint256"] * 9),
     "allocatedBalanceOfCrossPartyB": (["address"], ["uint256"]),
@@ -54,6 +55,8 @@ SIGS = {
     "paused": ([], ["bool"]),
     "deusV3Address": ([], ["address"]),
     "getAccountsLength": (["address"], ["uint256"]),
+    "withdrawFromAccount_ma": (["address", "uint256"], []),
+    "depositForAccount_ma": (["address", "uint256"], []),
     "implementation": ([], ["address"]),
     "admin": ([], ["address"]),
     # Solver vault views
@@ -91,10 +94,12 @@ SIGS = {
 
 def encode_call(name, args):
     base_name = name.split("_")[0]
-    sig = base_name + "(" + ",".join(SIGS[name][0]) + ")"
+    types = SIGS[name][0]
+    args = [a.lower() if (t == "address" and isinstance(a, str)) else a for t, a in zip(types, args)]
+    sig = base_name + "(" + ",".join(types) + ")"
     selector = eth_utils.keccak(text=sig)[:4]
     if args:
-        return "0x" + (selector + abi_encode(SIGS[name][0], args)).hex()
+        return "0x" + (selector + abi_encode(types, args)).hex()
     return "0x" + selector.hex()
 
 
@@ -107,24 +112,72 @@ def decode_result(name, raw):
 
 
 class Rpc:
+    MULTICALL3 = "0xcA11bde05977b3631167028862bE2a173976CA11"
+
     def __init__(self, url):
         self.url = url
         self._id = 0
 
-    def _post(self, payloads, tries=5):
-        delay = 0.7
+    def _post(self, payloads, tries=9, base_delay=1.0):
+        """POST JSON-RPC; robust to 429/5xx with exponential backoff + jitter."""
+        import random
+        delay = base_delay
+        last = None
         for attempt in range(tries):
             try:
-                r = requests.post(self.url, json=payloads, timeout=60)
-                if r.status_code == 429:
-                    raise RuntimeError("429")
+                r = requests.post(self.url, json=payloads, timeout=90)
+                if r.status_code in (429, 500, 502, 503, 504, 521, 525):
+                    raise RuntimeError(f"http {r.status_code}")
                 data = r.json()
+                if isinstance(data, dict) and data.get("error", {}).get("code") == 429:
+                    raise RuntimeError("rpc 429")
+                if isinstance(data, list) and data and all(isinstance(x, dict) and x.get("error", {}).get("code") == 429 for x in data):
+                    raise RuntimeError("rpc batch 429")
                 return data
             except Exception as e:
+                last = e
                 if attempt == tries - 1:
                     raise
-                time.sleep(delay)
-                delay *= 1.8
+                time.sleep(delay + random.uniform(0, 0.5))
+                delay = min(delay * 1.7, 45)
+        raise last
+
+    def raw_call(self, to, data, frm=None, block="latest"):
+        """eth_call with optional from; returns (ok, result_or_revert_data)."""
+        tx = {"to": to, "data": data}
+        if frm:
+            tx["from"] = frm.lower()
+        r = self._post({"jsonrpc": "2.0", "id": 1, "method": "eth_call", "params": [tx, block]})
+        if isinstance(r, dict) and "result" in r:
+            return True, r["result"]
+        return False, (r.get("error") if isinstance(r, dict) else r)
+
+    def multicall(self, calls, block="latest", size=120):
+        """Execute calls via Multicall3 aggregate3. calls: [(name,args,addr)]. Same order output."""
+        out = []
+        for start in range(0, len(calls), size):
+            chunk = calls[start:start + size]
+            encoded = []
+            for name, args, addr in chunk:
+                data = bytes.fromhex(encode_call(name, args)[2:])
+                encoded.append((addr, True, data))
+            sig = eth_utils.keccak(text="aggregate3((address,bool,bytes)[])")[:4]
+            calldata = "0x" + (sig + abi_encode(["(address,bool,bytes)[]"], [encoded])).hex()
+            raw = self._post({"jsonrpc": "2.0", "id": 1, "method": "eth_call",
+                              "params": [{"to": self.MULTICALL3, "data": calldata}, block]})
+            if not isinstance(raw, dict) or "result" not in raw or raw["result"] == "0x":
+                out.extend([None] * len(chunk))
+                continue
+            res = abi_decode(["(bool,bytes)[]"], bytes.fromhex(raw["result"][2:]))[0]
+            for (name, args, addr), (ok, ret) in zip(chunk, res):
+                if ok and ret:
+                    try:
+                        out.append(decode_result(name, "0x" + ret.hex()))
+                    except Exception:
+                        out.append(None)
+                else:
+                    out.append(None)
+        return out
 
     def block_number(self):
         r = self._post({"jsonrpc": "2.0", "id": 1, "method": "eth_blockNumber", "params": []})
@@ -139,8 +192,8 @@ class Rpc:
         out = {}
         results = [None] * len(calls)
         # chunk to 100
-        for start in range(0, len(reqs), 100):
-            chunk = reqs[start:start + 100]
+        for start in range(0, len(reqs), 40):
+            chunk = reqs[start:start + 40]
             resp = self._post(chunk)
             if isinstance(resp, dict):
                 resp = [resp]

@@ -1,0 +1,10 @@
+  [base] 0-4999999: 0 logs, universe=0
+  [base] 5000000-9999999: 0 logs, universe=0
+  [base] 10000000-14999999: 0 logs, universe=0
+  [base] 15000000-19999999: 2221 logs, universe=200
+Traceback (most recent call last):
+  File "/tmp/opencode/ca-zombie-ci-intentx/intentx/analysis/state/universe.py", line 107, in <module>
+    run(c)
+  File "/tmp/opencode/ca-zombie-ci-intentx/intentx/analysis/state/universe.py", line 56, in run
+    raise RuntimeError(f"{chain} {lo}-{hi}: {str(d['error'])[:150]}")
+RuntimeError: base 20000000-24999999: {'code': -32002, 'message': 'request timed out'}

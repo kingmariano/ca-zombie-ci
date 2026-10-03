@@ -17,7 +17,7 @@ RAW = os.path.join(BASE, "raw")
 CFG = {
     "base": dict(rpc="https://base-rpc.publicnode.com",
                  diamond="0x91Cf2D8Ed503EC52768999aA6D8DBeA6e52dbe43", dec=6),
-    "arb": dict(rpc="https://arb1.arbitrum.io/rpc",
+    "arb": dict(rpc="https://arbitrum-one-rpc.publicnode.com",
                 diamond="0x8F06459f184553e5d04F07F868720BDaCAB39395", dec=6),
     "mantle": dict(rpc="https://rpc.mantle.xyz",
                    diamond="0x2Ecc7da3Cc98d341F987C85c3D9FC198570838B5", dec=18),
@@ -40,6 +40,27 @@ def run(chain, top_n=50):
     seen = {}
     for a in list(agg["accounts"].keys()) + list(agg["deposits"].keys()) + list(agg["withdrawals"].keys()):
         seen[a] = True
+    uni_path = os.path.join(RAW, f"partyA_universe_{chain}.json")
+    uni_n = 0
+    if os.path.exists(uni_path):
+        uni = json.load(open(uni_path))
+        for a in uni.get("accounts", []):
+            if a not in seen:
+                uni_n += 1
+            seen[a] = True
+        print(f"  universe file adds {uni_n} accounts (total {len(seen)})")
+    du_path = os.path.join(RAW, f"diamond_users_{chain}.json")
+    dep_totals = {}
+    wd_totals = {}
+    if os.path.exists(du_path):
+        du = json.load(open(du_path))
+        for a, v in (du.get("deposit", {}).get("users") or {}).items():
+            dep_totals[a.lower()] = v
+            seen.setdefault(a.lower(), True)
+        for a, v in (du.get("withdraw", {}).get("users") or {}).items():
+            wd_totals[a.lower()] = v
+            seen.setdefault(a.lower(), True)
+        print(f"  diamond_users adds {len(dep_totals)} depositors, {len(wd_totals)} withdrawers (total {len(seen)})")
     accts = sorted(seen)
     print(f"[{chain}] block {blk}: {len(accts)} partyA accounts to read")
     out = {"chain": chain, "block": blk, "diamond": cfg["diamond"],
@@ -48,24 +69,57 @@ def run(chain, top_n=50):
     # Pass 1: free balance + allocated balance for ALL accounts
     free = {}
     alloc = {}
-    for i, batch in enumerate(chunks(accts, 100)):
-        calls = []
-        for a in batch:
-            calls.append(("balanceOf", [a], cfg["diamond"]))
-            calls.append(("allocatedBalanceOfPartyA", [a], cfg["diamond"]))
-        res = r.batch_call(calls, bh)
-        for j, a in enumerate(batch):
-            free[a] = res[2 * j][0] if res[2 * j] else None
-            alloc[a] = res[2 * j + 1][0] if res[2 * j + 1] else None
-        if (i + 1) % 10 == 0:
-            print(f"  pass1 {i+1} batches, {min((i+1)*100, len(accts))}/{len(accts)}", flush=True)
+    part_path = os.path.join(RAW, f"accounts_partial_{chain}.json")
+    if os.path.exists(part_path):
+        print(f"  resuming pass1 from checkpoint {part_path}")
+        p = json.load(open(part_path))
+        free = p["free"]; alloc = p["alloc"]
+        blk = p.get("block", blk)
+        bh = hex(blk)
+        out["block"] = blk
+        missing = [a for a in accts if a not in free]
+        if missing:
+            print(f"  checkpoint covers {len(free)} accounts; fetching {len(missing)} new ones")
+            for batch in chunks(missing, 100):
+                calls = []
+                for a in batch:
+                    calls.append(("balanceOf", [a], cfg["diamond"]))
+                    calls.append(("allocatedBalanceOfPartyA", [a], cfg["diamond"]))
+                res = r.multicall(calls, bh)
+                for j, a in enumerate(batch):
+                    free[a] = res[2 * j][0] if res[2 * j] else None
+                    alloc[a] = res[2 * j + 1][0] if res[2 * j + 1] else None
+            with open(part_path, "w") as f:
+                json.dump({"free": free, "alloc": alloc, "block": blk}, f)
+    else:
+        for i, batch in enumerate(chunks(accts, 100)):
+            calls = []
+            for a in batch:
+                calls.append(("balanceOf", [a], cfg["diamond"]))
+                calls.append(("allocatedBalanceOfPartyA", [a], cfg["diamond"]))
+            res = r.multicall(calls, bh)
+            for j, a in enumerate(batch):
+                free[a] = res[2 * j][0] if res[2 * j] else None
+                alloc[a] = res[2 * j + 1][0] if res[2 * j + 1] else None
+            if (i + 1) % 10 == 0:
+                print(f"  pass1 {i+1} batches, {min((i+1)*100, len(accts))}/{len(accts)}", flush=True)
+        with open(part_path, "w") as f:
+            json.dump({"free": free, "alloc": alloc, "block": blk}, f)
     out["free_total"] = sum(v for v in free.values() if v)
     out["allocated_total"] = sum(v for v in alloc.values() if v)
     print(f"[{chain}] sum free={out['free_total']/10**cfg['dec']:,.6f} allocated={out['allocated_total']/10**cfg['dec']:,.6f}")
 
-    # Top accounts by deposit
+    # Top accounts by deposit (diamond-level totals preferred, fallback to MA events)
     dep = agg["deposits"]
-    top = sorted(dep.items(), key=lambda kv: -kv[1]["deposit_units"])[:top_n]
+    def dep_of(a):
+        if a in dep_totals:
+            return dep_totals[a]
+        return (dep.get(a) or {}).get("deposit_units", 0)
+    def wd_of(a):
+        if a in wd_totals:
+            return wd_totals[a]
+        return agg["withdrawals"].get(a, {}).get("withdraw_units", 0)
+    top = sorted([(a, {"deposit_units": dep_of(a)}) for a in accts], key=lambda kv: -kv[1]["deposit_units"])[:top_n]
     top_accts = [a for a, _ in top]
     # include accounts with largest live free+alloc in top set too
     live_sorted = sorted(accts, key=lambda a: -((free.get(a) or 0) + (alloc.get(a) or 0)))
@@ -86,7 +140,7 @@ def run(chain, top_n=50):
                 ("quotesLength", [a], cfg["diamond"]),
                 ("partyAPositionsCount", [a], cfg["diamond"]),
             ]
-        res = r.batch_call(calls, bh)
+        res = r.multicall(calls, bh)
         for j, a in enumerate(batch):
             base = 8 * j
             det = {}
@@ -112,8 +166,8 @@ def run(chain, top_n=50):
             det["quotes_length"] = res[base + 6][0] if res[base + 6] else None
             det["positions_count"] = res[base + 7][0] if res[base + 7] else None
             det["free"] = free.get(a)
-            det["deposit_units"] = dep.get(a, {}).get("deposit_units", 0)
-            det["withdraw_units"] = agg["withdrawals"].get(a, {}).get("withdraw_units", 0)
+            det["deposit_units"] = dep_of(a)
+            det["withdraw_units"] = wd_of(a)
             det["user"] = (agg["accounts"].get(a) or {}).get("user") or (dep.get(a) or {}).get("user")
             det["name"] = (agg["accounts"].get(a) or {}).get("name")
             details[a] = det
@@ -128,7 +182,7 @@ def run(chain, top_n=50):
     pb_errors = 0
     for batch in chunks(nonzero, 10):
         calls = [("allocatedBalanceOfPartyBs", [a, partybs], cfg["diamond"]) for a in batch]
-        res = r.batch_call(calls, bh)
+        res = r.multicall(calls, bh)
         for a, v in zip(batch, res):
             if v is None:
                 pb_errors += 1
@@ -137,6 +191,22 @@ def run(chain, top_n=50):
             for pb, val in zip(partybs, vals):
                 if val:
                     pb_alloc.setdefault(pb, {})[a] = val
+    if nonzero and pb_errors > 0.5 * len(nonzero):
+        print(f"  batch view unreliable ({pb_errors}/{len(nonzero)} failed); per-pair fallback")
+        pb_alloc = {}
+        pb_errors = 0
+        pair_calls = []
+        for a in nonzero:
+            for pb in partybs:
+                pair_calls.append((a, pb))
+        res = r.multicall([("allocatedBalanceOfPartyB", [pb, a], cfg["diamond"]) for a, pb in pair_calls], bh, size=100)
+        for (a, pb), v in zip(pair_calls, res):
+            if v is None:
+                pb_errors += 1
+                continue
+            val = v[0] if v else None
+            if val:
+                pb_alloc.setdefault(pb, {})[a] = val
     out["partyB_allocations"] = {pb: {"total": sum(d.values()), "per_partyA": d}
                                  for pb, d in pb_alloc.items()}
     out["partyB_alloc_errors"] = pb_errors
@@ -153,7 +223,7 @@ def run(chain, top_n=50):
                  ("isCrossPartyB", [pb], cfg["diamond"]),
                  ("balanceOfReserveVault", [pb], cfg["diamond"]),
                  ("partyBLiquidationTimestamp", [pb, "0x0000000000000000000000000000000000000000"], cfg["diamond"])]
-        res = r.batch_call(calls, bh)
+        res = r.multicall(calls, bh)
         st = {"isPartyB": res[0][0] if res[0] else None,
               "emergency": res[1][0] if res[1] else None,
               "cross_info": list(res[2]) if res[2] else None,
@@ -168,6 +238,15 @@ def run(chain, top_n=50):
     v = r.eth_call("balanceOf", [cfg["diamond"]], coll, bh)
     out["diamond_collateral_balance"] = v[0] if v else None
     out["diamond_native_balance"] = r.get_balance(cfg["diamond"], bh)
+    if os.path.exists(du_path):
+        du = json.load(open(du_path))
+        out["diamond_lifetime"] = {
+            "deposit_token": du["deposit"]["total_token"],
+            "withdraw_token": du["withdraw"]["total_token"],
+            "deposit_count": du["deposit"]["count"],
+            "withdraw_count": du["withdraw"]["count"],
+            "events_latest_block": du.get("latest"),
+        }
 
     with open(os.path.join(RAW, f"accounts_{chain}.json"), "w") as f:
         json.dump(out, f, indent=1, default=lambda o: "0x" + o.hex() if isinstance(o, bytes) else str(o))

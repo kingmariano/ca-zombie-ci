@@ -14,7 +14,7 @@ RAW = os.path.join(BASE, "raw")
 
 RPC = {
     "base": "https://base-rpc.publicnode.com",
-    "arb": "https://arb1.arbitrum.io/rpc",
+    "arb": "https://arbitrum-one-rpc.publicnode.com",
     "mantle": "https://rpc.mantle.xyz",
     "blast": "https://blast-rpc.publicnode.com",
 }
@@ -56,7 +56,7 @@ def run(chain):
     out = {"chain": chain, "block": block, "diamond": diamond}
 
     # hash each role name
-    res = r.batch_call([("getRoleHash", [n], diamond) for n in ROLE_NAMES], bh)
+    res = r.multicall([("getRoleHash", [n], diamond) for n in ROLE_NAMES], bh)
     name_to_hash = {}
     for n, v in zip(ROLE_NAMES, res):
         v = v[0] if v else None
@@ -86,7 +86,7 @@ def run(chain):
 
     # live check: unique (hash, user)
     pairs = sorted(set((rh, u) for rh, u, _, _ in log_pairs))
-    res = r.batch_call([("hasRole", [u, bytes.fromhex(rh[2:])], diamond) for rh, u in pairs], bh)
+    res = r.multicall([("hasRole", [u, bytes.fromhex(rh[2:])], diamond) for rh, u in pairs], bh)
     live = []
     for (rh, u), v in zip(pairs, res):
         if v and v[0]:
@@ -97,7 +97,7 @@ def run(chain):
     out["live_role_holders"] = live
 
     # candidate admins vs all role names
-    res = r.batch_call([("hasRole", [c, bytes.fromhex(h[2:])], diamond)
+    res = r.multicall([("hasRole", [c, bytes.fromhex(h[2:])], diamond)
                         for c in CANDIDATES for h in name_to_hash.values()], bh)
     i = 0
     cand_roles = {}
