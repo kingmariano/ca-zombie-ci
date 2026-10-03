@@ -1,0 +1,61 @@
+{
+  "finding": "H-09",
+  "title": "Equilibrium Lending \u2014 deregistered Substrate chain + empty, admin-gated Ethereum ChainBridge",
+  "chains": [
+    "equilibrium",
+    "polkadot",
+    "ethereum",
+    "kusama"
+  ],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 0,
+    "P": 0,
+    "S": 472910.82
+  },
+  "latest_block": 26112752,
+  "block_numbers": {
+    "ethereum": 26112752
+  },
+  "targets_checked": 20,
+  "live_targets": 16,
+  "closed_reasons": [
+    "Equilibrium parachain 2011 is Deregistered on Polkadot and every public RPC/WSS endpoint is dead \u2014 no transaction can reach the Substrate lending state; funds are stuck (S), not extractable",
+    "Ethereum ChainBridge v2 (0x267c4d894db79a3023e266B84401e58f7434e1F1) + ERC20 handler (0xe2a1D7C0c2ED4d3937bd6f93d9aCeA7498232F2F) hold 0 of all 9 registered tokens and 0 ETH",
+    "adminWithdraw / transferFunds / deposit-enable paths revert 'sender doesn't have admin role' for arbitrary callers; admin = team EOA 0x81925a13D326420baEFD9f0b51bDd6309f778637",
+    "executeProposal / voteProposal revert 'sender doesn't have relayer role' for arbitrary callers (2-of-5 relayer quorum)",
+    "Bridge deposits to Equilibrium (chain 7) and chains 0/2/3 are disabled ('deposits resource to chain with supplied chainID are disabled'); chain 1 (Genshiro) deposits remain enabled but are inbound-only (no extraction)",
+    "ChainBridge v1 (0x13D3D12478044E6Ea1b76F2A52d4bb6Dd3Ec867F) is paused since 2022-09-05 and its handlers hold 0",
+    "EQ mint is MINTER_ROLE-gated to the bridge handler only (mintable only through 2-of-5 relayer proposals); EQ/EQD/GENS have no market price \u2014 economic value 0",
+    "The handler float was already swept by the team admin on 2025-04-08 (~$96k) \u2014 privileged (P), not unprivileged"
+  ],
+  "poc": {
+    "tests_passed": 16,
+    "tests_total": 16,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Polkadot parachain 2011 status: Deregistered (first_period=14, last_period=14); DefiLlama deadFrom 2024-09-01, last TVL 2024-08-21 = $1,134,428.70 (DOT 197,939 + USDC 220,865 + WETH 2.371 + iBTC 0.0464 + alts)",
+    "Mark-to-market of that frozen basket at 2026-10-03 prices = $472,910.82 (DOT $1.2101, ETH $2,680.73, BTC $84,821.07)",
+    "All Equilibrium/Genshiro RPC endpoints dead (node.equilibrium.io, dwellir, onfinality, parity, genshiro endpoints); equilibrium.subscan.io 404; Kong gateway returns 404 'no Route matched'",
+    "Equilibrium runtime has no EVM/Frontier pallet \u2014 the only EVM contracts are the Ethereum-side ChainBridge deployment",
+    "Team EOA 0x81925a13D326420baefd9f0b51bdd6309f778637 created 16 contracts (2021 ChainBridge v1 + GENS/EQD, 2022 ChainBridge v2 + EQ/EQD tokens/proxies); none hold value today",
+    "v2 bridge: threshold 2, 5 relayers, paused=false, chainID 0, version '0.1.0', fee 0.001 ETH; 9 registered resources; 52 lifetime deposits (39 Genshiro domain 1, 13 Equilibrium domain 7 EQ Jan-Feb 2024)",
+    "2025-04-08 sweep txs (blocks 22223003-22223090) withdrew WBTC 0.02891632, WETH 9.14502475, CRV 500.97839797, DAI 1777.121636, USDT 65633.852016, USDC 1208.393462 from the handler to 0x774496dd14589ECb5ac406A4DD417293A0159a1E",
+    "eth_call simulations from 0x...dEaD: adminWithdraw -> 'sender doesn't have admin role'; executeProposal/voteProposal -> 'sender doesn't have relayer role'; handler.withdraw -> 'sender must be bridge contract'; EQ.mint -> 'must have minter role to mint'; deposit -> deposits disabled",
+    "Even the admin cannot extract: adminWithdraw(handler,USDC,admin,1) reverts 'ERC20: call failed' because the handler balance is 0",
+    "v2 bridge resource-list getter 0x5096c417 returns 9 resource IDs (WETH/USDT/DAI/WBTC/USDC/CRV lock-release + EQD/EQ/GENS burn-mint); handler balances are 0 for all 9",
+    "Deposits: destination chain 7 (Equilibrium) and chains 0/2/3 are disabled; chain 1 (Genshiro) deposits are still enabled but inbound-only (caller pays 0.001 ETH fee, gets nothing) \u2014 Genshiro chain is dead",
+    "Independent child re-enumeration: exactly 16 team contracts, no missed deployment; only real-token dust is 19,568.5859 BTT (~$0.007) in the v1 handler, not whitelisted and not withdrawable (reverts 'sender must be bridge contract')"
+  ],
+  "caveats": [
+    "Substrate-side figure is DefiLlama's last-known snapshot (2024-08-21), not a live read; the chain state is unreachable so the true remaining balance is unverifiable and could be lower (users may have withdrawn during the 2023-24 wind-down)",
+    "Handler token lists come from resource IDs observed in deposit events; a registered-but-never-deposited resource cannot be fully excluded, but it could not hold value without deposits and all deposit events are accounted for",
+    "Six custom selectors on the v2 bridge are unidentified (4byte misses); the value-moving ones (adminWithdraw 0x780cf004, transferFunds 0x4603ae38, deposit 0x05e2ca17) were identified and simulated",
+    "EQ has no price feed (delisted); relayer-gated minting is therefore valued at $0 today and could regain value only if EQ is re-listed",
+    "E-U = $0 is proven on-chain for the Ethereum contracts; for the Substrate chain it is a reachability argument (no node accepts transactions), not a state read"
+  ],
+  "one_liner": "External unprivileged attacker can extract $0 live: the Equilibrium parachain is deregistered with all RPC endpoints dead (last-known $1.13M, ~$473k mark-to-market, stuck = S), and the Ethereum ChainBridge contracts hold zero value with every value path admin/relayer-gated and deposits disabled."
+}
