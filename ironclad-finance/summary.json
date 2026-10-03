@@ -1,0 +1,50 @@
+{
+  "finding": "H-14",
+  "title": "Ironclad Finance (Mode) — Aave v2 fork frozen by Pool pause; $0 unprivileged-extractable",
+  "chains": ["mode"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 4842, "S": 117575},
+  "latest_block": 45438468,
+  "block_numbers": {"mode": 45438468},
+  "targets_checked": 197,
+  "live_targets": 0,
+  "closed_reasons": [
+    "LendingPool.paused == true since block 21029938 (2025-03-17T16:04:19Z); every value-moving function is whenNotPaused and reverts LP_IS_PAUSED ('64'): deposit/withdraw/borrow/repay/swapBorrowRateMode/rebalanceStableBorrowRate/setUserUseReserveAsCollateral/liquidationCall/flashLoan/finalizeTransfer",
+    "aToken transfers call pool.finalizeTransfer (paused) -> revert '64'; mint/burn/mintToTreasury/transferUnderlyingTo/handleRepayment/transferOnLiquidation are onlyLendingPool -> revert '29'",
+    "Variable debt tokens revert TRANSFER_NOT_SUPPORTED; stable rate disabled; credit delegation cannot be exercised because borrow is paused",
+    "Pool.setPause/setConfiguration/setReserveInterestRateStrategyAddress -> '27' (not configurator); Configurator.setPoolPause -> '76' (not emergency admin, 3/6 Safe)",
+    "Pool/aToken proxy upgradeTo gated by immutable ADMIN (Provider / Configurator); Provider owner = Timelock; Timelock admin = 3/6 Safe; Timelock execute is admin-only",
+    "Treasury.withdrawAllReserves() is public but routes into paused Pool.withdraw -> '64'; transferToMultisig is onlyOwner",
+    "CollateralManager is delegatecall-only from the Pool; direct calls revert",
+    "MODE oracle feed reverts 'dAPI name not set'; all other Api3 feeds are 5-96 days stale",
+    "M-BTC market insolvent: issuer burned 30.354 M-BTC directly out of the aToken on 2025-02-07 (tx 0x12dc2a8ab6e78009b3bb8d25df2b1698b3dc50d46734378e28cd19411f65d5a0)"
+  ],
+  "poc": {
+    "tests_passed": 10,
+    "tests_total": 10,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37137721899",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37137982962"
+    ]
+  },
+  "key_facts": [
+    "Prior 'bricked provider' claim corrected: 0x5C93B799D31d3d6a7C977f75FDB88d069565A55b is the LendingPoolAddressesProviderRegistry (slot0 = Timelock owner), not the provider; the real provider 0xEDc83309549e36f3c7FD8c2C5C54B4c8e5FA00FC answers all reads",
+    "Pool impl 0xDb45611E3854F171D073a922A969Cd6D707fF3D1 bytecode hash matches ModeScan-verified LendingPool.sol (0x203a65f79290043bcbd82d3a1f684a64a2f638c0bc6d445b72f485199604480f)",
+    "Pause history: Paused @3929832, Unpaused @3931818, final Paused @21029938 (2025-03-17) via Safe execTransaction -> Configurator.setPoolPause(true)",
+    "11 reserves; 10 frozen, only MODE unfrozen; pool paused; total aToken supply claims $4.30M at market (incl. $2.14M dead M-BTC), variable debt $2.04M, available liquidity $122.4k (ezETH 38.79 = $112.8k; uniBTC 0.0992 = $8.4k; MODE 10.73M = $0.94k; weETH/M-BTC/USDC dust)",
+    "Exhaustive surface probe: 197 functions across 13 contracts, 106 state-changing; only 4 do not revert (aUSDC.approve/increaseAllowance, vUSDC.approveDelegation, M-BTC.approve) - allowance-only, no value movement",
+    "Treasury 0xd93E25A8B1D645b15f8c736E1419b4819Ff9e6EF holds ~$4.8k of reserve-factor aTokens, owner = Safe, only realizable after unpause",
+    "Stale oracle: WETH feed 0x6F18C77EaFc61fC5F97c8485e726ad6347fB86fd latestTimestamp 1782798933 (~95d) at $1,589.14 vs $2,681.72 market; USDC ~96d; uniBTC/M-BTC ~95d; ezETH ~5.3d; MODE feed reverts",
+    "Sampled 108 borrowers: 74 evaluated, 34 reverted (MODE positions), 11 with HF<1 (~$98.5k debt) at stale oracle prices; liquidationBonus = 10001 (0.01%) on all reserves",
+    "M-BTC token total supply is only 0.549 M-BTC while the aToken credits 30.42 M-BTC; top holder 0x9E34d89C013Da3BF65fc02b59B6F27D710850430 (30.3994) is unbacked"
+  ],
+  "caveats": [
+    "USD values use DefiLlama market prices on 2026-10-03; the protocol's own oracle is stale and returns different values",
+    "Borrower HF analysis is a sample (top-15 holders per debt token, 108 unique addresses); 34 positions could not be evaluated because the MODE oracle reverts",
+    "Holder lists paginated to <=400 addresses per token; small holders may be missing",
+    "Mode public RPC rejects checksummed addresses in eth_call; scripts lowercase all addresses",
+    "The M-BTC issuer burn is attributed only to the on-chain minter address 0x000039DdCF1F63Cf3555e62a8D32a11bD1E7E1E1; the reason for the burn is not confirmed off-chain"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live: the entire Ironclad deployment is frozen by LendingPool.paused (since 2025-03-17) and every value path reverts, with ~$122.4k of available liquidity stranded and ~$4.8k of treasury aTokens Safe-only; the only latent paths require governance to unpause."
+}

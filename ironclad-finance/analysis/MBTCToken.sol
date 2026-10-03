@@ -1,0 +1,73 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract MintableERC20 is ERC20 {
+    uint8 private _decimals;
+
+    address public minter;
+    address public vault;
+    uint256 public mintQuota;
+    uint256 public singleMintLimit;
+
+    constructor(address minter_, address vault_, string memory name, string memory symbol, uint8 decimals_) ERC20(name, symbol) {
+        minter = minter_;
+        vault = vault_;
+        singleMintLimit = 30 * 10 ** decimals_;
+        _decimals = decimals_;
+    }
+
+    function decimals() public view override returns (uint8) {
+        return _decimals;
+    }
+
+    modifier onlyMinter() {
+        require(msg.sender == minter, "Require minter");
+        _;
+    }
+
+    modifier onlyVault() {
+        require(msg.sender == vault, "Require vault");
+        _;
+    }
+
+    event MinterTransferred(address indexed prevMinter, address indexed newMinter);
+
+    function transferMinter(address newMinter) external onlyMinter {
+        address prevMinter = minter;
+        minter = newMinter;
+        emit MinterTransferred(prevMinter, newMinter);
+    }
+
+    event VaultTransferred(address indexed prevVault, address indexed newVault);
+
+    function transferVault(address newVault) external onlyVault {
+        address prevVault = vault;
+        vault = newVault;
+        emit VaultTransferred(prevVault, newVault);
+    }
+
+
+    function updateMintQuota(uint256 delta) onlyVault external {
+        mintQuota += delta;
+    }
+
+    function updateSingleMintLimit(uint256 limit) onlyVault external {
+        singleMintLimit = limit;
+    }
+
+    function mint(address account, uint256 amount) onlyMinter external {
+        if (singleMintLimit > 0 && amount >= singleMintLimit) {
+            require(account == vault, "Large amount must be minted to vault");
+        }
+        if (account != vault) {
+            mintQuota -= amount;
+        }
+        _mint(account, amount);
+    }
+
+    function burn(address account, uint256 amount) onlyMinter external {
+        _burn(account, amount);
+    }
+}
