@@ -1,0 +1,394 @@
+{
+  "address": "2DE1zVYmjoKy39qr2CS12jSySb7A2gSpk64sox7kwBoG",
+  "metadata": {
+    "name": "fcn",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "FCN V2 Contracts"
+  },
+  "instructions": [
+    {
+      "name": "initialize_fcn_product",
+      "discriminator": [
+        208,
+        198,
+        218,
+        90,
+        105,
+        66,
+        33,
+        113
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "product_authority"
+        },
+        {
+          "name": "product",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  99,
+                  110,
+                  95,
+                  112,
+                  114,
+                  111,
+                  100,
+                  117,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "args.product_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "underlying_asset_mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "InitializeFCNProductArgs"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "FCNProduct",
+      "discriminator": [
+        137,
+        78,
+        55,
+        229,
+        168,
+        2,
+        7,
+        99
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "FCNOptionBarrier",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "strike_bps",
+            "type": "u32"
+          },
+          {
+            "name": "barrier_bps",
+            "type": "u32"
+          },
+          {
+            "name": "barrier_type",
+            "type": {
+              "defined": {
+                "name": "FCNOptionBarrierType"
+              }
+            }
+          },
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "exponent_unused",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FCNOptionBarrierType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "None"
+          },
+          {
+            "name": "KnockIn"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FCNProduct",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "base",
+            "type": {
+              "defined": {
+                "name": "ProductBase"
+              }
+            }
+          },
+          {
+            "name": "leverage",
+            "type": "u8"
+          },
+          {
+            "name": "is_bond_option",
+            "type": "bool"
+          },
+          {
+            "name": "option_barriers",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "FCNOptionBarrier"
+                }
+              }
+            }
+          },
+          {
+            "name": "observation_interval_in_seconds",
+            "type": "u16"
+          },
+          {
+            "name": "unused_u64",
+            "type": "u64"
+          },
+          {
+            "name": "unused_u128",
+            "type": "u128"
+          },
+          {
+            "name": "unused_bool",
+            "type": "bool"
+          },
+          {
+            "name": "unused_pubkey",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitializeFCNProductArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "product_id",
+            "type": "u16"
+          },
+          {
+            "name": "tenor_in_seconds",
+            "type": "u32"
+          },
+          {
+            "name": "late_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "seconds_to_start_late_fees",
+            "type": "u16"
+          },
+          {
+            "name": "seconds_to_start_auction_default",
+            "type": "u16"
+          },
+          {
+            "name": "seconds_to_start_settlement_default",
+            "type": "u16"
+          },
+          {
+            "name": "dispute_period_in_seconds",
+            "type": "u16"
+          },
+          {
+            "name": "dispute_grace_delay_in_seconds",
+            "type": "u16"
+          },
+          {
+            "name": "min_deposit_amount",
+            "type": "u128"
+          },
+          {
+            "name": "min_withdrawal_amount",
+            "type": "u128"
+          },
+          {
+            "name": "max_underlying_amount_limit",
+            "type": "u128"
+          },
+          {
+            "name": "sum_vault_underlying_amounts",
+            "type": "u128"
+          },
+          {
+            "name": "leverage",
+            "type": "u8"
+          },
+          {
+            "name": "is_bond_option",
+            "type": "bool"
+          },
+          {
+            "name": "option_barriers",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "FCNOptionBarrier"
+                }
+              }
+            }
+          },
+          {
+            "name": "observation_interval_in_seconds",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProductBase",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "product_id",
+            "type": "u16"
+          },
+          {
+            "name": "underlying_asset_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "number_of_vaults",
+            "type": "u16"
+          },
+          {
+            "name": "operational_status",
+            "type": {
+              "defined": {
+                "name": "ProductOperationalStatus"
+              }
+            }
+          },
+          {
+            "name": "is_deposit_queue_open",
+            "type": "bool"
+          },
+          {
+            "name": "tenor_in_seconds",
+            "type": "u32"
+          },
+          {
+            "name": "late_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "seconds_to_start_late_fees",
+            "type": "u16"
+          },
+          {
+            "name": "seconds_to_start_auction_default",
+            "type": "u16"
+          },
+          {
+            "name": "seconds_to_start_settlement_default",
+            "type": "u16"
+          },
+          {
+            "name": "dispute_period_in_seconds",
+            "type": "u16"
+          },
+          {
+            "name": "dispute_grace_delay_in_seconds",
+            "type": "u16"
+          },
+          {
+            "name": "min_deposit_amount",
+            "type": "u128"
+          },
+          {
+            "name": "min_withdrawal_amount",
+            "type": "u128"
+          },
+          {
+            "name": "max_underlying_amount_limit",
+            "type": "u128"
+          },
+          {
+            "name": "sum_vault_underlying_amounts",
+            "type": "u128"
+          },
+          {
+            "name": "unused_u64",
+            "type": "u64"
+          },
+          {
+            "name": "unused_u128",
+            "type": "u128"
+          },
+          {
+            "name": "unused_bool",
+            "type": "bool"
+          },
+          {
+            "name": "unused_pubkey",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProductOperationalStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "DepositStoppedAndTrading"
+          },
+          {
+            "name": "DepositStoppedNotTrading"
+          },
+          {
+            "name": "Deprecated"
+          }
+        ]
+      }
+    }
+  ]
+}

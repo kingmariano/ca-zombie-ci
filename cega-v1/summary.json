@@ -1,0 +1,45 @@
+{
+  "finding": "H-12",
+  "title": "Cega V1 — options vaults / settlement (Ethereum, Arbitrum, Solana)",
+  "chains": ["ethereum", "arbitrum", "solana"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 620791.41, "S": 0},
+  "latest_block": 26112349,
+  "block_numbers": {"ethereum": 26112349, "arbitrum": 511324457, "solana": 452959593},
+  "targets_checked": 172,
+  "live_targets": 148,
+  "closed_reasons": [
+    "EVM: every USDC-out function (sendAssetsToTrade, processWithdrawalQueue, collectFees, processDepositQueue, moveAssetsToProduct) is gated by CegaState roles TRADER_ADMIN/OPERATOR_ADMIN/DEFAULT_ADMIN; fork-verified reverts 403:TA/OA/DA for arbitrary callers.",
+    "EVM: FCNVault.deposit/redeem are onlyOwner (the product); vault shares cannot be minted or redeemed by outsiders; addToWithdrawalQueue requires owning shares.",
+    "EVM: permissionless settlement entrypoints (checkBarriers, calculateCurrentYield, calculateVaultFinalPayoff) move no tokens and revert 500:WS on all live vaults (none in Traded/TradeExpired status).",
+    "EVM: oracles are Cega-pushed (addNextRoundData 403:SA, updateRoundData 403:DA) and frozen since 2025-01-01; staleness check reverts 400:T, so no spot-price manipulation is reachable.",
+    "Solana: all USDC custody token accounts are owned by productAuthority PDA 4nhbsUdKEwVQXuYDotgdQHoMWW83GvjXENwLsf9QrRJT; every outbound instruction requires admin/traderAdmin (has_one on State); live account-substitution probes rejected AnchorError 3007.",
+    "Solana: withdrawVault only enqueues a claim; payout is traderAdmin-only processWithdrawQueue."
+  ],
+  "poc": {
+    "tests_passed": 13,
+    "tests_total": 13,
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37132657691"]
+  },
+  "key_facts": [
+    "Ethereum block 26112349: $122,335.37 USDC in 9 FCN products + CegaState 0x0730AA138062D8Cc54510aa939b533ba7c30f26B; $5,929.52 in 6 registered LOV products + orphan/staging products; Ethereum total $128,264.89.",
+    "Arbitrum: $18,985.49 USDC in 10 registered LOV products + 1 orphan LOVProduct + CegaState 0xc809B7F21250B1ce0a61b7Fb645AEf5CE7c1B5ed.",
+    "Solana program 3HUeooitcfKX1TSCx2xEpg2W31n6Qfmizu7nnbaEWYzs holds $473,541.02 USDC ($265,472.75 in 23 product token accounts + $208,068.26 in program USDC account BTStJZTJvscGRive34P6ShujjqK4GBBRs93bg1Y4B7Y4).",
+    "Total program-controlled USDC across the three chains: $620,791.41 — all moveable only via privileged admin/trader signatures, not by an unprivileged attacker.",
+    "EVM roles still live and unrenounced: multiple EOAs hold TRADER_ADMIN/OPERATOR_ADMIN/DEFAULT_ADMIN/SERVICE_ADMIN on both chains.",
+    "EVM oracle rounds frozen since 2025-01-01 (BTC/ETH etc., startedAt 1735740000); settlement requires a privileged round push.",
+    "go-fast vault 0x5799Dab15A745b346058AFbC141C78A0dc25F8c6 has 2 queued withdrawals (100,000 of 100,006.605405 shares) to receiver 0x5DF6a71c62895B22B73C4fd5D015526876819366, pending trader processing (~$117.3k).",
+    "Solana withdraw queues: 10,841.15 USDC across 8 vaults/13 nodes; under-collateralized claims: cruise-control-test 10,000.00 vs 0.002055 held, starboard 821.42 vs 556.89 held (~$10,264.53 shortfall).",
+    "Solana upgrade authority 5d8d3PSxKDb6knunoweZ8jZYoDmgEEGMVJdqJBTgjvRx is a Squads v3 multisig vault; admin/traderAdmin are single keys.",
+    "No exploit of Cega V1 was found in public incidents research; the protocol was wound down operationally with vaults left in Zombie/DepositsClosed status."
+  ],
+  "caveats": [
+    "Solana program source is not public and the on-chain IDL is absent; instruction gating was established from the public 2024 SDK IDL, binary string extraction, and live rejected simulation probes (deployed schema is newer than the IDL). A deeply hidden validation bug cannot be ruled out absolutely.",
+    "Arbitrum public RPCs serve no archive state; Arbitrum fork tests use latest state and assert gates rather than pinned balances.",
+    "Custody totals are measured token balances; vault underlyingAmount counters (DefiLlama's source) are cumulative and not current custody.",
+    "P bucket = value moveable only via privileged roles, most of it owed to vault holders and paid via trader-processed queues; it is not attacker-extractable and not extractable by the privileged party to itself except fees.",
+    "Cega V2 (separate finding) was not audited."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Cega V1 across Ethereum/Arbitrum/Solana (high confidence EVM fork-verified, medium-high Solana): every USDC-out path is admin/trader-gated, vault shares are non-mintable by outsiders, oracles are Cega-pushed and frozen, and all $620.8k custody sits in PDA/role-controlled accounts; $10.3k of Solana queued claims are under-collateralized."
+}

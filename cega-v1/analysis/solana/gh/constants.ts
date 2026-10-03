@@ -1,0 +1,2 @@
+export const PROCESS_QUEUE_ACCOUNT_LIMIT = 3;
+export const DEPOSIT_QUEUE_ACCOUNT_LIMIT = 4;

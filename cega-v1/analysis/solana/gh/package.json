@@ -1,0 +1,54 @@
+{
+  "name": "@cega-fi/cega-sdk-sol",
+  "version": "1.1.0",
+  "description": "A sdk to communicate with Cega's Solana SC vaults",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "homepage": "https://github.com/cega-fi/cega-sdk-sol",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "solana",
+    "cega",
+    "defi"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "format": "npx prettier --check .",
+    "format-fix": "npx prettier --write .",
+    "dev-test": "ts-node --files src/tests/index.ts",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.1",
+    "@types/lodash": "^4.17.9",
+    "dotenv": "^16.4.5",
+    "eslint": "^9.11.1",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.10.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.8.0"
+  },
+  "dependencies": {
+    "@metaplex-foundation/mpl-token-metadata": "2.2.3",
+    "@project-serum/anchor": "0.24.2",
+    "@solana/codecs": "2.0.0-rc.1",
+    "@solana/spl-token": "0.2.0",
+    "@solana/web3.js": "1.95.3",
+    "@types/node": "^22.7.4",
+    "buffer-layout": "1.2.2",
+    "lodash": "4.17.21"
+  },
+  "lint-staged": {
+    "*.{json,js,ts}": [
+      "prettier --check . --ignore-unknown"
+    ]
+  }
+}
