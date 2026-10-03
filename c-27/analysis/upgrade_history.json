@@ -1,0 +1,91 @@
+{
+  "proxy": "0x30bD8eAb29181F790D7e495786d4B96d7AfDC518",
+  "admin": "0xAb6FB4aa6C5B04c7f6BAD72317d12b329dD5AB2d",
+  "admin_owner": "0xf4c75938e590D9095939001E17C67ad86F243D8a",
+  "upgrade_count": 15,
+  "upgrades": [
+    {
+      "block": 249784924,
+      "tx": "0x1a67f80611ad5e5f2a838fb69c0bfd0616482ec903bbda50f3d8c580009658ba",
+      "impl": "0x92b5f6dae0386bdcf3f4a9d4d931f750903b807b"
+    },
+    {
+      "block": 249786497,
+      "tx": "0x02bd8a686a827f4df70f0bb7a1e20182b5dce5e88b4e9a37a0f40411aa63c839",
+      "impl": "0xee271faed1d05632e73d4e77838a03518a00e5f4"
+    },
+    {
+      "block": 254544674,
+      "tx": "0xd199d82825a2415a1154dbbd82b031e454200abe335e478d72fa31466bddccb7",
+      "impl": "0xee271faed1d05632e73d4e77838a03518a00e5f4"
+    },
+    {
+      "block": 257314542,
+      "tx": "0xd376b9c70d2a996bbf7c1241ca7aebb4c86f03f3529771ff12145dbc638a6833",
+      "impl": "0xee271faed1d05632e73d4e77838a03518a00e5f4"
+    },
+    {
+      "block": 257712749,
+      "tx": "0x88898b64538ada603ccf150625f957165c9e0c9997afbb4472dcb6ca42fc279c",
+      "impl": "0xb2b0d4ea93a8262d3b4da88c00ef2e8229ff30bc"
+    },
+    {
+      "block": 268988312,
+      "tx": "0xaac58805c5a41f8d69b264d41a6e76b6c0f1bcc05db464f6d8b911a189952b03",
+      "impl": "0x33f71c7e50ae26881c87e21f000e26880c599a8e"
+    },
+    {
+      "block": 274513669,
+      "tx": "0xe44bad3754f45b69c1649dd09673b3ce74eb4114323a4aaa48ee16b321fa05fe",
+      "impl": "0x557e4b0b9899d86c162a286d5d7dcbfebef60402"
+    },
+    {
+      "block": 281094072,
+      "tx": "0x25d2420bdef30ed8a8e0ca0ef8821fae1944bf29067e0bf7b4230c05465e1304",
+      "impl": "0x88a2e0921d049307dfd44a0ed18bc79b057e8067"
+    },
+    {
+      "block": 293355170,
+      "tx": "0xe386305c8a315a92f62b8c32f99bad95e015468d4b8f72988de5529450c34706",
+      "impl": "0x113eb054ca1fc42124b4db004528ce1857b721bb"
+    },
+    {
+      "block": 324060260,
+      "tx": "0x83f1c5155ba97b1838b84dc6848149e006ec94b78fce3832abb4ee0a64aab792",
+      "impl": "0x4b1d056d4d47b891b9373a931e7ee1f398762e69"
+    },
+    {
+      "block": 334934630,
+      "tx": "0x556a9b45d07b1f4b7138e6e80bcf2f8486ebdde9229f57a5a489f4b94a54eb3f",
+      "impl": "0xc98d893045c46b9e61eee401ed166415ef734ffe"
+    },
+    {
+      "block": 335012333,
+      "tx": "0xc40d446078bf83a2b4bdfc7efd86051c18dc7561b72988d7d748660147b2b65a",
+      "impl": "0xc8b26584ce18f57de8d1be5399438809ddc5d740"
+    },
+    {
+      "block": 335046336,
+      "tx": "0x8bdec15a6f6751e17e95b1add5bfab3ae19b9210a9327e8c6e038af4000eb09d",
+      "impl": "0xb5c19bba92d4ce3719a9ece8df8e2c330478be74"
+    },
+    {
+      "block": 339138251,
+      "tx": "0x70773f3e858850521e3841f8889582f07032e6d1954a258dcec24df25b68d634",
+      "impl": "0xc038933d0b33359f5c87b4b2f92ee0dad11eadc5"
+    },
+    {
+      "block": 461440223,
+      "tx": "0x77b6474037f992907070b6bd69037ce1d5ccad545822a838ceabf6b1d3599ac8",
+      "impl": "0x58f876aaeecbd5a0fca8f87e1313a9188c155bcc"
+    }
+  ],
+  "notes": [
+    "2024-09-03 deploy: impl 0x92b5f6da (62-byte stub Solidity)",
+    "2024-09-17..2025-01-08: Solidity impls (0xee271fae 15.6KB .. 0x113eb054 22.6KB)",
+    "2025-04-08 migration (block 324060260): impl 0x4b1d056d -> Stylus program (eth_getCode prefix 0xeff00000)",
+    "2025-05-21: last pre-attack impl 0xc038933d (Stylus, 19.4KB)",
+    "2026-05-10 08:27 UTC: exploit at block 461301926; the proxy's OZ v5 Initializable slot (ERC-7201) reads 0 even today",
+    "2026-05-10 18:04 UTC: admin freeze upgradeAndCall -> DarkpoolFrozen 0x58f876aa (112-byte Solidity, fallback/receive revert DarkpoolFrozenError 0x7be24541)"
+  ]
+}

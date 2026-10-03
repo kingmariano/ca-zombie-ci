@@ -1,0 +1,42 @@
+{
+  "finding": "C-27",
+  "title": "Renegade V1 dark pool (Arbitrum) — unprotected initializer / migration desync; frozen post-exploit",
+  "chains": ["arbitrum", "base"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 511181492,
+  "block_numbers": {"arbitrum": 511181492, "base": 52103998, "arbitrum_attack_block": 461301926, "arbitrum_freeze_block": 461440223, "arbitrum_migration_block": 324060260},
+  "targets_checked": 45,
+  "live_targets": 4,
+  "closed_reasons": [
+    "Arbitrum proxy 0x30bD8eAb... was frozen on 2026-05-10 18:04 UTC: EIP-1967 impl = DarkpoolFrozen 0x58f876aA..., fallback/receive revert DarkpoolFrozenError() 0x7be24541; initialize(0x92413afe) and updateWallet(0x803f430a) both revert",
+    "proxy holds 0 ETH and 0 of all 26 originally drained tokens; only unpriced spam airdrops remain (immovable)",
+    "upgrades are Ownable-gated via ProxyAdmin 0xAb6FB4aa... (owner EOA 0xf4c75938...); outsider upgradeAndCall reverts OwnableUnauthorizedAccount 0x118cdaa7",
+    "all 12 old Stylus implementations and the direct Stylus darkpool 0xb4a96068... hold zero value and currently fail ProgramNeedsUpgrade(2,3)",
+    "Base deployment 0xb4a96068... is live/unpaused but its OZ v5 Initializable slot = 1; initialize(0xacad1e2c) reverts InvalidInitialization() 0xf92ee8a9 (fork-verified)",
+    "residual approvals to the frozen proxy (22 non-zero incl. CoW GPv2Settlement infinite approvals) are inert: the proxy cannot execute transferFrom, and all sampled owners hold 0 of the allowed tokens"
+  ],
+  "poc": {
+    "tests_passed": 6,
+    "tests_total": 6,
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37092580451"]
+  },
+  "key_facts": [
+    "Original exploit (2026-05-10, block 461301926, tx 0x0e494685...): April-2025 Solidity->Stylus migration left the OZ v5 Initializable ERC-7201 slot at 0 on the proxy; attacker re-called Stylus initialize(0x92413afe) with attacker-controlled addresses, then updateWallet(0x803f430a) delegatecalled attacker logic from proxy context, sweeping 26 ERC-20s (~$209K; 104,383.59 USDC + 10.2765 WETH + 0.34658469 WBTC + 23 more)",
+    "~$190K returned same day (bulk back to 0xE4a7Cc3049... at blocks 461422041-461423204); ~20,025 USDC (10% bounty) bridged via Circle CCTP 2026-05-19",
+    "Freeze: ProxyAdmin.upgradeAndCall(proxy, DarkpoolFrozen 0x58f876aA..., '') at block 461440223; frozen code has no functions, every call reverts 0x7be24541",
+    "Live Arbitrum impl slot 0x58f876aAeeCBD5a0fca8F87e1313a9188C155bcC, codehash 0x1eab163f1f897929be0389a77f1f4b52a3aa3dd2b328f6f0abf3f55f1944e315",
+    "Proxy OZ v5 init slot still 0 today (proof of the desync); Base deployment same slot = 1",
+    "Family enumerated: 12 old impls, direct Stylus darkpool 0xb4a96068..., 22-contract May-2025 Stylus suite, two Apr-2026 Solidity proxies 0xC5D1b809.../0xCE7a8D45... (OZ slot 1), Base V1 (impl 0xBBcCf203...), 2 testnet deployments — all zero priced value",
+    "Counterfactual fork test (local-only vm.store/vm.etch): re-pointing the proxy at a vulnerable implementation profile re-opens the initialize->updateWallet delegatecall drain (100,000 USDC + 10 WETH + 1 WBTC) — the freeze is the gate",
+    "No flash loans or capital needed for any candidate path; all paths revert before state changes"
+  ],
+  "caveats": [
+    "Stylus WASM cannot run in revm; the counterfactual test etches a minimal shim reproducing the documented initialize/updateWallet delegatecall surface (fork-only), while the historical drain is evidenced by on-chain trace + attacker token transfers",
+    "Public Arbitrum RPC is non-archive, so the attack block was not replayed; live assertions are at the latest block recorded by CI",
+    "Approval sampling is capped at the first 1,000 Approval events returned by Etherscan; more pairs may exist, but all sampled owners' current balances are zero and the frozen proxy cannot move anything",
+    "Unpriced spam airdrops in the proxy were not valued (no market/feed) and are immovable while frozen"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Renegade V1: the Arbitrum proxy was bricked to DarkpoolFrozen after the 2026-05-10 exploit (all calls revert 0x7be24541), holds no priced assets, its admin is Ownable-gated, and the Base sibling's initializer is consumed (InvalidInitialization 0xf92ee8a9)."
+}
