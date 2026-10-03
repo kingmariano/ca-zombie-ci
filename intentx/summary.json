@@ -1,0 +1,60 @@
+{
+  "finding": "H-04",
+  "title": "IntentX (SYMMIO perp DEX) — live-state audit: no unprivileged extraction; latent SymmioPartyB instant-layer auth bug; Blast accounting paused",
+  "chains": ["base", "arbitrum", "mantle", "blast"],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 1671489.65,
+    "P": 0.0,
+    "S": 40.52
+  },
+  "latest_block": 52127574,
+  "block_numbers": {
+    "base": 52127574,
+    "arbitrum": 511351957,
+    "mantle": 101457088,
+    "blast": 41117340
+  },
+  "targets_checked": 52,
+  "live_targets": 21,
+  "closed_reasons": [
+    "SYMMIO core: all value-moving entries are self-scoped, role-gated or Muon-signature-bound; Schnorr/gateway verification bound to appId, address(this), method, nonces, values, timestamp, chainid; no forgery/replay path found",
+    "SymmioPartyB instant-layer bug (GitHub commit 0def5ea, 2026-09-22) is latent: isCallFromInstantLayer() = false on all chains; no InstantLayer batch ever executed (Arb 2,445/2,445 txs = grantDelegation); the only vulnerable proxy 0x0b5b3f9b has 1 lifetime tx (deployment), no positions, 0 allocated balance",
+    "AccountLayer confused-deputy (setSigner poisoning) blocked: each op wraps setSigner(owner)..setSigner(0); batch entry is OPERATOR_ROLE-gated",
+    "MultiAccount: deployed depositAndAllocateForAccount retains onlyOwner; _call selector-scoped via delegatedAccesses; apiExecutor/trasnferAccount only in GitHub main, not deployed",
+    "OnChainSymmioVaultV2 and SolverVault: withdrawals/rebalance require signer EIP-712 and BALANCER/EXECUTOR roles; replay is receiver-bound (griefing only)",
+    "Upgrade/role/pause paths are privileged: 3-day TimelockControllers (Base/Arb/Mantle), 3-of-6 Safe (Blast)",
+    "Blast funds are stuck (S): accountingPaused = true; deposit/withdraw/allocate revert 'Pausable: Accounting paused'",
+    "No IntentX staking/xINTX/merkle/claim contract holding INTX found; INTX token contracts hold no protocol value"
+  ],
+  "poc": {
+    "tests_passed": 10,
+    "tests_total": 10,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37136544374"
+    ]
+  },
+  "key_facts": [
+    "Base diamond 0x91Cf2D8Ed503EC52768999aA6D8DBeA6e52dbe43 holds 1,018,722.777883 USDC (block 52,127,402)",
+    "Arbitrum diamond 0x8F06459f184553e5d04F07F868720BDaCAB39395 holds 591,107.969626 USDC (block 511,351,957)",
+    "Mantle diamond 0x2Ecc7da3Cc98d341F987C85c3D9FC198570838B5 holds 61,658.902999059175503421 USDe",
+    "Blast diamond 0x3d17f073cCb9c3764F105550B0BCF9550477D266 holds 40.5175384338934146 USDB with accountingPaused=true (stuck)",
+    "Lifetime deposits/withdrawals: Base 25,397,915.60 / 16,902,105.08 USDC; Arbitrum 1,692,999.02 / 815,958.71 USDC; top historical depositors now hold ~0 (they exited)",
+    "Base PartyB free balances total ~103,961.7 USDC (largest 0x6015e7e0.. 34,985.57; 0x9206d9d8.. 51,999.13; 0xf49d0089.. 9,993.14); rest of custody is mostly allocated balances needing Muon-signed deallocate",
+    "Arbitrum OnChainSymmioVaultV2 0x40423eF1.. currentDeposit 401,425.170314 USDC forwarded to solver 0xE72284fc..; vault holds 1.000000 USDC locked; one Ready 1-USDC claim and one Pending 10,613.87-USDC request",
+    "Arbitrum SolverVault 0xAdBb55b3.. holds 409,161.893001 USDC in-contract; SIGNER EOA 0x751CFA90.., EXECUTOR Safe 0x14622475..",
+    "Vulnerable PartyB impl 0x556f255e (Arb proxy 0x0b5b3f9b) contains selector 0x67aa6fea (isCallFromInstantLayer); patched impl 0x25547278 contains keccak('INSTANT_LAYER_ROLE') 0x35840de5..",
+    "No public hack/exploit of IntentX or SYMMIO core found; SYMMIO core audited via Sherlock (v0.8/0.8.2/0.8.3/0.8.4/0.8.5), INTX/xINTX via Quantstamp 2023-12",
+    "Two diamond facets remain unverified on-chain (PartyB position/batch actions); live probes show partyB gating"
+  ],
+  "caveats": [
+    "Exact user/hedger/protocol split of allocated balances not fully enumerated; H-O is an upper bound on owner-recoverable custody",
+    "Allocated balances require a Muon-signed deallocate; Muon service liveness inferred from continued admin/liquidation activity (last liquidation 2026-08-22), not directly observable",
+    "Off-chain operator behaviour (when/if InstantLayer batches run) cannot be observed on-chain; the PartyB bug would open immediately if a batch runs with a funded vulnerable PartyB",
+    "Two unverified facets; source-only analysis for those paths is limited to upstream code",
+    "Vault LP recovery additionally requires the vault signer EOA and BALANCER/EXECUTOR acceptance"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from IntentX; the SYMMIO diamonds (Base $1.02M + Arb $0.59M + Mantle $0.06M) are signature/role/self-scoped, the one real IntentX bug (SymmioPartyB instant-layer auth) is latent (flag false, no batches, vulnerable PartyB unused), and Blast's $40.5 is stuck behind accountingPaused"
+}
