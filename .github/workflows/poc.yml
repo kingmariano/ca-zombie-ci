@@ -1,0 +1,67 @@
+name: poc
+
+# Generic CI runner for zombie-hunt deep dives.
+# Dispatch:  gh workflow run poc.yml --repo kingmariano/ca-zombie-ci --ref <branch> -f finding=<folder>
+# Runs, in order (when present):
+#   1. <folder>/ci/run.sh        (custom heavy job, runs from <folder>, has secrets in env)
+#   2. forge test -vvv           (if <folder>/poc/foundry.toml exists, runs from <folder>/poc)
+# Results: uploads <folder>/ci-out/** and <folder>/**/*.log as artifact result-<folder>.
+
+on:
+  workflow_dispatch:
+    inputs:
+      finding:
+        description: 'folder name (c-21 ... c-35)'
+        required: true
+        default: 'ci-smoke'
+
+concurrency:
+  group: poc-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      RPC_URL: ${{ secrets.RPC_URL }}
+      BLOCKPI_RPC_URL: ${{ secrets.BLOCKPI_RPC_URL }}
+      NODEREAL_ETH_RPC_URL: ${{ secrets.NODEREAL_ETH_RPC_URL }}
+      ETHERSCANV2_API_KEY: ${{ secrets.ETHERSCANV2_API_KEY }}
+      GOLD_RUSH_API_KEY: ${{ secrets.GOLD_RUSH_API_KEY }}
+      ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+      ANKR_API_KEY: ${{ secrets.ANKR_API_KEY }}
+      DRPC_API_KEY: ${{ secrets.DRPC_API_KEY }}
+      INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+      DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+      FOUNDRY_FUZZ_RUNS: "256"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+      - name: env info
+        run: |
+          df -h /
+          nproc
+          forge --version
+          python3 --version
+          node --version || true
+      - name: custom CI script
+        if: ${{ hashFiles(format('{0}/ci/run.sh', github.event.inputs.finding)) != '' }}
+        working-directory: ${{ github.event.inputs.finding }}
+        run: bash ci/run.sh
+      - name: foundry tests
+        if: ${{ hashFiles(format('{0}/poc/foundry.toml', github.event.inputs.finding)) != '' }}
+        working-directory: ${{ github.event.inputs.finding }}/poc
+        run: forge test -vvv
+      - name: upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-${{ github.event.inputs.finding }}
+          path: |
+            ${{ github.event.inputs.finding }}/ci-out/**
+            ${{ github.event.inputs.finding }}/**/*.log
+          if-no-files-found: ignore
+          retention-days: 7
