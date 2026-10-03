@@ -1,0 +1,49 @@
+{
+  "finding": "C-38",
+  "title": "Tectonic (Cronos) money market - post-hack live extractability",
+  "chains": ["cronos"],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 21902513.0,
+    "P": 1918914.0,
+    "S": 34982.96
+  },
+  "latest_block": 97656545,
+  "block_numbers": {"cronos": 97656545},
+  "targets_checked": 20,
+  "live_targets": 18,
+  "closed_reasons": [
+    "mintGuardianPaused=true and borrowGuardianPaused=true on all 18 markets (block 97,656,545); mintAllowed()/borrowAllowed() revert with 'mint is paused'/'borrow is paused'; mint()/borrow() revert on tUSDC/tCRO/tTONIC",
+    "empty-market donation / exchange-rate inflation requires mint -> closed",
+    "borrow against manipulated collateral (the Aug-2026 $120.4M exploit class) requires borrow -> closed",
+    "oracle feeds are RedStone-style aggregators updated by an owner-only updatePrice(); not spot-manipulable by an unprivileged attacker",
+    "2,914 accounts have shortfall ($34,982.96) but their remaining collateral is dust; fork-verified best single liquidation profit ~$0.9 (repay $13.54 -> seize ~$14.4); ~$35k is bad debt with no collateral left",
+    "reserves (~$1.92M) and all admin functions (_reduceReserves, caps, CFs, oracle registration, upgrades, unpause) are admin-gated to EOA 0x9e3f42052337e2cF0C3748bCC732430Af3F53f72"
+  ],
+  "poc": {
+    "tests_passed": 6,
+    "tests_total": 6,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Unitroller 0xb3831584acb95ED9cCb0C11f677B5AD01DeaeEc0; 18 markets; oracle TectonicOracleAdapter 0xD360D8cABc1b2e56eCf348BFF00D2Bd9F658754A",
+    "Live on-chain (block 97,651,394): cash $21,902,513 + borrows $8,423,528 + reserves $1,918,914 (oracle prices); DefiLlama TVL $22.04M",
+    "Aug-2026 incident: TONIC pumped ~100x, 364.6T TONIC collateral, $120.4M borrowed across 9 markets, no borrow caps; Cronos rolled back 10,961 blocks, $111.2M reversed, $9.19M gone",
+    "Post-hack fix live: TONIC CF cut to 5%, borrow caps set on all markets, mint+borrow paused on all 18",
+    "Live oracle anomaly: tTONIC oracle $1.9284e-8 vs VVS USDC/TONIC DEX $8.9418e-9 = +115.6% premium (feed updatedAt current, owner-pushed); tLCRO +2.1%, tCDCBTC +0.7%, tCDCETH +0.5%, all others <0.5%",
+    "Liquidations open (liquidateBorrowAllowed=0 for underwater accounts; seizeAllowed=0; closeFactor 0.5; liquidationIncentive 1.10; protocolSeizeShare 2.8%) - but only dust collateral remains",
+    "Fork PoC: tUSDC debt -> tVVS collateral liquidation on 0x8e2c707786b55b2c25c9b834d5a2c1fb6d56d395 repays $13.54, seizes $14.4, profit ~$0.9; redeem to VVS succeeds",
+    "Adjacent: TectonicStakingPool holds 90.9T TONIC (~$813k at live price), fully backed by 40.39T xTONIC at ~2.25; zero allowances to TCM/router; public tcmPublicAccess cannot move pool funds; owner-gated admin",
+    "Cronos sibling forks immaterial: Mimas $31.2k borrowed=0; Agile/CroLend $0; VVS Flawless is a DEX"
+  ],
+  "caveats": [
+    "Exact extractable liquidation total is computed in CI from on-chain getAccountSnapshot over all 6,530 borrower accounts (subgraph-enumerated); the local subgraph estimate was $5.16 - the honest range is $0-$10 and is dust after gas",
+    "Borrower enumeration uses Tectonic's official subgraph (indexed to block 97,652,543); accounts that never emitted Borrow/Repay events are not enumerable, but all debt positions emit Borrow",
+    "DefiLlama's 'borrowed' field ($126k) contradicts on-chain borrows ($8.42M); on-chain values used throughout",
+    "The TONIC oracle premium would become exploitable within the borrow caps if mint/borrow are unpaused (tTONIC borrow cap ~$47k at oracle price); this is a latent risk, not current E-U",
+    "Staking-pool/vault checks are bounded (no source review; behavior verified via selectors, balances, allowances, exchange rate)"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live (liquidation dust only) from Tectonic on Cronos: all 18 markets have mint+borrow guardian-paused, oracle feeds are owner-pushed (not manipulable), and the 2,914 underwater accounts hold dust collateral (~$35k is unrecoverable bad debt)."
+}
