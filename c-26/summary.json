@@ -1,0 +1,46 @@
+{
+  "finding": "C-26",
+  "title": "SquidRouterModule — attacker-chosen delegate in cross-chain payload drains Safe modules",
+  "chains": ["ethereum", "base", "arbitrum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 26109087,
+  "block_numbers": {"ethereum": 26109087, "base": 0, "arbitrum": 0},
+  "targets_checked": 150,
+  "live_targets": 34,
+  "closed_reasons": [
+    "59 traced 2026-05-25 Ethereum victims disabled the module (execTransactionFromModule reverts GS104)",
+    "the 34 still-enabled Safes hold only ~$2.10 gross combined (token dust + 0.0004388 ETH); net of gas is negative",
+    "the module contract itself holds 0 ETH and only 10 valueless spam tokens",
+    "NFTs are not movable through the module's fixed action set (swaps/approvals/wrap-unwrap only)"
+  ],
+  "poc": {
+    "tests_passed": 2,
+    "tests_total": 2,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37093274390"
+    ]
+  },
+  "key_facts": [
+    "module 0x1f1d37a3Bf840e35c6a860c7C2dA71Fe555123ca (verified, no proxy, no pause) is an Axelar express-executable Safe module",
+    "_processPayload() decodes (module, safe, delegate, actions) from an attacker-controlled bridged payload and trusts `delegate` for permissionsManager.hasPermission(safe, delegate, ...) with no signature or caller binding",
+    "expressExecuteWithToken() is externally callable by anyone with 1 wei of a gateway-mapped token and a fresh commandId — no bridge required",
+    "150 Safes ever enabled the module; 116 disable events; 34 Safes are enabled today (events replay + Safe Tx Service + live isModuleEnabled all agree)",
+    "all 34 still-enabled Safes have 1-2 delegates holding '*' for the module; permissions were never revoked",
+    "gross live balances of the 34: tokens ~$0.93 + 0.0004388 ETH (~$1.17) = ~$2.10 at 2026-10-03 prices; largest single item 0.00036 ETH ($0.96)",
+    "gas for a drain tx (~2-4M) is ~$27-215 at 5-20 gwei, i.e. far above the gross extractable -> net $0",
+    "supplementary same-address surface: Base 31 Safes enabled (~$0.37), Arbitrum 32 Safes enabled (~$0.09)",
+    "incident 2026-05-25: ~$3.2M-$4M from 86-88 Safes across Ethereum/Base/Arbitrum (Halborn/Common Prefix/Blockaid); 0 of the 59 Ethereum victims traced here remain enabled",
+    "the module is unrelated to Squid Router; the fixed sourceAddress string check in _executeWithToken is public and caller-suppliable"
+  ],
+  "caveats": [
+    "USD uses DefiLlama/Blockscout prices on 2026-10-03 (~$2,677/ETH, ~$84,530/WBTC); spam tokens unpriced",
+    "gross Ethereum total from the complete local computation is $2.10; the CI artifact estimate of $1.75 is a lower bound caused by price-API 429s during the CI run",
+    "extractable = ERC20 + native balances reachable via the module's action set; NFTs and arbitrary calls are not reachable",
+    "Base enabled-status is from Safe Tx Service + RPC (full event replay not run); Arbitrum likewise",
+    "the 88-victim count from public reporting spans three chains; only 59 Ethereum victims were traced from module events",
+    "read-only research; PoC runs on a local fork only, no mainnet transactions"
+  ],
+  "one_liner": "external unprivileged attacker can extract ~$0 net live (gross dust ~$2.10 across 34 still-enabled Safes): the drain path is fully open but every remaining Safe holds only dust and gas costs more; all real victims disabled the module"
+}
