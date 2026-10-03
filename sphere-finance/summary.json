@@ -1,0 +1,62 @@
+{
+ "finding": "H-03",
+ "title": "Sphere Finance (Polygon): dead OHM-fork ecosystem; only permissionless value is the ylSPHERE kick incentive",
+ "chains": [
+  "polygon",
+  "base",
+  "optimism",
+  "arbitrum",
+  "bsc",
+  "mantle"
+ ],
+ "headline_extractable_usd": 29.08,
+ "headline_confidence": "high",
+ "categories": {
+  "E-U": 29.08,
+  "H-O": 31680,
+  "P": 515800,
+  "S": 0
+ },
+ "latest_block": 94895848,
+ "block_numbers": {
+  "polygon": 94895848
+ },
+ "targets_checked": 809,
+ "live_targets": 2419,
+ "closed_reasons": [
+  "Polygon treasuries are 4-of-8 Gnosis Safes with EOA owners - no permissionless exec",
+  "Cross-chain Base/OP/ARB/BSC/Mantle Safes are 4-of-8 (4-of-7 Mantle) multisigs holding ~$490.6k - privileged",
+  "SPHERE/Settings ProxyAdmin owned by a TimelockController with zero roles - upgrades bricked",
+  "BondDepo deposit capped by availableDebt=7.881 SPHERE; redeem reverts for non-bond-holders",
+  "v1 token's ~$1.0k stranded balance is onlyOwner-rescuable",
+  "Fair-launch claims require a real investment; pools otherwise empty",
+  "BondTreasurySwapper/OvernightStrategy/SphereTreasury/SphereZap all role-gated",
+  "Dyson strategy vaults (aPolDAI $19.3k, WMATIC $1.1k, ...) are controller/manager-gated and initialized"
+ ],
+ "poc": {
+  "tests_passed": 19,
+  "tests_total": 19,
+  "ci_run_urls": [
+   "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37137398290",
+   "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37140904976"
+  ]
+ },
+ "key_facts": [
+  "ylSPHERE kick enumeration over all 5526 lockers at block 94895848: 5,544,297 SPHERE total permissionless kick reward (2419 active lockers, 2350 bundle-path)",
+  "Realizable via Balancer V2 WMATIC/SPHERE pool (20/80, 0.3% fee): 268.58 WMATIC = $29.08",
+  "1,504,755,941 SPHERE of expired locks remain unprocessed",
+  "DefiLlama $6.20M frozen 2023-08-23, carried flat to 2025-11-20; live Polygon treasuries ~$24.2k priced",
+  "ylSPHERE locker holds 2,233,132,276.9 SPHERE locked + 143,520 WMATIC/$16.4k unclaimed rewards (holder-only)",
+  "Investment Treasury Safe holds 166,981 POL + ~$4.5k tokens (~$22.6k); LP Safe ~$618; RFV Safe ~$970",
+  "Base Safe 1 (4-of-8, nonce 1471, actively operated) holds ~$473.5k; all cross-chain Safes ~$490.6k",
+  "SPHERE token impl upgraded 7 times; current impl is a plain ERC20 with no mint/rebase",
+  "Fork PoC: kick on 0x42dcc796... paid 25,632.74 SPHERE; BondDepo 0.04 USDC -> 7.55 SPHERE (loss); all gated paths revert"
+ ],
+ "caveats": [
+  "kickExpiredLocks is a race: victims can self-process expired locks at any time",
+  "SPHERE liquidity is thin (~$1.0k WMATIC in the only pool); USD value is realizable proceeds, not book value",
+  "Cross-chain Safes were checked for configuration/balances only, not exhaustively audited",
+  "No key-compromise scenarios considered (deployer EOA / Safe signers assumed uncompromised)"
+ ],
+ "one_liner": "external unprivileged attacker can extract only ~$29.08 of SPHERE via the permissionless ylSPHERE kickExpiredLocks incentive; the ~$24.2k Polygon treasuries, ~$490.6k cross-chain Safes, ~$1.0k stranded in the v1 token and all bond/fair-launch pools are 4-of-8 multisig or owner-gated"
+}
