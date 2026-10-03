@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "campaign": "zombie-hunt",
+    "target": "H-11 xSigma (BSC sibling sweep)",
+    "author": "child subagent",
+    "date": "2026-10-03",
+    "read_only": true,
+    "eu_found": false,
+    "eu_threshold_usd": 100,
+    "blocks": { "bsc": 125511031, "ethereum": 26112866, "bsc_testnet": "code-presence-only" },
+    "prices": {
+      "source": "https://coins.llama.fi/prices/current",
+      "WBNB": { "usd": 777.1340726781948, "ts": 1791042220 },
+      "WETH": { "usd": 2681.6208906510387, "ts": 1791043130 }
+    }
+  },
+  "discovery": {
+    "wayback_cdx": "http://web.archive.org/cdx/search/cdx?url=app.xsigma.fi*&filter=original:.*\\.(js|json)",
+    "bundle": "https://web.archive.org/web/20220915133234if_/https://app.xsigma.fi/js/app.05a8027a.js",
+    "bundle_2021": "https://web.archive.org/web/20210516135509if_/https://app.xsigma.fi/js/app.533def49.js",
+    "bsc_chainid_config_found_in_bundle": true,
+    "bsc_config_hi": {
+      "periodicDutchAuction": "0xddddddd4f7280e91aa5ed57d937413451cfd0946",
+      "curveLpToken": "0xaf4de8e872131ae328ce21d909c74705d3aaf452",
+      "curve3pool": "0x160caed03795365f3a589f10c379ffa7d75d4e76",
+      "xsigmaLpToken": "0x78d40aa1f5Aa698B53d2A9e1f58825B0Fc4165bd",
+      "xsigma3poolDelegator": "0x33333333420360CBa0e3D760182cBb3faFADceDd",
+      "sigMasterChef": "0xFFfFfffff3471BacB75460D390474fCE40B7de42"
+    },
+    "artifacts_found_in_bundle": ["ContractName:SigMasterChefBsc", "ContractName:SigThreePoolProxyBsc", "ContractName:PeriodicDutchAuctionBsc"],
+    "audit": "/home/heisenberg/CA/xsigma/analysis/sources/15022021_xSigma_Audit.pdf",
+    "audit_notes": {
+      "withdraw_admin_fees": "public, 'Withdraw fees to the dutchAuction address', constraints: none",
+      "exchange2": "public, 'normal exchange delegate call + cashback'",
+      "medium_findings": [
+        "SigMasterChef.add lacks _lpToken existence validation",
+        "SigThreePoolProxy cashback functions setCashbackEther/availableCashbackEther/entitledCashbackEther/payCashbackEther/calcCashbackEther unsafe math"
+      ]
+    }
+  },
+  "contracts": [
+    {
+      "chain": "bsc",
+      "chainid": 56,
+      "address": "0x33333333420360CBa0e3D760182cBb3faFADceDd",
+      "name": "SigThreePoolProxyBsc (delegator; proxy->impl 0x160CAed...)",
+      "code": true,
+      "native_balance_wei": "0",
+      "tokens": {
+        "BUSD_0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56": "90468585161053678864",
+        "USDC_0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d": "223016557730166275761",
+        "USDT_0x55d398326f99059fF775485246999027B3197955": "208595550754261462145",
+        "SIG_0x7777777777697cFEECF846A76326dA79CC606517": "0",
+        "SIG-LP1": "0"
+      },
+      "views": {
+        "coins": ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", "0x55d398326f99059fF775485246999027B3197955"],
+        "balances": ["90200328754779410827", "222921438162367698496", "208401572832843432565"],
+        "admin_balances": ["268256406274268037", "95119567798577265", "193977921418029580"],
+        "fee": "24000000",
+        "admin_fee": "10000000000",
+        "owner": "0x99806391e326291ED138C766e32Aaf765D5f3d74",
+        "dutchAuction": "0xdDdDddd4F7280e91AA5eD57d937413451CFd0946",
+        "cashBack": "0xDa59F5Ca1465D989B223e6eC4244ee1da5ed24dC",
+        "fee_converter": "0x0000000000000000000000000000000000000000",
+        "DELEGATION_TARGET": "0x160CAed03795365F3A589f10C379FfA7d75d4E76",
+        "SIG_TOKEN": "0x7777777777697cFEECF846A76326dA79CC606517"
+      },
+      "usd_stables": 522.0806936454814,
+      "usd_admin_fees_inside": 0.5573538954908749,
+      "usd_lp_backed": 521.5233397499905,
+      "verdict": "H-O",
+      "verdict_reason": "idle LP-backed stables; redeemable only by SIG-LP1 holders via delegated remove_liquidity; public withdraw_admin_fees_to_auction moves only $0.56 admin fees to auction; public exchange2 is a fair swap"
+    },
+    {
+      "chain": "bsc",
+      "address": "0xFFfFfffff3471BacB75460D390474fCE40B7de42",
+      "name": "SigMasterChefBsc",
+      "code": true,
+      "native_balance_wei": "0",
+      "tokens": { "SIG_0x7777777777697cFEECF846A76326dA79CC606517": "742084488278219951084408" },
+      "views": {
+        "owner": "0x99806391e326291ED138C766e32Aaf765D5f3d74",
+        "SIG_TOKEN": "0x7777777777697cFEECF846A76326dA79CC606517",
+        "poolLength": 3,
+        "totalAllocPoint": 660,
+        "startBscBlock": 5118738,
+        "rewardTimeFactor": 4,
+        "bscMintFraction1000": 420,
+        "totalRewardAtBlock(125511031)": "10090080000000000000000000",
+        "totalRewardAtBlock(26219753)": "9901112156250000000000000",
+        "pools": [
+          { "pid": 0, "lpToken": "0x78d40aa1f5Aa698B53d2A9e1f58825B0Fc4165bd", "allocPoint": 300, "lastRewardBlock": 26219753, "accSushiPerShare": "784455687220854", "lpStaked": "516271734279213083887" },
+          { "pid": 1, "lpToken": "0x25B2CD76fB271A704D885BDFe61C13C61F8bDFf1", "allocPoint": 300, "lastRewardBlock": 36897755, "accSushiPerShare": "588238404301089", "lpStaked": "0" },
+          { "pid": 2, "lpToken": "0x7777777777697cFEECF846A76326dA79CC606517", "allocPoint": 60, "lastRewardBlock": 47629413, "accSushiPerShare": "766007150470", "lpStaked": "1000000000000000000" }
+        ],
+        "pendingSushi_pid2_owner": "751792819265000000",
+        "userInfo_pid2_owner": ["1000000000000000000", "14652240728000000"]
+      },
+      "usd_sig_spot": 728.48,
+      "usd_sig_sell_all_impact": 415.6,
+      "verdict": "H-O",
+      "verdict_reason": "SIG reservoir only claimable by stakers (updatePool runs before stake transfer -> no stale-accrual sniping); SIG mint gated to owner+MC; no owner sweep in ABI"
+    },
+    {
+      "chain": "bsc",
+      "address": "0x7777777777697cFEECF846A76326dA79CC606517",
+      "name": "SigTokenBsc (xSigma, SIG)",
+      "code": true,
+      "tokens_totalSupply": "2312465472817089335297237",
+      "views": { "name": "xSigma", "owner": "0x99806391e326291ED138C766e32Aaf765D5f3d74", "decimals": 18 },
+      "minters": { "masterchef_0xFFfFfffff3471BacB75460D390474fCE40B7de42": true, "owner_0x99806391...": true, "dead": false },
+      "sim_mint_from_dead": "revert: caller is not a minter",
+      "verdict": "P/S"
+    },
+    {
+      "chain": "bsc",
+      "address": "0x78d40aa1f5Aa698B53d2A9e1f58825B0Fc4165bd",
+      "name": "SIG-LP1 (xSigmaDEX BUSD/USDC/USDT)",
+      "code": true,
+      "views": { "name": "xSigmaDEX BUSD/USDC/USDT", "totalSupply": "521493962656982918482", "storage_slot6_minter": "0x33333333420360cba0e3d760182cbb3fafadcedd" },
+      "holders": { "masterchef": "516271734279213083887", "proxy": "0", "auction": "0", "owner_eoa": "0" },
+      "sim_mint_from_dead": "revert",
+      "verdict": "S"
+    },
+    {
+      "chain": "bsc",
+      "address": "0xdDdDddd4F7280e91AA5eD57d937413451CFd0946",
+      "name": "PeriodicDutchAuctionBsc",
+      "code": true,
+      "tokens": { "BUSD": "2", "USDC": "1", "USDT": "3", "SIG": "0" },
+      "views": { "owner": "0x99806391e326291ED138C766e32Aaf765D5f3d74" },
+      "verdict": "S",
+      "verdict_reason": "dust only; sellSigForStablecoin is public but contract holds no SIG"
+    },
+    {
+      "chain": "bsc",
+      "address": "0xDa59F5Ca1465D989B223e6eC4244ee1da5ed24dC",
+      "name": "CashBackBSC",
+      "code": true,
+      "tokens": { "BUSD": "0", "USDC": "0", "USDT": "0", "SIG": "0" },
+      "views": { "owner": "0x99806391e326291ED138C766e32Aaf765D5f3d74" },
+      "verdict": "S"
+    },
+    {
+      "chain": "bsc",
+      "address": "0x160CAed03795365F3A589f10C379FfA7d75d4E76",
+      "name": "Ellipsis-style 3pool (delegation target, third-party)",
+      "code": true,
+      "tokens_held_by_third_party_pool": {
+        "BUSD": "149209319230708669415161",
+        "USDC": "186855971172101222398971",
+        "USDT": "336946262768738136576641"
+      },
+      "note": "public Ellipsis 3EPS pool; LP 0xaf4de8e872131ae328ce21d909c74705d3aaf452 supply 602614902486090170747343; not xSigma-owned",
+      "verdict": "S"
+    }
+  ],
+  "bsc_testnet_mirror": {
+    "chainid": 97,
+    "addresses_with_code": ["0x33333333420360CBa0e3D760182cBb3faFADceDd", "0x7777777777697cFEECF846A76326dA79CC606517"],
+    "native_balance": "0",
+    "verdict": "S"
+  },
+  "other_chains": {
+    "checked_rpcs": ["https://polygon-bor-rpc.publicnode.com", "https://arb1.arbitrum.io/rpc", "https://mainnet.optimism.io", "https://mainnet.base.org", "https://api.avax.network/ext/bc/C/rpc", "https://rpc.gnosischain.com"],
+    "addresses_checked": ["0x33333333420360CBa0e3D760182cBb3faFADceDd", "0x7777777777697cFEECF846A76326dA79CC606517", "0xFFfFfffff3471BacB75460D390474fCE40B7de42", "0xddddddd4f7280e91aa5ed57d937413451cfd0946"],
+    "result": "no code on any checked chain"
+  },
+  "ethereum_deployer_sweep": {
+    "method": "Etherscan V2 chainid=1 module=account&action=txlist; creations = to==''",
+    "deployers": {
+      "0x02280165B29B8e2fFE23eA7ff15e3ba6F1b0429f": { "txcount": 8, "creations": ["0x3333333acdedbbc9ad7bda0876e60714195681c5"] },
+      "0xf74d2eca7a47e5e0348541e47e9c4532c2bd5628": { "txcount": 4, "creations": ["0x77777777778e9f1259a32f4d605adde67d576c79"] },
+      "0x2a7d2665955c1cdb7f41aea9c3f4cce74b835b0a": { "txcount": 43, "creations": ["0x7777777777697cfeecf846a76326da79cc606517", "0xb82a2e5871b146e8b903b342c9c0c72c6b0fc757", "0x16b910dcd628c75f7447b8922a81d3a94b6ae438", "0x79ef38d19ea4167703ccd7c41fb1ece2b2521a02"] },
+      "0xdde553b4fc83eaa9802ecf7fe35f7701bfc7ce56": { "txcount": 217, "creations": ["0x76d688af1f9aec5fef35947f30beb224cbf259f3", "0x31933fcb39452351f0d708370fb3a81695c6c5fb", "0x4c34a635c18149c4757de73f9a7d4a9ef4678116", "0xb843b122ac2ff261f425bf0f639b5718e25c0691", "0x88e11412bb21d137c217fd8b73982dc0ed3665d7", "0xf837ab93db8d12a3557021281e5850f789302f78", "0x0316d18bdbe9bb37f40baec7039dcca0a233fa5f", "0x73d5e967704c29a7034ee65b2ee841a3e7d8ea1c", "0xcfd695d85fe33e16114a9321ff5c8cc80a8d4501", "0x98c32b59a0ac00cd33750427b1a317ebcf84d0f7", "0x71566073ddef3309c740242193c8239d497b264d"] }
+    },
+    "new_l1_contracts": [
+      { "address": "0x76d688af1f9aec5fef35947f30beb224cbf259f3", "name": "Truffle Migrations (unverified)", "functions": ["last_completed_migration()", "setCompleted(uint256)", "owner()"], "eth": "0", "tokens": "0", "verdict": "S" },
+      { "address": "0x0316d18bdbe9bb37f40baec7039dcca0a233fa5f", "name": "Truffle Migrations (unverified)", "eth": "0", "tokens": "0", "verdict": "S" },
+      { "address": "0xcfd695d85fe33e16114a9321ff5c8cc80a8d4501", "name": "Truffle Migrations (unverified)", "eth": "0", "tokens": "0", "verdict": "S" },
+      { "address": "0x73d5e967704c29a7034ee65b2ee841a3e7d8ea1c", "name": "SigMasterChef (verified early gen)", "sushi": "0x77777777777b3d7f5Fd4287061BCb39c3A237366", "totalAllocPoint": "0", "startBlock": 11921500, "owner": "0xd730D6e5d97f78101bDe4045bBb946E0014947cC", "eth": "0", "verdict": "S" },
+      { "address": "0x71566073ddef3309c740242193c8239d497b264d", "name": "TokenMock xsig-mock-lp (verified)", "supply": "1000000000000000000", "owner": "0xdde553b4fC83EaA9802EcF7Fe35F7701bfc7cE56", "verdict": "S" },
+      { "address": "0xb82a2e5871b146e8b903b342c9c0c72c6b0fc757", "name": "xSIG (2023)", "supply": "2200000000000000000000000000", "univ2_pair": "0x4F8786CD248D19D378Ef16742082363595fd7FB3", "weth_reserve_wei": "1", "verdict": "S" },
+      { "address": "0x16b910dcd628c75f7447b8922a81d3a94b6ae438", "name": "xSigma Rabbit (2023)", "supply": "15000000000000000000000000", "univ2_pair": "0x2785e1D1fe334C09856b83374ADf6eaA9C4eFF8f", "weth_reserve_wei": "6", "verdict": "S" },
+      { "address": "0x79ef38d19ea4167703ccd7c41fb1ece2b2521a02", "name": "$SIG (2024)", "supply": "12000000000000000000000000", "univ2_pair": "0xdfac436896026C89de3F68945eDc30A530f04Aed", "weth_reserve_wei": "2", "verdict": "S" }
+    ],
+    "sig3": {
+      "address": "0x77777777777b3d7f5Fd4287061BCb39c3A237366",
+      "symbol": "SIG",
+      "supply": "1724000000000000000000",
+      "owner": "0x73d5e967704c29a7034ee65b2ee841a3e7d8ea1c",
+      "holder_0xd730D6e5": "170000000000000000000",
+      "univ2_pair_weth": "0xb117fAE1A0184b74697A181273233D1934F7b11D",
+      "pair_reserves": { "SIG3": "98892738171304798", "WETH": "5837546835271642" },
+      "usd_liquidity": 15.65,
+      "verdict": "S (below $100)"
+    }
+  },
+  "totals": {
+    "live_stables_bsc_usd": 522.08,
+    "sig_in_masterchef": { "amount": "742084488278219951084408", "usd_spot": 728.48, "usd_sell_all_impact": 415.6 },
+    "other_bsc_value_usd": 0,
+    "sibling_chain_value_usd": 0,
+    "eu_paths_over_100_usd": []
+  }
+}
