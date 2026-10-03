@@ -1,0 +1,21 @@
+moonbeam: latest block 16796699, comptroller 0x8E00D5e02E65A19337Cdba98bbA9F84d4186a180
+  fetching all Borrow events...
+Traceback (most recent call last):
+  File "/home/runner/work/ca-zombie-ci/ca-zombie-ci/c-32/analysis/enumerate_positions.py", line 248, in <module>
+    main()
+  File "/home/runner/work/ca-zombie-ci/ca-zombie-ci/c-32/analysis/enumerate_positions.py", line 162, in main
+    evs = all_borrow_events(cfg["id"], end)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/ca-zombie-ci/ca-zombie-ci/c-32/analysis/enumerate_positions.py", line 107, in all_borrow_events
+    d = http_json(url)
+        ^^^^^^^^^^^^^^
+  File "/home/runner/work/ca-zombie-ci/ca-zombie-ci/c-32/analysis/enumerate_positions.py", line 65, in http_json
+    raise RuntimeError(f"http failed: {url[:140]} {last}")
+RuntimeError: http failed: https://api.covalenthq.com/v1/1284/events/topics/0x13ed6866d4e1ee6da46f845c46d7e54120883d75c5ea9a2dacc1c4ca8984ab80/?starting-block=1&ending HTTP Error 401: Unauthorized
+Traceback (most recent call last):
+  File "/home/runner/work/ca-zombie-ci/ca-zombie-ci/c-32/analysis/fix_balances.py", line 67, in <module>
+    main()
+  File "/home/runner/work/ca-zombie-ci/ca-zombie-ci/c-32/analysis/fix_balances.py", line 46, in main
+    p = json.load(open(os.path.join(OUT, f"{chain}_positions.json")))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/ca-zombie-ci/ca-zombie-ci/c-32/analysis/out/moonbeam_positions.json'
