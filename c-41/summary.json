@@ -1,0 +1,63 @@
+{
+  "finding": "C-41",
+  "title": "Ionic Protocol — paused oracle-less Compound fork on Mode/Base/Lisk/OP; $0 unprivileged-extractable",
+  "chains": ["mode", "base", "optimism", "lisk"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 9.4,
+    "P": 21132250,
+    "S": 0
+  },
+  "latest_block": 45428349,
+  "block_numbers": {
+    "mode": 45428349,
+    "mode_b": 45428332,
+    "base": 52117469,
+    "optimism": 157712754,
+    "lisk": 38147747
+  },
+  "targets_checked": 65,
+  "live_targets": 65,
+  "closed_reasons": [
+    "mint + borrow guardian-paused on every market of all 5 Ionic deployments (65 markets)",
+    "ionLBTC market: depositor is a market member, so redeem/redeemUnderlying/transfer/exitMarket all revert 'Price oracle not found for this underlying token address' (MasterPriceOracle has no LBTC price; assigned oracle reverts)",
+    "liquidateBorrow of the depositor and of other meaningful borrowers reverts (missing oracle for LBTC/weETH/STONE/wrsETH/M-BTC/uniBTC or stale-feed custom error 0x42753799); only dust shortfalls exist",
+    "seize() from an EOA returns SEIZE_MARKET_NOT_LISTED (seizer must be a listed market)",
+    "flash() is callable by anyone (FeeDistributor.canCall=true) but selfTransferIn enforces atomic repayment; honest flash yields zero profit",
+    "_withdrawAdminFees/_withdrawIonicFees are permissionless but bounded by accrued fees and pay comptroller.admin()/ionicAdmin",
+    "Mode LBTC peg-out closed: isWithdrawalsEnabled=false (never enabled), treasury=0x0, zero bridge destinations; redeem reverts WithdrawalsDisabled()",
+    "only LBTC venue on Mode (Balancer LBTC/wBTC pool) has swaps disabled (BAL#402); no other pool exists",
+    "no cToken Approval events ever on ionLBTC -> no third party can move the depositor's cTokens"
+  ],
+  "poc": {
+    "tests_passed": 16,
+    "tests_total": 16,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37116944802",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37117987151",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37118170265"
+    ]
+  },
+  "key_facts": [
+    "Mode-A comptroller 0xFB3323E24743Caf4ADD0fDCCFB268565c0685556 has 18 markets; admin is a Gnosis Safe v1.3.0 threshold 2 (owners 0x03A376.., 0x737898.., 0x5A9e79.., 0x1155b614..)",
+    "ionLBTC market 0xADE794534c05F79981337E73dc2A987cdFf1958d holds 249.00006075 LBTC (cash 24,900,006,075, totalBorrows 5,000 wei, exchangeRateCurrent 0.2e18)",
+    "depositor 0x9E34d89C013Da3BF65fc02b59B6F27D710850430 owns 124,500,000,000 of 124,500,055,375 cTokens (99.99996%) and is a member of 12 markets; it is the protocol's largest BORROWER (~$5M debt across 11 markets), not a passive holder",
+    "the only other holder 0x1155b614971f16758C92c4890eD338C9e3ede6b7 (55,375 cTokens, NOT a member) can redeem 0.00011075 LBTC because non-members bypass the liquidity/oracle check",
+    "oracle 0x2BAF3A2B667A5027a83101d218A9e8B73577F117 reverts for LBTC, weETH, STONE, wrsETH, uniBTC ('Price oracle not found'); M-BTC oracle reverts too",
+    "all 18 Mode-A markets, 4 Mode-B markets, 28 Base markets, 10 OP markets and 5 Lisk markets have mintGuardianPaused=true and borrowGuardianPaused=true; transfer/seize are not paused",
+    "Mode LBTC 0x964dd444e3192F636322229080A576077B06FbA3 is Lombard's native LBTC (not a LayerZero OFT); withdrawals disabled, treasury unset, no bridge destinations; Ethereum LBTC has withdrawals enabled (Mode deployment is the closed one)",
+    "Balancer pool 0xcc53c20aD428359FbaEF29684Dd2c9B55F378ce6 holds 3.99999097 LBTC + 0.20016459 WBTC (~$16.9k) but Vault.swap reverts BAL#402 SWAP_DISABLED",
+    "nominal 249.00006075 LBTC = $21,132,250 at LBTC $84,869.01 (DefiLlama 2026-10-03); realizable by anyone unprivileged today = $0",
+    "38,294-entry borrower registry; sampled top-25 historical borrowers per debt market: meaningful accounts getAccountLiquidity reverts, only dust shortfalls (<= ~$0.20)"
+  ],
+  "caveats": [
+    "USD values are nominal at DefiLlama prices 2026-10-03 (LBTC $84,869.01, BTC $84,571.50, ETH $2,681.55); Mode LBTC has no native price so ETH-LBTC parity is used for the nominal figure only",
+    "borrower scan covered the top-25 historical borrowers per debt market (89 rows: 71 getAccountLiquidity reverts, 8 healthy, 10 dust shortfalls totalling ~$6.5), not all 38,294 registry entries; no material shortfall was found in the sampled set",
+    "getAccountLiquidity reverts for accounts holding any broken-oracle market, so their exact health cannot be computed - but the same revert blocks their liquidation",
+    "value could move after privileged actions: (1) adding an LBTC oracle unblocks holder redemption/liquidation checks; (2) the LBTC owner enabling withdrawals + setting a treasury restores BTC peg-out (then limited by redemption logistics)",
+    "the Balancer pool composition may change if swaps are re-enabled; the $16.9k buy-side figure is as of block ~45.43M"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Ionic: every market is mint+borrow paused, the LBTC oracle reverts so the member depositor cannot redeem/transfer/exit, liquidations are blocked by missing/stale oracles (dust shortfalls only), flash() is repayment-enforced, and the 249 LBTC ($21.13M nominal) is stuck behind a disabled Mode-LBTC peg-out with no working DEX - only privileged oracle/owner action could unlock it."
+}
