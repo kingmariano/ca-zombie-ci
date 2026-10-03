@@ -1,0 +1,43 @@
+{
+  "finding": "C-23",
+  "title": "1inch Fusion v1 Settlement Yul calldata corruption — live resolver drain (Ethereum)",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 395.00,
+  "headline_confidence": "medium",
+  "categories": {"E-U": 395.00, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 26109263,
+  "block_numbers": {"ethereum": 26109263},
+  "targets_checked": 14,
+  "live_targets": 7,
+  "closed_reasons": [
+    "Settlement 0xa888 itself holds only spam dust (USDC/USDT 0; WETH 1 wei) and has no sweep/owner",
+    "7 of 14 resolver contracts with resolveOrders drained end-to-end on a fork at block 26,109,263",
+    "2 further candidates unproven (0x5B93D80D operator arg unknown; 0xA9048585 rejects the non-empty data of the corrupted path)",
+    "user approvals to Settlement are not usable (maker signature required for LOP pulls; DEXT has no LOP allowance; the other holder has zero balance)",
+    "successor v2 Settlement/SimpleSettlement deployments are rewritten code with no vulnerable Yul pattern and no resolveOrders callback",
+    "an active third-party drainer bot (0xC0ffeE… via 0xE08D97e1) has been sweeping this resolver class (traced drains 2025-11, 2026-04, 2026-10), and other drainer addresses appear in 2025-03 and 2026-08"
+  ],
+  "poc": {
+    "tests_passed": 4,
+    "tests_total": 4,
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37099199777"]
+  },
+  "key_facts": [
+    "0xA88800CD213dA5Ae406ce248380802BD53b47647 is the verified immutable Fusion-v1 Settlement (solc 0.8.17) with the unchecked Yul pointer arithmetic in _settleOrder",
+    "The corrupted suffix lets anyone make Settlement call resolveOrders(resolverArg, tokensAndAmounts, data) on any target with attacker-chosen arguments",
+    "Historical 2025-03-05 exploit reproduced on a fork at block 21,982,110: exactly 1,000,000 USDC extracted from TrustedVolumes resolver 0xB02F…",
+    "Live fork extraction at block 26,109,263 succeeded for 7 resolver contracts: 0x5623B873 (GYEN), 0x7a359544 (EURA), 0xe789c556 (XAUT), 0x84D99Aa5 (FNT), 0xBd4DBE0C (DEGEN), 0xcb13e91f (DUCKER), 0xB02F (WETH)",
+    "Gross market value of the 7 victims' remaining token holdings at the pin block: $400.75 (DefiLlama/Blockscout cross-priced); per-token extraction costs ~600-670k gas (~$0.13/token at the 0.0764 gwei pin-block gas price), so net is ~$395 before thin-liquidity slippage",
+    "Enumeration (CI, full history): 14 top-level settleOrders senders, 749 ERC-20 senders to Settlement, 763 code scans -> the same 14 contracts with resolveOrders selector 0x1944799f; Blockscout-priced total across all 14 = $1,813.20 (the conservative cross-priced total for the 7 fork-proven victims = $400.75)",
+    "Approvals to Settlement over all history: 11 Approval events, only 2 with non-zero allowance and balance, neither extractable",
+    "Successor deployments (0x2Ad500… Settlement on Ethereum, SimpleSettlement on 17 chains) are patched/rewritten (solc 0.8.23)"
+  ],
+  "caveats": [
+    "USD total is a market-price snapshot at block 26,109,263; illiquid tokens may realise less; one token per victim was actually moved on the fork, the rest assumed standard ERC-20",
+    "The active drainer bot may have emptied balances after the pin block",
+    "0x5B93D80D (~$1.4k partial) excluded: operator argument not recovered and direct probe failed",
+    "0xA9048585 (~$28) excluded: direct probe moves tokens but the full corrupted path (non-empty data) reverts",
+    "Gas cost of sweeping the >=$1 tokens is ~$5 at the pin-block gas price (0.0764 gwei); it rises with gas price and slippage on thin tokens is unquantified"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$395 net (~$400.75 gross) today by calling the unpatched 1inch Fusion v1 Settlement at 0xA888… and making it call resolveOrders on 7 old resolver contracts that still trust it; the path is fork-proven and is being actively swept by competing drainer bots."
+}
