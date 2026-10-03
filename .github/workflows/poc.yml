@@ -69,8 +69,12 @@ jobs:
             echo ""; return 1
           }
           PICK=$(pick "$RPC_URL" "https://ethereum-rpc.publicnode.com" "https://eth.drpc.org" "https://1rpc.io/eth" || true)
-          if [ -z "$PICK" ]; then echo "WARNING: no working ETH RPC"; else echo "ETH fork RPC selected"; fi
-          echo "FORK_RPC_URL=$PICK" >> "$GITHUB_ENV"
+          if [ -z "$PICK" ]; then
+            echo "WARNING: no working ETH RPC found; FORK_RPC_URL left unset"
+          else
+            echo "ETH fork RPC selected"
+            echo "FORK_RPC_URL=$PICK" >> "$GITHUB_ENV"
+          fi
       - name: custom CI script
         if: ${{ hashFiles(format('{0}/ci/run.sh', github.event.inputs.finding)) != '' }}
         working-directory: ${{ github.event.inputs.finding }}
