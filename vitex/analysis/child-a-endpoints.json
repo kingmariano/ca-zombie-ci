@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "mission": "H-05 ViteX child A - Vite chain liveness / public endpoint reachability",
+    "collected_utc": "2026-10-03T15:06:00Z..15:51:00Z",
+    "collector": "child-a subagent, host /home/heisenberg/CA, read-only probes",
+    "methods": ["Google DoH (dns.google)", "curl HTTPS with browser UA", "single TCP connect attempt", "JSON-RPC POST ledger_getSnapshotChainHeight", "crt.sh", "api.certspotter.com", "Wayback Machine CDX + raw snapshots", "archive.today", "GitHub code/repo search (gh api)", "Telegram web previews (t.me/s)", "fxtwitter/syndication API", "Web search"],
+    "parent_context": "analysis/00-endpoint-evidence.md"
+  },
+  "verdict": {
+    "public_vite_mainnet_rpc_reachable": false,
+    "public_vite_mainnet_rpc_verdict_confidence": "~97%",
+    "chain_halted_or_effectively_dead": "likely (no public observer since ~Feb-May 2025; not directly provable from outside)",
+    "chain_halted_confidence": "~80-85%",
+    "any_third_party_rpc_provider_supports_vite": false,
+    "jeets_airdrop_vite_snapshot_moment_utc": "2025-11-11T00:00:00Z",
+    "last_known_public_snapshot_height": "unknown / not publicly published; no explorer/API reachable"
+  },
+  "official_vite_endpoints": [
+    {"host_or_url": "node.vite.net", "dns": "CNAME vitenode-837259984.us-east-1.elb.amazonaws.com -> NXDOMAIN (Status 3)", "http": "curl 000 (DNS fail)", "jsonrpc": "not attempted (DNS fail)", "observed_utc": "2026-10-03T15:45:02Z", "notes": "official public node RPC https://node.vite.net/gvite; ELB deleted"},
+    {"host_or_url": "https://node.vite.net/gvite/ws", "dns": "NXDOMAIN", "http": "000", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:45:03Z", "notes": "websocket endpoint hardcoded by wallet/explorer"},
+    {"host_or_url": "buidl.vite.net (testnet)", "dns": "NXDOMAIN (Status 3)", "http": "000", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:45:03Z", "notes": "official testnet node"},
+    {"host_or_url": "vitex.vite.net", "dns": "NXDOMAIN (Status 3)", "http": "000", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:45:05Z", "notes": "ViteX exchange front-end"},
+    {"host_or_url": "config.vite.net", "dns": "CNAME d-28npzmg7sk.execute-api.us-east-1.amazonaws.com -> NXDOMAIN", "http": "connect fail", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:10Z", "notes": "Wayback shows nginx default page in 2024/2025; deployment deleted"},
+    {"host_or_url": "api.vite.net", "dns": "CNAME d-583y2v6j0e.execute-api.us-east-1.amazonaws.com -> NXDOMAIN", "http": "connect fail", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:10Z", "notes": "API gateway deleted"},
+    {"host_or_url": "bootnodes.vite.net /bootmainnet.json", "dns": "CNAME d-5j0jymw5ua.execute-api.us-east-1.amazonaws.com -> NXDOMAIN", "http": "curl 000", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:45:38Z", "notes": "P2P boot seed used by gvite (conf/node_config.json BootSeeds); no Wayback capture of JSON"},
+    {"host_or_url": "biforst.vite.net (ViteConnect)", "dns": "CNAME viteconnectlb-1888616360.us-east-1.elb.amazonaws.com -> NXDOMAIN", "http": "connect fail", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:10Z", "notes": "from parent evidence"},
+    {"host_or_url": "gateway.vite.net", "dns": "NXDOMAIN", "http": "connect fail", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:10Z", "notes": "from parent evidence"},
+    {"host_or_url": "stats.vite.net", "dns": "NXDOMAIN (Status 3)", "http": "curl 000", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:45:36Z", "notes": "dashboard target wss://stats.vite.net hardcoded in node_config.json"},
+    {"host_or_url": "node-jp.vite.net / node-tokyo.vite.net / node-1.vite.net", "dns": "NXDOMAIN", "http": "n/a", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:10Z", "notes": "old certs / old nginx hosts; both dead"},
+    {"host_or_url": "vitescan.io (official explorer)", "dns": "A 47.240.225.75 (Alibaba Cloud HK); NS AWS", "http": "TCP 443/80 timeout (>=20s); curl 000", "jsonrpc": "000 at 15:45:06Z", "observed_utc": "2026-10-03T15:45:06Z", "notes": "global timeouts also from 6 check-host nodes (DE,ES,FI,IR,SE,US) per parent; www/test subdomains same IP also timeout 15:45:16Z/15:45:38Z; raw 47.240.225.75:48132 timeout 15:45:26Z"},
+    {"host_or_url": "explorer.vite.net", "dns": "CNAME vitelabs.github.io / A 185.199.108-111.153", "http": "HTTP 200 static SPA on GitHub Pages (last-modified 2025-04-16)", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:12Z + 15:50Z", "notes": "JS bundle hardcodes https://node.vite.net/gvite and wss://node.vite.net/gvite/ws (both dead); vitelabs/explorer src/utils/consts.js DEFAULT_NODE=node.vite.net/gvite"},
+    {"host_or_url": "wallet.vite.net / x.vite.net", "dns": "A 15.197.225.128 / 3.33.251.168 (AWS Global Accelerator)", "http": "HTTP 301 -> https://vite.net", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:12Z", "notes": "only a redirect remains"},
+    {"host_or_url": "vite.net", "dns": "A 185.199.108.153..111 (GitHub Pages)", "http": "HTTP 200 'Vite Wallet' SPA; .env.production points to node.vite.net/gvite and vitex.vite.net (both dead)", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:48Z", "notes": "cannot function"},
+    {"host_or_url": "docs.vite.org", "dns": "CNAME vitelabs.github.io", "http": "HTTP 200 GitHub Pages (last-modified 2025-03-29)", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:12Z", "notes": "docs still instruct curl https://bootnodes.vite.net/bootmainnet.json and node.vite.net/gvite; both dead"},
+    {"host_or_url": "mainnet.viteview.xyz / buidl.viteview.xyz (3rd-party explorer)", "dns": "Cloudflare 104.21.94.74 / 172.67.220.230", "http": "HTTP 200 static SPA", "jsonrpc": "rejected (no backend API) per parent", "observed_utc": "2026-10-03T15:20Z", "notes": "JS config https://node.vite.net/gvite / https://buidl.vite.net/gvite; both dead; Wayback captures through 2026-01-31 (shell only)"},
+    {"host_or_url": "vitcscan.com", "dns": "Cloudflare 104.21.81.26 / 172.67.156.119", "http": "HTTP 502 (origin down) per parent", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:10Z", "notes": "community explorer (JeanOUINA); repo vitcscan-rewrite hardcodes wss://node.vite.net/gvite/ws"},
+    {"host_or_url": "vitex.net / api.vitex.net", "dns": "zone removed (REFUSED) per parent; crt.sh historic names *.vitex.net", "http": "n/a", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:10Z", "notes": "ViteX website zone gone"},
+    {"host_or_url": "vitetxs.de / viteexplorer.eu", "dns": "NXDOMAIN", "http": "n/a", "jsonrpc": "n/a", "observed_utc": "2026-10-03T15:10Z", "notes": "from parent evidence"}
+  ],
+  "third_party_providers": [
+    {"provider": "NOWNodes", "endpoint_tested": "https://vite.nownodes.io", "jsonrpc_result": "HTTP 404 nginx (2026-10-03T15:25Z)", "supported": false, "citation": "docs.nownodes.io/nodeapis chain list contains no VITE; llms-full.txt node list contains no vite"},
+    {"provider": "Ankr", "endpoint_tested": "https://rpc.ankr.com/vite", "jsonrpc_result": "HTTP 403 {\"error\":\"message: API key is not allowed to access blockchain, json-rpc code: -32052, rest code: 403\"} — identical for bogus chain foobar123xyz and ethereum => generic, meaningless", "supported": false, "citation": "ankr.com docs chain list grep: no vite"},
+    {"provider": "dRPC", "endpoint_tested": "https://vite.drpc.org", "jsonrpc_result": "HTTP 404 {\"message\":\"Not Found\"}", "supported": false, "citation": "drpc.org/chainlist grep: no vite"},
+    {"provider": "BlockPI", "endpoint_tested": "https://vite.blockpi.network/v1/rpc/public", "jsonrpc_result": "HTTP 404 {\"jsonrpc\":\"2.0\",\"error\":{\"code\":-32000,\"message\":\"unknown host\"}}", "supported": false, "citation": "n/a"},
+    {"provider": "PublicNode (Allnodes)", "endpoint_tested": "https://vite-rpc.publicnode.com and https://vite.publicnode.com", "jsonrpc_result": "HTTP 404", "supported": false, "citation": "n/a"},
+    {"provider": "Tatum", "endpoint_tested": "https://vite.gateway.tatum.io", "jsonrpc_result": "HTTP 404 {\"statusCode\":404,\"message\":\"Not Found\"}", "supported": false, "citation": "docs.tatum.io supported-blockchains grep: no vite (only 'Invite')"},
+    {"provider": "GetBlock", "endpoint_tested": "https://vite.getblock.io", "jsonrpc_result": "DNS none", "supported": false, "citation": "getblock.io/chains grep: no vite"},
+    {"provider": "OnFinality", "endpoint_tested": "https://vite.api.onfinality.io/public", "jsonrpc_result": "DNS none", "supported": false, "citation": "n/a"},
+    {"provider": "Pocket Network", "endpoint_tested": "n/a", "jsonrpc_result": "n/a", "supported": false, "citation": "github code search org:pokt-network vite returns only Vite frontend-tool configs, no Vite blockchain"},
+    {"provider": "Chainstack", "endpoint_tested": "n/a", "jsonrpc_result": "n/a", "supported": false, "citation": "chainstack.com/protocols grep: no vite"},
+    {"provider": "Alchemy", "endpoint_tested": "https://vite-mainnet.g.alchemy.com", "jsonrpc_result": "DNS none", "supported": false, "citation": "n/a"},
+    {"provider": "Chainlist / chainid.network", "endpoint_tested": "https://chainid.network/chains.json", "jsonrpc_result": "no Vite entry", "supported": false, "citation": "chains.json filter"},
+    {"provider": "GoldRush/Covalent", "endpoint_tested": "https://api.covalenthq.com/v1/chains/", "jsonrpc_result": "no Vite entry", "supported": false, "citation": "chains endpoint filter"}
+  ],
+  "chain_status_evidence": [
+    {"date": "2025-02-09", "source": "redlib.vanillax.me/r/vitelabs/comments/1ilobzo/servers_are_updated/", "summary": "Official-style post: 'Servers upgrades have been completed. Services are now gradually coming back up... basic functions of ViteX and the wallet/app are back online. We are working on full node and MM mining rewards.' => service degradation period"},
+    {"date": "2025-02-16", "source": "Wayback CDX vitescan.io", "summary": "Last-ever Wayback capture of official explorer vitescan.io (SPA shell). No later captures; Common Crawl 2025 none (parent)"},
+    {"date": "2025-02-24", "source": "Binance / adbytes.media", "summary": "Binance delisted VITE (low volume / insufficient development activity)"},
+    {"date": "2025-03-10", "source": "Vite Labs notices (Cryptorank/Bitget; parent)", "summary": "Official gateway closed; withdrawals through gateway ended"},
+    {"date": "2025-03-27", "source": "bitget.com/news/detail/12560604667775 ; chaincatcher.com/article/2174470", "summary": "Vite Labs: dev funds tight after DWF losses + delisting; 'will only maintain network operation until it can no longer support it'; all roadmap plans canceled"},
+    {"date": "2025-03-31", "source": "adbytes.media/index.php/blog/vite-labs-cancels-roadmap...", "summary": "FDV ~$256,340; gateway stops 2025-03-10; 'community-run gateways will continue'"},
+    {"date": "2025-04-13/16", "source": "GitHub vitelabs/vite-org-new, vite-web-wallet, vitelabs/explorer", "summary": "Last real commits ('Update links', 'Update Explorer URL'); explorer.vite.net GitHub Pages last-modified 2025-04-16. go-vite last commit 2024-09-26"},
+    {"date": "2025-05-22", "source": "x.com/vitelabs/status/1925499301314097170 (live via fxtwitter; full text saved)", "summary": "Migration to JEETS on Solana. Reasons: 'Network instability: Ongoing performance and reliability issues on the Vite native chain, including node and explorer disruptions. Security concerns: Increasing technical vulnerabilities and degraded trust in core infrastructure.' No specific hack/protocol bug named"},
+    {"date": "2025-05-30", "source": "MEXC announcement 17827791524492 / JEETS Telegram message #5", "summary": "'Due to instability issues on the VITE mainnet, which often cause network disruptions...' trading ceases; deposits closed; swap 100 VITE = 1 JEETS; 'Token to Rebrand as $JEETS... Following persistent problems on the VITE blockchain'"},
+    {"date": "2025-07-04", "source": "reddit r/vitelabs post 1lriuq8", "summary": "'Vite is dead. I wouldn't expect much. Money gone. My wallet says 15 cents now but there's nowhere to send it anyway because Vite is dead.'"},
+    {"date": "2025-10-03", "source": "Wayback snapshot https://web.archive.org/web/20251003122448id_/https://jeets.ai/airdrop_vite/ (jeets.ai/airdrop_vite original)", "summary": "JEETS x VITE airdrop snapshot-entry page. Hardcoded SNAPSHOT_TEXT = 'Snapshot (Vite Network): 11/11/25 00:00 (UTC)'. Page: 'Eligibility is based only on holding Jeets and VITE / VX (Vite chain) at the snapshot moment... No live checks here.' No live Vite RPC used; submits via Firebase Firestore (project jeets-ai)"},
+    {"date": "2025-10-03", "source": "t.me/s/Jeets_Token message #48", "summary": "'Jeets airdrop for vite holders' forwarding x.com/vitelabs/status/1974080261454536967; the tweet itself is now DELETED (syndication API returns TweetTombstone 'This Post was deleted by the Post author'; Wayback capture 2025-10-10 is a JS shell without text)"},
+    {"date": "2025-11-11T00:00Z", "source": "jeets.ai/airdrop_vite JS constant", "summary": "Declared Vite-network snapshot moment for the JEETS holder airdrop. Execution/claim evidence not publicly found; jeets.ai now has no DNS records (NXDOMAIN/NODATA); www CNAME jeets.ai; Wayback CDX shows /airdrop 301 (2025-09-28), /airdrop_vite 200 (2025-10-03), airdrop_ginux 301 (2025-10-01), claim.html (monthly game claim, 2025-09-10). No public snapshot height/state file found"},
+    {"date": "2026-02-08", "source": "t.me/s/Jeets_Token last visible message #55", "summary": "Last public channel activity (image/no text). No Vite chain status posts"},
+    {"date": "2026-05-29", "source": "github.com/vitelabs/go-vite/issues/656", "summary": "Only recent issue: a private-network coinbase bug report; not evidence of mainnet production. No mainnet-down reports (community gone)"}
+  ],
+  "negative_results_and_limits": [
+    "crt.sh returned HTTP 429 for vitescan.io, vitcscan.com, vite.org, vitewallet.io, vite.org.cn on 2026-10-03 15:37-15:45Z after an initial full JSON pull for *.vite.net and one for *.vitex.net; certspotter returned [] for vitescan.io and vitex.net (recent issuances only).",
+    "No Wayback captures exist for bootnodes.vite.net/bootmainnet.json; no public copy of the boot seed/peer list found in GitHub search.",
+    "Redlib search endpoints 403 after first successful queries; official Vite Telegram channels are not web-previewable (302).",
+    "x.com/vitelabs/status/1974080261454536967 deleted; text not recoverable from Wayback (JS shell), fxtwitter/vxtwitter/twstalker/threadreader/xcancel all failed or returned no content.",
+    "Single TCP-connect-only checks: no port scanning beyond candidate Vite hosts; vitescan.io (47.240.225.75) ports 80/443/48132 timed out from this host."
+  ]
+}

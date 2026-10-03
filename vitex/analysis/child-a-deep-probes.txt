@@ -1,0 +1,71 @@
+=== deep probes Sat Oct  3 15:19:59 UTC 2026 ===
+--- https://vitescan.io/
+FINAL http=000 ip= time=20.002919s size=0
+head: cannot open '/tmp/opencode/pb.txt' for reading: No such file or directory
+body[:300]: 
+
+--- http://vitescan.io/
+FINAL http=000 ip= time=20.001176s size=0
+head: cannot open '/tmp/opencode/pb.txt' for reading: No such file or directory
+body[:300]: 
+
+--- https://vite.io/
+HTTP/1.1 200 OK
+Content-Type: text/html
+Date: Sat, 03 Oct 2026 15:20:41 GMT
+Content-Length: 114
+
+FINAL http=200 ip=76.223.54.146 time=2.032161s size=114
+body[:300]: <!DOCTYPE html><html><head><script>window.onload=function(){window.location.href="/lander"}</script></head></html>
+
+--- https://explorer.vite.io/
+FINAL http=000 ip=13.248.169.48 time=11.283712s size=0
+body[:300]: <!DOCTYPE html><html><head><script>window.onload=function(){window.location.href="/lander"}</script></head></html>
+
+--- https://mainnet.viteview.xyz/
+HTTP/2 200 
+date: Sat, 03 Oct 2026 15:20:55 GMT
+content-type: text/html; charset=utf-8
+cf-ray: a44cef0029625639-AMS
+cf-cache-status: HIT
+accept-ranges: bytes
+age: 3475
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+feature-policy: none
+referrer-policy: unsafe-url
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-xss-protection: 1; mode=block
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=5HN0emxlacGajTn6wiLCRx8swqgPuC3G2VA2zD9zKfcaNDh1nk4iZOvY%2BOwedLN3AgSQIasOVlHbMvgI28J%2FDDjERU1YRNo5NNS0eYtJ2dv5f848ACornpIl%2BRj97tJMqb%2BLwSyNVw%3D%3D"}]}
+alt-svc: h3=":443"; ma=86400
+
+FINAL http=200 ip=104.21.94.74 time=1.779628s size=1205
+body[:300]: <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="open source Vite Explorer"><meta name="keyword" content="vite,blockchain,explorer,vitev
+
+--- https://buidl.viteview.xyz/
+HTTP/2 200 
+date: Sat, 03 Oct 2026 15:20:57 GMT
+content-type: text/html; charset=utf-8
+cf-cache-status: MISS
+accept-ranges: bytes
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+feature-policy: none
+referrer-policy: unsafe-url
+x-content-type-options: nosniff
+x-frame-options: DENY
+x-xss-protection: 1; mode=block
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=wiI4mYZUaaQQCs97rNjRO%2FNgCAkiL%2BNkAYUgekGdWmsw6oa0QIKFvidxQoaFmFNbX2D2LydU4xlpH7P2aw7wLq2ZQu2scp0c9JcyXi%2FYOOIjMuVH6EycRGQhX%2FHHYD0HVm97hrY%3D"}]}
+server: cloudflare
+cf-ray: a44cef0c8caba00b-AMS
+alt-svc: h3=":443"; ma=86400
+
+FINAL http=200 ip=172.67.220.230 time=1.976650s size=1205
+body[:300]: <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="open source Vite Explorer"><meta name="keyword" content="vite,blockchain,explorer,vitev
+
+=== TCP connect checks (single attempt, nc or bash) ===
+vitescan.io:443 TIMEOUT/REFUSED (124)
+vitescan.io:80 TIMEOUT/REFUSED (124)
+47.240.225.75:443 TIMEOUT/REFUSED (124)
+vite.io:443 OPEN
+explorer.vite.io:443 OPEN

@@ -1,0 +1,64 @@
+# H-05 ViteX endpoint scan
+utc: 2026-10-03T15:17:07Z
+runner: Linux 6.17.0-1022-azure x86_64 / 4 vCPU
+
+## 1. DNS status (Google DoH) + TCP/HTTP probe
+node.vite.net            CNAME=vitenode-837259984.us-east-1.elb.amazonaws.com.                  http=000ERR
+vitex.vite.net           Status=3                                                               http=000ERR
+config.vite.net          CNAME=d-28npzmg7sk.execute-api.us-east-1.amazonaws.com.                http=000ERR
+api.vite.net             CNAME=d-583y2v6j0e.execute-api.us-east-1.amazonaws.com.                http=000ERR
+gateway.vite.net         Status=3                                                               http=000ERR
+crosschain.vite.net      Status=3                                                               http=000ERR
+biforst.vite.net         CNAME=viteconnectlb-1888616360.us-east-1.elb.amazonaws.com.            http=000ERR
+buidl.vite.net           Status=3                                                               http=000ERR
+explorer.vite.net        A=185.199.109.153,185.199.110.153,185.199.108.153,185.199.111.153      http=200
+wallet.vite.net          A=15.197.225.128,3.33.251.168                                          http=301
+vitescan.io              A=47.240.225.75                                                        http=000ERR
+mainnet.viteview.xyz     A=104.21.94.74,172.67.220.230                                          http=200
+viteview.xyz             A=172.67.220.230,104.21.94.74                                          http=200
+vitex.net                Status=2                                                               http=000ERR
+api.vitex.net            Status=2                                                               http=000ERR
+forum.vite.net           Status=3                                                               http=000ERR
+wiki.vite.net            Status=3                                                               http=000ERR
+
+## 2. Vite JSON-RPC POST to candidate endpoints
+POST https://node.vite.net/gvite -> curl: (6) Could not resolve host: node.vite.net
+POST https://vitex.vite.net -> curl: (6) Could not resolve host: vitex.vite.net
+POST https://mainnet.viteview.xyz/gvite -> POST is not a valid request method
+POST https://viteview.xyz/gvite -> POST is not a valid request method
+POST https://buidl.vite.net/gvite -> curl: (6) Could not resolve host: buidl.vite.net
+
+## 3. Global reachability via check-host.net (independent vantage points)
+check-host https://vitescan.io/ request_id=4ecb4b8dk9f0
+  au1.node.check-host.net      Connection timed out
+  ch1.node.check-host.net      Connection timed out
+  de1.node.check-host.net      Connection timed out
+  in2.node.check-host.net      no result
+  rs1.node.check-host.net      Connection timed out
+  ua1.node.check-host.net      Connection timed out
+check-host https://node.vite.net/ request_id=
+  parse error Expecting value: line 1 column 1 (char 0)
+
+## 4. Official web wallet bundle endpoint config (live site)
+endpoints referenced in live vite.net bundle:
+https://app.vite.net/
+https://coinmarketcap.com/exchanges/vitex/
+https://config.vite.net
+https://crosschain.vite.net
+https://explorer.vite.net
+https://forum.vite.net/topic/2283/guidelines-on-how-to-become-an-operator-on-vitex
+https://gateway.vite.net
+https://growth.vite.net/vitex-board
+https://node.vite.net/eth/v3/caae2231051e46a1941f422df1fbcc94
+https://static.vite.net/web-wallet-1257137467
+https://vitex.net/
+https://vitex.vite.net
+https://vitex.vite.net/
+https://vitex.zendesk.com/
+https://vitex.zendesk.com/hc/en-001/categories/360002539494-Announcement
+https://x.vite.net/trade
+wss://biforst.vite.net
+wss://node.vite.net/gvite/ws
+wss://vitex.vite.net/websocket
+
+scan complete: 2026-10-03T15:17:07Z

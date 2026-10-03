@@ -1,0 +1,145 @@
+=== JeanOUINA vite repos Sat Oct  3 15:23:42 UTC 2026 ===
+--- repo vite-proxy
+{"default_branch":"master","description":null,"html_url":"https://github.com/JeanOUINA/vite-proxy","name":"vite-proxy","pushed_at":"2023-07-19T13:44:11Z"}
+--- repo vitcscan-rewrite
+{"default_branch":"master","description":null,"html_url":"https://github.com/JeanOUINA/vitcscan-rewrite","name":"vitcscan-rewrite","pushed_at":"2023-06-30T10:39:42Z"}
+--- repo web3-vite
+{"default_branch":"master","description":"A library to interact with the Vite blockchain","html_url":"https://github.com/JeanOUINA/web3-vite","name":"web3-vite","pushed_at":"2023-07-19T22:11:27Z"}
+--- repo crypto-info
+{"default_branch":"master","description":"Profiles of Token, Gateway, and Operator on ViteX","html_url":"https://github.com/JeanOUINA/crypto-info","name":"crypto-info","pushed_at":"2023-04-04T18:39:18Z"}
+
+=== vite-proxy caching.ts ===
+import { ActionQueue, SnapshotBlock } from "web3-vite";
+import { Namespace } from "../Namespace.js";
+import events from "../events.js";
+import { proxyRequest, ViteRequest } from "../proxy.js";
+import Joi from "joi";
+import { hashSchema } from "../validation.js";
+
+export const expireTimes = {
+    snapshotBlock: 60*1000
+}
+
+export type CachingQueueKeyNamespace = "get_snapshot_block_by_hash" |
+    "get_snapshot_block_by_height"
+export type CachingQueueKey = `${CachingQueueKeyNamespace}:${string}`
+
+// we'll only cache the most used methods; the rest will be proxied
+export default new class CachingNamespace extends Namespace {
+    queue = new ActionQueue<CachingQueueKey>()
+    constructor(){
+        super()
+
+        this.methods.set("ledger_getLatestSnapshotHash", this.ledger_getLatestSnapshotHash.bind(this))
+        this.methods.set("ledger_getLatestSnapshotChainHash", this.ledger_getLatestSnapshotHash.bind(this))
+        this.methods.set("ledger_getSnapshotChainHeight", this.ledger_getSnapshotChainHeight.bind(this))
+
+        this.methods.set("ledger_getSnapshotBlockByHash", this.ledger_getSnapshotBlockByHash.bind(this))
+        this.methods.set("ledger_getSnapshotBlockByHeight", this.ledger_getSnapshotBlockByHeight.bind(this))
+    }
+
+    start(){
+        events.on("snapshotBlock", (height, hash) => {
+            this.snapshotChainHeight = height
+            this.snapshotChainHash = hash
+            // attempt at caching directly, before even going to clients
+            // also lock queues
+            
+            this.queue.queueAction(`get_snapshot_block_by_hash:${hash}`, async () => {
+                // lock hash and height queues, while fetching
+                await this.ledger_getSnapshotBlockByHeight({
+                    method: "ledger_getSnapshotBlockByHeight",
+                    params: [height]
+                }).catch(() => {})
+            })
+        })
+    }
+
+    snapshotBlockByHashCache = new Map<string, SnapshotBlock>()
+    snapshotBlockByHeightCache = new Map<number, SnapshotBlock>()
+
+    ledger_getSnapshotBlockByHeightSchema = Joi.array().allow(
+        Joi.string().required().regex(/^\d+$/),
+        Joi.number().required().min(0).integer()
+    ).required().length(1)
+    async ledger_getSnapshotBlockByHeight(request: ViteRequest):Promise<SnapshotBlock>{
+        const [heightAny] = await this.ledger_getSnapshotBlockByHeightSchema.validateAsync(request.params) as [string|number]
+        const height = typeof heightAny === "string" ? parseInt(heightAny) : heightAny
+        
+        return this.queue.queueAction(`get_snapshot_block_by_height:${height}`, async () => {
+            if(this.snapshotBlockByHeightCache.has(height)){
+                console.log(`[get_snapshot_block_by_height:${height}] cache hit`)
+                return this.snapshotBlockByHeightCache.get(height)!
+            }
+
+            const snapshotBlock:SnapshotBlock = await proxyRequest(request)
+
+            this.snapshotBlockByHeightCache.set(height, snapshotBlock)
+            this.snapshotBlockByHashCache.set(snapshotBlock.hash, snapshotBlock)
+            setTimeout(() => {
+                this.snapshotBlockByHeightCache.delete(height)
+                this.snapshotBlockByHashCache.delete(snapshotBlock.hash)
+            }, expireTimes.snapshotBlock)
+            
+            return snapshotBlock
+        })
+    }
+
+    ledger_getSnapshotBlockByHashSchema = Joi.array().items(
+        hashSchema
+    ).required()
+    async ledger_getSnapshotBlockByHash(request: ViteRequest):Promise<SnapshotBlock>{
+        const [hash] = await this.ledger_getSnapshotBlockByHashSchema.validateAsync(request.params) as [string]
+        
+        return this.queue.queueAction(`get_snapshot_block_by_hash:${hash}`, async () => {
+            if(this.snapshotBlockByHashCache.has(hash)){
+                console.log(`[get_snapshot_block_by_hash:${hash}] cache hit`)
+                return this.snapshotBlockByHashCache.get(hash)!
+            }
+
+            const snapshotBlock:Snapsho
+=== vitcscan-rewrite src/vite.ts ===
+import { Client, SBPVoteInfo, TokenInfo } from "web3-vite";
+
+window.process = {
+    version: "18.0.0"
+} as any
+export const client = new Client("wss://node.vite.net/gvite/ws")
+
+export async function getSBPs():Promise<Map<string, SBPVoteInfo>>{
+    try{
+        const sbps = await client.methods.contract.getSBPVoteList();
+        return new Map(sbps.map(sbp => [sbp.sbpName, sbp] as [string, any]));
+    }catch(err){
+        console.error(err);
+        throw new Error("Couldn't fetch SBPs list; Please refresh the page");
+    }
+}
+export let sbpsMap = getSBPs()
+setInterval(async () => {
+    const val = await getSBPs().catch(() => null)
+    if(val !== null){
+        sbpsMap = Promise.resolve(val)
+    }
+}, 30 * 1000)
+
+export async function getTokens():Promise<Map<string, TokenInfo>>{
+    try{
+        const { tokenInfoList: tokens } = await client.methods.contract.getTokenList(0, 1000)
+        return new Map(tokens.map(token => [token.tokenId, token] as [string, any]))
+    }catch(err){
+        console.error(err)
+        throw new Error("Couldn't fetch tokens list; Please refresh the page")
+    }
+}
+export let tokensMap = getTokens()
+setInterval(async () => {
+    const val = await getTokens().catch(() => null)
+    if(val !== null){
+        tokensMap = Promise.resolve(val)
+    }
+}, 30 * 1000)
+
+export function waitNextTick(){
+    return new Promise<void>(resolve => setImmediate(resolve))
+}

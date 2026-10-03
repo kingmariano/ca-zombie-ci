@@ -1,0 +1,36 @@
+=== go-vite issue 656 Sat Oct  3 15:46:22 UTC 2026 ===
+{"body":"DeepSeek v4 with the assistance of Skybuck Flying, found the main culprit/bug:\n\nVerified by Skybuck Flying:\n\nResult of debugging session on 29 may 2026:\n\n# Bug Report: Vite Private Network Setup - CoinBase Format Inconsistency\n\n## Bug Title\nProducer config parser and consensus verifier have incompatible CoinBase format requirements\n\n## Version Affected\ngvite v2.14.0 (git commit 142a4f6fa0ed50d24ceaa6445e03da91b6bf8999)\n\n## Severity\nCritical - Prevents private network operation with miner-enabled nodes\n\n## Description\n\nWhen configuring a Vite node as a miner (Snapshot Block Producer), the `CoinBase` field in the node configuration has conflicting format requirements between different components of the system:\n\n1. **Producer config parser** (`common/config/producer.go`, lines 53-60) requires CoinBase in format `\"index:address\"` (e.g., `\"0:vite_...\"`). If the format is incorrect, the node panics with:\n   ```\n   panic: len is not equals 2\n   ```\n\n2. **Consensus verifier** (`ledger/consensus/core/sbp_reader.go` and `ledger/consensus/consensus_snapshot.go`) expects the producer address to match the `BlockProducingAddress` from genesis.json, which is stored as a pure address (e.g., `\"vite_...\"` without the `0:` prefix).\n\nThis creates an impossible situation:\n- Using `\"0:vite_...\"` → Producer starts successfully but consensus verification fails with `\"verify snapshot producer fail\"`\n- Using `\"vite_...\"` → Producer fails to start with `\"len is not equals 2\"` panic\n\n## Root Cause\n\nThe `parseCoinbase` function in `common/config/producer.go` strictly requires the `index:address` format:\n\n```go\nfunc parseCoinbase(coinbaseCfg string) (*types.Address, uint32, error) {\n    splits := strings.Split(coinbaseCfg, \":\")\n    if len(splits) != 2 {\n        return nil, 0, errors.New(\"len is not equals 2\")\n    }\n    // ...\n}\n```\n\nHowever, the consensus system compares the producer address directly with addresses from genesis.json, which are stored without the index prefix. The index (typically `0`) is only meaningful for the producer to identify which key in the entropy store to use.\n\n## Impact\n\n- Private network operators cannot configure miner-enabled nodes\n- Block production is impossible\n- Network cannot achieve consensus\n- Genesis initialization of miner nodes fails with panic\n\n## Steps to Reproduce\n\n1. Create a private Vite network with 5 SBP nodes\n2. Generate wallets and genesis.json with
+--- comments
+expected an object but got: string ("https://docs.github.com/ ...")
+
+--- recent issues by updated
+2026-08-11T04:16:05Z open #656 Vite Private Network Setup - CoinBase Format Inconsistency
+2024-11-01T03:47:15Z closed #624  error fork point check
+2024-09-26T13:47:46Z closed #655 Release v2.14.0
+2024-08-27T00:31:59Z open #654 Fixed "Access is denied." running Mainnet+Testnet
+2024-05-25T18:34:13Z open #653 Bizar situation on ViteX Exchange, bid and ask price the same for Vinu.
+2024-04-03T21:50:44Z open #652 Memory leaks while downloading blockchain on Windows 11.
+2024-02-19T02:42:48Z closed #643 Release v2.13.0
+2023-12-27T17:31:44Z open #646 build(deps): bump golang.org/x/crypto from 0.0.0-20210711020723-a769d52b0f97 to 0.1.0
+2023-09-21T11:58:53Z open #649 Vite explorer not working ?
+2023-07-30T04:18:07Z open #651 cancel staking for Quota at any time 
+2023-03-22T18:41:29Z open #650 Cannot buy vite if no quota available... (to get quota...)
+2023-03-22T18:35:49Z closed #648 Data dir/folder on different drive than C: ?
+2023-03-18T03:11:16Z open #645 build(deps): bump golang.org/x/net from 0.0.0-20210805182204-aaa1db679c0d to 0.7.0
+2023-03-16T09:08:33Z open #647 Lock VITE while vote for SBP
+2023-03-07T04:35:40Z closed #640 feat: enable big contract
+2023-02-25T09:31:07Z open #644 build(deps): bump golang.org/x/sys from 0.0.0-20210809222454-d867a43fc93e to 0.1.0
+2023-02-03T21:52:30Z open #642 build(deps): bump http-cache-semantics from 4.1.0 to 4.1.1 in /contracts-vite
+2023-01-24T05:34:18Z open #641 build(deps): bump cookiejar from 2.1.2 to 2.1.4 in /contracts-vite
+2022-12-28T19:50:30Z open #639 Make Makefile windows compatible
+2022-12-19T09:57:20Z closed #638 Release v2.12.1
+2022-12-19T09:55:20Z closed #632 Remove privateKey field for rpc address derivation
+2022-12-14T07:14:22Z open #637 build(deps): bump express from 4.17.1 to 4.18.2 in /contracts-vite
+2022-12-07T17:14:12Z open #636 build(deps): bump decode-uri-component from 0.2.0 to 0.2.2 in /contracts-vite
+2022-12-07T06:47:49Z open #635 build(deps): bump qs from 6.5.2 to 6.5.3 in /contracts-vite
+2022-12-01T12:21:28Z closed #634 fix: move error to api scope
+2022-12-01T10:57:25Z closed #633 Enable private rpc api for private modules
+2022-11-27T15:58:09Z closed #612 too many onroad tx
+2022-11-27T14:27:46Z closed #629 fix: set difficulty cap
+2022-11-27T14:27:26Z closed #630 fix: get invalid sbp name cause panic
+2022-11-27T14:25:51Z closed #631 fix wallet_addEntropyStore crash bug

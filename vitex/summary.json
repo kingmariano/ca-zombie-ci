@@ -1,0 +1,40 @@
+{
+  "finding": "H-05",
+  "title": "ViteX DEX on the abandoned Vite chain — no reachable node, no unprivileged extraction path",
+  "chains": ["vite"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 4944710.11},
+  "latest_block": 122615899,
+  "block_numbers": {"vite_snapshot_height_last_known": 122615899},
+  "targets_checked": 6,
+  "live_targets": 0,
+  "closed_reasons": [
+    "No reachable Vite mainnet node/RPC anywhere: node.vite.net CNAMEs to a deleted AWS ELB; bootnodes.vite.net (the P2P seed list hardcoded in go-vite conf/node_config.json) CNAMEs to a deleted API Gateway; vitex.vite.net/gateway.vite.net/crosschain.vite.net/stats.vite.net/static.vite.net/buidl.vite.net are NXDOMAIN; config.vite.net and api.vite.net point at deleted API Gateways; biforst.vite.net at a deleted ELB",
+    "Official explorer vitescan.io (47.240.225.75) times out on 80/443/48132 from 9+ countries (check-host.net); no Wayback captures after 2025-02-16",
+    "No community or third-party node exists: every wallet/explorer/SDK repo hardcodes the dead official endpoints; no RPC provider (NOWNodes, Ankr, GetBlock, dRPC, Chainstack, Tatum, PublicNode, BlockPI, OnFinality, Pocket, Alchemy) supports the Vite chain",
+    "Chain abandoned: Feb-2025 server outage; Binance delisted VITE 2025-02-24; Vite Labs closed its gateway 2025-03-10; 2025-03-27 statement says funds lost to DWF market-making, roadmap canceled, network maintained 'only until it can no longer support it'; 2025-05-22 migration to Solana JEETS citing node/explorer disruptions and technical vulnerabilities; MEXC cited mainnet instability 2025-05-30; r/vitelabs users report the chain dead (Jul 2025); CoinGecko delisted VITE and VX",
+    "Even if a node reappeared: source audit of the final production code (go-vite v2.14.0) found no unprivileged value-extraction path (admin/oracle/trigger gates, sender-pinned callbacks, self-only debits, balanced matcher settlement)",
+    "The ~4.94M held by DexFund was gateway-minted Vite-USDT (tti_80f3751485e4e83456059473); every gateway operator has shut down (Vite Gateway closed, VGATE domain repurposed to an unrelated gambling site, XGate/Kivigate/ViNo/ExperimentDAO dead) so it has no redemption value even if drained",
+    "VITE and VX are delisted; the JEETS migration token itself has ~$5K FDV and $0 volume"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37132690689"]},
+  "key_facts": [
+    "ViteX DexFund vite_0000000000000000000000000000000000000006e82b8ba657; DexTrade vite_00000000000000000000000000000000000000079710f19dc7; both are native built-in contracts in go-vite, not user Solidity++",
+    "Last measured ViteX fund: 4,944,710.11 Vite-USDT at Vite snapshot height 122,615,899 (~2023-05-13), per the still-frozen community worker vite-info-api.xvite.workers.dev; DefiLlama's adapter last changed 2023-08-23 and was marked dead 2025-03-01",
+    "DefiLlama TVL was 100% USDT — the $4.94M is a 2023 reading, not a 2025 one",
+    "Final mainnet contract map was dexEnrichOrderContracts (V13 166,869,900; VersionX 1e9 never reached): AgentDeposit/AssignedWithdraw were never enabled",
+    "Privileged roles: owner vite_a8a00b3a2f60f5defb221c68f79b65f3620ee874f951a825db (or genesis), timeOracle, periodJobTrigger, makerMiningAdmin, per-market owner — all correctly gated in code",
+    "Two latent non-theft defects confirmed in code: C5 inverted stake-failure refund check (contracts_dex_fund.go:879, stuck VITE) and C6 RollAndGentNewDexFeesByPeriod panic (dex/fund_storage.go:1157, any trader can trigger a trading freeze once the privileged state precondition exists)",
+    "JEETS airdrop claim page (archived 2025-10-03) declares a Vite-network snapshot moment of 2025-11-11 00:00 UTC and performs 'No live checks' — not even the migration team was querying a public node; no public snapshot height survives",
+    "The live vite.net wallet bundle still points at wss://node.vite.net/gvite/ws and https://vitex.vite.net (all dead); vitex.network is a static 2023-06-21 Nuxt build with the dead vitex.vite.net/api as API base"
+  ],
+  "caveats": [
+    "No public node found does not 100% exclude an IP-only or regionally-blocked node (CN vantage not tested; ~3% residual)",
+    "'Chain halted' is inferred from infrastructure decommissioning + official statements + community reports, not from a direct node query (~80-85% confidence)",
+    "The 4.94M Vite-USDT figure is from 2023; no 2024-2026 on-chain verification is possible without a node",
+    "The native-contract audit is manual code review with unit tests; no formal verification or fuzzing of the matcher arithmetic was performed",
+    "If the chain were revived, C5/C6 (loss/liveness) and any undiscovered matcher arithmetic bug would matter, but there is no unprivileged theft path today"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live: the Vite chain has no reachable node (official endpoints and bootnode list decommissioned, no community/provider alternative) and the DEX's ~4.94M was gateway-minted USDT whose gateway operators have all shut down; a source audit of the final node code found no unprivileged extraction bug."
+}

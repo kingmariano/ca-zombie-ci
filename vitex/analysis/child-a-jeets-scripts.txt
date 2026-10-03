@@ -1,0 +1,110 @@
+=== jeets airdrop page scripts Sat Oct  3 15:31:18 UTC 2026 ===
+----- script 0 (12054 chars) -----
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    // ===== Hardcoded JEETS mint (given) =====
+    window.JEETS_MINT = "7D87YFU86HJcHwc3izRp27eAH6G9MYY8WeoE1R5xpump";
+    // Optional: supply your own paid RPC for best reliability:
+    // window.JEETS_RPC = "https://YOUR-HELIUS-OR-ALCHEMY-ENDPOINT";
+
+    // ===== Firebase (same as your games) =====
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuqXHSczafO0BvNAWlN-1awCo98hdPEpU",
+      authDomain: "jeets-ai.firebaseapp.com",
+      projectId: "jeets-ai",
+      storageBucket: "jeets-ai.firebasestorage.app",
+      messagingSenderId: "688351355857",
+      appId: "1:688351355857:web:0bb582cd8dbe4718f076f0",
+      measurementId: "G-C3VN4EQPRF"
+    };
+
+    const SNAPSHOT_TEXT = "Snapshot (Vite Network): 11/11/25 00:00 (UTC)";
+    document.getElementById('snapshotText').textContent = SNAPSHOT_TEXT;
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    async function ensureAuth(displayName=null){
+      return new Promise((resolve)=>{
+        onAuthStateChanged(auth, async (u)=>{
+          if(!u){ await signInAnonymously(auth); }
+          else if(displayName && !u.displayName){ try{ await updateProfile(u,{displayName}); }catch(_){} }
+          resolve(auth.currentUser);
+        });
+      });
+    }
+
+    // ===== Validators =====
+    const SOL_RE  = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+    const VITE_RE = /^vite_[0-9A-Fa-f]{50}$/;
+    const HANDLE_RE = /^@?[A-Za-z0-9_]{2,32}$/;
+
+    // ===== JEETS holding check with RPC fallbacks =====
+    const RPCS = [
+      window.JEETS_RPC || null,                         // your override if provided
+      "https://rpc.ankr.com/solana",                    // CORS-friendly public
+      "https://solana-mainnet.g.alchemy.com/v2/demo",   // public demo
+      "https://api.mainnet-beta.solana.com"             // may 403; last resort
+    ].filter(Boolean);
+
+    async function callWithTimeout(url, method, params, ms=12000){
+      const controller = new AbortController();
+      const t = setTimeout(()=>controller.abort(), ms);
+      try{
+        const r = await fetch(url, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ jsonrpc:"2.0", id:1, method, params }),
+          mode: "cors",
+          signal: controller.signal
+        });
+        if(!r.ok) throw new Error(`HTTP ${r.status}`);
+        const j = await r.json();
+        if(j?.error) throw new Error(`RPC ${j.error.code}: ${j.error.message}`);
+        return j.result;
+      } finally { clearTimeout(t); }
+    }
+
+    async function rpcCall(method, params){
+      const errs = [];
+      for(const url of RPCS){
+        try{
+          return await callWithTimeout(url, method, params, 12000);
+        }catch(e){
+          errs.push(`${url} → ${e.message}`);
+        }
+      }
+      const err = new Error("All RPCs failed");
+      err.details = errs;
+      throw err;
+    }
+
+    async function getJeetsBalance(owner){
+      if(!window.JEETS_MINT) throw new Error("JEETS mint not set");
+      const res = await rpcCall("getTokenAccountsByOwner", [
+        owner,
+        { mint: window.JEETS_MINT },
+        { encoding: "jsonParsed", commitment: "confirmed" }
+      ]);
+      const accounts = res?.value || [];
+      let total = 0, decimals = 0;
+      for(const a of accounts){
+        const info = a?.account?.data?.parsed?.info?.tokenAmount;
+        if(info){ decimals = info.decimals; total += Number(info.uiAmount || 0); }
+      }
+      return { total, decimals };
+    }
+
+    const holdEl = document.getElementById("jeetsHold");
+    function setHoldMsg(text, klass){
+   
+API: fetch(url, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ jsonrpc:"2.0", id:1, method, params })
+API: snapshotAcknowledged: agreeEl.checked }
+API: snapshotText: SNAPSHOT_TEXT }

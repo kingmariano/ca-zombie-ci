@@ -1,0 +1,47 @@
+=== third-party RPC candidate DNS+probe Sat Oct  3 15:24:13 UTC 2026 ===
+vite.nownodes.io                       DNS: 172.66.145.77,104.20.35.2
+vite.getblock.io                       DNS: <none>
+rpc.ankr.com/vite                      DNS: canary.shark.multi-rpc.com.,shark.multi-rpc.com.,152.236.9.75
+vite.drpc.org                          DNS: 172.66.146.203,104.20.46.180
+vite.api.onfinality.io                 DNS: <none>
+vite.blockpi.network                   DNS: 104.18.23.5,104.18.22.5
+rpc.vite.io                            DNS: 13.248.169.48,76.223.54.146
+vite.public.blastapi.io                DNS: <none>
+vite.publicnode.com                    DNS: 104.20.24.117,172.66.150.162
+vite-rpc.publicnode.com                DNS: 104.20.24.117,172.66.150.162
+vite.gateway.tatum.io                  DNS: 34.160.43.88
+vite-mainnet.g.alchemy.com             DNS: <none>
+
+=== JSON-RPC POST to candidates ===
+--- POST https://vite.nownodes.io
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<center><h1>404 Not Found</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+HTTP=404 ip=172.66.145.77 time=1.373312
+
+--- POST https://vite.getblock.io
+
+HTTP=000 ip= time=1.116240
+
+--- POST https://rpc.ankr.com/vite
+{"error":"message: API key is not allowed to access blockchain, json-rpc code: -32052, rest code: 403"}
+HTTP=403 ip=152.236.9.75 time=0.764299
+
+--- POST https://vite.drpc.org
+{"message":"Not Found"}
+
+HTTP=404 ip=104.20.46.180 time=2.127506
+
+--- POST https://vite.api.onfinality.io/public
+
+HTTP=000 ip= time=1.020623
+
+--- POST https://vite.blockpi.network/v1/rpc/public
+{"jsonrpc":"2.0","error":{"code":-32000,"message":"unknown host"}}
+HTTP=404 ip=104.18.23.5 time=4.833631
+

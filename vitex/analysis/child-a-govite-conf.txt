@@ -1,0 +1,349 @@
+=== go-vite conf + discovery Sat Oct  3 15:23:42 UTC 2026 ===
+--- conf/node_config.json
+{
+  "Identity": "foobar",
+  "NetID": 1,
+  "ListenInterface": "0.0.0.0",
+  "Port": 8483,
+  "FilePort": 8484,
+  "MaxPeers": 10,
+  "MinPeers": 5,
+  "MaxInboundRatio": 2,
+  "MaxPendingPeers": 5,
+  "BootSeeds": [
+    "https://bootnodes.vite.net/bootmainnet.json"
+  ],
+  "Discover": true,
+  "RPCEnabled": true,
+  "HttpHost": "0.0.0.0",
+  "HttpPort": 48132,
+  "WSEnabled": false,
+  "WSHost": "0.0.0.0",
+  "WSPort": 41420,
+  "HttpVirtualHosts": [],
+  "IPCEnabled": true,
+  "PublicModules": [
+    "ledger",
+    "net",
+    "contract",
+    "util",
+    "debug",
+    "sbpstats",
+    "dashboard"
+  ],
+  "Miner": false,
+  "CoinBase": "",
+  "EntropyStorePath": "",
+  "EntropyStorePassword": "",
+  "LogLevel": "info",
+  "OpenPlugins": true,
+  "SubscribeEnabled": true,
+  "TxDexEnable": true,
+  "VmLogAll": true,
+  "DashboardTargetURL": "wss://stats.vite.net",
+  "RewardAddr": "vite_xxxxxxxxxxxxxxxxxx"
+}
+--- common/config/net.go
+package config
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+
+	"github.com/vitelabs/go-vite/v2/crypto/ed25519"
+)
+
+const (
+	DefaultSingle = false
+
+	DefaultNodeName = "vite-node"
+
+	DefaultNetID = 3
+
+	DefaultListenInterface = "0.0.0.0"
+	DefaultPort            = 8483
+	DefaultFilePort        = 8484
+
+	DefaultDiscover = true
+
+	DefaultMaxPeers        = 60
+	DefaultMaxInboundRatio = 2
+	DefaultMinPeers        = 5
+	DefaultMaxPendingPeers = 10
+
+	DefaultNetDirName = "net"
+	PeerKeyFileName   = "peerKey"
+
+	DefaultForwardStrategy = "cross"
+	DefaultAccessControl   = "any"
+)
+
+type Net struct {
+	Single bool
+
+	// Name is our node name, NO need to be unique in the whole network, just for readability, default is `vite-node`
+	Name string
+
+	// NetID is to mark which network our node in, nodes from different network can`t connect each other
+	NetID int
+
+	ListenInterface string
+
+	Port int
+
+	FilePort int
+
+	// PublicAddress is the network address can be access by other nodes, usually is the public Internet address
+	PublicAddress string
+
+	FilePublicAddress string
+
+	// DataDir is the directory to storing p2p data, if is null-string, will use memory as database
+	DataDir string
+
+	// PeerKey is to encrypt message, the corresponding public key use for NodeID, MUST NOT be revealed
+	PeerKey string
+
+	// Discover means whether discover other nodes in the networks, default true
+	Discover bool
+
+	// BootNodes are roles as network entrance. Node can discovery more other nodes by send UDP query BootNodes,
+	// but not create a TCP connection to BootNodes directly
+	BootNodes []string
+
+	// BootSeeds are the address where can query BootNodes, is a more flexible option than BootNodes
+	BootSeeds []string
+
+	// StaticNodes will be connect directly
+	StaticNodes []string
+
+	MaxPeers int
+
+	MaxInboundRatio int
+
+	// MinPeers server will keep finding nodes and try to connect until number of peers is larger than `MinPeers`,
+	// default 5
+	MinPeers int
+
+	// MaxPendingPeers how many inbound peers can be connect concurrently, more inbound connection will be blocked
+	// this value is for defend DDOS attack, default 10
+	MaxPendingPeers int
+
+	ForwardStrategy string
+
+	AccessControl   string
+	AccessAllowKeys []string
+	AccessDenyKeys  []string
+
+	BlackBlockHashList []string
+	WhiteBlockList     []string
+
+	MineKey ed25519.PrivateKey
+}
+
+func getPeerKey(filename string) (privateKey ed25519.PrivateKey, err error) {
+	var fd *os.File
+	fd, err = os.Open(filename)
+
+	// open file error
+	if err != nil {
+		fd = nil
+
+		if _, privateKey, err = ed25519.GenerateKey(nil); err != nil {
+			return
+		}
+
+		if fd, err = os.Create(filename); err == nil {
+			defer func() {
+				_ = fd.Close()
+			}()
+		}
+	} else {
+		defer func() {
+			_ = fd.Close()
+		}()
+
+		privateKey = make(ed25519.PrivateKey, ed25519.PrivateKeySize)
+		var n int
+		if n, err = fd.Read(privateKey); err != nil || n != len(privateKey) {
+			// read file error
+			if _, privateKey, err = ed25519.GenerateKey(nil); err != nil {
+				return
+			}
+		}
+	}
+
+	if fd != nil {
+		_, _ = fd.Write(priv
+--- net/discovery/booter.go
+package discovery
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"math/rand"
+	"net/http"
+
+	"github.com/vitelabs/go-vite/v2/log15"
+	"github.com/vitelabs/go-vite/v2/net/vnode"
+)
+
+// booter can supply bootNodes
+type booter interface {
+	// getBootNodes return count nodes
+	getBootNodes(count int) []*Node
+}
+
+// booterDB can retrieve bootNodes
+type booterDB interface {
+	ReadNodes(expiration int64) []*Node
+}
+
+// dbBooter supply bootNodes from database
+type dbBooter struct {
+	db booterDB
+}
+
+func newDBBooter(db booterDB) booter {
+	return &dbBooter{
+		db: db,
+	}
+}
+
+func (d *dbBooter) getBootNodes(count int) []*Node {
+	nodes := d.db.ReadNodes(seedMaxAge)
+	discvLog.Info(fmt.Sprintf("load %d nodes from db", len(nodes)))
+	return nodes
+}
+
+// cfgBooter supply random bootNodes from config
+type cfgBooter struct {
+	bootNodes []*Node
+	node      *vnode.Node
+}
+
+func newCfgBooter(bootNodes []string, node *vnode.Node) (booter, error) {
+	var c = &cfgBooter{
+		bootNodes: make([]*Node, len(bootNodes)),
+		node:      node,
+	}
+
+	var n *vnode.Node
+	var err error
+
+	for i, url := range bootNodes {
+		n, err = vnode.ParseNode(url)
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse bootNode: %s", url)
+		}
+
+		if n.Net != 0 && n.Net != node.Net {
+			return nil, errDifferentNet
+		}
+
+		n.Net = node.Net
+
+		c.bootNodes[i] = &Node{
+			Node: *n,
+		}
+	}
+
+	return c, nil
+}
+
+func (c *cfgBooter) getBootNodes(count int) []*Node {
+	return c.bootNodes
+}
+
+// netBooter supply bootNodes from service, eg. HTTP request.
+type netBooter struct {
+	self   *vnode.Node
+	reader *requestReader
+	seeds  []string
+	log    log15.Logger
+}
+
+type Request struct {
+	Node  *vnode.Node `json:"node"`
+	Count int         `json:"count"`
+}
+
+type Result struct {
+	Code    int      `json:"code"`
+	Message string   `json:"message"`
+	Data    []string `json:"data"`
+}
+
+type requestReader struct {
+	request Request
+	buf     []byte
+	r       int
+}
+
+func (r *requestReader) Read(p []byte) (n int, err error) {
+	to := r.r + len(p)
+	if to > len(r.buf) {
+		to = len(r.buf)
+	}
+
+	n = copy(p, r.buf[r.r:to])
+	r.r = to
+	if r.r == len(r.buf) {
+		err = io.EOF
+	}
+
+	return
+}
+
+func (r *requestReader) reset(count int) {
+	r.request.Count = count
+
+	r.buf, _ = json.Marshal(r.request)
+
+	r.r = 0
+}
+
+func newNetBooter(self *vnode.Node, seeds []string) booter {
+	return &netBooter{
+		self: self,
+		reader: &requestReader{
+			request: Request{
+				Node:  self,
+				Count: 0,
+			},
+			r: 0,
+		},
+		seeds: seeds,
+		log:   discvLog.New("module", "netBooter"),
+	}
+}
+
+func (n *netBooter) getBootNodes(count int) (nodes []*Node) {
+	var seed string
+	if len(n.seeds) > 0 {
+		seed = n.seeds[rand.Intn(len(n.seeds))]
+	}
+
+	if seed == "" {
+		return nil
+	}
+
+	n.reader.reset(count)
+
+	resp, err := http.Post(seed, "application/json", n.reader)
+
+	if err != nil {
+		n.log.Error(fmt.Sprintf("failed to request seed %s: %v", seed, err))
+		return nil
+	}
+
+	var ret []byte
+	var buf = make([]byte, 1024000)
+
+	i, err := resp.Body.Read(buf)
+	ret = append(ret, buf[:i]...)
+
+	if err != nil && err != io

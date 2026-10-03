@@ -1,0 +1,190 @@
+=== vitcscan operator configs Sat Oct  3 15:36:37 UTC 2026 ===
+--- vite-proxy config.json
+
+--- vite-proxy config.example.json
+
+--- vite-proxy src/config.ts
+import { join } from "path";
+import __dirname from "./__dirname.js";
+import { readFile } from "fs/promises";
+import { existsSync } from "fs";
+
+export enum Modules {
+    vpow = "vpow",
+    wallet = "wallet",
+    ssl = "ssl",
+    caching = "caching",
+    rate_limits = "rate_limits",
+    heartbeat = "heartbeat"
+}
+// [limit, interval]
+export type RateLimitDefinition = [number, string]
+export interface SSLConfig {
+    key: string,
+    cert: string
+}
+export interface Config {
+    nodes: string[],
+    modules: Modules[],
+
+    vpow_api_key: string,
+
+    port: number,
+    host: string,
+    ssl?: SSLConfig,
+
+    rate_limits: RateLimitsConfig,
+
+    headers: {
+        [key: string]: string
+    }
+}
+export interface RateLimitsConfig {
+    global: RateLimitDefinition,
+    vpow: RateLimitDefinition,
+}
+
+export const configPath = join(__dirname, "../config.json")
+if(!existsSync(configPath)){
+    console.error(`config.json not found at ${configPath}`)
+    console.error("Please copy config.example.json to config.json and edit it.")
+    process.exit(1)
+}
+
+export const config:Config = JSON.parse(await readFile(configPath, "utf-8"))
+export default config
+
+export function validateConfig(config:Config){
+  
+--- vite-proxy src/vite.ts
+import { Client } from "web3-vite";
+import config from "./config.js";
+import { WebsocketProvider } from "web3-vite/dist/providers/ws.js";
+import events from "./events.js";
+import { serveRequest } from "./proxy.js";
+
+export let nodes = config.nodes.map(node => new Client(node))
+
+console.log(`Testing nodes...`)
+
+await Promise.all(nodes.map(node => {
+    return node.methods.net.syncInfo()
+    .then(info => {
+        if(info.state !== 2)throw new Error("Node is not synced")
+    })
+    .catch(e => {
+        console.warn(`Node ${node.provider.url} is not working`, e)
+        nodes = nodes.filter(n => n !== node)
+    })
+}))
+
+if(nodes.length === 0){
+    console.error("No working nodes found")
+    process.exit(1)
+}
+
+console.log(`${nodes.length} working nodes`)
+export let subscriptionNode = nodes.find(node => node.provider instanceof WebsocketProvider)
+if(!subscriptionNode){
+    console.warn("No websocket node found. Subscription events will be using HTTP (slow).")
+    subscriptionNode = nodes[0]
+}
+
+subscriptionNode.subscribe("snapshotBlock")
+.then(subscription => {
+    subscription.events.on("data", (block) => {
+        events.emit("snapshotBlock", parseInt(block.height), block.hash, block.
+--- vite-proxy vercel.json
+
+--- vite-proxy package.json
+{
+  "name": "typescript-template",
+  "version": "1.0.0",
+  "description": "A template for me, instead of having to create a new project from scratch each time",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "npm run build && npm start",
+    "build": "tsc",
+    "start": "node .",
+    "watch": "tsc --watch",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+  },
+  "author": "JeanOUINA",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "18",
+    "@types/node-fetch": "^2.6.4",
+    "@types/ws": "^8.5.5",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "eslint": "^8.36.0",
+    "typescript": "^4.6.2"
+  },
+  "type": "module",
+  "dependencies": {
+    "bignumber.js": "^9.1.1",
+    "bip39": "^3.1.0",
+    "blakejs": "^1.2.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "ipaddr.js": "^2.1.0",
+    "joi": "^17.9.2",
+    "modernlog": "^1.1.0",
+    "mongoose": "^7.0.3",
+    "node-fetch": "^3.3.1",
+    "node-lmdb": "^0.9.7",
+    "web3-vite": "^1.1.0",
+    "ws": "^8.13.0"
+  }
+}
+
+--- vitcscan-rewrite files
+.eslintignore
+.eslintrc.js
+.github
+.github/workflows
+.github/workflows/build.yml
+.gitignore
+README.md
+index.html
+package.json
+pnpm-lock.yaml
+public
+public/favicon.png
+public/style.css
+src
+src/App.tsx
+src/Settings.ts
+src/components
+src/components/AddressCard
+src/components/AddressCard/Balance.tsx
+src/components/AddressCard/Overview.tsx
+src/components/AddressName.tsx
+src/components/ColoredAddress.tsx
+src/components/FlatPaper.tsx
+src/components/Modal.tsx
+src/components/NavBar.tsx
+src/components/OutlinedPaper.tsx
+src/components/RelativeTime.tsx
+src/components/RouterLink.tsx
+src/components/RouterRedirect.tsx
+src/components/SearchField.tsx
+src/components/SnapshotBlockList.tsx
+src/components/TableCellBorderTop.tsx
+src/contexts
+src/contexts/SettingsContext.tsx
+src/contexts/ViteContext.tsx
+src/contexts/vite
+src/contexts/vite/SnapshotBlockContext.tsx
+src/contracts
+src/contracts/vitcswap.ts
+src/cycle.ts
+--- DNS vitcscan
+vitcscan.com status=0 104.21.81.26,172.67.156.119
+www.vitcscan.com status=3 
+api.vitcscan.com status=3 
+proxy.vitcscan.com status=3 
+node.vitcscan.com status=3 
+vite-proxy.vercel.app status=0 64.29.17.3,216.198.79.3
