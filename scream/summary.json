@@ -1,0 +1,66 @@
+{
+  "finding": "H-08",
+  "title": "Scream (Fantom) — Compound v2.8 fork: $0 unprivileged extraction; 98.6% of the $1.16M scLINK cash frozen by dead Chainlink feeds",
+  "chains": ["fantom"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 17433.56,
+    "P": 1230680.16,
+    "S": 0
+  },
+  "latest_block": 123539101,
+  "block_numbers": {
+    "fantom": 123539101
+  },
+  "targets_checked": 27,
+  "live_targets": 27,
+  "closed_reasons": [
+    "mint and borrow are paused (guardian) on all 27 markets -> mintAllowed reverts 'mint is paused', borrowAllowed reverts 'borrow is paused'",
+    "every account with valuable collateral holds >=1 dead-feed market, so getAccountLiquidity/liquidateBorrow revert -> no liquidations possible on scLINK (14/14 debtors), scFRAX-A (16/16), scFUSD (28/29)",
+    "the only liquidatable account (0x539654afe0c85df7db6176258f6dce567d2f8c13, 32.45 FUSD shortfall) has scFUSD-only collateral and the market holds 0.0000012 FUSD -> seized cTokens are unredeemable",
+    "C-33 empty-market donation attack closed: 8 empty markets hold 1 wei total cash and mint is paused",
+    "oracle is not manipulable: setters are admin-only (revert), Chainlink proxies have aggregator()=0 (feed removed), Band ref is validator-updated; and price moves cannot feed paused borrows or reverting liquidations",
+    "all admin surfaces blocked for EOA (revert or UNAUTHORIZED=1); admin is a 4-of-N Gnosis Safe, guardian 2-of-N",
+    "COMP/SCREAM rewards: compAccrued dust (<=0.00087 SCREAM per holder) and claimComp pays only the holder"
+  ],
+  "poc": {
+    "tests_passed": 12,
+    "tests_total": 12,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37140618279"
+    ],
+    "ci_iteration_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37139009977",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37139420865",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37139746238",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37140142309"
+    ]
+  },
+  "key_facts": [
+    "Fantom Opera is still producing blocks (123,537,949 -> 123,539,101 during the session; ~1 tx/block, 2026-10-03)",
+    "27 markets (corpus said 26); Comptroller 0x260E596DAbE3AFc463e75B6CC05d8c46aCAcFB09 -> impl 0x37517C5D880c5c282437a3Da4d627B4457C10BEB",
+    "scLINK market 0x2359012ebe36cca231203d78b914284947b58aa3 holds 84,119.31805425331 LINK cash ($1,163,048 at $13.826) + 1,960.97 LINK borrows",
+    "17 of 27 markets have reverting oracle prices: scUSDC, scDAI, scWFTM, scWBTC, scWETH, scFUSDT, scYFI, scCRV, scLINK, scFRAX-A, scDOLA, scMIM, scBIFI, scTUSD, scSPELL, scBOO-a25f, scDEI",
+    "scLINK aggregator proxy 0x221C773d8647BC3034e91a0c47062e26D20d97B4 has aggregator()=0 (Chainlink phase removed) -> getUnderlyingPrice(scLINK) reverts",
+    "scLINK holders: 181 current holders = 100% of supply; 20 non-members (58,760.9042 ct = 1.4%) can redeem -> 1,209.45 LINK (~$16,722); 161 members (4,123,510.8608 ct = 98.6%) are frozen -> 84,872.18 LINK (~$1,173,457)",
+    "top scLINK holder 0x91a88dd9c43e1e6d580abe4c54f1b6b53900a644 holds 4,059,588.63 ct (97.07%) and is a member -> redeem, transfer and exitMarket all revert",
+    "member freeze mechanism: getHypotheticalAccountLiquidityInternal calls oracle.getUnderlyingPrice for every asset in the account's list without try/catch; the dead scLINK feed makes redeemAllowed/transferAllowed/exitMarket revert",
+    "only liquidatable account in the protocol: 0x539654afe0c85df7db6176258f6dce567d2f8c13 (shortfall 32.45 FUSD); liquidation executes (PoC seized 313,765.35 scFUSD ct for 100 FUSD) but scFUSD cash is 0.0000012 FUSD -> $0 yield",
+    "scBOO a25f market 0xa25f9ffd7855fc350a103d91ab7c906d6bf1977d: cash 26,842.97 BOO ($509); 99.96% of cTokens held by non-members who can redeem (H-O)",
+    "scDEI market 0x68c102aba11f5e086c999d99620c78f5bc30ecd8: cash 11,004,489 DEI; only 1,462.89 ct (0.0003%) non-member-redeemable; 550,368,858.99 ct frozen (P nominal ~$57k at $0.0052, realizable much less)",
+    "admin = Gnosis Safe 1.3.0 0x63A03871141D88cB5417f18DD5b782F9C2118b5B threshold 4; pauseGuardian Safe 0x52bad1537790f102012f4d10b887ae2e5819563f threshold 2; pendingAdmin/pendingImpl = 0",
+    "scLINK last accrued 2025-05-09 (block 109,425,975); accrual factor 0.0034 -> no overflow and no extraction",
+    "total priced market cash at CI block 123,539,101 = $1,170,300.76 (DefiLlama prices)"
+  ],
+  "caveats": [
+    "H-O for scDOLA/scWETH/scFRAX-B/scYFI/dust (<=$201 combined) is an upper bound: holder membership was not individually simulated; only scLINK, scBOO and scDEI were per-holder verified",
+    "scDEI nominal value uses the deepest-pool marginal price ($0.0052); total Fantom DEI pool depth is ~$25k and 24h volume ~0, so realizable value is likely $10-25k at best",
+    "The P amount (~$1.23M) becomes permanently stuck (S) if neither the Scream admin Safe (4-of-N) nor Chainlink's proxy owner ever repairs the dead feeds; no holder self-service path exists",
+    "Holder split is a snapshot at block ~123,539,000; a feed repair or admin oracle swap changes it instantly",
+    "If the pause guardian ever unpauses borrow, stale Band prices (LINK $24.06 vs real $13.83) would create a real bad-debt/liquidation surface - latent risk, not live extractable",
+    "Public Fantom RPCs return 96-byte padded results for some cToken getters (first-word decode used); Fantom explorer APIs (Etherscan V2/Sourcify) do not cover chainid 250, so ABIs were recovered by bytecode selector extraction"
+  ],
+  "one_liner": "External unprivileged attacker can extract $0 live: mint/borrow are paused on all 27 Scream markets, every account with valuable collateral is un-liquidatable because 17 oracle feeds (including scLINK's Chainlink proxy with aggregator()=0) revert and the liquidity check has no try/catch, and the sole liquidatable account's collateral market holds 0.0000012 FUSD; the $1.16M scLINK cash is 98.6% frozen for its own holders (only 1,209 LINK = $16.7k is non-member-redeemable), recoverable only by a privileged feed repair."
+}
