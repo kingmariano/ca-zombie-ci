@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "chain": "bnb",
+  "chain_id": 56,
+  "block_timestamp": "0x6a17ba6e",
+  "incident": {
+    "name": "dxsale-legacy-locker-repeat-unlock-drain",
+    "title": "DxSale Legacy Locker Repeat Unlock Drain",
+    "classification": "repeat_unlock_accounting_bug",
+    "status": "validated_with_external_impact_estimate",
+    "root_cause": "unlockToken(uint256) allowed the same lock index and amount to be withdrawn repeatedly; ownership transfer enabled attacker-controlled setup/execution."
+  },
+  "transactions": {
+    "0x16a932b7eb06b9d333c895011a4dceb7e73f0c0151acf75d0e43616335e802a6": {
+      "tx_hash": "0x16a932b7eb06b9d333c895011a4dceb7e73f0c0151acf75d0e43616335e802a6",
+      "role": "primary_alert_post_drain_liquidity_tx",
+      "block_number": 100853125,
+      "files": {
+        "tx": "tx.json",
+        "receipt": "receipt.json",
+        "trace_callTracer": "trace_callTracer.json",
+        "trace_prestateTracer": "trace_prestateTracer.json",
+        "funds_flow": "funds_flow.json",
+        "decoded_calls": "decoded_calls.json",
+        "selectors": "selectors.json"
+      }
+    },
+    "0x23e331a81e496890c8f6147a672c6bc45cc2d2dd17547e72713b6ee070b38d41": {
+      "tx_hash": "0x23e331a81e496890c8f6147a672c6bc45cc2d2dd17547e72713b6ee070b38d41",
+      "role": "ownership_transfer_setup",
+      "block_number": 100449100,
+      "files": {
+        "tx": "related_tx.json",
+        "receipt": "related_receipt.json",
+        "trace_callTracer": "related_trace_callTracer.json",
+        "trace_prestateTracer": "related_trace_prestateTracer.json",
+        "funds_flow": "funds_flow.json",
+        "decoded_calls": "decoded_calls.json",
+        "selectors": "selectors.json"
+      }
+    },
+    "0x5d51d975ca607d1e51bdf97d40d17ee85893eedd660ece1328b74aa91f43fe52": {
+      "tx_hash": "0x5d51d975ca607d1e51bdf97d40d17ee85893eedd660ece1328b74aa91f43fe52",
+      "role": "sample_mass_unlock_gwc_lp",
+      "block_number": 100853178,
+      "files": {
+        "tx": "drain_0x5d51d975_tx.json",
+        "receipt": "drain_0x5d51d975_receipt.json",
+        "trace_callTracer": "drain_0x5d51d975_trace_callTracer.json",
+        "trace_prestateTracer": "drain_0x5d51d975_trace_prestateTracer.json",
+        "funds_flow": "funds_flow.json",
+        "decoded_calls": "decoded_calls.json",
+        "selectors": "selectors.json"
+      }
+    },
+    "0xdbd71d000ee58726ef3e06e4caa9ee046335613c043676cb83a99471bfdf7c79": {
+      "tx_hash": "0xdbd71d000ee58726ef3e06e4caa9ee046335613c043676cb83a99471bfdf7c79",
+      "role": "sample_mass_unlock_bls_lp",
+      "block_number": 100813269,
+      "files": {
+        "tx": "drain_0xdbd71d00_tx.json",
+        "receipt": "drain_0xdbd71d00_receipt.json",
+        "trace_callTracer": "drain_0xdbd71d00_trace_callTracer.json",
+        "trace_prestateTracer": "drain_0xdbd71d00_trace_prestateTracer.json",
+        "funds_flow": "funds_flow.json",
+        "decoded_calls": "decoded_calls.json",
+        "selectors": "selectors.json"
+      }
+    }
+  },
+  "contracts": {
+    "0xeb3a9c56d963b971d320f889be2fb8b59853e449": {
+      "name": "DxSale Legacy Locker",
+      "source_type": "unverified",
+      "is_proxy": false,
+      "role": "vulnerable_contract",
+      "notes": "Runtime bytecode collected; no verified source on BscScan."
+    },
+    "0xc4574ddef299e7e563971e200433e592eeaafa69": {
+      "name": "Attacker EIP-7702 delegated account",
+      "source_type": "unverified",
+      "is_proxy": false,
+      "role": "attacker"
+    },
+    "0xc2efbd94aedff1555b97ddcb216646dfc01e4718": {
+      "name": "Later EIP-7702 delegate target",
+      "source_type": "unverified",
+      "is_proxy": false,
+      "role": "delegate"
+    },
+    "0x10ed43c718714eb63d5aa57b78b54704e256024e": {
+      "name": "PancakeRouter",
+      "source_type": "verified",
+      "is_proxy": false,
+      "source_dir": "0x10ed43c718714eb63d5aa57b78b54704e256024e/",
+      "role": "dex_router"
+    },
+    "0x280ce73a3a90b8aeb4ef7ed10c928c35ec5c0420": {
+      "name": "GWC token",
+      "source_type": "verified",
+      "is_proxy": false,
+      "source_dir": "0x280ce73a3a90b8aeb4ef7ed10c928c35ec5c0420/",
+      "role": "sample_token"
+    },
+    "0x61fc33cbb5e1b95c9c28f2df9de876ee1d155814": {
+      "name": "GWC/WBNB Pancake LP",
+      "source_type": "verified",
+      "is_proxy": false,
+      "source_dir": "0x61fc33cbb5e1b95c9c28f2df9de876ee1d155814/",
+      "role": "sample_lp"
+    },
+    "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c": {
+      "name": "WBNB",
+      "source_type": "verified",
+      "is_proxy": false,
+      "source_dir": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c/",
+      "role": "wrapped_native"
+    }
+  },
+  "evidence": {
+    "ownership_transfer": {
+      "tx_hash": "0x23e331a81e496890c8f6147a672c6bc45cc2d2dd17547e72713b6ee070b38d41",
+      "from_owner": "0x47bacf935066b802eaa0067ec14ab035b24eb78b",
+      "to_owner": "0xc4574ddef299e7e563971e200433e592eeaafa69"
+    },
+    "unlock_events": {
+      "attacker_unlock_event_count": 667465,
+      "attacker_unlock_tx_count": 1362,
+      "unique_lp_token_count": 45,
+      "first_unlock_block": 100812090,
+      "last_unlock_block": 100898571
+    },
+    "external_impact_claim": "PeckShield/Tahax reported approximately $7.3M drained from about 1,400 BNB Chain LPs.",
+    "repeat_unlock_bug": {
+      "gwc_sample_tx": "0x5d51d975ca607d1e51bdf97d40d17ee85893eedd660ece1328b74aa91f43fe52",
+      "gwc_repeated_calls": 500,
+      "bls_sample_tx": "0xdbd71d000ee58726ef3e06e4caa9ee046335613c043676cb83a99471bfdf7c79",
+      "bls_repeated_calls": 500
+    }
+  },
+  "report": {
+    "incident_name": "dxsale-legacy-locker-repeat-unlock-drain",
+    "path": "reports/dxsale-legacy-locker-repeat-unlock-drain/report.md"
+  }
+}

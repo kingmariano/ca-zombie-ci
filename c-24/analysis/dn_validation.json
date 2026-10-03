@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "pipeline_halt": false,
+  "overall_result": "VALIDATED_WITH_WARNINGS",
+  "debate_round": 1,
+  "classification": "repeat_unlock_accounting_bug",
+  "confidence": "high for repeat-withdraw behavior; medium for exact source-level state variable names",
+  "validated_claims": [
+    "The legacy locker ownership was transferred to the attacker-controlled handoff wallet in the related setup transaction.",
+    "The primary alert transaction prepared one LP market by swapping BNB into GWC and minting a small LP amount to the attacker.",
+    "Subsequent transactions repeatedly called unlockToken(uint256) for the same lock index and received a fresh LP transfer each time.",
+    "The measured window contains 667,465 attacker-directed unlock events across 1,362 transactions and 45 LP token contracts."
+  ],
+  "warnings": [
+    "The vulnerable locker source is unverified; code is reconstructed from bytecode selectors, trace behavior, storage behavior, and revert strings.",
+    "The externally reported $7.3M impact was not independently repriced for every LP reserve in this run.",
+    "The primary PeckShield-image transaction is a market-preparation transaction for one target LP, not the first repeat-unlock withdrawal transaction."
+  ],
+  "revision_guidance": [],
+  "checks": {
+    "ownership_transfer_event": "pass",
+    "sample_unlock_trace": "pass",
+    "mass_unlock_event_scan": "pass",
+    "financial_pricing": "partial_external_estimate",
+    "repeat_unlock_trace": "pass"
+  }
+}

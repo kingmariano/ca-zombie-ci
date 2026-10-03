@@ -1,0 +1,18 @@
+Variant locker 0x2D045410f002A95EFcEE67759A92518fA3FcE677 — decode of the lock + payout for wallet
+0x265f6d014f2d47395014f0d0f3f2c7bdbea20d15 (the first wallet whose live unlockToken(0) succeeded).
+
+Lock tx: 0x9765436cefa2362544f9f313b8d4641262cf613d2b380a8de579f691e68172c3
+Block 5,290,068 (2021-03-01), msg.value 1e16 (fee).
+onLock event data:
+  lockerOwner = 0x265f6d014f2d47395014f0d0f3f2c7bdbea20d15
+  lpAddress   = 0xABB4F7F7687D57d90821DF33900e56351F5aCf54
+  tokenAmount = 446199903000000000000000000 (4.46199903e26)
+  lockDate    = 1614573098 (2021-03-01)
+  unlockDate  = 1622516876 (2021-06-01)
+Transfer at lock: 4.46199903e26 wallet -> locker.
+
+Live fork test result (poc/test/DxSaleC24.t.sol, test_variant_2d04_unlockable_record_replay):
+  first unlockToken(0) => one Transfer from locker to wallet of exactly 4.46199903e26
+  second call reverts (consumed); call from 0xDEAD reverts (caller-scoped).
+Locker balance of the token at latest = 4.46199903e26 (== the record amount; no other record left).
+=> single claim of the recorded amount, no over-payment, no replay.

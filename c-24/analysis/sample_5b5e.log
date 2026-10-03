@@ -1,0 +1,24 @@
+lockerNumberOpen: 14223
+sampled ids: 701 unique wallets: 682
+record calls: 1461
+Traceback (most recent call last):
+  File "/home/heisenberg/CA/c-24/analysis/sample_records.py", line 120, in <module>
+    main()
+  File "/home/heisenberg/CA/c-24/analysis/sample_records.py", line 83, in main
+    rres = rpc_batch(record_calls)
+  File "/home/heisenberg/CA/c-24/analysis/sample_records.py", line 38, in rpc_batch
+    with urllib.request.urlopen(req, timeout=120) as r:
+  File "/usr/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/usr/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/usr/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/usr/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/usr/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/usr/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 429: Too Many Requests
+exit=1

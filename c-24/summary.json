@@ -1,0 +1,43 @@
+{
+  "finding": "C-24",
+  "title": "DxSale legacy Liquidity Locker — replay backdoor, live custody and extractable value",
+  "chains": ["bsc", "ethereum", "polygon", "arbitrum", "avax", "xdai", "celo", "harmony"],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0.0, "H-O": 8853243.07, "P": 745.27, "S": 3727220.51},
+  "latest_block": 125433171,
+  "block_numbers": {"bsc": 125433171, "bsc_enumeration": 125414390},
+  "targets_checked": 23,
+  "live_targets": 21,
+  "closed_reasons": [
+    "v1 replay bug is live but every still-locked record's token balance is fully covered by that same wallet's own records: replay returns self-funds early, no third-party surplus (max $0.001 dust)",
+    "the May-2026 attacker already drained all shared-pool balances on the buggy v1 locker",
+    "v1-family instances on Ethereum/Polygon hold only dead/unpriced tokens ($0 after LP unwrapping)",
+    "record creation on v1 instances is blocked at rest by 1e31-1e46 wei fee gates (owner can toggle in-transaction)",
+    "fixed DxLockLPDep family enforces block.timestamp > lockedTime and clears the record before a single transfer",
+    "variant DxLock family: single claim, caller-scoped, payout equals recorded amount; no replay, no owner sweep",
+    "V3 escrow registry: each escrow is Ownable by its recorded beneficiary; unlockTokensAfterTimestamp is owner-gated and pays the owner",
+    "no sweep/rescue/arbitrary-transfer function exists in any family"
+  ],
+  "poc": {"tests_passed": 11, "tests_total": 11, "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37094137505"], "note": "12th test (test_v1_real_record_replay_is_self_funds) added after run 1 and passing locally; final run 2 pending at write time"},
+  "key_facts": [
+    "verified source DxLockLPDep at BSC 0xEb3a9C56d963b971d320f889bE2fb8B59853e449 (solc 0.6.12) has an inverted time check: still-locked records pay out on every call and are never consumed",
+    "the May-2026 drain used that replay primitive: 667,465 onUnlock events, 1,362 txs, 45 LP tokens, ~$7.3M",
+    "all five BSC legacy lockers (0xEb3a, 0x8655, 0x5b5e, 0x2D0454, 0x81E0eF68) are owned by the drain wallet 0xC4574DDEF299e7E563971e200433e592EeaaFA69",
+    "live fork PoC with a real unprivileged still-locked record (wallet 0x862d7c..., token 0x608D85..., unlock 2100): two replayed payouts of 44721359549994793 each; locker balance 152203354178845283 == that wallet's own two records exactly",
+    "live fork PoC: after owner changeFees(1), a fresh user's still-locked record paid out 10x its deposit from the locker balance and stayed locked=true",
+    "P: attacker records on token 0x833ce42396e46c921743725837975626672f2b59 can replay-drain the remaining $745.27 (2 attacker records, future-locked 2095)",
+    "fixed family platformRelease is owner-only and transfers to the record's beneficiary, never to the owner",
+    "variants 0x2D0454/0x81E0eF68 hold ~$754k/~$337k (GoldRush); 832/988 and 652/794 sampled wallets have claimable records; each pays exactly the recorded amount once and reverts for third-party callers",
+    "V3 registry 0xFEE2A3f4329e9A1828F46927D424DB2C1624985: 2,558 records, 1,020 escrows with balance; 287 still future-locked; escrow owners match recorded beneficiaries",
+    "custody measured: 0x5b5e $3,098,941.95; 0x8655 $3,647,505.75; v1 0xEb3a $399,913.33; V3 escrows $4,317,453.16; variants $1,091,084.78; total $12,580,463.58"
+  ],
+  "caveats": [
+    "census covers DefiLlama-listed deployments, their commented-out siblings and code-hash families; not an exhaustive chain-by-chain onLock event scan",
+    "USD values for unpriced/dead tokens use DefiLlama price absence as $0; LP positions unwrapped via getReserves x share; the two variant lockers are valued from GoldRush quotes (different ABI, not enumerated)",
+    "0x8655 and the variant lockers are unverified; behavior established by disassembly + fork tests",
+    "E-U is reported as third-party theft; early self-withdrawal of a holder's own still-locked deposit (~$100k on v1) and beneficiary-initiated V3 escrow releases (~$3.35M) are counted under H-O",
+    "historical replay test is gated on an archive RPC (Ankr archive verified working); CI uses latest-state tests"
+  ],
+  "one_liner": "external unprivileged attacker can steal ~$0 live: the DxSale v1 replay bug is real and still deployed, but every still-locked record's balance is fully owned by the same wallet that can replay it (early self-withdrawal only), all shared pools were drained in May 2026, and the funded lockers run patched single-claim or beneficiary-owned escrow code; the attacker-owner can take just $745.27 from one contested token."
+}
