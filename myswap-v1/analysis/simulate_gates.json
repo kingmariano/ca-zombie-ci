@@ -1,0 +1,87 @@
+{
+ "block": 15842149,
+ "rpc": "https://api.cartridge.gg/x/starknet/mainnet",
+ "read_only": true,
+ "tests": {
+  "attacker_distribute_tokens": {
+   "ok": true,
+   "entries": [
+    {
+     "revert_reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x029f9de5cafb30f55e4a6f4f032e8774958520c1649b3a0441f1354c0b330518, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nExecution failed. Failure reason:\n(0x617267656e742f6d756c746963616c6c2d6661696c6564 ('argent/multicall-failed'), 0x0 (''), 0x43616c6c6572206973206e6f742061646d696e ('Caller is not admin'), 0x454e545259504f494e545f4641494c4544 ('ENTRYPOINT_FAILED')).\n",
+     "has_execute": false,
+     "fee": "0x38b12a150"
+    }
+   ]
+  },
+  "attacker_upgrade": {
+   "ok": true,
+   "entries": [
+    {
+     "revert_reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x029f9de5cafb30f55e4a6f4f032e8774958520c1649b3a0441f1354c0b330518, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nExecution failed. Failure reason:\n(0x617267656e742f6d756c746963616c6c2d6661696c6564 ('argent/multicall-failed'), 0x0 (''), 0x43616c6c6572206973206e6f742061646d696e ('Caller is not admin'), 0x454e545259504f494e545f4641494c4544 ('ENTRYPOINT_FAILED')).\n",
+     "has_execute": false,
+     "fee": "0x38b12a150"
+    }
+   ]
+  },
+  "admin_distribute_tokens": {
+   "ok": true,
+   "entries": [
+    {
+     "revert_reason": null,
+     "has_execute": true,
+     "fee": "0xb5eeae118"
+    }
+   ]
+  },
+  "attacker_lp_mint": {
+   "ok": true,
+   "entries": [
+    {
+     "revert_reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x029f9de5cafb30f55e4a6f4f032e8774958520c1649b3a0441f1354c0b330518, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x022b05f9396d2c48183f6deaf138a57522bcc8b35b67dee919f76403d1783136, class hash: 0x02797c4997ea0ca14401188bf6cbd4d89f0e632bd088088ab6cabf63c2056fc8, selector: 0x02f0b3c5710379609eb5495f1ecd348cb28167711b73609fe565a72734550354):\nError message: Ownable: caller is not the owner\nError at pc=0:1192:\nCairo traceback (most recent call last):\nUnknown location (pc=0:1732)\nUnknown location (pc=0:1715)\n\nAn ASSERT_EQ instruction failed: 467359278613506166151492726487752216059557962335532790304583050955123345960 != 1186644149846945782410042582656131736308663902852641801657059926571115283736.\n",
+     "has_execute": false,
+     "fee": "0x38b12a150"
+    }
+   ]
+  },
+  "attacker_lp_burnFrom": {
+   "ok": true,
+   "entries": [
+    {
+     "revert_reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x029f9de5cafb30f55e4a6f4f032e8774958520c1649b3a0441f1354c0b330518, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x022b05f9396d2c48183f6deaf138a57522bcc8b35b67dee919f76403d1783136, class hash: 0x02797c4997ea0ca14401188bf6cbd4d89f0e632bd088088ab6cabf63c2056fc8, selector: 0x035528e7a5a578129b17edda3b942aff94e6191011372bc35bf3d31dcbb2614b):\nError message: SafeUint256: subtraction overflow\nError at pc=0:385:\nCairo traceback (most recent call last):\nUnknown location (pc=0:1761)\nUnknown location (pc=0:1749)\nUnknown location (pc=0:796)\nError message: ERC20: insufficient allowance\nUnknown location (pc=0:1106)\n\nAn ASSERT_EQ instruction failed: 0 != 1.\n",
+     "has_execute": false,
+     "fee": "0x38b12a150"
+    }
+   ]
+  },
+  "attacker_merkle_add_root": {
+   "ok": true,
+   "entries": [
+    {
+     "revert_reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x029f9de5cafb30f55e4a6f4f032e8774958520c1649b3a0441f1354c0b330518, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nExecution failed. Failure reason:\n(0x617267656e742f6d756c746963616c6c2d6661696c6564 ('argent/multicall-failed'), 0x0 (''), 0x43616c6c6572206973206e6f7420746865206f776e6572 ('Caller is not the owner'), 0x454e545259504f494e545f4641494c4544 ('ENTRYPOINT_FAILED')).\n",
+     "has_execute": false,
+     "fee": "0x38b12a150"
+    }
+   ]
+  },
+  "attacker_merkle_claim": {
+   "ok": true,
+   "entries": [
+    {
+     "revert_reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x029f9de5cafb30f55e4a6f4f032e8774958520c1649b3a0441f1354c0b330518, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nExecution failed. Failure reason:\n(0x617267656e742f6d756c746963616c6c2d6661696c6564 ('argent/multicall-failed'), 0x0 (''), 0x494e56414c49442050524f4f46 ('INVALID PROOF'), 0x454e545259504f494e545f4641494c4544 ('ENTRYPOINT_FAILED')).\n",
+     "has_execute": false,
+     "fee": "0x8d4697588"
+    }
+   ]
+  },
+  "attacker_cl_create_pool_evil_dai": {
+   "ok": true,
+   "entries": [
+    {
+     "revert_reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x029f9de5cafb30f55e4a6f4f032e8774958520c1649b3a0441f1354c0b330518, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nExecution failed. Failure reason:\n(0x617267656e742f6d756c746963616c6c2d6661696c6564 ('argent/multicall-failed'), 0x0 (''), 0x496e70757420746f6f206c6f6e6720666f7220617267756d656e7473 ('Input too long for arguments'), 0x454e545259504f494e545f4641494c4544 ('ENTRYPOINT_FAILED')).\n",
+     "has_execute": false,
+     "fee": "0x3cb847aa8"
+    }
+   ]
+  }
+ }
+}
