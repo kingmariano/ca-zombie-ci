@@ -1,0 +1,77 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.Rate {
+
+
+rate_per_second(Arg0: Exp): Exp {
+B0:
+	0: MoveLoc[0](Arg0: Exp)
+	1: LdU128(31536000)
+	2: Call[3](div_scalar_exp(Exp, u128): Exp)
+	3: Ret
+}
+public stability_fee<Ty0: copy + drop + store>(Arg0: u128, Arg1: u128, Arg2: u64): u128 {
+L0:	loc3: u64
+B0:
+	0: Call[4](now_seconds(): u64)
+	1: StLoc[4](loc1: u64)
+	2: CopyLoc[4](loc1: u64)
+	3: CopyLoc[2](Arg2: u64)
+	4: Sub
+	5: StLoc[6](loc3: u64)
+	6: Call[0](get<Ty0>(): VaultPoolConfig<Ty0>)
+	7: StLoc[3](loc0: VaultPoolConfig<Ty0>)
+	8: MoveLoc[3](loc0: VaultPoolConfig<Ty0>)
+	9: Call[1](unpack<Ty0>(VaultPoolConfig<Ty0>): u128 * u128 * u128 * u128 * u128 * u128 * u128)
+	10: Pop
+	11: Pop
+	12: Pop
+	13: Pop
+	14: StLoc[5](loc2: u128)
+	15: Pop
+	16: Pop
+	17: CopyLoc[0](Arg0: u128)
+	18: CopyLoc[1](Arg1: u128)
+	19: Add
+	20: CopyLoc[6](loc3: u64)
+	21: CopyLoc[5](loc2: u128)
+	22: Call[2](stability_fee_calc<Ty0>(u128, u64, u128): u128)
+	23: Ret
+}
+stability_fee_calc<Ty0: copy + drop + store>(Arg0: u128, Arg1: u64, Arg2: u128): u128 {
+L0:	loc3: Exp
+L1:	loc4: Exp
+L2:	loc5: Exp
+L3:	loc6: Exp
+B0:
+	0: CopyLoc[2](Arg2: u128)
+	1: LdConst[0](U128: [16, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+	2: Call[7](exp(u128, u128): Exp)
+	3: StLoc[6](loc3: Exp)
+	4: CopyLoc[6](loc3: Exp)
+	5: LdU128(1000)
+	6: Call[8](mul_scalar_exp(Exp, u128): Exp)
+	7: StLoc[7](loc4: Exp)
+	8: MoveLoc[7](loc4: Exp)
+	9: Call[0](rate_per_second(Exp): Exp)
+	10: StLoc[8](loc5: Exp)
+	11: MoveLoc[8](loc5: Exp)
+	12: CopyLoc[1](Arg1: u64)
+	13: CastU128
+	14: Call[8](mul_scalar_exp(Exp, u128): Exp)
+	15: StLoc[9](loc6: Exp)
+	16: CopyLoc[0](Arg0: u128)
+	17: Call[9](exp_direct(u128): Exp)
+	18: StLoc[3](loc0: Exp)
+	19: MoveLoc[3](loc0: Exp)
+	20: MoveLoc[9](loc6: Exp)
+	21: Call[10](mul_exp(Exp, Exp): Exp)
+	22: StLoc[4](loc1: Exp)
+	23: MoveLoc[4](loc1: Exp)
+	24: LdU128(1000)
+	25: Call[3](div_scalar_exp(Exp, u128): Exp)
+	26: StLoc[5](loc2: Exp)
+	27: MoveLoc[5](loc2: Exp)
+	28: Call[11](mantissa(Exp): u128)
+	29: Ret
+}
+}

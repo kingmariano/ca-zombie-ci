@@ -1,0 +1,91 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.Admin {
+
+
+public admin_address(): address {
+B0:
+	0: LdConst[0](Address: [79, 252, 201, 143, 67, 206, 116, 102, 130, 100, 160, 207, 110, 235, 228, 43])
+	1: Ret
+}
+public is_admin_address(Arg0: address) {
+B0:
+	0: LdConst[0](Address: [79, 252, 201, 143, 67, 206, 116, 102, 130, 100, 160, 207, 110, 235, 228, 43])
+	1: CopyLoc[0](Arg0: address)
+	2: Eq
+	3: BrTrue(7)
+B1:
+	4: LdConst[1](U64: [101, 0, 0, 0, 0, 0, 0, 0])
+	5: Call[6](requires_role(u64): u64)
+	6: Abort
+B2:
+	7: Ret
+}
+public is_barnard(): bool {
+L0:	loc0: u8
+B0:
+	0: Call[7](get(): u8)
+	1: StLoc[0](loc0: u8)
+	2: CopyLoc[0](loc0: u8)
+	3: LdU8(251)
+	4: Eq
+	5: Ret
+}
+public is_dev(): bool {
+L0:	loc0: bool
+L1:	loc1: bool
+L2:	loc2: u8
+B0:
+	0: Call[7](get(): u8)
+	1: StLoc[2](loc2: u8)
+	2: CopyLoc[2](loc2: u8)
+	3: LdU8(252)
+	4: Eq
+	5: BrTrue(7)
+B1:
+	6: Branch(10)
+B2:
+	7: LdTrue
+	8: StLoc[0](loc0: bool)
+	9: Branch(14)
+B3:
+	10: CopyLoc[2](loc2: u8)
+	11: LdU8(254)
+	12: Eq
+	13: StLoc[0](loc0: bool)
+B4:
+	14: MoveLoc[0](loc0: bool)
+	15: BrTrue(17)
+B5:
+	16: Branch(20)
+B6:
+	17: LdTrue
+	18: StLoc[1](loc1: bool)
+	19: Branch(24)
+B7:
+	20: CopyLoc[2](loc2: u8)
+	21: LdU8(255)
+	22: Eq
+	23: StLoc[1](loc1: bool)
+B8:
+	24: MoveLoc[1](loc1: bool)
+	25: Ret
+}
+public is_stc_admin_address(Arg0: address) {
+B0:
+	0: LdConst[0](Address: [79, 252, 201, 143, 67, 206, 116, 102, 130, 100, 160, 207, 110, 235, 228, 43])
+	1: CopyLoc[0](Arg0: address)
+	2: Eq
+	3: BrTrue(7)
+B1:
+	4: LdConst[2](U64: [102, 0, 0, 0, 0, 0, 0, 0])
+	5: Call[6](requires_role(u64): u64)
+	6: Abort
+B2:
+	7: Ret
+}
+public stc_admin_address(): address {
+B0:
+	0: LdConst[0](Address: [79, 252, 201, 143, 67, 206, 116, 102, 130, 100, 160, 207, 110, 235, 228, 43])
+	1: Ret
+}
+}

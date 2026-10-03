@@ -1,0 +1,477 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.Liquidation {
+
+
+public cal_max_borrow<Ty0: copy + drop + store, Ty1: store>(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: LdConst[2](U64: [204, 0, 0, 0, 0, 0, 0, 0])
+	1: Call[7](deprecated(u64): u64)
+	2: Abort
+}
+public cal_max_withdraw<Ty0: copy + drop + store>(Arg0: u128, Arg1: u128, Arg2: u128): u128 {
+B0:
+	0: LdConst[2](U64: [204, 0, 0, 0, 0, 0, 0, 0])
+	1: Call[7](deprecated(u64): u64)
+	2: Abort
+}
+public check_health_factor<Ty0: copy + drop + store, Ty1: store>(Arg0: u128, Arg1: u128, Arg2: u128, Arg3: u128) {
+B0:
+	0: LdConst[2](U64: [204, 0, 0, 0, 0, 0, 0, 0])
+	1: Call[7](deprecated(u64): u64)
+	2: Abort
+}
+public clip<Ty0: copy + drop + store, Ty1: copy + drop + store>(Arg0: &signer, Arg1: address, Arg2: u128) {
+L0:	loc3: u128
+L1:	loc4: u128
+L2:	loc5: u128
+L3:	loc6: u128
+L4:	loc7: u128
+L5:	loc8: u128
+L6:	loc9: u128
+L7:	loc10: Exp
+L8:	loc11: u128
+L9:	loc12: u128
+L10:	loc13: PriceNumber
+L11:	loc14: u128
+L12:	loc15: u128
+L13:	loc16: u128
+L14:	loc17: u128
+B0:
+	0: Call[8](check_global_switch())
+	1: CopyLoc[1](Arg1: address)
+	2: Call[0](health_factor_by_address<Ty0, Ty1>(address): u128)
+	3: StLoc[10](loc7: u128)
+	4: CopyLoc[10](loc7: u128)
+	5: LdU8(18)
+	6: Call[9](pow_10(u8): u128)
+	7: Le
+	8: BrTrue(14)
+B1:
+	9: MoveLoc[0](Arg0: &signer)
+	10: Pop
+	11: LdConst[5](U64: [201, 0, 0, 0, 0, 0, 0, 0])
+	12: Call[10](custom(u64): u64)
+	13: Abort
+B2:
+	14: CopyLoc[1](Arg1: address)
+	15: Call[1](info<Ty0, Ty1>(address): u64 * u128 * u128 * u128 * u64)
+	16: Pop
+	17: Pop
+	18: StLoc[19](loc16: u128)
+	19: StLoc[6](loc3: u128)
+	20: Pop
+	21: CopyLoc[6](loc3: u128)
+	22: CopyLoc[19](loc16: u128)
+	23: Add
+	24: StLoc[20](loc17: u128)
+	25: CopyLoc[2](Arg2: u128)
+	26: LdU128(0)
+	27: Eq
+	28: BrTrue(30)
+B3:
+	29: Branch(37)
+B4:
+	30: CopyLoc[6](loc3: u128)
+	31: CopyLoc[19](loc16: u128)
+	32: Add
+	33: LdU128(2)
+	34: Div
+	35: StLoc[3](loc0: u128)
+	36: Branch(52)
+B5:
+	37: CopyLoc[20](loc17: u128)
+	38: LdU128(2)
+	39: Div
+	40: StLoc[9](loc6: u128)
+	41: CopyLoc[9](loc6: u128)
+	42: CopyLoc[2](Arg2: u128)
+	43: Ge
+	44: BrTrue(50)
+B6:
+	45: MoveLoc[0](Arg0: &signer)
+	46: Pop
+	47: LdConst[0](U64: [202, 0, 0, 0, 0, 0, 0, 0])
+	48: Call[10](custom(u64): u64)
+	49: Abort
+B7:
+	50: CopyLoc[2](Arg2: u128)
+	51: StLoc[3](loc0: u128)
+B8:
+	52: MoveLoc[3](loc0: u128)
+	53: StLoc[5](loc2: u128)
+	54: CopyLoc[0](Arg0: &signer)
+	55: Call[12](address_of(&signer): address)
+	56: Call[2](balance<FAI>(address): u128)
+	57: StLoc[8](loc5: u128)
+	58: CopyLoc[8](loc5: u128)
+	59: CopyLoc[5](loc2: u128)
+	60: Ge
+	61: BrTrue(67)
+B9:
+	62: MoveLoc[0](Arg0: &signer)
+	63: Pop
+	64: LdConst[3](U64: [203, 0, 0, 0, 0, 0, 0, 0])
+	65: Call[10](custom(u64): u64)
+	66: Abort
+B10:
+	67: Call[3](get<Ty0>(): VaultPoolConfig<Ty0>)
+	68: StLoc[4](loc1: VaultPoolConfig<Ty0>)
+	69: MoveLoc[4](loc1: VaultPoolConfig<Ty0>)
+	70: Call[4](unpack<Ty0>(VaultPoolConfig<Ty0>): u128 * u128 * u128 * u128 * u128 * u128 * u128)
+	71: Pop
+	72: StLoc[11](loc8: u128)
+	73: Pop
+	74: Pop
+	75: Pop
+	76: Pop
+	77: Pop
+	78: Call[5](usdt_price<STC>(): PriceNumber)
+	79: StLoc[16](loc13: PriceNumber)
+	80: MoveLoc[16](loc13: PriceNumber)
+	81: Call[17](unpack(PriceNumber): u128 * u128)
+	82: StLoc[17](loc14: u128)
+	83: StLoc[14](loc11: u128)
+	84: CopyLoc[14](loc11: u128)
+	85: LdU128(100)
+	86: CopyLoc[11](loc8: u128)
+	87: Sub
+	88: Mul
+	89: StLoc[15](loc12: u128)
+	90: CopyLoc[5](loc2: u128)
+	91: CopyLoc[15](loc12: u128)
+	92: Call[18](exp(u128, u128): Exp)
+	93: StLoc[13](loc10: Exp)
+	94: LdU8(18)
+	95: Call[9](pow_10(u8): u128)
+	96: StLoc[7](loc4: u128)
+	97: CopyLoc[7](loc4: u128)
+	98: CopyLoc[17](loc14: u128)
+	99: LdU128(100)
+	100: Mul
+	101: Div
+	102: StLoc[18](loc15: u128)
+	103: MoveLoc[13](loc10: Exp)
+	104: Call[19](mantissa(Exp): u128)
+	105: CopyLoc[18](loc15: u128)
+	106: Div
+	107: StLoc[12](loc9: u128)
+	108: Call[6](is_same_token<Ty1, STC>(): bool)
+	109: BrTrue(111)
+B11:
+	110: Branch(117)
+B12:
+	111: MoveLoc[0](Arg0: &signer)
+	112: CopyLoc[1](Arg1: address)
+	113: CopyLoc[12](loc9: u128)
+	114: CopyLoc[5](loc2: u128)
+	115: Call[21](crack(&signer, address, u128, u128))
+	116: Branch(119)
+B13:
+	117: MoveLoc[0](Arg0: &signer)
+	118: Pop
+B14:
+	119: Ret
+}
+public clip_b<Ty0: copy + drop + store, Ty1: copy + drop + store, Ty2>(Arg0: &signer, Arg1: address, Arg2: u64, Arg3: u128) {
+L0:	loc4: u128
+L1:	loc5: u128
+L2:	loc6: u128
+L3:	loc7: u128
+L4:	loc8: u128
+L5:	loc9: u128
+L6:	loc10: Exp
+L7:	loc11: u128
+L8:	loc12: u128
+L9:	loc13: PriceNumber
+L10:	loc14: u128
+L11:	loc15: u128
+L12:	loc16: u128
+L13:	loc17: u128
+B0:
+	0: Call[8](check_global_switch())
+	1: CopyLoc[1](Arg1: address)
+	2: CopyLoc[2](Arg2: u64)
+	3: Call[7](lock_health_factor_by_address<Ty0, Ty1>(address, u64): u128)
+	4: StLoc[11](loc7: u128)
+	5: CopyLoc[11](loc7: u128)
+	6: LdU8(18)
+	7: Call[9](pow_10(u8): u128)
+	8: Le
+	9: BrTrue(15)
+B1:
+	10: MoveLoc[0](Arg0: &signer)
+	11: Pop
+	12: LdConst[5](U64: [201, 0, 0, 0, 0, 0, 0, 0])
+	13: Call[10](custom(u64): u64)
+	14: Abort
+B2:
+	15: CopyLoc[1](Arg1: address)
+	16: CopyLoc[2](Arg2: u64)
+	17: Call[8](lock_info<Ty0, Ty1>(address, u64): u64 * u128 * u128 * u128 * u128 * u64 * u64)
+	18: Pop
+	19: Pop
+	20: Pop
+	21: Pop
+	22: StLoc[20](loc16: u128)
+	23: StLoc[7](loc3: u128)
+	24: Pop
+	25: CopyLoc[7](loc3: u128)
+	26: CopyLoc[20](loc16: u128)
+	27: Add
+	28: StLoc[21](loc17: u128)
+	29: CopyLoc[3](Arg3: u128)
+	30: LdU128(0)
+	31: Eq
+	32: BrTrue(34)
+B3:
+	33: Branch(41)
+B4:
+	34: CopyLoc[7](loc3: u128)
+	35: CopyLoc[20](loc16: u128)
+	36: Add
+	37: LdU128(2)
+	38: Div
+	39: StLoc[4](loc0: u128)
+	40: Branch(56)
+B5:
+	41: CopyLoc[21](loc17: u128)
+	42: LdU128(2)
+	43: Div
+	44: StLoc[10](loc6: u128)
+	45: CopyLoc[10](loc6: u128)
+	46: CopyLoc[3](Arg3: u128)
+	47: Ge
+	48: BrTrue(54)
+B6:
+	49: MoveLoc[0](Arg0: &signer)
+	50: Pop
+	51: LdConst[0](U64: [202, 0, 0, 0, 0, 0, 0, 0])
+	52: Call[10](custom(u64): u64)
+	53: Abort
+B7:
+	54: CopyLoc[3](Arg3: u128)
+	55: StLoc[4](loc0: u128)
+B8:
+	56: MoveLoc[4](loc0: u128)
+	57: StLoc[6](loc2: u128)
+	58: CopyLoc[0](Arg0: &signer)
+	59: Call[12](address_of(&signer): address)
+	60: Call[2](balance<FAI>(address): u128)
+	61: StLoc[9](loc5: u128)
+	62: CopyLoc[9](loc5: u128)
+	63: CopyLoc[6](loc2: u128)
+	64: Ge
+	65: BrTrue(71)
+B9:
+	66: MoveLoc[0](Arg0: &signer)
+	67: Pop
+	68: LdConst[3](U64: [203, 0, 0, 0, 0, 0, 0, 0])
+	69: Call[10](custom(u64): u64)
+	70: Abort
+B10:
+	71: Call[3](get<Ty0>(): VaultPoolConfig<Ty0>)
+	72: StLoc[5](loc1: VaultPoolConfig<Ty0>)
+	73: MoveLoc[5](loc1: VaultPoolConfig<Ty0>)
+	74: Call[4](unpack<Ty0>(VaultPoolConfig<Ty0>): u128 * u128 * u128 * u128 * u128 * u128 * u128)
+	75: Pop
+	76: StLoc[12](loc8: u128)
+	77: Pop
+	78: Pop
+	79: Pop
+	80: Pop
+	81: Pop
+	82: Call[5](usdt_price<STC>(): PriceNumber)
+	83: StLoc[17](loc13: PriceNumber)
+	84: MoveLoc[17](loc13: PriceNumber)
+	85: Call[17](unpack(PriceNumber): u128 * u128)
+	86: StLoc[18](loc14: u128)
+	87: StLoc[15](loc11: u128)
+	88: CopyLoc[15](loc11: u128)
+	89: LdU128(100)
+	90: CopyLoc[12](loc8: u128)
+	91: Sub
+	92: Mul
+	93: StLoc[16](loc12: u128)
+	94: CopyLoc[6](loc2: u128)
+	95: CopyLoc[16](loc12: u128)
+	96: Call[18](exp(u128, u128): Exp)
+	97: StLoc[14](loc10: Exp)
+	98: LdU8(18)
+	99: Call[9](pow_10(u8): u128)
+	100: StLoc[8](loc4: u128)
+	101: CopyLoc[8](loc4: u128)
+	102: CopyLoc[18](loc14: u128)
+	103: LdU128(100)
+	104: Mul
+	105: Div
+	106: StLoc[19](loc15: u128)
+	107: MoveLoc[14](loc10: Exp)
+	108: Call[19](mantissa(Exp): u128)
+	109: CopyLoc[19](loc15: u128)
+	110: Div
+	111: StLoc[13](loc9: u128)
+	112: Call[6](is_same_token<Ty1, STC>(): bool)
+	113: BrTrue(115)
+B11:
+	114: Branch(122)
+B12:
+	115: MoveLoc[0](Arg0: &signer)
+	116: CopyLoc[2](Arg2: u64)
+	117: CopyLoc[1](Arg1: address)
+	118: CopyLoc[13](loc9: u128)
+	119: CopyLoc[6](loc2: u128)
+	120: Call[9](crack<Ty2>(&signer, u64, address, u128, u128))
+	121: Branch(124)
+B13:
+	122: MoveLoc[0](Arg0: &signer)
+	123: Pop
+B14:
+	124: Ret
+}
+public health_factor_by_address<Ty0: copy + drop + store, Ty1: store>(Arg0: address): u128 {
+L0:	loc1: Exp
+L1:	loc2: VaultPoolConfig<Ty0>
+L2:	loc3: u128
+L3:	loc4: Exp
+L4:	loc5: Exp
+L5:	loc6: u128
+L6:	loc7: Exp
+L7:	loc8: u128
+L8:	loc9: Exp
+L9:	loc10: PriceNumber
+L10:	loc11: u128
+L11:	loc12: u128
+L12:	loc13: u128
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: Call[1](info<Ty0, Ty1>(address): u64 * u128 * u128 * u128 * u64)
+	2: Pop
+	3: StLoc[1](loc0: u128)
+	4: StLoc[13](loc12: u128)
+	5: StLoc[4](loc3: u128)
+	6: Pop
+	7: Call[5](usdt_price<STC>(): PriceNumber)
+	8: StLoc[11](loc10: PriceNumber)
+	9: MoveLoc[11](loc10: PriceNumber)
+	10: Call[17](unpack(PriceNumber): u128 * u128)
+	11: StLoc[12](loc11: u128)
+	12: StLoc[9](loc8: u128)
+	13: CopyLoc[9](loc8: u128)
+	14: CopyLoc[12](loc11: u128)
+	15: Call[18](exp(u128, u128): Exp)
+	16: StLoc[10](loc9: Exp)
+	17: MoveLoc[10](loc9: Exp)
+	18: CopyLoc[1](loc0: u128)
+	19: Call[24](mul_scalar_exp(Exp, u128): Exp)
+	20: StLoc[2](loc1: Exp)
+	21: Call[3](get<Ty0>(): VaultPoolConfig<Ty0>)
+	22: StLoc[3](loc2: VaultPoolConfig<Ty0>)
+	23: MoveLoc[3](loc2: VaultPoolConfig<Ty0>)
+	24: Call[4](unpack<Ty0>(VaultPoolConfig<Ty0>): u128 * u128 * u128 * u128 * u128 * u128 * u128)
+	25: StLoc[7](loc6: u128)
+	26: Pop
+	27: Pop
+	28: Pop
+	29: Pop
+	30: Pop
+	31: Pop
+	32: CopyLoc[7](loc6: u128)
+	33: LdU128(10000)
+	34: Call[18](exp(u128, u128): Exp)
+	35: StLoc[8](loc7: Exp)
+	36: CopyLoc[4](loc3: u128)
+	37: CopyLoc[13](loc12: u128)
+	38: Add
+	39: StLoc[14](loc13: u128)
+	40: MoveLoc[8](loc7: Exp)
+	41: CopyLoc[14](loc13: u128)
+	42: Call[24](mul_scalar_exp(Exp, u128): Exp)
+	43: StLoc[5](loc4: Exp)
+	44: MoveLoc[2](loc1: Exp)
+	45: Call[25](truncate(Exp): u128)
+	46: MoveLoc[5](loc4: Exp)
+	47: Call[25](truncate(Exp): u128)
+	48: Call[18](exp(u128, u128): Exp)
+	49: StLoc[6](loc5: Exp)
+	50: MoveLoc[6](loc5: Exp)
+	51: Call[19](mantissa(Exp): u128)
+	52: Ret
+}
+public lock_health_factor_by_address<Ty0: copy + drop + store, Ty1: store>(Arg0: address, Arg1: u64): u128 {
+L0:	loc2: VaultPoolConfig<Ty0>
+L1:	loc3: u128
+L2:	loc4: Exp
+L3:	loc5: Exp
+L4:	loc6: u128
+L5:	loc7: Exp
+L6:	loc8: u128
+L7:	loc9: Exp
+L8:	loc10: PriceNumber
+L9:	loc11: u128
+L10:	loc12: u128
+L11:	loc13: u128
+L12:	loc14: u128
+L13:	loc15: u128
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: CopyLoc[1](Arg1: u64)
+	2: Call[8](lock_info<Ty0, Ty1>(address, u64): u64 * u128 * u128 * u128 * u128 * u64 * u64)
+	3: Pop
+	4: Pop
+	5: StLoc[16](loc14: u128)
+	6: StLoc[17](loc15: u128)
+	7: StLoc[14](loc12: u128)
+	8: StLoc[5](loc3: u128)
+	9: Pop
+	10: Call[5](usdt_price<STC>(): PriceNumber)
+	11: StLoc[12](loc10: PriceNumber)
+	12: MoveLoc[12](loc10: PriceNumber)
+	13: Call[17](unpack(PriceNumber): u128 * u128)
+	14: StLoc[13](loc11: u128)
+	15: StLoc[10](loc8: u128)
+	16: CopyLoc[10](loc8: u128)
+	17: CopyLoc[13](loc11: u128)
+	18: Call[18](exp(u128, u128): Exp)
+	19: StLoc[11](loc9: Exp)
+	20: CopyLoc[17](loc15: u128)
+	21: CopyLoc[16](loc14: u128)
+	22: Add
+	23: StLoc[2](loc0: u128)
+	24: MoveLoc[11](loc9: Exp)
+	25: CopyLoc[2](loc0: u128)
+	26: Call[24](mul_scalar_exp(Exp, u128): Exp)
+	27: StLoc[3](loc1: Exp)
+	28: Call[3](get<Ty0>(): VaultPoolConfig<Ty0>)
+	29: StLoc[4](loc2: VaultPoolConfig<Ty0>)
+	30: MoveLoc[4](loc2: VaultPoolConfig<Ty0>)
+	31: Call[4](unpack<Ty0>(VaultPoolConfig<Ty0>): u128 * u128 * u128 * u128 * u128 * u128 * u128)
+	32: StLoc[8](loc6: u128)
+	33: Pop
+	34: Pop
+	35: Pop
+	36: Pop
+	37: Pop
+	38: Pop
+	39: CopyLoc[8](loc6: u128)
+	40: LdU128(10000)
+	41: Call[18](exp(u128, u128): Exp)
+	42: StLoc[9](loc7: Exp)
+	43: CopyLoc[5](loc3: u128)
+	44: CopyLoc[14](loc12: u128)
+	45: Add
+	46: StLoc[15](loc13: u128)
+	47: MoveLoc[9](loc7: Exp)
+	48: CopyLoc[15](loc13: u128)
+	49: Call[24](mul_scalar_exp(Exp, u128): Exp)
+	50: StLoc[6](loc4: Exp)
+	51: MoveLoc[3](loc1: Exp)
+	52: Call[25](truncate(Exp): u128)
+	53: MoveLoc[6](loc4: Exp)
+	54: Call[25](truncate(Exp): u128)
+	55: Call[18](exp(u128, u128): Exp)
+	56: StLoc[7](loc5: Exp)
+	57: MoveLoc[7](loc5: Exp)
+	58: Call[19](mantissa(Exp): u128)
+	59: Ret
+}
+}

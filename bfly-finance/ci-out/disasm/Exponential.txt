@@ -1,0 +1,365 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.Exponential {
+struct Double has copy, drop, store {
+	mantissa: u128
+}
+struct Exp has copy, drop, store {
+	mantissa: u128
+}
+
+public add_exp(Arg0: Exp, Arg1: Exp): Exp {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: ImmBorrowLoc[1](Arg1: Exp)
+	4: ImmBorrowField[0](Exp.mantissa: u128)
+	5: ReadRef
+	6: Call[1](add_u128(u128, u128): u128)
+	7: Pack[1](Exp)
+	8: Ret
+}
+add_u128(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: CopyLoc[1](Arg1: u128)
+	2: Add
+	3: Ret
+}
+public div_exp(Arg0: Exp, Arg1: Exp): Exp {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: ImmBorrowLoc[1](Arg1: Exp)
+	4: ImmBorrowField[0](Exp.mantissa: u128)
+	5: ReadRef
+	6: Call[7](exp(u128, u128): Exp)
+	7: Ret
+}
+public div_scalar_by_exp(Arg0: u128, Arg1: Exp): Exp {
+B0:
+	0: LdConst[2](U128: [0, 0, 100, 167, 179, 182, 224, 13, 0, 0, 0, 0, 0, 0, 0, 0])
+	1: CopyLoc[0](Arg0: u128)
+	2: Call[24](mul_u128(u128, u128): u128)
+	3: StLoc[2](loc0: u128)
+	4: CopyLoc[2](loc0: u128)
+	5: ImmBorrowLoc[1](Arg1: Exp)
+	6: ImmBorrowField[0](Exp.mantissa: u128)
+	7: ReadRef
+	8: Call[7](exp(u128, u128): Exp)
+	9: Ret
+}
+public div_scalar_by_exp_truncate(Arg0: u128, Arg1: Exp): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: MoveLoc[1](Arg1: Exp)
+	2: Call[3](div_scalar_by_exp(u128, Exp): Exp)
+	3: Call[28](truncate(Exp): u128)
+	4: Ret
+}
+public div_scalar_exp(Arg0: Exp, Arg1: u128): Exp {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: CopyLoc[1](Arg1: u128)
+	4: Call[6](div_u128(u128, u128): u128)
+	5: Pack[1](Exp)
+	6: Ret
+}
+div_u128(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: LdU128(0)
+	2: Eq
+	3: BrTrue(5)
+B1:
+	4: Branch(8)
+B2:
+	5: LdConst[0](U64: [234, 3, 0, 0, 0, 0, 0, 0])
+	6: Call[29](invalid_argument(u64): u64)
+	7: Abort
+B3:
+	8: CopyLoc[0](Arg0: u128)
+	9: LdU128(0)
+	10: Eq
+	11: BrTrue(13)
+B4:
+	12: Branch(15)
+B5:
+	13: LdU128(0)
+	14: Ret
+B6:
+	15: CopyLoc[0](Arg0: u128)
+	16: CopyLoc[1](Arg1: u128)
+	17: Div
+	18: Ret
+}
+public exp(Arg0: u128, Arg1: u128): Exp {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdConst[2](U128: [0, 0, 100, 167, 179, 182, 224, 13, 0, 0, 0, 0, 0, 0, 0, 0])
+	2: Call[24](mul_u128(u128, u128): u128)
+	3: StLoc[3](loc1: u128)
+	4: CopyLoc[3](loc1: u128)
+	5: CopyLoc[1](Arg1: u128)
+	6: Call[6](div_u128(u128, u128): u128)
+	7: StLoc[2](loc0: u128)
+	8: CopyLoc[2](loc0: u128)
+	9: Pack[1](Exp)
+	10: Ret
+}
+public exp_direct(Arg0: u128): Exp {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: Pack[1](Exp)
+	2: Ret
+}
+public exp_scale(): u128 {
+B0:
+	0: LdConst[2](U128: [0, 0, 100, 167, 179, 182, 224, 13, 0, 0, 0, 0, 0, 0, 0, 0])
+	1: Ret
+}
+public fraction(Arg0: u128, Arg1: u128): Double {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdConst[1](U128: [0, 0, 0, 0, 16, 159, 75, 179, 21, 7, 201, 123, 206, 151, 192, 0])
+	2: Call[24](mul_u128(u128, u128): u128)
+	3: CopyLoc[1](Arg1: u128)
+	4: Call[6](div_u128(u128, u128): u128)
+	5: StLoc[2](loc0: u128)
+	6: CopyLoc[2](loc0: u128)
+	7: Pack[0](Double)
+	8: Ret
+}
+greater_than_exp(Arg0: Exp, Arg1: Exp): bool {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: ImmBorrowLoc[1](Arg1: Exp)
+	4: ImmBorrowField[0](Exp.mantissa: u128)
+	5: ReadRef
+	6: Gt
+	7: Ret
+}
+is_zero(Arg0: Exp): bool {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: LdU128(0)
+	4: Eq
+	5: Ret
+}
+less_than_exp(Arg0: Exp, Arg1: Exp): bool {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: ImmBorrowLoc[1](Arg1: Exp)
+	4: ImmBorrowField[0](Exp.mantissa: u128)
+	5: ReadRef
+	6: Lt
+	7: Ret
+}
+less_than_or_equal_exp(Arg0: Exp, Arg1: Exp): bool {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: ImmBorrowLoc[1](Arg1: Exp)
+	4: ImmBorrowField[0](Exp.mantissa: u128)
+	5: ReadRef
+	6: Le
+	7: Ret
+}
+public mantissa(Arg0: Exp): u128 {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: Ret
+}
+public mul_exp(Arg0: Exp, Arg1: Exp): Exp {
+L0:	loc2: u128
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: ImmBorrowLoc[1](Arg1: Exp)
+	4: ImmBorrowField[0](Exp.mantissa: u128)
+	5: ReadRef
+	6: Call[24](mul_u128(u128, u128): u128)
+	7: StLoc[2](loc0: u128)
+	8: LdConst[3](U128: [0, 0, 178, 211, 89, 91, 240, 6, 0, 0, 0, 0, 0, 0, 0, 0])
+	9: CopyLoc[2](loc0: u128)
+	10: Call[1](add_u128(u128, u128): u128)
+	11: StLoc[3](loc1: u128)
+	12: CopyLoc[3](loc1: u128)
+	13: LdConst[2](U128: [0, 0, 100, 167, 179, 182, 224, 13, 0, 0, 0, 0, 0, 0, 0, 0])
+	14: Call[6](div_u128(u128, u128): u128)
+	15: StLoc[4](loc2: u128)
+	16: CopyLoc[4](loc2: u128)
+	17: Pack[1](Exp)
+	18: Ret
+}
+public mul_exp_3(Arg0: Exp, Arg1: Exp, Arg2: Exp): Exp {
+B0:
+	0: MoveLoc[0](Arg0: Exp)
+	1: MoveLoc[1](Arg1: Exp)
+	2: Call[16](mul_exp(Exp, Exp): Exp)
+	3: StLoc[3](loc0: Exp)
+	4: MoveLoc[3](loc0: Exp)
+	5: MoveLoc[2](Arg2: Exp)
+	6: Call[16](mul_exp(Exp, Exp): Exp)
+	7: Ret
+}
+public mul_exp_u128(Arg0: u128, Arg1: u128): Exp {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: Pack[1](Exp)
+	2: CopyLoc[1](Arg1: u128)
+	3: Pack[1](Exp)
+	4: Call[16](mul_exp(Exp, Exp): Exp)
+	5: Ret
+}
+public mul_scalar_exp(Arg0: Exp, Arg1: u128): Exp {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: CopyLoc[1](Arg1: u128)
+	4: Call[24](mul_u128(u128, u128): u128)
+	5: Pack[1](Exp)
+	6: Ret
+}
+public mul_scalar_exp_truncate(Arg0: Exp, Arg1: u128): Exp {
+B0:
+	0: MoveLoc[0](Arg0: Exp)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[19](mul_scalar_exp(Exp, u128): Exp)
+	3: Call[28](truncate(Exp): u128)
+	4: Pack[1](Exp)
+	5: Ret
+}
+public mul_scalar_exp_truncate_add(Arg0: Exp, Arg1: u128, Arg2: u128): u128 {
+B0:
+	0: MoveLoc[0](Arg0: Exp)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[19](mul_scalar_exp(Exp, u128): Exp)
+	3: StLoc[3](loc0: Exp)
+	4: MoveLoc[3](loc0: Exp)
+	5: Call[28](truncate(Exp): u128)
+	6: CopyLoc[2](Arg2: u128)
+	7: Call[1](add_u128(u128, u128): u128)
+	8: Ret
+}
+mul_scalar_truncate_(Arg0: Exp, Arg1: u128): u128 {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: CopyLoc[1](Arg1: u128)
+	4: Call[24](mul_u128(u128, u128): u128)
+	5: StLoc[2](loc0: u128)
+	6: CopyLoc[2](loc0: u128)
+	7: Pack[1](Exp)
+	8: Call[28](truncate(Exp): u128)
+	9: Ret
+}
+mul_scalar_truncate_add_(Arg0: Exp, Arg1: u128, Arg2: u128): u128 {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: CopyLoc[1](Arg1: u128)
+	4: Call[24](mul_u128(u128, u128): u128)
+	5: StLoc[4](loc1: u128)
+	6: CopyLoc[4](loc1: u128)
+	7: Pack[1](Exp)
+	8: Call[28](truncate(Exp): u128)
+	9: StLoc[3](loc0: u128)
+	10: CopyLoc[3](loc0: u128)
+	11: CopyLoc[2](Arg2: u128)
+	12: Call[1](add_u128(u128, u128): u128)
+	13: Ret
+}
+mul_u128(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdU128(0)
+	2: Eq
+	3: BrTrue(5)
+B1:
+	4: Branch(8)
+B2:
+	5: LdTrue
+	6: StLoc[2](loc0: bool)
+	7: Branch(12)
+B3:
+	8: CopyLoc[1](Arg1: u128)
+	9: LdU128(0)
+	10: Eq
+	11: StLoc[2](loc0: bool)
+B4:
+	12: MoveLoc[2](loc0: bool)
+	13: BrTrue(15)
+B5:
+	14: Branch(17)
+B6:
+	15: LdU128(0)
+	16: Ret
+B7:
+	17: CopyLoc[0](Arg0: u128)
+	18: CopyLoc[1](Arg1: u128)
+	19: Mul
+	20: Ret
+}
+safe64(Arg0: u128): u64 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdConst[6](U128: [255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0])
+	2: Le
+	3: BrTrue(5)
+B1:
+	4: Branch(8)
+B2:
+	5: CopyLoc[0](Arg0: u128)
+	6: CastU64
+	7: Ret
+B3:
+	8: LdConst[4](U64: [233, 3, 0, 0, 0, 0, 0, 0])
+	9: Call[29](invalid_argument(u64): u64)
+	10: Abort
+}
+public sub_exp(Arg0: Exp, Arg1: Exp): Exp {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: ImmBorrowLoc[1](Arg1: Exp)
+	4: ImmBorrowField[0](Exp.mantissa: u128)
+	5: ReadRef
+	6: Call[27](sub_u128(u128, u128): u128)
+	7: Pack[1](Exp)
+	8: Ret
+}
+sub_u128(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: CopyLoc[1](Arg1: u128)
+	2: Sub
+	3: Ret
+}
+public truncate(Arg0: Exp): u128 {
+B0:
+	0: ImmBorrowLoc[0](Arg0: Exp)
+	1: ImmBorrowField[0](Exp.mantissa: u128)
+	2: ReadRef
+	3: LdConst[2](U128: [0, 0, 100, 167, 179, 182, 224, 13, 0, 0, 0, 0, 0, 0, 0, 0])
+	4: Div
+	5: Ret
+}
+}

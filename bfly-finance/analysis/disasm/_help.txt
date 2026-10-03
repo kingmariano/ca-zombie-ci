@@ -1,0 +1,37 @@
+move-disassembler 0.1.0
+Diem Association <opensource@diem.com>
+Print a human-readable version of Move bytecode (.mv files)
+
+USAGE:
+    move-disassembler [OPTIONS] --bytecode <BYTECODE_FILE_PATH>
+
+OPTIONS:
+    -b, --bytecode <BYTECODE_FILE_PATH>
+            The path to the bytecode file to disassemble; let's call it file.mv. We assume that two
+            other files reside under the same directory: a source map file.mvsm (possibly) and the
+            Move source code file.move
+
+    -c, --move-coverage-path <CODE_COVERAGE_PATH>
+            (Optional) Path to a coverage file for the VM in order to print trace information in the
+            disassembled output
+
+    -h, --help
+            Print help information
+
+    -s, --script
+            Treat input file as a script (default is to treat file as a module)
+
+        --skip-basic-blocks
+            Do not print the basic blocks of each function
+
+        --skip-code
+            Do not print the disassembled bytecodes of each function
+
+        --skip-locals
+            Do not print locals of each function
+
+        --skip-private
+            Skip printing of private functions
+
+    -V, --version
+            Print version information

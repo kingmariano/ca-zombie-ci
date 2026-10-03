@@ -1,0 +1,259 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.TestHelper {
+struct GenesisSignerCapability has key {
+	cap: SignerCapability
+}
+
+public assert_same_config<Ty0: copy + drop + store>(Arg0: VaultPoolConfig<Ty0>, Arg1: u128) {
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: Call[0](config_builder<Ty0>(u128): VaultPoolConfig<Ty0>)
+	2: StLoc[2](loc0: VaultPoolConfig<Ty0>)
+	3: MoveLoc[0](Arg0: VaultPoolConfig<Ty0>)
+	4: MoveLoc[2](loc0: VaultPoolConfig<Ty0>)
+	5: Eq
+	6: StLoc[3](loc1: bool)
+	7: CopyLoc[3](loc1: bool)
+	8: BrTrue(11)
+B1:
+	9: LdU64(666)
+	10: Abort
+B2:
+	11: Ret
+}
+public config_builder<Ty0: copy + drop + store>(Arg0: u128): VaultPoolConfig<Ty0> {
+B0:
+	0: LdU128(100000)
+	1: CopyLoc[0](Arg0: u128)
+	2: Mul
+	3: LdU128(10)
+	4: CopyLoc[0](Arg0: u128)
+	5: Mul
+	6: LdU128(10)
+	7: CopyLoc[0](Arg0: u128)
+	8: Mul
+	9: LdU128(10)
+	10: CopyLoc[0](Arg0: u128)
+	11: Mul
+	12: LdU128(10000)
+	13: CopyLoc[0](Arg0: u128)
+	14: Mul
+	15: LdU128(10)
+	16: CopyLoc[0](Arg0: u128)
+	17: Mul
+	18: LdU128(90000)
+	19: Call[1](new_config<Ty0>(u128, u128, u128, u128, u128, u128, u128): VaultPoolConfig<Ty0>)
+	20: Ret
+}
+public deposit_stc_to(Arg0: &signer, Arg1: u128, Arg2: &signer) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[13](address_of(&signer): address)
+	2: Call[2](is_accepts_token<STC>(address): bool)
+	3: StLoc[3](loc0: bool)
+	4: CopyLoc[3](loc0: bool)
+	5: Not
+	6: BrTrue(8)
+B1:
+	7: Branch(10)
+B2:
+	8: CopyLoc[0](Arg0: &signer)
+	9: Call[3](do_accept_token<STC>(&signer))
+B3:
+	10: MoveLoc[2](Arg2: &signer)
+	11: CopyLoc[1](Arg1: u128)
+	12: Call[4](mint<STC>(&signer, u128): Token<STC>)
+	13: StLoc[4](loc1: Token<STC>)
+	14: MoveLoc[0](Arg0: &signer)
+	15: Call[13](address_of(&signer): address)
+	16: MoveLoc[4](loc1: Token<STC>)
+	17: Call[5](deposit<STC>(address, Token<STC>))
+	18: Ret
+}
+public init_account_with_stc(Arg0: &signer, Arg1: u128, Arg2: &signer) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[13](address_of(&signer): address)
+	2: StLoc[3](loc0: address)
+	3: CopyLoc[3](loc0: address)
+	4: Call[18](exists_at(address): bool)
+	5: Not
+	6: BrTrue(8)
+B1:
+	7: Branch(11)
+B2:
+	8: CopyLoc[3](loc0: address)
+	9: Call[19](create_genesis_account(address): signer)
+	10: Pop
+B3:
+	11: CopyLoc[1](Arg1: u128)
+	12: LdU128(0)
+	13: Gt
+	14: BrTrue(16)
+B4:
+	15: Branch(30)
+B5:
+	16: MoveLoc[0](Arg0: &signer)
+	17: CopyLoc[1](Arg1: u128)
+	18: MoveLoc[2](Arg2: &signer)
+	19: Call[2](deposit_stc_to(&signer, u128, &signer))
+	20: CopyLoc[3](loc0: address)
+	21: Call[6](balance<STC>(address): u128)
+	22: StLoc[4](loc1: u128)
+	23: CopyLoc[4](loc1: u128)
+	24: CopyLoc[1](Arg1: u128)
+	25: Eq
+	26: BrTrue(29)
+B6:
+	27: LdU64(999)
+	28: Abort
+B7:
+	29: Branch(34)
+B8:
+	30: MoveLoc[2](Arg2: &signer)
+	31: Pop
+	32: MoveLoc[0](Arg0: &signer)
+	33: Pop
+B9:
+	34: Ret
+}
+public init_oracle(Arg0: &signer) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[13](address_of(&signer): address)
+	2: Call[7](is_data_source_initialized<STCUSD>(address): bool)
+	3: Not
+	4: BrTrue(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &signer)
+	7: LdU128(1000000)
+	8: Call[8](init_data_source<STCUSD>(&signer, u128))
+	9: Branch(12)
+B3:
+	10: MoveLoc[0](Arg0: &signer)
+	11: Pop
+B4:
+	12: Ret
+}
+public init_stdlib(): signer {
+L0:	loc0: address
+L1:	loc1: signer
+L2:	loc2: SignerCapability
+L3:	loc3: SignerCapability
+L4:	loc4: GenesisSignerCapability
+L5:	loc5: GenesisSignerCapability
+L6:	loc6: signer
+B0:
+	0: Call[23](GENESIS_ADDRESS(): address)
+	1: Call[19](create_genesis_account(address): signer)
+	2: StLoc[6](loc6: signer)
+	3: ImmBorrowLoc[6](loc6: signer)
+	4: LdU64(1655797763000)
+	5: Call[24](initialize(&signer, u64))
+	6: ImmBorrowLoc[6](loc6: signer)
+	7: LdU8(9)
+	8: Call[9](register_token<STC>(&signer, u8))
+	9: ImmBorrowLoc[6](loc6: signer)
+	10: LdU8(254)
+	11: Call[26](initialize(&signer, u8))
+	12: ImmBorrowLoc[6](loc6: signer)
+	13: Call[27](initialize(&signer))
+	14: ImmBorrowLoc[6](loc6: signer)
+	15: Call[28](remove_signer_capability(&signer): SignerCapability)
+	16: StLoc[2](loc2: SignerCapability)
+	17: MoveLoc[2](loc2: SignerCapability)
+	18: Pack[0](GenesisSignerCapability)
+	19: StLoc[4](loc4: GenesisSignerCapability)
+	20: ImmBorrowLoc[6](loc6: signer)
+	21: MoveLoc[4](loc4: GenesisSignerCapability)
+	22: MoveTo[0](GenesisSignerCapability)
+	23: LdConst[1](Address: [79, 252, 201, 143, 67, 206, 116, 102, 130, 100, 160, 207, 110, 235, 228, 43])
+	24: Call[19](create_genesis_account(address): signer)
+	25: StLoc[1](loc1: signer)
+	26: ImmBorrowLoc[1](loc1: signer)
+	27: Call[28](remove_signer_capability(&signer): SignerCapability)
+	28: StLoc[3](loc3: SignerCapability)
+	29: MoveLoc[3](loc3: SignerCapability)
+	30: Pack[0](GenesisSignerCapability)
+	31: StLoc[5](loc5: GenesisSignerCapability)
+	32: ImmBorrowLoc[1](loc1: signer)
+	33: MoveLoc[5](loc5: GenesisSignerCapability)
+	34: MoveTo[0](GenesisSignerCapability)
+	35: MoveLoc[6](loc6: signer)
+	36: Ret
+}
+public mint_stc_to(Arg0: u128, Arg1: &signer): Token<STC> {
+B0:
+	0: MoveLoc[1](Arg1: &signer)
+	1: CopyLoc[0](Arg0: u128)
+	2: Call[4](mint<STC>(&signer, u128): Token<STC>)
+	3: Ret
+}
+public pow(Arg0: u64, Arg1: u8): u128 {
+B0:
+	0: LdU128(1)
+	1: StLoc[3](loc1: u128)
+	2: LdU8(0)
+	3: StLoc[2](loc0: u8)
+B1:
+	4: CopyLoc[2](loc0: u8)
+	5: CopyLoc[1](Arg1: u8)
+	6: Lt
+	7: BrTrue(9)
+B2:
+	8: Branch(19)
+B3:
+	9: CopyLoc[3](loc1: u128)
+	10: CopyLoc[0](Arg0: u64)
+	11: CastU128
+	12: Mul
+	13: StLoc[3](loc1: u128)
+	14: CopyLoc[2](loc0: u8)
+	15: LdU8(1)
+	16: Add
+	17: StLoc[2](loc0: u8)
+	18: Branch(4)
+B4:
+	19: CopyLoc[3](loc1: u128)
+	20: Ret
+}
+public pow_10(Arg0: u8): u128 {
+B0:
+	0: LdU64(10)
+	1: CopyLoc[0](Arg0: u8)
+	2: Call[7](pow(u64, u8): u128)
+	3: Ret
+}
+public set_timestamp(Arg0: u64) {
+L0:	loc1: &GenesisSignerCapability
+B0:
+	0: Call[23](GENESIS_ADDRESS(): address)
+	1: ImmBorrowGlobal[0](GenesisSignerCapability)
+	2: StLoc[2](loc1: &GenesisSignerCapability)
+	3: MoveLoc[2](loc1: &GenesisSignerCapability)
+	4: ImmBorrowField[0](GenesisSignerCapability.cap: SignerCapability)
+	5: Call[29](create_signer_with_cap(&SignerCapability): signer)
+	6: StLoc[1](loc0: signer)
+	7: ImmBorrowLoc[1](loc0: signer)
+	8: CopyLoc[0](Arg0: u64)
+	9: Call[30](update_global_time(&signer, u64))
+	10: Ret
+}
+public update_price(Arg0: &signer, Arg1: u128) {
+B0:
+	0: MoveLoc[0](Arg0: &signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[10](update<STCUSD>(&signer, u128))
+	3: Ret
+}
+public wrap_to_stc_amount(Arg0: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdConst[0](U8: [9])
+	2: Call[8](pow_10(u8): u128)
+	3: Mul
+	4: Ret
+}
+}

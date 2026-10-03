@@ -1,0 +1,59 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.FAI {
+struct FAI has copy, drop, store {
+	dummy_field: bool
+}
+struct SharedTreasuryWithdrawCapability has store, key {
+	cap: WithdrawCapability<FAI>
+}
+
+public burn_with_cap(Arg0: Token<FAI>, Arg1: &BurnCapability<FAI>) {
+B0:
+	0: Call[5](check_global_switch())
+	1: MoveLoc[1](Arg1: &BurnCapability<FAI>)
+	2: MoveLoc[0](Arg0: Token<FAI>)
+	3: Call[0](burn_with_capability<FAI>(&BurnCapability<FAI>, Token<FAI>))
+	4: Ret
+}
+public deposit_to_treasury(Arg0: Token<FAI>) {
+B0:
+	0: Call[5](check_global_switch())
+	1: MoveLoc[0](Arg0: Token<FAI>)
+	2: Call[1](deposit<FAI>(Token<FAI>))
+	3: Ret
+}
+public initialize(Arg0: &signer): MintCapability<FAI> * BurnCapability<FAI> {
+L0:	loc1: MintCapability<FAI>
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[8](address_of(&signer): address)
+	2: Call[9](is_admin_address(address))
+	3: CopyLoc[0](Arg0: &signer)
+	4: LdConst[0](U8: [9])
+	5: Call[2](register_token<FAI>(&signer, u8))
+	6: CopyLoc[0](Arg0: &signer)
+	7: Call[3](do_accept_token<FAI>(&signer))
+	8: CopyLoc[0](Arg0: &signer)
+	9: Call[4](remove_mint_capability<FAI>(&signer): MintCapability<FAI>)
+	10: StLoc[2](loc1: MintCapability<FAI>)
+	11: MoveLoc[0](Arg0: &signer)
+	12: Call[5](remove_burn_capability<FAI>(&signer): BurnCapability<FAI>)
+	13: StLoc[1](loc0: BurnCapability<FAI>)
+	14: MoveLoc[2](loc1: MintCapability<FAI>)
+	15: MoveLoc[1](loc0: BurnCapability<FAI>)
+	16: Ret
+}
+public mint_with_cap(Arg0: u128, Arg1: &MintCapability<FAI>): Token<FAI> {
+B0:
+	0: Call[5](check_global_switch())
+	1: MoveLoc[1](Arg1: &MintCapability<FAI>)
+	2: CopyLoc[0](Arg0: u128)
+	3: Call[6](mint_with_capability<FAI>(&MintCapability<FAI>, u128): Token<FAI>)
+	4: Ret
+}
+public treasury_balance(): u128 {
+B0:
+	0: Call[7](balance<FAI>(): u128)
+	1: Ret
+}
+}

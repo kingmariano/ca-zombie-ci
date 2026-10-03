@@ -1,0 +1,471 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.STCVaultPoolA {
+struct BorrowEvent has drop, store {
+	pool_type: TokenCode,
+	borrower: address,
+	amount: u128
+}
+struct ClipEvent has drop, store {
+	pool_type: TokenCode,
+	liquidator: address,
+	clip_address: address,
+	collateral_amount: u128,
+	debit: u128,
+	stability_fee: u128
+}
+struct CreateVaultEvent has drop, store {
+	pool_type: TokenCode,
+	vault_id: u64,
+	creator: address
+}
+struct DepositEvent has drop, store {
+	pool_type: TokenCode,
+	depositor: address,
+	amount: u128
+}
+struct RepayEvent has drop, store {
+	pool_type: TokenCode,
+	repayer: address,
+	amount: u128,
+	debit: u128,
+	stability_fee: u128
+}
+struct STCPoolEvent has store, key {
+	create_vault_event: EventHandle<CreateVaultEvent>,
+	deposit_event: EventHandle<DepositEvent>,
+	borrow_event: EventHandle<BorrowEvent>,
+	repay_event: EventHandle<RepayEvent>,
+	withdraw_event: EventHandle<WithdrawEvent>,
+	clip_event: EventHandle<ClipEvent>
+}
+struct VaultPool has copy, drop, store, key {
+	id: u64,
+	current_fai_supply: u128,
+	vault_count: u64,
+	stc_amount: u128
+}
+struct WithdrawEvent has drop, store {
+	pool_type: TokenCode,
+	withdrawer: address,
+	amount: u128
+}
+
+public borrow_fai(Arg0: &signer, Arg1: u128) {
+L0:	loc2: &mut STCPoolEvent
+L1:	loc3: &mut VaultPool
+B0:
+	0: Call[15](check_global_switch())
+	1: Call[10](is_exists(): bool)
+	2: BrTrue(8)
+B1:
+	3: MoveLoc[0](Arg0: &signer)
+	4: Pop
+	5: LdConst[3](U64: [146, 1, 0, 0, 0, 0, 0, 0])
+	6: Call[16](not_published(u64): u64)
+	7: Abort
+B2:
+	8: Call[0](get<VaultPool>(): VaultPoolConfig<VaultPool>)
+	9: StLoc[3](loc1: VaultPoolConfig<VaultPool>)
+	10: ImmBorrowLoc[3](loc1: VaultPoolConfig<VaultPool>)
+	11: Call[3](current_fai_supply(): u128)
+	12: CopyLoc[1](Arg1: u128)
+	13: Call[1](check_max_fai_supply<VaultPool>(&VaultPoolConfig<VaultPool>, u128, u128))
+	14: ImmBorrowLoc[3](loc1: VaultPoolConfig<VaultPool>)
+	15: CopyLoc[1](Arg1: u128)
+	16: Call[2](check_min_mint_amount<VaultPool>(&VaultPoolConfig<VaultPool>, u128))
+	17: CopyLoc[0](Arg0: &signer)
+	18: CopyLoc[1](Arg1: u128)
+	19: Call[3](borrow_fai<VaultPool, STC>(&signer, u128): u128)
+	20: StLoc[1](Arg1: u128)
+	21: Call[21](admin_address(): address)
+	22: MutBorrowGlobal[6](VaultPool)
+	23: StLoc[5](loc3: &mut VaultPool)
+	24: CopyLoc[5](loc3: &mut VaultPool)
+	25: ImmBorrowField[0](VaultPool.current_fai_supply: u128)
+	26: ReadRef
+	27: CopyLoc[1](Arg1: u128)
+	28: Add
+	29: MoveLoc[5](loc3: &mut VaultPool)
+	30: MutBorrowField[0](VaultPool.current_fai_supply: u128)
+	31: WriteRef
+	32: Call[21](admin_address(): address)
+	33: StLoc[2](loc0: address)
+	34: CopyLoc[2](loc0: address)
+	35: MutBorrowGlobal[5](STCPoolEvent)
+	36: StLoc[4](loc2: &mut STCPoolEvent)
+	37: MoveLoc[4](loc2: &mut STCPoolEvent)
+	38: MutBorrowField[1](STCPoolEvent.borrow_event: EventHandle<BorrowEvent>)
+	39: Call[4](token_code<STC>(): TokenCode)
+	40: MoveLoc[0](Arg0: &signer)
+	41: Call[23](address_of(&signer): address)
+	42: CopyLoc[1](Arg1: u128)
+	43: Pack[0](BorrowEvent)
+	44: Call[5](emit_event<BorrowEvent>(&mut EventHandle<BorrowEvent>, BorrowEvent))
+	45: Ret
+}
+public(friend) crack(Arg0: &signer, Arg1: address, Arg2: u128, Arg3: u128) {
+L0:	loc4: &mut VaultPool
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: CopyLoc[1](Arg1: address)
+	2: CopyLoc[2](Arg2: u128)
+	3: CopyLoc[3](Arg3: u128)
+	4: Call[6](rearrange<VaultPool, STC>(&signer, address, u128, u128): u128 * u128)
+	5: StLoc[7](loc3: u128)
+	6: StLoc[5](loc1: u128)
+	7: Call[21](admin_address(): address)
+	8: MutBorrowGlobal[6](VaultPool)
+	9: StLoc[8](loc4: &mut VaultPool)
+	10: CopyLoc[8](loc4: &mut VaultPool)
+	11: ImmBorrowField[0](VaultPool.current_fai_supply: u128)
+	12: ReadRef
+	13: CopyLoc[5](loc1: u128)
+	14: Sub
+	15: CopyLoc[8](loc4: &mut VaultPool)
+	16: MutBorrowField[0](VaultPool.current_fai_supply: u128)
+	17: WriteRef
+	18: CopyLoc[8](loc4: &mut VaultPool)
+	19: ImmBorrowField[2](VaultPool.stc_amount: u128)
+	20: ReadRef
+	21: CopyLoc[2](Arg2: u128)
+	22: Sub
+	23: MoveLoc[8](loc4: &mut VaultPool)
+	24: MutBorrowField[2](VaultPool.stc_amount: u128)
+	25: WriteRef
+	26: Call[21](admin_address(): address)
+	27: StLoc[4](loc0: address)
+	28: CopyLoc[4](loc0: address)
+	29: MutBorrowGlobal[5](STCPoolEvent)
+	30: StLoc[6](loc2: &mut STCPoolEvent)
+	31: MoveLoc[6](loc2: &mut STCPoolEvent)
+	32: MutBorrowField[3](STCPoolEvent.clip_event: EventHandle<ClipEvent>)
+	33: Call[4](token_code<STC>(): TokenCode)
+	34: MoveLoc[0](Arg0: &signer)
+	35: Call[23](address_of(&signer): address)
+	36: CopyLoc[1](Arg1: address)
+	37: CopyLoc[2](Arg2: u128)
+	38: CopyLoc[5](loc1: u128)
+	39: CopyLoc[7](loc3: u128)
+	40: Pack[1](ClipEvent)
+	41: Call[7](emit_event<ClipEvent>(&mut EventHandle<ClipEvent>, ClipEvent))
+	42: Ret
+}
+public create_vault(Arg0: &signer): u64 {
+L0:	loc1: &mut STCPoolEvent
+L1:	loc2: u64
+L2:	loc3: &mut VaultPool
+B0:
+	0: Call[15](check_global_switch())
+	1: Call[10](is_exists(): bool)
+	2: BrTrue(8)
+B1:
+	3: MoveLoc[0](Arg0: &signer)
+	4: Pop
+	5: LdConst[3](U64: [146, 1, 0, 0, 0, 0, 0, 0])
+	6: Call[16](not_published(u64): u64)
+	7: Abort
+B2:
+	8: Call[26](fresh_guid(): u64)
+	9: StLoc[3](loc2: u64)
+	10: CopyLoc[0](Arg0: &signer)
+	11: CopyLoc[3](loc2: u64)
+	12: Call[8](create_vault<VaultPool, STC>(&signer, u64))
+	13: Call[21](admin_address(): address)
+	14: MutBorrowGlobal[6](VaultPool)
+	15: StLoc[4](loc3: &mut VaultPool)
+	16: CopyLoc[4](loc3: &mut VaultPool)
+	17: ImmBorrowField[4](VaultPool.vault_count: u64)
+	18: ReadRef
+	19: LdU64(1)
+	20: Add
+	21: MoveLoc[4](loc3: &mut VaultPool)
+	22: MutBorrowField[4](VaultPool.vault_count: u64)
+	23: WriteRef
+	24: Call[21](admin_address(): address)
+	25: StLoc[1](loc0: address)
+	26: CopyLoc[1](loc0: address)
+	27: MutBorrowGlobal[5](STCPoolEvent)
+	28: StLoc[2](loc1: &mut STCPoolEvent)
+	29: MoveLoc[2](loc1: &mut STCPoolEvent)
+	30: MutBorrowField[5](STCPoolEvent.create_vault_event: EventHandle<CreateVaultEvent>)
+	31: Call[4](token_code<STC>(): TokenCode)
+	32: CopyLoc[3](loc2: u64)
+	33: MoveLoc[0](Arg0: &signer)
+	34: Call[23](address_of(&signer): address)
+	35: Pack[2](CreateVaultEvent)
+	36: Call[9](emit_event<CreateVaultEvent>(&mut EventHandle<CreateVaultEvent>, CreateVaultEvent))
+	37: CopyLoc[3](loc2: u64)
+	38: Ret
+}
+public current_fai_supply(): u128 {
+L0:	loc0: &VaultPool
+B0:
+	0: Call[21](admin_address(): address)
+	1: ImmBorrowGlobal[6](VaultPool)
+	2: StLoc[0](loc0: &VaultPool)
+	3: MoveLoc[0](loc0: &VaultPool)
+	4: ImmBorrowField[0](VaultPool.current_fai_supply: u128)
+	5: ReadRef
+	6: Ret
+}
+public current_stc_locked(): u128 {
+L0:	loc0: &VaultPool
+B0:
+	0: Call[21](admin_address(): address)
+	1: ImmBorrowGlobal[6](VaultPool)
+	2: StLoc[0](loc0: &VaultPool)
+	3: MoveLoc[0](loc0: &VaultPool)
+	4: ImmBorrowField[2](VaultPool.stc_amount: u128)
+	5: ReadRef
+	6: Ret
+}
+public deposit(Arg0: &signer, Arg1: u128): u128 {
+L0:	loc2: u128
+L1:	loc3: &mut STCPoolEvent
+L2:	loc4: &mut VaultPool
+L3:	loc5: u128
+B0:
+	0: Call[15](check_global_switch())
+	1: CopyLoc[0](Arg0: &signer)
+	2: Call[23](address_of(&signer): address)
+	3: StLoc[2](loc0: address)
+	4: CopyLoc[2](loc0: address)
+	5: Call[10](balance<STC>(address): u128)
+	6: StLoc[7](loc5: u128)
+	7: CopyLoc[7](loc5: u128)
+	8: CopyLoc[1](Arg1: u128)
+	9: Ge
+	10: BrTrue(16)
+B1:
+	11: MoveLoc[0](Arg0: &signer)
+	12: Pop
+	13: LdConst[0](U64: [147, 1, 0, 0, 0, 0, 0, 0])
+	14: Call[29](invalid_argument(u64): u64)
+	15: Abort
+B2:
+	16: CopyLoc[0](Arg0: &signer)
+	17: CopyLoc[1](Arg1: u128)
+	18: Call[11](deposit<VaultPool, STC>(&signer, u128): u128)
+	19: StLoc[4](loc2: u128)
+	20: Call[21](admin_address(): address)
+	21: MutBorrowGlobal[6](VaultPool)
+	22: StLoc[6](loc4: &mut VaultPool)
+	23: CopyLoc[6](loc4: &mut VaultPool)
+	24: ImmBorrowField[2](VaultPool.stc_amount: u128)
+	25: ReadRef
+	26: CopyLoc[4](loc2: u128)
+	27: Add
+	28: MoveLoc[6](loc4: &mut VaultPool)
+	29: MutBorrowField[2](VaultPool.stc_amount: u128)
+	30: WriteRef
+	31: Call[21](admin_address(): address)
+	32: StLoc[3](loc1: address)
+	33: CopyLoc[3](loc1: address)
+	34: MutBorrowGlobal[5](STCPoolEvent)
+	35: StLoc[5](loc3: &mut STCPoolEvent)
+	36: MoveLoc[5](loc3: &mut STCPoolEvent)
+	37: MutBorrowField[6](STCPoolEvent.deposit_event: EventHandle<DepositEvent>)
+	38: Call[4](token_code<STC>(): TokenCode)
+	39: MoveLoc[0](Arg0: &signer)
+	40: Call[23](address_of(&signer): address)
+	41: CopyLoc[1](Arg1: u128)
+	42: Pack[3](DepositEvent)
+	43: Call[12](emit_event<DepositEvent>(&mut EventHandle<DepositEvent>, DepositEvent))
+	44: CopyLoc[4](loc2: u128)
+	45: Ret
+}
+empty_pool(): VaultPool {
+B0:
+	0: LdConst[2](U64: [10, 0, 0, 0, 0, 0, 0, 0])
+	1: LdU128(0)
+	2: LdU64(0)
+	3: LdU128(0)
+	4: Pack[6](VaultPool)
+	5: Ret
+}
+public info(Arg0: address): u64 * u128 * u128 * u128 * u64 {
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: Call[13](info<VaultPool, STC>(address): u64 * u128 * u128 * u128 * u64)
+	2: Ret
+}
+public initialize(Arg0: &signer, Arg1: u128, Arg2: u128, Arg3: u128, Arg4: u128, Arg5: u128, Arg6: u128, Arg7: u128) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[23](address_of(&signer): address)
+	2: StLoc[8](loc0: address)
+	3: CopyLoc[8](loc0: address)
+	4: Call[32](is_admin_address(address))
+	5: Call[33](is_counter_exist(): bool)
+	6: Not
+	7: BrTrue(9)
+B1:
+	8: Branch(12)
+B2:
+	9: CopyLoc[0](Arg0: &signer)
+	10: Call[34](initialize_counter(&signer): u64)
+	11: Pop
+B3:
+	12: Call[10](is_exists(): bool)
+	13: Not
+	14: BrTrue(20)
+B4:
+	15: MoveLoc[0](Arg0: &signer)
+	16: Pop
+	17: LdConst[1](U64: [145, 1, 0, 0, 0, 0, 0, 0])
+	18: Call[35](already_published(u64): u64)
+	19: Abort
+B5:
+	20: Call[6](empty_pool(): VaultPool)
+	21: StLoc[10](loc2: VaultPool)
+	22: CopyLoc[0](Arg0: &signer)
+	23: MoveLoc[10](loc2: VaultPool)
+	24: MoveTo[6](VaultPool)
+	25: CopyLoc[1](Arg1: u128)
+	26: CopyLoc[2](Arg2: u128)
+	27: CopyLoc[3](Arg3: u128)
+	28: CopyLoc[4](Arg4: u128)
+	29: CopyLoc[5](Arg5: u128)
+	30: CopyLoc[6](Arg6: u128)
+	31: CopyLoc[7](Arg7: u128)
+	32: Call[14](new_config<VaultPool>(u128, u128, u128, u128, u128, u128, u128): VaultPoolConfig<VaultPool>)
+	33: StLoc[9](loc1: VaultPoolConfig<VaultPool>)
+	34: MoveLoc[0](Arg0: &signer)
+	35: MoveLoc[9](loc1: VaultPoolConfig<VaultPool>)
+	36: Call[15](publish_new_config_with_capability<VaultPool>(&signer, VaultPoolConfig<VaultPool>))
+	37: Ret
+}
+public initialize_event(Arg0: &signer) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[23](address_of(&signer): address)
+	2: Call[32](is_admin_address(address))
+	3: CopyLoc[0](Arg0: &signer)
+	4: CopyLoc[0](Arg0: &signer)
+	5: Call[16](new_event_handle<CreateVaultEvent>(&signer): EventHandle<CreateVaultEvent>)
+	6: CopyLoc[0](Arg0: &signer)
+	7: Call[17](new_event_handle<DepositEvent>(&signer): EventHandle<DepositEvent>)
+	8: CopyLoc[0](Arg0: &signer)
+	9: Call[18](new_event_handle<BorrowEvent>(&signer): EventHandle<BorrowEvent>)
+	10: CopyLoc[0](Arg0: &signer)
+	11: Call[19](new_event_handle<RepayEvent>(&signer): EventHandle<RepayEvent>)
+	12: CopyLoc[0](Arg0: &signer)
+	13: Call[20](new_event_handle<WithdrawEvent>(&signer): EventHandle<WithdrawEvent>)
+	14: MoveLoc[0](Arg0: &signer)
+	15: Call[21](new_event_handle<ClipEvent>(&signer): EventHandle<ClipEvent>)
+	16: Pack[5](STCPoolEvent)
+	17: MoveTo[5](STCPoolEvent)
+	18: Ret
+}
+public is_exists(): bool {
+B0:
+	0: Call[21](admin_address(): address)
+	1: Exists[6](VaultPool)
+	2: Ret
+}
+public max_borrow(Arg0: address): u128 {
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: Call[22](max_borrow<VaultPool, STC>(address): u128)
+	2: Ret
+}
+public repay_fai(Arg0: &signer, Arg1: u128): u128 * u128 {
+L0:	loc2: &mut STCPoolEvent
+L1:	loc3: u128
+L2:	loc4: &mut VaultPool
+B0:
+	0: Call[15](check_global_switch())
+	1: Call[10](is_exists(): bool)
+	2: BrTrue(8)
+B1:
+	3: MoveLoc[0](Arg0: &signer)
+	4: Pop
+	5: LdConst[3](U64: [146, 1, 0, 0, 0, 0, 0, 0])
+	6: Call[16](not_published(u64): u64)
+	7: Abort
+B2:
+	8: CopyLoc[0](Arg0: &signer)
+	9: CopyLoc[1](Arg1: u128)
+	10: Call[23](repay_fai<VaultPool, STC>(&signer, u128): u128 * u128)
+	11: StLoc[5](loc3: u128)
+	12: StLoc[3](loc1: u128)
+	13: Call[21](admin_address(): address)
+	14: MutBorrowGlobal[6](VaultPool)
+	15: StLoc[6](loc4: &mut VaultPool)
+	16: CopyLoc[6](loc4: &mut VaultPool)
+	17: ImmBorrowField[0](VaultPool.current_fai_supply: u128)
+	18: ReadRef
+	19: CopyLoc[3](loc1: u128)
+	20: Sub
+	21: MoveLoc[6](loc4: &mut VaultPool)
+	22: MutBorrowField[0](VaultPool.current_fai_supply: u128)
+	23: WriteRef
+	24: Call[21](admin_address(): address)
+	25: StLoc[2](loc0: address)
+	26: CopyLoc[2](loc0: address)
+	27: MutBorrowGlobal[5](STCPoolEvent)
+	28: StLoc[4](loc2: &mut STCPoolEvent)
+	29: MoveLoc[4](loc2: &mut STCPoolEvent)
+	30: MutBorrowField[7](STCPoolEvent.repay_event: EventHandle<RepayEvent>)
+	31: Call[4](token_code<STC>(): TokenCode)
+	32: MoveLoc[0](Arg0: &signer)
+	33: Call[23](address_of(&signer): address)
+	34: CopyLoc[3](loc1: u128)
+	35: CopyLoc[5](loc3: u128)
+	36: Add
+	37: CopyLoc[3](loc1: u128)
+	38: CopyLoc[5](loc3: u128)
+	39: Pack[4](RepayEvent)
+	40: Call[24](emit_event<RepayEvent>(&mut EventHandle<RepayEvent>, RepayEvent))
+	41: CopyLoc[3](loc1: u128)
+	42: CopyLoc[5](loc3: u128)
+	43: Ret
+}
+public vault_count(): u64 {
+L0:	loc0: &VaultPool
+B0:
+	0: Call[21](admin_address(): address)
+	1: ImmBorrowGlobal[6](VaultPool)
+	2: StLoc[0](loc0: &VaultPool)
+	3: MoveLoc[0](loc0: &VaultPool)
+	4: ImmBorrowField[4](VaultPool.vault_count: u64)
+	5: ReadRef
+	6: Ret
+}
+public withdraw(Arg0: &signer, Arg1: u128): u128 {
+L0:	loc2: &mut VaultPool
+L1:	loc3: u128
+B0:
+	0: Call[15](check_global_switch())
+	1: CopyLoc[0](Arg0: &signer)
+	2: CopyLoc[1](Arg1: u128)
+	3: Call[25](withdraw<VaultPool, STC>(&signer, u128): u128)
+	4: StLoc[5](loc3: u128)
+	5: Call[21](admin_address(): address)
+	6: MutBorrowGlobal[6](VaultPool)
+	7: StLoc[4](loc2: &mut VaultPool)
+	8: CopyLoc[4](loc2: &mut VaultPool)
+	9: ImmBorrowField[2](VaultPool.stc_amount: u128)
+	10: ReadRef
+	11: CopyLoc[5](loc3: u128)
+	12: Sub
+	13: MoveLoc[4](loc2: &mut VaultPool)
+	14: MutBorrowField[2](VaultPool.stc_amount: u128)
+	15: WriteRef
+	16: Call[21](admin_address(): address)
+	17: StLoc[2](loc0: address)
+	18: CopyLoc[2](loc0: address)
+	19: MutBorrowGlobal[5](STCPoolEvent)
+	20: StLoc[3](loc1: &mut STCPoolEvent)
+	21: MoveLoc[3](loc1: &mut STCPoolEvent)
+	22: MutBorrowField[8](STCPoolEvent.withdraw_event: EventHandle<WithdrawEvent>)
+	23: Call[4](token_code<STC>(): TokenCode)
+	24: MoveLoc[0](Arg0: &signer)
+	25: Call[23](address_of(&signer): address)
+	26: CopyLoc[5](loc3: u128)
+	27: Pack[7](WithdrawEvent)
+	28: Call[26](emit_event<WithdrawEvent>(&mut EventHandle<WithdrawEvent>, WithdrawEvent))
+	29: CopyLoc[5](loc3: u128)
+	30: Ret
+}
+}

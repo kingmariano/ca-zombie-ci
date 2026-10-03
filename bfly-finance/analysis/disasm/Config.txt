@@ -1,0 +1,260 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.Config {
+struct CapHolder<phantom Ty0: copy + drop + store> has store, key {
+	cap: ModifyConfigCapability<VaultPoolConfig<Ty0>>
+}
+struct ExtensionConfigCapHolder<phantom Ty0> has store, key {
+	cap: ModifyConfigCapability<VaultPoolConfigExtension<Ty0>>
+}
+struct GlobalSwitch has copy, drop, store {
+	switch: bool
+}
+struct VaultPoolConfig<phantom Ty0: copy + drop + store> has copy, drop, store {
+	max_fai_supply: u128,
+	min_mint_amount: u128,
+	stability_fee_ratio: u128,
+	ccr: u128,
+	max_deposit_per_vault: u128,
+	liquidation_penalty: u128,
+	liquidation_threshold: u128
+}
+struct VaultPoolConfigExtension<phantom Ty0> has copy, drop, store {
+	lock_length: u64,
+	user_ratio: u128,
+	treasury_ratio: u128
+}
+
+public check_global_switch() {
+B0:
+	0: Call[5](get_global_switch(): bool)
+	1: Not
+	2: BrTrue(6)
+B1:
+	3: LdConst[2](U64: [236, 3, 0, 0, 0, 0, 0, 0])
+	4: Call[15](invalid_state(u64): u64)
+	5: Abort
+B2:
+	6: Ret
+}
+public check_max_fai_supply<Ty0: copy + drop + store>(Arg0: &VaultPoolConfig<Ty0>, Arg1: u128, Arg2: u128) {
+B0:
+	0: MoveLoc[0](Arg0: &VaultPoolConfig<Ty0>)
+	1: ImmBorrowFieldGeneric[0](VaultPoolConfig.max_fai_supply: u128)
+	2: ReadRef
+	3: CopyLoc[1](Arg1: u128)
+	4: CopyLoc[2](Arg2: u128)
+	5: Add
+	6: Ge
+	7: BrTrue(11)
+B1:
+	8: LdConst[3](U64: [235, 3, 0, 0, 0, 0, 0, 0])
+	9: Call[16](custom(u64): u64)
+	10: Abort
+B2:
+	11: Ret
+}
+public check_min_mint_amount<Ty0: copy + drop + store>(Arg0: &VaultPoolConfig<Ty0>, Arg1: u128) {
+B0:
+	0: MoveLoc[0](Arg0: &VaultPoolConfig<Ty0>)
+	1: ImmBorrowFieldGeneric[1](VaultPoolConfig.min_mint_amount: u128)
+	2: ReadRef
+	3: CopyLoc[1](Arg1: u128)
+	4: Le
+	5: BrTrue(7)
+B1:
+	6: Branch(10)
+B2:
+	7: LdTrue
+	8: StLoc[2](loc0: bool)
+	9: Branch(14)
+B3:
+	10: CopyLoc[1](Arg1: u128)
+	11: LdU128(0)
+	12: Eq
+	13: StLoc[2](loc0: bool)
+B4:
+	14: MoveLoc[2](loc0: bool)
+	15: BrTrue(19)
+B5:
+	16: LdConst[4](U64: [234, 3, 0, 0, 0, 0, 0, 0])
+	17: Call[16](custom(u64): u64)
+	18: Abort
+B6:
+	19: Ret
+}
+public get<Ty0: copy + drop + store>(): VaultPoolConfig<Ty0> {
+B0:
+	0: Call[17](admin_address(): address)
+	1: Call[0](get_by_address<VaultPoolConfig<Ty0>>(address): VaultPoolConfig<Ty0>)
+	2: Ret
+}
+public get_config_extension<Ty0>(): VaultPoolConfigExtension<Ty0> {
+B0:
+	0: Call[17](admin_address(): address)
+	1: Call[1](get_by_address<VaultPoolConfigExtension<Ty0>>(address): VaultPoolConfigExtension<Ty0>)
+	2: Ret
+}
+public get_global_switch(): bool {
+L0:	loc0: bool
+L1:	loc1: GlobalSwitch
+B0:
+	0: Call[17](admin_address(): address)
+	1: Call[2](config_exist_by_address<GlobalSwitch>(address): bool)
+	2: BrTrue(4)
+B1:
+	3: Branch(12)
+B2:
+	4: Call[17](admin_address(): address)
+	5: Call[3](get_by_address<GlobalSwitch>(address): GlobalSwitch)
+	6: StLoc[1](loc1: GlobalSwitch)
+	7: ImmBorrowLoc[1](loc1: GlobalSwitch)
+	8: ImmBorrowField[2](GlobalSwitch.switch: bool)
+	9: ReadRef
+	10: StLoc[0](loc0: bool)
+	11: Branch(14)
+B3:
+	12: LdConst[0](Bool: [0])
+	13: StLoc[0](loc0: bool)
+B4:
+	14: MoveLoc[0](loc0: bool)
+	15: Ret
+}
+public new_config<Ty0: copy + drop + store>(Arg0: u128, Arg1: u128, Arg2: u128, Arg3: u128, Arg4: u128, Arg5: u128, Arg6: u128): VaultPoolConfig<Ty0> {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: CopyLoc[1](Arg1: u128)
+	2: CopyLoc[2](Arg2: u128)
+	3: CopyLoc[3](Arg3: u128)
+	4: CopyLoc[4](Arg4: u128)
+	5: CopyLoc[5](Arg5: u128)
+	6: CopyLoc[6](Arg6: u128)
+	7: PackGeneric[0](VaultPoolConfig<Ty0>)
+	8: Ret
+}
+public new_config_extension<Ty0>(Arg0: u64, Arg1: u128, Arg2: u128): VaultPoolConfigExtension<Ty0> {
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: CopyLoc[1](Arg1: u128)
+	2: CopyLoc[2](Arg2: u128)
+	3: PackGeneric[1](VaultPoolConfigExtension<Ty0>)
+	4: Ret
+}
+public publish_new_config_with_capability<Ty0: copy + drop + store>(Arg0: &signer, Arg1: VaultPoolConfig<Ty0>) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[20](address_of(&signer): address)
+	2: StLoc[2](loc0: address)
+	3: CopyLoc[2](loc0: address)
+	4: Call[21](is_admin_address(address))
+	5: CopyLoc[0](Arg0: &signer)
+	6: MoveLoc[1](Arg1: VaultPoolConfig<Ty0>)
+	7: Call[4](publish_new_config_with_capability<VaultPoolConfig<Ty0>>(&signer, VaultPoolConfig<Ty0>): ModifyConfigCapability<VaultPoolConfig<Ty0>>)
+	8: StLoc[3](loc1: ModifyConfigCapability<VaultPoolConfig<Ty0>>)
+	9: MoveLoc[0](Arg0: &signer)
+	10: MoveLoc[3](loc1: ModifyConfigCapability<VaultPoolConfig<Ty0>>)
+	11: PackGeneric[2](CapHolder<Ty0>)
+	12: MoveToGeneric[2](CapHolder<Ty0>)
+	13: Ret
+}
+public publish_new_extension_config_with_capability<Ty0>(Arg0: &signer, Arg1: VaultPoolConfigExtension<Ty0>) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[20](address_of(&signer): address)
+	2: StLoc[2](loc0: address)
+	3: CopyLoc[2](loc0: address)
+	4: Call[21](is_admin_address(address))
+	5: CopyLoc[0](Arg0: &signer)
+	6: MoveLoc[1](Arg1: VaultPoolConfigExtension<Ty0>)
+	7: Call[5](publish_new_config_with_capability<VaultPoolConfigExtension<Ty0>>(&signer, VaultPoolConfigExtension<Ty0>): ModifyConfigCapability<VaultPoolConfigExtension<Ty0>>)
+	8: StLoc[3](loc1: ModifyConfigCapability<VaultPoolConfigExtension<Ty0>>)
+	9: MoveLoc[0](Arg0: &signer)
+	10: MoveLoc[3](loc1: ModifyConfigCapability<VaultPoolConfigExtension<Ty0>>)
+	11: PackGeneric[3](ExtensionConfigCapHolder<Ty0>)
+	12: MoveToGeneric[3](ExtensionConfigCapHolder<Ty0>)
+	13: Ret
+}
+public set_global_switch(Arg0: &signer, Arg1: bool) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[20](address_of(&signer): address)
+	2: Call[21](is_admin_address(address))
+	3: CopyLoc[1](Arg1: bool)
+	4: Pack[2](GlobalSwitch)
+	5: StLoc[2](loc0: GlobalSwitch)
+	6: CopyLoc[0](Arg0: &signer)
+	7: Call[20](address_of(&signer): address)
+	8: Call[2](config_exist_by_address<GlobalSwitch>(address): bool)
+	9: BrTrue(11)
+B1:
+	10: Branch(15)
+B2:
+	11: MoveLoc[0](Arg0: &signer)
+	12: MoveLoc[2](loc0: GlobalSwitch)
+	13: Call[6](set<GlobalSwitch>(&signer, GlobalSwitch))
+	14: Branch(18)
+B3:
+	15: MoveLoc[0](Arg0: &signer)
+	16: MoveLoc[2](loc0: GlobalSwitch)
+	17: Call[7](publish_new_config<GlobalSwitch>(&signer, GlobalSwitch))
+B4:
+	18: Ret
+}
+public unpack<Ty0: copy + drop + store>(Arg0: VaultPoolConfig<Ty0>): u128 * u128 * u128 * u128 * u128 * u128 * u128 {
+B0:
+	0: ImmBorrowLoc[0](Arg0: VaultPoolConfig<Ty0>)
+	1: ImmBorrowFieldGeneric[0](VaultPoolConfig.max_fai_supply: u128)
+	2: ReadRef
+	3: ImmBorrowLoc[0](Arg0: VaultPoolConfig<Ty0>)
+	4: ImmBorrowFieldGeneric[1](VaultPoolConfig.min_mint_amount: u128)
+	5: ReadRef
+	6: ImmBorrowLoc[0](Arg0: VaultPoolConfig<Ty0>)
+	7: ImmBorrowFieldGeneric[2](VaultPoolConfig.stability_fee_ratio: u128)
+	8: ReadRef
+	9: ImmBorrowLoc[0](Arg0: VaultPoolConfig<Ty0>)
+	10: ImmBorrowFieldGeneric[3](VaultPoolConfig.ccr: u128)
+	11: ReadRef
+	12: ImmBorrowLoc[0](Arg0: VaultPoolConfig<Ty0>)
+	13: ImmBorrowFieldGeneric[4](VaultPoolConfig.max_deposit_per_vault: u128)
+	14: ReadRef
+	15: ImmBorrowLoc[0](Arg0: VaultPoolConfig<Ty0>)
+	16: ImmBorrowFieldGeneric[5](VaultPoolConfig.liquidation_penalty: u128)
+	17: ReadRef
+	18: ImmBorrowLoc[0](Arg0: VaultPoolConfig<Ty0>)
+	19: ImmBorrowFieldGeneric[6](VaultPoolConfig.liquidation_threshold: u128)
+	20: ReadRef
+	21: Ret
+}
+public unpack_extension<Ty0: copy + drop + store>(Arg0: VaultPoolConfigExtension<Ty0>): u64 * u128 * u128 {
+B0:
+	0: ImmBorrowLoc[0](Arg0: VaultPoolConfigExtension<Ty0>)
+	1: ImmBorrowFieldGeneric[7](VaultPoolConfigExtension.lock_length: u64)
+	2: ReadRef
+	3: ImmBorrowLoc[0](Arg0: VaultPoolConfigExtension<Ty0>)
+	4: ImmBorrowFieldGeneric[8](VaultPoolConfigExtension.user_ratio: u128)
+	5: ReadRef
+	6: ImmBorrowLoc[0](Arg0: VaultPoolConfigExtension<Ty0>)
+	7: ImmBorrowFieldGeneric[9](VaultPoolConfigExtension.treasury_ratio: u128)
+	8: ReadRef
+	9: Ret
+}
+public update_config<Ty0: copy + drop + store>(Arg0: VaultPoolConfig<Ty0>) {
+B0:
+	0: LdConst[1](U64: [233, 3, 0, 0, 0, 0, 0, 0])
+	1: Call[25](deprecated(u64): u64)
+	2: Abort
+}
+public update_config_sign<Ty0: copy + drop + store>(Arg0: &signer, Arg1: VaultPoolConfig<Ty0>) {
+B0:
+	0: MoveLoc[0](Arg0: &signer)
+	1: Call[20](address_of(&signer): address)
+	2: Call[21](is_admin_address(address))
+	3: Call[17](admin_address(): address)
+	4: MutBorrowGlobalGeneric[2](CapHolder<Ty0>)
+	5: StLoc[2](loc0: &mut CapHolder<Ty0>)
+	6: MoveLoc[2](loc0: &mut CapHolder<Ty0>)
+	7: MutBorrowFieldGeneric[10](CapHolder.cap: ModifyConfigCapability<VaultPoolConfig<Ty0>>)
+	8: MoveLoc[1](Arg1: VaultPoolConfig<Ty0>)
+	9: Call[8](set_with_capability<VaultPoolConfig<Ty0>>(&mut ModifyConfigCapability<VaultPoolConfig<Ty0>>, VaultPoolConfig<Ty0>))
+	10: Ret
+}
+}

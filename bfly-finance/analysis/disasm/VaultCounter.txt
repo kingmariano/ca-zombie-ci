@@ -1,0 +1,70 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.VaultCounter {
+struct Counter has key {
+	guid: u64
+}
+
+public fresh_guid(): u64 {
+L0:	loc0: address
+L1:	loc1: &mut Counter
+B0:
+	0: Call[4](admin_address(): address)
+	1: StLoc[0](loc0: address)
+	2: CopyLoc[0](loc0: address)
+	3: MutBorrowGlobal[0](Counter)
+	4: StLoc[1](loc1: &mut Counter)
+	5: CopyLoc[1](loc1: &mut Counter)
+	6: ImmBorrowField[0](Counter.guid: u64)
+	7: ReadRef
+	8: LdU64(1)
+	9: Add
+	10: CopyLoc[1](loc1: &mut Counter)
+	11: MutBorrowField[0](Counter.guid: u64)
+	12: WriteRef
+	13: MoveLoc[1](loc1: &mut Counter)
+	14: ImmBorrowField[0](Counter.guid: u64)
+	15: ReadRef
+	16: Ret
+}
+public get_guid_start_at(): u64 {
+B0:
+	0: LdConst[1](U64: [16, 39, 0, 0, 0, 0, 0, 0])
+	1: Ret
+}
+public initialize_counter(Arg0: &signer): u64 {
+L0:	loc1: Counter
+L1:	loc2: u64
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[5](address_of(&signer): address)
+	2: StLoc[1](loc0: address)
+	3: CopyLoc[1](loc0: address)
+	4: Call[6](is_admin_address(address))
+	5: Call[3](is_counter_exist(): bool)
+	6: Not
+	7: BrTrue(13)
+B1:
+	8: MoveLoc[0](Arg0: &signer)
+	9: Pop
+	10: LdConst[0](U64: [133, 3, 0, 0, 0, 0, 0, 0])
+	11: Call[7](already_published(u64): u64)
+	12: Abort
+B2:
+	13: LdConst[1](U64: [16, 39, 0, 0, 0, 0, 0, 0])
+	14: StLoc[3](loc2: u64)
+	15: CopyLoc[3](loc2: u64)
+	16: Pack[0](Counter)
+	17: StLoc[2](loc1: Counter)
+	18: MoveLoc[0](Arg0: &signer)
+	19: MoveLoc[2](loc1: Counter)
+	20: MoveTo[0](Counter)
+	21: CopyLoc[3](loc2: u64)
+	22: Ret
+}
+public is_counter_exist(): bool {
+B0:
+	0: Call[4](admin_address(): address)
+	1: Exists[0](Counter)
+	2: Ret
+}
+}

@@ -1,0 +1,1595 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.Vault {
+struct Lock<phantom Ty0, phantom Ty1> has store {
+	id: u64,
+	debt_fai_amount: u128,
+	unpay_stability_fee: u128,
+	user_locked_amount: u128,
+	treasury_locked_amount: u128,
+	expiry_at: u64,
+	last_update_at: u64
+}
+struct LockList<phantom Ty0, phantom Ty1: store> has store, key {
+	items: vector<Lock<Ty0, Ty1>>
+}
+struct SharedBurnCapability has store, key {
+	cap: BurnCapability<FAI>
+}
+struct SharedMintCapability has store, key {
+	cap: MintCapability<FAI>
+}
+struct SharedSTCTreasuryGetCapability<phantom Ty0> has store, key {
+	cap: WithdrawCapability<Ty0>
+}
+struct SharedTreasuryGetCapability<phantom Ty0> has store, key {
+	cap: WithdrawCapability<Ty0>
+}
+struct Vault<phantom Ty0: store, phantom Ty1: store> has store, key {
+	debt_fai_amount: u128,
+	unpay_stability_fee: u128,
+	token: Token<Ty1>,
+	id: u64,
+	last_update_at: u64
+}
+
+public balance<Ty0: store, Ty1: store>(Arg0: address): u128 {
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: ImmBorrowGlobalGeneric[0](Vault<Ty0, Ty1>)
+	2: StLoc[1](loc0: &Vault<Ty0, Ty1>)
+	3: MoveLoc[1](loc0: &Vault<Ty0, Ty1>)
+	4: Call[0](balance_for<Ty0, Ty1>(&Vault<Ty0, Ty1>): u128)
+	5: Ret
+}
+balance_for<Ty0: store, Ty1: store>(Arg0: &Vault<Ty0, Ty1>): u128 {
+B0:
+	0: MoveLoc[0](Arg0: &Vault<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](Vault.token: Token<Ty1>)
+	2: Call[1](value<Ty1>(&Token<Ty1>): u128)
+	3: Ret
+}
+balance_for_lock<Ty0: store, Ty1: store>(Arg0: &Lock<Ty0, Ty1>): u128 {
+B0:
+	0: CopyLoc[0](Arg0: &Lock<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[1](Lock.user_locked_amount: u128)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &Lock<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	5: ReadRef
+	6: Add
+	7: Ret
+}
+public borrow_fai<Ty0: copy + drop + store, Ty1: store>(Arg0: &signer, Arg1: u128): u128 {
+L0:	loc2: bool
+L1:	loc3: u128
+L2:	loc4: u128
+L3:	loc5: Token<FAI>
+L4:	loc6: &mut Vault<Ty0, Ty1>
+L5:	loc7: &mut Vault<Ty0, Ty1>
+B0:
+	0: Call[30](check_global_switch())
+	1: CopyLoc[0](Arg0: &signer)
+	2: Call[31](address_of(&signer): address)
+	3: Call[2](vault_exist<Ty0, Ty1>(address): bool)
+	4: BrTrue(10)
+B1:
+	5: MoveLoc[0](Arg0: &signer)
+	6: Pop
+	7: LdConst[6](U64: [34, 3, 0, 0, 0, 0, 0, 0])
+	8: Call[32](custom(u64): u64)
+	9: Abort
+B2:
+	10: CopyLoc[0](Arg0: &signer)
+	11: Call[31](address_of(&signer): address)
+	12: MutBorrowGlobalGeneric[0](Vault<Ty0, Ty1>)
+	13: StLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	14: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	15: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	16: ReadRef
+	17: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	18: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	19: ReadRef
+	20: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	21: ImmBorrowFieldGeneric[5](Vault.last_update_at: u64)
+	22: ReadRef
+	23: Call[3](stability_fee<Ty0>(u128, u128, u64): u128)
+	24: StLoc[6](loc4: u128)
+	25: Call[34](now_seconds(): u64)
+	26: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	27: MutBorrowFieldGeneric[5](Vault.last_update_at: u64)
+	28: WriteRef
+	29: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	30: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	31: ReadRef
+	32: CopyLoc[6](loc4: u128)
+	33: Add
+	34: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	35: MutBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	36: WriteRef
+	37: CopyLoc[1](Arg1: u128)
+	38: LdU128(0)
+	39: Eq
+	40: BrTrue(42)
+B3:
+	41: Branch(56)
+B4:
+	42: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	43: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	44: ReadRef
+	45: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	46: FreezeRef
+	47: Call[0](balance_for<Ty0, Ty1>(&Vault<Ty0, Ty1>): u128)
+	48: Call[4](cal_max_borrow<Ty0, Ty1>(u128, u128): u128)
+	49: StLoc[5](loc3: u128)
+	50: CopyLoc[5](loc3: u128)
+	51: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	52: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	53: ReadRef
+	54: Sub
+	55: StLoc[1](Arg1: u128)
+B5:
+	56: CopyLoc[1](Arg1: u128)
+	57: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	58: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	59: ReadRef
+	60: CopyLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	61: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	62: ReadRef
+	63: MoveLoc[8](loc6: &mut Vault<Ty0, Ty1>)
+	64: FreezeRef
+	65: Call[0](balance_for<Ty0, Ty1>(&Vault<Ty0, Ty1>): u128)
+	66: Call[5](check_health_factor<Ty0, Ty1>(u128, u128, u128, u128))
+	67: Call[37](admin_address(): address)
+	68: ImmBorrowGlobal[3](SharedMintCapability)
+	69: StLoc[2](loc0: &SharedMintCapability)
+	70: CopyLoc[1](Arg1: u128)
+	71: MoveLoc[2](loc0: &SharedMintCapability)
+	72: ImmBorrowField[6](SharedMintCapability.cap: MintCapability<FAI>)
+	73: Call[38](mint_with_cap(u128, &MintCapability<FAI>): Token<FAI>)
+	74: StLoc[7](loc5: Token<FAI>)
+	75: CopyLoc[0](Arg0: &signer)
+	76: Call[31](address_of(&signer): address)
+	77: Call[6](is_accepts_token<FAI>(address): bool)
+	78: StLoc[4](loc2: bool)
+	79: CopyLoc[4](loc2: bool)
+	80: Not
+	81: BrTrue(83)
+B6:
+	82: Branch(85)
+B7:
+	83: CopyLoc[0](Arg0: &signer)
+	84: Call[7](do_accept_token<FAI>(&signer))
+B8:
+	85: ImmBorrowLoc[7](loc5: Token<FAI>)
+	86: Call[8](value<FAI>(&Token<FAI>): u128)
+	87: StLoc[3](loc1: u128)
+	88: CopyLoc[0](Arg0: &signer)
+	89: MoveLoc[7](loc5: Token<FAI>)
+	90: Call[9](deposit_to_self<FAI>(&signer, Token<FAI>))
+	91: MoveLoc[0](Arg0: &signer)
+	92: Call[31](address_of(&signer): address)
+	93: MutBorrowGlobalGeneric[0](Vault<Ty0, Ty1>)
+	94: StLoc[9](loc7: &mut Vault<Ty0, Ty1>)
+	95: CopyLoc[9](loc7: &mut Vault<Ty0, Ty1>)
+	96: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	97: ReadRef
+	98: CopyLoc[3](loc1: u128)
+	99: Add
+	100: MoveLoc[9](loc7: &mut Vault<Ty0, Ty1>)
+	101: MutBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	102: WriteRef
+	103: CopyLoc[3](loc1: u128)
+	104: Ret
+}
+public create_lock_list<Ty0: store, Ty1: store>(Arg0: &signer) {
+L0:	loc1: LockList<Ty0, Ty1>
+B0:
+	0: Call[30](check_global_switch())
+	1: CopyLoc[0](Arg0: &signer)
+	2: Call[31](address_of(&signer): address)
+	3: StLoc[1](loc0: address)
+	4: CopyLoc[1](loc0: address)
+	5: Call[10](lock_list_exists<Ty0, Ty1>(address): bool)
+	6: Not
+	7: BrTrue(13)
+B1:
+	8: MoveLoc[0](Arg0: &signer)
+	9: Pop
+	10: LdConst[5](U64: [33, 3, 0, 0, 0, 0, 0, 0])
+	11: Call[32](custom(u64): u64)
+	12: Abort
+B2:
+	13: Call[11](empty<Lock<Ty0, Ty1>>(): vector<Lock<Ty0, Ty1>>)
+	14: PackGeneric[1](LockList<Ty0, Ty1>)
+	15: StLoc[2](loc1: LockList<Ty0, Ty1>)
+	16: MoveLoc[0](Arg0: &signer)
+	17: MoveLoc[2](loc1: LockList<Ty0, Ty1>)
+	18: MoveToGeneric[1](LockList<Ty0, Ty1>)
+	19: Ret
+}
+public create_stc_treasury<Ty0: store>(Arg0: &signer) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[31](address_of(&signer): address)
+	2: Call[43](is_admin_address(address))
+	3: CopyLoc[0](Arg0: &signer)
+	4: Call[12](initialize<Ty0>(&signer): WithdrawCapability<Ty0>)
+	5: StLoc[1](loc0: WithdrawCapability<Ty0>)
+	6: MoveLoc[0](Arg0: &signer)
+	7: MoveLoc[1](loc0: WithdrawCapability<Ty0>)
+	8: PackGeneric[2](SharedSTCTreasuryGetCapability<Ty0>)
+	9: MoveToGeneric[2](SharedSTCTreasuryGetCapability<Ty0>)
+	10: Ret
+}
+public create_treasury<Ty0: store>(Arg0: &signer) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[31](address_of(&signer): address)
+	2: Call[43](is_admin_address(address))
+	3: CopyLoc[0](Arg0: &signer)
+	4: Call[13](create_treasury<Ty0>(&signer): WithdrawCapability<Ty0>)
+	5: StLoc[1](loc0: WithdrawCapability<Ty0>)
+	6: MoveLoc[0](Arg0: &signer)
+	7: MoveLoc[1](loc0: WithdrawCapability<Ty0>)
+	8: PackGeneric[3](SharedTreasuryGetCapability<Ty0>)
+	9: MoveToGeneric[3](SharedTreasuryGetCapability<Ty0>)
+	10: Ret
+}
+public create_vault<Ty0: store, Ty1: store>(Arg0: &signer, Arg1: u64) {
+B0:
+	0: Call[30](check_global_switch())
+	1: CopyLoc[0](Arg0: &signer)
+	2: Call[31](address_of(&signer): address)
+	3: Call[2](vault_exist<Ty0, Ty1>(address): bool)
+	4: Not
+	5: BrTrue(11)
+B1:
+	6: MoveLoc[0](Arg0: &signer)
+	7: Pop
+	8: LdConst[5](U64: [33, 3, 0, 0, 0, 0, 0, 0])
+	9: Call[32](custom(u64): u64)
+	10: Abort
+B2:
+	11: LdU128(0)
+	12: LdU128(0)
+	13: Call[14](zero<Ty1>(): Token<Ty1>)
+	14: CopyLoc[1](Arg1: u64)
+	15: Call[34](now_seconds(): u64)
+	16: PackGeneric[0](Vault<Ty0, Ty1>)
+	17: StLoc[2](loc0: Vault<Ty0, Ty1>)
+	18: MoveLoc[0](Arg0: &signer)
+	19: MoveLoc[2](loc0: Vault<Ty0, Ty1>)
+	20: MoveToGeneric[0](Vault<Ty0, Ty1>)
+	21: Ret
+}
+public deposit<Ty0: copy + drop + store, Ty1: store>(Arg0: &signer, Arg1: u128): u128 {
+L0:	loc2: Token<Ty1>
+L1:	loc3: &mut Vault<Ty0, Ty1>
+B0:
+	0: Call[30](check_global_switch())
+	1: CopyLoc[0](Arg0: &signer)
+	2: Call[31](address_of(&signer): address)
+	3: Call[2](vault_exist<Ty0, Ty1>(address): bool)
+	4: BrTrue(10)
+B1:
+	5: MoveLoc[0](Arg0: &signer)
+	6: Pop
+	7: LdConst[6](U64: [34, 3, 0, 0, 0, 0, 0, 0])
+	8: Call[32](custom(u64): u64)
+	9: Abort
+B2:
+	10: Call[15](get<Ty0>(): VaultPoolConfig<Ty0>)
+	11: StLoc[2](loc0: VaultPoolConfig<Ty0>)
+	12: MoveLoc[2](loc0: VaultPoolConfig<Ty0>)
+	13: Call[16](unpack<Ty0>(VaultPoolConfig<Ty0>): u128 * u128 * u128 * u128 * u128 * u128 * u128)
+	14: Pop
+	15: Pop
+	16: StLoc[3](loc1: u128)
+	17: Pop
+	18: Pop
+	19: Pop
+	20: Pop
+	21: CopyLoc[0](Arg0: &signer)
+	22: Call[31](address_of(&signer): address)
+	23: MutBorrowGlobalGeneric[0](Vault<Ty0, Ty1>)
+	24: StLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	25: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	26: FreezeRef
+	27: Call[0](balance_for<Ty0, Ty1>(&Vault<Ty0, Ty1>): u128)
+	28: CopyLoc[1](Arg1: u128)
+	29: Add
+	30: CopyLoc[3](loc1: u128)
+	31: Le
+	32: BrTrue(40)
+B3:
+	33: MoveLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	34: Pop
+	35: MoveLoc[0](Arg0: &signer)
+	36: Pop
+	37: LdConst[7](U64: [36, 3, 0, 0, 0, 0, 0, 0])
+	38: Call[49](invalid_argument(u64): u64)
+	39: Abort
+B4:
+	40: MoveLoc[0](Arg0: &signer)
+	41: CopyLoc[1](Arg1: u128)
+	42: Call[17](withdraw<Ty1>(&signer, u128): Token<Ty1>)
+	43: StLoc[4](loc2: Token<Ty1>)
+	44: MoveLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	45: MutBorrowFieldGeneric[0](Vault.token: Token<Ty1>)
+	46: MoveLoc[4](loc2: Token<Ty1>)
+	47: Call[18](deposit<Ty1>(&mut Token<Ty1>, Token<Ty1>))
+	48: CopyLoc[1](Arg1: u128)
+	49: Ret
+}
+get_idx_by_id<Ty0, Ty1: store>(Arg0: address, Arg1: u64): Option<u64> {
+L0:	loc2: u64
+L1:	loc3: &LockList<Ty0, Ty1>
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: ImmBorrowGlobalGeneric[1](LockList<Ty0, Ty1>)
+	2: StLoc[5](loc3: &LockList<Ty0, Ty1>)
+	3: CopyLoc[5](loc3: &LockList<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	5: Call[19](length<Lock<Ty0, Ty1>>(&vector<Lock<Ty0, Ty1>>): u64)
+	6: StLoc[4](loc2: u64)
+	7: CopyLoc[4](loc2: u64)
+	8: LdU64(0)
+	9: Eq
+	10: BrTrue(12)
+B1:
+	11: Branch(16)
+B2:
+	12: MoveLoc[5](loc3: &LockList<Ty0, Ty1>)
+	13: Pop
+	14: Call[20](none<u64>(): Option<u64>)
+	15: Ret
+B3:
+	16: CopyLoc[4](loc2: u64)
+	17: LdU64(1)
+	18: Sub
+	19: StLoc[3](loc1: u64)
+B4:
+	20: CopyLoc[5](loc3: &LockList<Ty0, Ty1>)
+	21: ImmBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	22: CopyLoc[3](loc1: u64)
+	23: Call[21](borrow<Lock<Ty0, Ty1>>(&vector<Lock<Ty0, Ty1>>, u64): &Lock<Ty0, Ty1>)
+	24: StLoc[2](loc0: &Lock<Ty0, Ty1>)
+	25: MoveLoc[2](loc0: &Lock<Ty0, Ty1>)
+	26: ImmBorrowFieldGeneric[7](Lock.id: u64)
+	27: ReadRef
+	28: CopyLoc[1](Arg1: u64)
+	29: Eq
+	30: BrTrue(32)
+B5:
+	31: Branch(37)
+B6:
+	32: MoveLoc[5](loc3: &LockList<Ty0, Ty1>)
+	33: Pop
+	34: CopyLoc[3](loc1: u64)
+	35: Call[22](some<u64>(u64): Option<u64>)
+	36: Ret
+B7:
+	37: CopyLoc[3](loc1: u64)
+	38: LdU64(0)
+	39: Eq
+	40: BrTrue(42)
+B8:
+	41: Branch(46)
+B9:
+	42: MoveLoc[5](loc3: &LockList<Ty0, Ty1>)
+	43: Pop
+	44: Call[20](none<u64>(): Option<u64>)
+	45: Ret
+B10:
+	46: CopyLoc[3](loc1: u64)
+	47: LdU64(1)
+	48: Sub
+	49: StLoc[3](loc1: u64)
+	50: Branch(20)
+}
+public info<Ty0: copy + drop + store, Ty1: store>(Arg0: address): u64 * u128 * u128 * u128 * u64 {
+L0:	loc1: &Vault<Ty0, Ty1>
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: ImmBorrowGlobalGeneric[0](Vault<Ty0, Ty1>)
+	2: StLoc[2](loc1: &Vault<Ty0, Ty1>)
+	3: CopyLoc[2](loc1: &Vault<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	5: ReadRef
+	6: CopyLoc[2](loc1: &Vault<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	8: ReadRef
+	9: CopyLoc[2](loc1: &Vault<Ty0, Ty1>)
+	10: ImmBorrowFieldGeneric[5](Vault.last_update_at: u64)
+	11: ReadRef
+	12: Call[3](stability_fee<Ty0>(u128, u128, u64): u128)
+	13: StLoc[1](loc0: u128)
+	14: CopyLoc[2](loc1: &Vault<Ty0, Ty1>)
+	15: ImmBorrowFieldGeneric[8](Vault.id: u64)
+	16: ReadRef
+	17: CopyLoc[2](loc1: &Vault<Ty0, Ty1>)
+	18: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	19: ReadRef
+	20: CopyLoc[2](loc1: &Vault<Ty0, Ty1>)
+	21: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	22: ReadRef
+	23: CopyLoc[1](loc0: u128)
+	24: Add
+	25: MoveLoc[2](loc1: &Vault<Ty0, Ty1>)
+	26: Call[0](balance_for<Ty0, Ty1>(&Vault<Ty0, Ty1>): u128)
+	27: Call[34](now_seconds(): u64)
+	28: Ret
+}
+public initialize(Arg0: &signer) {
+L0:	loc1: MintCapability<FAI>
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[56](initialize(&signer): MintCapability<FAI> * BurnCapability<FAI>)
+	2: StLoc[1](loc0: BurnCapability<FAI>)
+	3: StLoc[2](loc1: MintCapability<FAI>)
+	4: CopyLoc[0](Arg0: &signer)
+	5: Call[23](initialize<FAI>(&signer))
+	6: CopyLoc[0](Arg0: &signer)
+	7: MoveLoc[2](loc1: MintCapability<FAI>)
+	8: Pack[3](SharedMintCapability)
+	9: MoveTo[3](SharedMintCapability)
+	10: MoveLoc[0](Arg0: &signer)
+	11: MoveLoc[1](loc0: BurnCapability<FAI>)
+	12: Pack[2](SharedBurnCapability)
+	13: MoveTo[2](SharedBurnCapability)
+	14: Ret
+}
+public last_update_at<Ty0: store, Ty1: store>(Arg0: &address): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &address)
+	1: ReadRef
+	2: ImmBorrowGlobalGeneric[0](Vault<Ty0, Ty1>)
+	3: StLoc[1](loc0: &Vault<Ty0, Ty1>)
+	4: MoveLoc[1](loc0: &Vault<Ty0, Ty1>)
+	5: ImmBorrowFieldGeneric[5](Vault.last_update_at: u64)
+	6: ReadRef
+	7: Ret
+}
+public lock_balance<Ty0: store, Ty1: store>(Arg0: address, Arg1: u64): u128 {
+L0:	loc2: &LockList<Ty0, Ty1>
+L1:	loc3: Option<u64>
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: CopyLoc[1](Arg1: u64)
+	2: Call[24](get_idx_by_id<Ty0, Ty1>(address, u64): Option<u64>)
+	3: StLoc[5](loc3: Option<u64>)
+	4: MoveLoc[5](loc3: Option<u64>)
+	5: Call[25](destroy_some<u64>(Option<u64>): u64)
+	6: StLoc[2](loc0: u64)
+	7: CopyLoc[0](Arg0: address)
+	8: ImmBorrowGlobalGeneric[1](LockList<Ty0, Ty1>)
+	9: StLoc[4](loc2: &LockList<Ty0, Ty1>)
+	10: MoveLoc[4](loc2: &LockList<Ty0, Ty1>)
+	11: ImmBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	12: CopyLoc[2](loc0: u64)
+	13: Call[21](borrow<Lock<Ty0, Ty1>>(&vector<Lock<Ty0, Ty1>>, u64): &Lock<Ty0, Ty1>)
+	14: StLoc[3](loc1: &Lock<Ty0, Ty1>)
+	15: MoveLoc[3](loc1: &Lock<Ty0, Ty1>)
+	16: Call[26](balance_for_lock<Ty0, Ty1>(&Lock<Ty0, Ty1>): u128)
+	17: Ret
+}
+public lock_borrow<Ty0: copy + drop + store, Ty1: store>(Arg0: &signer, Arg1: u64, Arg2: u128): u128 {
+L0:	loc3: bool
+L1:	loc4: &mut Lock<Ty0, Ty1>
+L2:	loc5: &mut LockList<Ty0, Ty1>
+L3:	loc6: u128
+L4:	loc7: Option<u64>
+L5:	loc8: u128
+L6:	loc9: Token<FAI>
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[31](address_of(&signer): address)
+	2: CopyLoc[1](Arg1: u64)
+	3: Call[24](get_idx_by_id<Ty0, Ty1>(address, u64): Option<u64>)
+	4: StLoc[10](loc7: Option<u64>)
+	5: MoveLoc[10](loc7: Option<u64>)
+	6: Call[25](destroy_some<u64>(Option<u64>): u64)
+	7: StLoc[5](loc2: u64)
+	8: CopyLoc[0](Arg0: &signer)
+	9: Call[31](address_of(&signer): address)
+	10: MutBorrowGlobalGeneric[1](LockList<Ty0, Ty1>)
+	11: StLoc[8](loc5: &mut LockList<Ty0, Ty1>)
+	12: MoveLoc[8](loc5: &mut LockList<Ty0, Ty1>)
+	13: MutBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	14: CopyLoc[5](loc2: u64)
+	15: Call[27](borrow_mut<Lock<Ty0, Ty1>>(&mut vector<Lock<Ty0, Ty1>>, u64): &mut Lock<Ty0, Ty1>)
+	16: StLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	17: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	18: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	19: ReadRef
+	20: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	21: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	22: ReadRef
+	23: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	24: ImmBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	25: ReadRef
+	26: Call[3](stability_fee<Ty0>(u128, u128, u64): u128)
+	27: StLoc[11](loc8: u128)
+	28: Call[34](now_seconds(): u64)
+	29: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	30: MutBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	31: WriteRef
+	32: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	33: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	34: ReadRef
+	35: CopyLoc[11](loc8: u128)
+	36: Add
+	37: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	38: MutBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	39: WriteRef
+	40: CopyLoc[2](Arg2: u128)
+	41: LdU128(0)
+	42: Eq
+	43: BrTrue(45)
+B1:
+	44: Branch(59)
+B2:
+	45: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	46: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	47: ReadRef
+	48: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	49: FreezeRef
+	50: Call[26](balance_for_lock<Ty0, Ty1>(&Lock<Ty0, Ty1>): u128)
+	51: Call[4](cal_max_borrow<Ty0, Ty1>(u128, u128): u128)
+	52: StLoc[9](loc6: u128)
+	53: CopyLoc[9](loc6: u128)
+	54: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	55: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	56: ReadRef
+	57: Sub
+	58: StLoc[2](Arg2: u128)
+B3:
+	59: CopyLoc[2](Arg2: u128)
+	60: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	61: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	62: ReadRef
+	63: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	64: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	65: ReadRef
+	66: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	67: FreezeRef
+	68: Call[26](balance_for_lock<Ty0, Ty1>(&Lock<Ty0, Ty1>): u128)
+	69: Call[5](check_health_factor<Ty0, Ty1>(u128, u128, u128, u128))
+	70: Call[37](admin_address(): address)
+	71: ImmBorrowGlobal[3](SharedMintCapability)
+	72: StLoc[3](loc0: &SharedMintCapability)
+	73: CopyLoc[2](Arg2: u128)
+	74: MoveLoc[3](loc0: &SharedMintCapability)
+	75: ImmBorrowField[6](SharedMintCapability.cap: MintCapability<FAI>)
+	76: Call[38](mint_with_cap(u128, &MintCapability<FAI>): Token<FAI>)
+	77: StLoc[12](loc9: Token<FAI>)
+	78: CopyLoc[0](Arg0: &signer)
+	79: Call[31](address_of(&signer): address)
+	80: Call[6](is_accepts_token<FAI>(address): bool)
+	81: StLoc[6](loc3: bool)
+	82: CopyLoc[6](loc3: bool)
+	83: Not
+	84: BrTrue(86)
+B4:
+	85: Branch(88)
+B5:
+	86: CopyLoc[0](Arg0: &signer)
+	87: Call[7](do_accept_token<FAI>(&signer))
+B6:
+	88: ImmBorrowLoc[12](loc9: Token<FAI>)
+	89: Call[8](value<FAI>(&Token<FAI>): u128)
+	90: StLoc[4](loc1: u128)
+	91: MoveLoc[0](Arg0: &signer)
+	92: MoveLoc[12](loc9: Token<FAI>)
+	93: Call[9](deposit_to_self<FAI>(&signer, Token<FAI>))
+	94: CopyLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	95: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	96: ReadRef
+	97: CopyLoc[4](loc1: u128)
+	98: Add
+	99: MoveLoc[7](loc4: &mut Lock<Ty0, Ty1>)
+	100: MutBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	101: WriteRef
+	102: CopyLoc[4](loc1: u128)
+	103: Ret
+}
+public lock_exist<Ty0: store, Ty1: store>(Arg0: address, Arg1: u64): bool {
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: Call[2](vault_exist<Ty0, Ty1>(address): bool)
+	2: Not
+	3: BrTrue(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdFalse
+	6: Ret
+B3:
+	7: CopyLoc[0](Arg0: address)
+	8: CopyLoc[1](Arg1: u64)
+	9: Call[24](get_idx_by_id<Ty0, Ty1>(address, u64): Option<u64>)
+	10: StLoc[2](loc0: Option<u64>)
+	11: ImmBorrowLoc[2](loc0: Option<u64>)
+	12: Call[28](is_some<u64>(&Option<u64>): bool)
+	13: BrTrue(15)
+B4:
+	14: Branch(17)
+B5:
+	15: LdTrue
+	16: Ret
+B6:
+	17: LdFalse
+	18: Ret
+}
+public lock_info<Ty0: copy + drop + store, Ty1: store>(Arg0: address, Arg1: u64): u64 * u128 * u128 * u128 * u128 * u64 * u64 {
+L0:	loc2: &Lock<Ty0, Ty1>
+L1:	loc3: &LockList<Ty0, Ty1>
+L2:	loc4: Option<u64>
+L3:	loc5: u128
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: CopyLoc[1](Arg1: u64)
+	2: Call[24](get_idx_by_id<Ty0, Ty1>(address, u64): Option<u64>)
+	3: StLoc[6](loc4: Option<u64>)
+	4: MoveLoc[6](loc4: Option<u64>)
+	5: Call[25](destroy_some<u64>(Option<u64>): u64)
+	6: StLoc[2](loc0: u64)
+	7: CopyLoc[0](Arg0: address)
+	8: ImmBorrowGlobalGeneric[1](LockList<Ty0, Ty1>)
+	9: StLoc[5](loc3: &LockList<Ty0, Ty1>)
+	10: CopyLoc[5](loc3: &LockList<Ty0, Ty1>)
+	11: ImmBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	12: CopyLoc[2](loc0: u64)
+	13: Call[21](borrow<Lock<Ty0, Ty1>>(&vector<Lock<Ty0, Ty1>>, u64): &Lock<Ty0, Ty1>)
+	14: StLoc[3](loc1: &Lock<Ty0, Ty1>)
+	15: CopyLoc[3](loc1: &Lock<Ty0, Ty1>)
+	16: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	17: ReadRef
+	18: CopyLoc[3](loc1: &Lock<Ty0, Ty1>)
+	19: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	20: ReadRef
+	21: MoveLoc[3](loc1: &Lock<Ty0, Ty1>)
+	22: ImmBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	23: ReadRef
+	24: Call[3](stability_fee<Ty0>(u128, u128, u64): u128)
+	25: StLoc[7](loc5: u128)
+	26: MoveLoc[5](loc3: &LockList<Ty0, Ty1>)
+	27: ImmBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	28: CopyLoc[2](loc0: u64)
+	29: Call[21](borrow<Lock<Ty0, Ty1>>(&vector<Lock<Ty0, Ty1>>, u64): &Lock<Ty0, Ty1>)
+	30: StLoc[4](loc2: &Lock<Ty0, Ty1>)
+	31: CopyLoc[4](loc2: &Lock<Ty0, Ty1>)
+	32: ImmBorrowFieldGeneric[7](Lock.id: u64)
+	33: ReadRef
+	34: CopyLoc[4](loc2: &Lock<Ty0, Ty1>)
+	35: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	36: ReadRef
+	37: CopyLoc[4](loc2: &Lock<Ty0, Ty1>)
+	38: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	39: ReadRef
+	40: CopyLoc[7](loc5: u128)
+	41: Add
+	42: CopyLoc[4](loc2: &Lock<Ty0, Ty1>)
+	43: ImmBorrowFieldGeneric[1](Lock.user_locked_amount: u128)
+	44: ReadRef
+	45: CopyLoc[4](loc2: &Lock<Ty0, Ty1>)
+	46: ImmBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	47: ReadRef
+	48: CopyLoc[4](loc2: &Lock<Ty0, Ty1>)
+	49: ImmBorrowFieldGeneric[12](Lock.expiry_at: u64)
+	50: ReadRef
+	51: MoveLoc[4](loc2: &Lock<Ty0, Ty1>)
+	52: ImmBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	53: ReadRef
+	54: Ret
+}
+public lock_list_exists<Ty0: store, Ty1: store>(Arg0: address): bool {
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: ExistsGeneric[1](LockList<Ty0, Ty1>)
+	2: Ret
+}
+public lock_lock<Ty0: copy + drop + store, Ty1: store>(Arg0: &signer, Arg1: u128, Arg2: u128) {
+L0:	loc3: &mut LockList<Ty0, Ty1>
+L1:	loc4: Token<Ty1>
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[17](withdraw<Ty1>(&signer, u128): Token<Ty1>)
+	3: StLoc[7](loc4: Token<Ty1>)
+	4: MoveLoc[7](loc4: Token<Ty1>)
+	5: Call[29](deposit<Ty1>(Token<Ty1>))
+	6: CopyLoc[2](Arg2: u128)
+	7: Call[30](lock<Ty1>(u128))
+	8: MoveLoc[0](Arg0: &signer)
+	9: Call[31](address_of(&signer): address)
+	10: MutBorrowGlobalGeneric[1](LockList<Ty0, Ty1>)
+	11: StLoc[6](loc3: &mut LockList<Ty0, Ty1>)
+	12: CopyLoc[6](loc3: &mut LockList<Ty0, Ty1>)
+	13: ImmBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	14: Call[19](length<Lock<Ty0, Ty1>>(&vector<Lock<Ty0, Ty1>>): u64)
+	15: StLoc[4](loc1: u64)
+	16: Call[31](get_config_extension<Ty0>(): VaultPoolConfigExtension<Ty0>)
+	17: StLoc[3](loc0: VaultPoolConfigExtension<Ty0>)
+	18: MoveLoc[3](loc0: VaultPoolConfigExtension<Ty0>)
+	19: Call[32](unpack_extension<Ty0>(VaultPoolConfigExtension<Ty0>): u64 * u128 * u128)
+	20: Pop
+	21: Pop
+	22: StLoc[5](loc2: u64)
+	23: MoveLoc[6](loc3: &mut LockList<Ty0, Ty1>)
+	24: MutBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	25: CopyLoc[4](loc1: u64)
+	26: LdU128(0)
+	27: LdU128(0)
+	28: CopyLoc[1](Arg1: u128)
+	29: CopyLoc[2](Arg2: u128)
+	30: CopyLoc[5](loc2: u64)
+	31: Call[34](now_seconds(): u64)
+	32: Add
+	33: Call[34](now_seconds(): u64)
+	34: PackGeneric[4](Lock<Ty0, Ty1>)
+	35: Call[33](push_back<Lock<Ty0, Ty1>>(&mut vector<Lock<Ty0, Ty1>>, Lock<Ty0, Ty1>))
+	36: Ret
+}
+public lock_repay<Ty0: copy + drop + store, Ty1: store>(Arg0: &signer, Arg1: u64, Arg2: u128): u128 * u128 {
+L0:	loc3: &mut LockList<Ty0, Ty1>
+L1:	loc4: u128
+L2:	loc5: u128
+L3:	loc6: Option<u64>
+L4:	loc7: u128
+L5:	loc8: Token<FAI>
+L6:	loc9: u128
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[31](address_of(&signer): address)
+	2: CopyLoc[1](Arg1: u64)
+	3: Call[24](get_idx_by_id<Ty0, Ty1>(address, u64): Option<u64>)
+	4: StLoc[9](loc6: Option<u64>)
+	5: MoveLoc[9](loc6: Option<u64>)
+	6: Call[25](destroy_some<u64>(Option<u64>): u64)
+	7: StLoc[4](loc1: u64)
+	8: CopyLoc[0](Arg0: &signer)
+	9: Call[31](address_of(&signer): address)
+	10: MutBorrowGlobalGeneric[1](LockList<Ty0, Ty1>)
+	11: StLoc[6](loc3: &mut LockList<Ty0, Ty1>)
+	12: MoveLoc[6](loc3: &mut LockList<Ty0, Ty1>)
+	13: MutBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	14: CopyLoc[4](loc1: u64)
+	15: Call[27](borrow_mut<Lock<Ty0, Ty1>>(&mut vector<Lock<Ty0, Ty1>>, u64): &mut Lock<Ty0, Ty1>)
+	16: StLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	17: CopyLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	18: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	19: ReadRef
+	20: CopyLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	21: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	22: ReadRef
+	23: CopyLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	24: ImmBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	25: ReadRef
+	26: Call[3](stability_fee<Ty0>(u128, u128, u64): u128)
+	27: StLoc[10](loc7: u128)
+	28: Call[34](now_seconds(): u64)
+	29: CopyLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	30: MutBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	31: WriteRef
+	32: CopyLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	33: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	34: ReadRef
+	35: CopyLoc[10](loc7: u128)
+	36: Add
+	37: CopyLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	38: MutBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	39: WriteRef
+	40: CopyLoc[0](Arg0: &signer)
+	41: Call[31](address_of(&signer): address)
+	42: Call[34](balance<FAI>(address): u128)
+	43: StLoc[3](loc0: u128)
+	44: CopyLoc[2](Arg2: u128)
+	45: LdU128(0)
+	46: Eq
+	47: BrTrue(49)
+B1:
+	48: Branch(64)
+B2:
+	49: CopyLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	50: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	51: ReadRef
+	52: CopyLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	53: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	54: ReadRef
+	55: Add
+	56: StLoc[2](Arg2: u128)
+	57: CopyLoc[2](Arg2: u128)
+	58: CopyLoc[3](loc0: u128)
+	59: Gt
+	60: BrTrue(62)
+B3:
+	61: Branch(64)
+B4:
+	62: CopyLoc[3](loc0: u128)
+	63: StLoc[2](Arg2: u128)
+B5:
+	64: CopyLoc[3](loc0: u128)
+	65: CopyLoc[2](Arg2: u128)
+	66: Ge
+	67: BrTrue(75)
+B6:
+	68: MoveLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	69: Pop
+	70: MoveLoc[0](Arg0: &signer)
+	71: Pop
+	72: LdConst[2](U64: [35, 3, 0, 0, 0, 0, 0, 0])
+	73: Call[49](invalid_argument(u64): u64)
+	74: Abort
+B7:
+	75: CopyLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	76: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	77: ReadRef
+	78: CopyLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	79: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	80: ReadRef
+	81: Add
+	82: StLoc[12](loc9: u128)
+	83: CopyLoc[12](loc9: u128)
+	84: CopyLoc[2](Arg2: u128)
+	85: Ge
+	86: BrTrue(94)
+B8:
+	87: MoveLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	88: Pop
+	89: MoveLoc[0](Arg0: &signer)
+	90: Pop
+	91: LdConst[7](U64: [36, 3, 0, 0, 0, 0, 0, 0])
+	92: Call[49](invalid_argument(u64): u64)
+	93: Abort
+B9:
+	94: MoveLoc[0](Arg0: &signer)
+	95: CopyLoc[2](Arg2: u128)
+	96: Call[35](withdraw<FAI>(&signer, u128): Token<FAI>)
+	97: StLoc[11](loc8: Token<FAI>)
+	98: MoveLoc[5](loc2: &mut Lock<Ty0, Ty1>)
+	99: MoveLoc[11](loc8: Token<FAI>)
+	100: CopyLoc[2](Arg2: u128)
+	101: Call[36](repay_lock<Ty0, Ty1>(&mut Lock<Ty0, Ty1>, Token<FAI>, u128): u128 * u128)
+	102: StLoc[8](loc5: u128)
+	103: StLoc[7](loc4: u128)
+	104: CopyLoc[7](loc4: u128)
+	105: CopyLoc[8](loc5: u128)
+	106: Ret
+}
+public lock_unlock<Ty0: copy + drop + store, Ty1: store>(Arg0: &signer, Arg1: u64): u128 * u128 {
+L0:	loc2: &mut LockList<Ty0, Ty1>
+L1:	loc3: Option<u64>
+L2:	loc4: u128
+L3:	loc5: Token<Ty1>
+L4:	loc6: u128
+L5:	loc7: u128
+L6:	loc8: &SharedTreasuryGetCapability<Ty1>
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[31](address_of(&signer): address)
+	2: CopyLoc[1](Arg1: u64)
+	3: Call[24](get_idx_by_id<Ty0, Ty1>(address, u64): Option<u64>)
+	4: StLoc[5](loc3: Option<u64>)
+	5: MoveLoc[5](loc3: Option<u64>)
+	6: Call[25](destroy_some<u64>(Option<u64>): u64)
+	7: StLoc[2](loc0: u64)
+	8: CopyLoc[0](Arg0: &signer)
+	9: Call[31](address_of(&signer): address)
+	10: MutBorrowGlobalGeneric[1](LockList<Ty0, Ty1>)
+	11: StLoc[4](loc2: &mut LockList<Ty0, Ty1>)
+	12: MoveLoc[4](loc2: &mut LockList<Ty0, Ty1>)
+	13: MutBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	14: CopyLoc[2](loc0: u64)
+	15: Call[27](borrow_mut<Lock<Ty0, Ty1>>(&mut vector<Lock<Ty0, Ty1>>, u64): &mut Lock<Ty0, Ty1>)
+	16: StLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	17: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	18: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	19: ReadRef
+	20: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	21: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	22: ReadRef
+	23: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	24: ImmBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	25: ReadRef
+	26: Call[3](stability_fee<Ty0>(u128, u128, u64): u128)
+	27: StLoc[6](loc4: u128)
+	28: Call[34](now_seconds(): u64)
+	29: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	30: MutBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	31: WriteRef
+	32: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	33: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	34: ReadRef
+	35: CopyLoc[6](loc4: u128)
+	36: Add
+	37: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	38: MutBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	39: WriteRef
+	40: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	41: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	42: ReadRef
+	43: LdU128(0)
+	44: Eq
+	45: BrTrue(53)
+B1:
+	46: MoveLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	47: Pop
+	48: MoveLoc[0](Arg0: &signer)
+	49: Pop
+	50: LdConst[3](U64: [38, 3, 0, 0, 0, 0, 0, 0])
+	51: Call[32](custom(u64): u64)
+	52: Abort
+B2:
+	53: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	54: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	55: ReadRef
+	56: LdU128(0)
+	57: Eq
+	58: BrTrue(66)
+B3:
+	59: MoveLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	60: Pop
+	61: MoveLoc[0](Arg0: &signer)
+	62: Pop
+	63: LdConst[0](U64: [39, 3, 0, 0, 0, 0, 0, 0])
+	64: Call[32](custom(u64): u64)
+	65: Abort
+B4:
+	66: Call[34](now_seconds(): u64)
+	67: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	68: ImmBorrowFieldGeneric[12](Lock.expiry_at: u64)
+	69: ReadRef
+	70: Ge
+	71: BrTrue(79)
+B5:
+	72: MoveLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	73: Pop
+	74: MoveLoc[0](Arg0: &signer)
+	75: Pop
+	76: LdConst[1](U64: [37, 3, 0, 0, 0, 0, 0, 0])
+	77: Call[32](custom(u64): u64)
+	78: Abort
+B6:
+	79: Call[37](admin_address(): address)
+	80: ImmBorrowGlobalGeneric[5](SharedTreasuryGetCapability<Ty1>)
+	81: StLoc[10](loc8: &SharedTreasuryGetCapability<Ty1>)
+	82: MoveLoc[10](loc8: &SharedTreasuryGetCapability<Ty1>)
+	83: ImmBorrowFieldGeneric[13](SharedTreasuryGetCapability.cap: WithdrawCapability<Ty0>)
+	84: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	85: ImmBorrowFieldGeneric[1](Lock.user_locked_amount: u128)
+	86: ReadRef
+	87: Call[37](get_with_capability<Ty1>(&WithdrawCapability<Ty1>, u128): Token<Ty1>)
+	88: StLoc[7](loc5: Token<Ty1>)
+	89: MoveLoc[0](Arg0: &signer)
+	90: MoveLoc[7](loc5: Token<Ty1>)
+	91: Call[38](deposit_to_self<Ty1>(&signer, Token<Ty1>))
+	92: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	93: ImmBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	94: ReadRef
+	95: Call[39](repay<Ty1>(u128))
+	96: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	97: ImmBorrowFieldGeneric[1](Lock.user_locked_amount: u128)
+	98: ReadRef
+	99: StLoc[9](loc7: u128)
+	100: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	101: ImmBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	102: ReadRef
+	103: StLoc[8](loc6: u128)
+	104: LdU128(0)
+	105: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	106: MutBorrowFieldGeneric[1](Lock.user_locked_amount: u128)
+	107: WriteRef
+	108: LdU128(0)
+	109: CopyLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	110: MutBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	111: WriteRef
+	112: Call[34](now_seconds(): u64)
+	113: MoveLoc[3](loc1: &mut Lock<Ty0, Ty1>)
+	114: MutBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	115: WriteRef
+	116: CopyLoc[9](loc7: u128)
+	117: CopyLoc[8](loc6: u128)
+	118: Ret
+}
+public max_borrow<Ty0: copy + drop + store, Ty1: store>(Arg0: address): u128 {
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: ImmBorrowGlobalGeneric[0](Vault<Ty0, Ty1>)
+	2: StLoc[1](loc0: &Vault<Ty0, Ty1>)
+	3: CopyLoc[1](loc0: &Vault<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	5: ReadRef
+	6: MoveLoc[1](loc0: &Vault<Ty0, Ty1>)
+	7: Call[0](balance_for<Ty0, Ty1>(&Vault<Ty0, Ty1>): u128)
+	8: Call[4](cal_max_borrow<Ty0, Ty1>(u128, u128): u128)
+	9: Ret
+}
+public(friend) rearrange<Ty0: copy + drop + store, Ty1: store>(Arg0: &signer, Arg1: address, Arg2: u128, Arg3: u128): u128 * u128 {
+B0:
+	0: Call[30](check_global_switch())
+	1: CopyLoc[1](Arg1: address)
+	2: Call[2](vault_exist<Ty0, Ty1>(address): bool)
+	3: BrTrue(9)
+B1:
+	4: MoveLoc[0](Arg0: &signer)
+	5: Pop
+	6: LdConst[6](U64: [34, 3, 0, 0, 0, 0, 0, 0])
+	7: Call[32](custom(u64): u64)
+	8: Abort
+B2:
+	9: CopyLoc[1](Arg1: address)
+	10: MutBorrowGlobalGeneric[0](Vault<Ty0, Ty1>)
+	11: StLoc[7](loc3: &mut Vault<Ty0, Ty1>)
+	12: CopyLoc[7](loc3: &mut Vault<Ty0, Ty1>)
+	13: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	14: ReadRef
+	15: CopyLoc[7](loc3: &mut Vault<Ty0, Ty1>)
+	16: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	17: ReadRef
+	18: CopyLoc[7](loc3: &mut Vault<Ty0, Ty1>)
+	19: ImmBorrowFieldGeneric[5](Vault.last_update_at: u64)
+	20: ReadRef
+	21: Call[3](stability_fee<Ty0>(u128, u128, u64): u128)
+	22: StLoc[6](loc2: u128)
+	23: CopyLoc[7](loc3: &mut Vault<Ty0, Ty1>)
+	24: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	25: ReadRef
+	26: CopyLoc[6](loc2: u128)
+	27: Add
+	28: CopyLoc[7](loc3: &mut Vault<Ty0, Ty1>)
+	29: MutBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	30: WriteRef
+	31: Call[34](now_seconds(): u64)
+	32: CopyLoc[7](loc3: &mut Vault<Ty0, Ty1>)
+	33: MutBorrowFieldGeneric[5](Vault.last_update_at: u64)
+	34: WriteRef
+	35: CopyLoc[7](loc3: &mut Vault<Ty0, Ty1>)
+	36: MutBorrowFieldGeneric[0](Vault.token: Token<Ty1>)
+	37: CopyLoc[2](Arg2: u128)
+	38: Call[40](withdraw<Ty1>(&mut Token<Ty1>, u128): Token<Ty1>)
+	39: StLoc[4](loc0: Token<Ty1>)
+	40: CopyLoc[0](Arg0: &signer)
+	41: MoveLoc[4](loc0: Token<Ty1>)
+	42: Call[38](deposit_to_self<Ty1>(&signer, Token<Ty1>))
+	43: MoveLoc[0](Arg0: &signer)
+	44: CopyLoc[3](Arg3: u128)
+	45: Call[35](withdraw<FAI>(&signer, u128): Token<FAI>)
+	46: StLoc[5](loc1: Token<FAI>)
+	47: MoveLoc[7](loc3: &mut Vault<Ty0, Ty1>)
+	48: MoveLoc[5](loc1: Token<FAI>)
+	49: CopyLoc[3](Arg3: u128)
+	50: Call[41](repay<Ty0, Ty1>(&mut Vault<Ty0, Ty1>, Token<FAI>, u128): u128 * u128)
+	51: Ret
+}
+public(friend) rearrange_lock<Ty0: copy + drop + store, Ty1: store>(Arg0: &signer, Arg1: address, Arg2: u64, Arg3: u128, Arg4: u128): u128 * u128 {
+L0:	loc5: &mut LockList<Ty0, Ty1>
+L1:	loc6: Option<u64>
+L2:	loc7: u128
+L3:	loc8: &SharedTreasuryGetCapability<Ty1>
+L4:	loc9: Token<Ty1>
+L5:	loc10: Token<Ty1>
+L6:	loc11: u128
+B0:
+	0: Call[30](check_global_switch())
+	1: CopyLoc[1](Arg1: address)
+	2: CopyLoc[2](Arg2: u64)
+	3: Call[24](get_idx_by_id<Ty0, Ty1>(address, u64): Option<u64>)
+	4: StLoc[11](loc6: Option<u64>)
+	5: MoveLoc[11](loc6: Option<u64>)
+	6: Call[25](destroy_some<u64>(Option<u64>): u64)
+	7: StLoc[8](loc3: u64)
+	8: CopyLoc[1](Arg1: address)
+	9: MutBorrowGlobalGeneric[1](LockList<Ty0, Ty1>)
+	10: StLoc[10](loc5: &mut LockList<Ty0, Ty1>)
+	11: MoveLoc[10](loc5: &mut LockList<Ty0, Ty1>)
+	12: MutBorrowFieldGeneric[6](LockList.items: vector<Lock<Ty0, Ty1>>)
+	13: CopyLoc[8](loc3: u64)
+	14: Call[27](borrow_mut<Lock<Ty0, Ty1>>(&mut vector<Lock<Ty0, Ty1>>, u64): &mut Lock<Ty0, Ty1>)
+	15: StLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	16: CopyLoc[0](Arg0: &signer)
+	17: CopyLoc[4](Arg4: u128)
+	18: Call[35](withdraw<FAI>(&signer, u128): Token<FAI>)
+	19: StLoc[7](loc2: Token<FAI>)
+	20: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	21: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	22: ReadRef
+	23: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	24: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	25: ReadRef
+	26: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	27: ImmBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	28: ReadRef
+	29: Call[3](stability_fee<Ty0>(u128, u128, u64): u128)
+	30: StLoc[12](loc7: u128)
+	31: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	32: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	33: ReadRef
+	34: CopyLoc[12](loc7: u128)
+	35: Add
+	36: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	37: MutBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	38: WriteRef
+	39: Call[34](now_seconds(): u64)
+	40: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	41: MutBorrowFieldGeneric[11](Lock.last_update_at: u64)
+	42: WriteRef
+	43: Call[37](admin_address(): address)
+	44: ImmBorrowGlobalGeneric[6](SharedSTCTreasuryGetCapability<Ty1>)
+	45: StLoc[5](loc0: &SharedSTCTreasuryGetCapability<Ty1>)
+	46: CopyLoc[3](Arg3: u128)
+	47: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	48: ImmBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	49: ReadRef
+	50: Le
+	51: BrTrue(53)
+B1:
+	52: Branch(70)
+B2:
+	53: MoveLoc[5](loc0: &SharedSTCTreasuryGetCapability<Ty1>)
+	54: ImmBorrowFieldGeneric[14](SharedSTCTreasuryGetCapability.cap: WithdrawCapability<Ty0>)
+	55: CopyLoc[3](Arg3: u128)
+	56: Call[42](get_with_capability<Ty1>(&WithdrawCapability<Ty1>, u128): Token<Ty1>)
+	57: StLoc[6](loc1: Token<Ty1>)
+	58: MoveLoc[0](Arg0: &signer)
+	59: MoveLoc[6](loc1: Token<Ty1>)
+	60: Call[38](deposit_to_self<Ty1>(&signer, Token<Ty1>))
+	61: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	62: ImmBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	63: ReadRef
+	64: CopyLoc[3](Arg3: u128)
+	65: Sub
+	66: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	67: MutBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	68: WriteRef
+	69: Branch(109)
+B3:
+	70: Call[37](admin_address(): address)
+	71: ImmBorrowGlobalGeneric[5](SharedTreasuryGetCapability<Ty1>)
+	72: StLoc[13](loc8: &SharedTreasuryGetCapability<Ty1>)
+	73: MoveLoc[5](loc0: &SharedSTCTreasuryGetCapability<Ty1>)
+	74: ImmBorrowFieldGeneric[14](SharedSTCTreasuryGetCapability.cap: WithdrawCapability<Ty0>)
+	75: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	76: ImmBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	77: ReadRef
+	78: Call[42](get_with_capability<Ty1>(&WithdrawCapability<Ty1>, u128): Token<Ty1>)
+	79: StLoc[14](loc9: Token<Ty1>)
+	80: CopyLoc[3](Arg3: u128)
+	81: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	82: ImmBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	83: ReadRef
+	84: Sub
+	85: StLoc[16](loc11: u128)
+	86: MoveLoc[13](loc8: &SharedTreasuryGetCapability<Ty1>)
+	87: ImmBorrowFieldGeneric[13](SharedTreasuryGetCapability.cap: WithdrawCapability<Ty0>)
+	88: CopyLoc[16](loc11: u128)
+	89: Call[37](get_with_capability<Ty1>(&WithdrawCapability<Ty1>, u128): Token<Ty1>)
+	90: StLoc[15](loc10: Token<Ty1>)
+	91: CopyLoc[0](Arg0: &signer)
+	92: MoveLoc[14](loc9: Token<Ty1>)
+	93: Call[38](deposit_to_self<Ty1>(&signer, Token<Ty1>))
+	94: LdU128(0)
+	95: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	96: MutBorrowFieldGeneric[2](Lock.treasury_locked_amount: u128)
+	97: WriteRef
+	98: MoveLoc[0](Arg0: &signer)
+	99: MoveLoc[15](loc10: Token<Ty1>)
+	100: Call[38](deposit_to_self<Ty1>(&signer, Token<Ty1>))
+	101: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	102: ImmBorrowFieldGeneric[1](Lock.user_locked_amount: u128)
+	103: ReadRef
+	104: CopyLoc[16](loc11: u128)
+	105: Sub
+	106: CopyLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	107: MutBorrowFieldGeneric[1](Lock.user_locked_amount: u128)
+	108: WriteRef
+B4:
+	109: MoveLoc[9](loc4: &mut Lock<Ty0, Ty1>)
+	110: MoveLoc[7](loc2: Token<FAI>)
+	111: CopyLoc[4](Arg4: u128)
+	112: Call[36](repay_lock<Ty0, Ty1>(&mut Lock<Ty0, Ty1>, Token<FAI>, u128): u128 * u128)
+	113: Ret
+}
+repay<Ty0: copy + drop + store, Ty1: store>(Arg0: &mut Vault<Ty0, Ty1>, Arg1: Token<FAI>, Arg2: u128): u128 * u128 {
+L0:	loc3: u128
+L1:	loc4: &SharedBurnCapability
+L2:	loc5: Token<FAI>
+L3:	loc6: Token<FAI>
+L4:	loc7: u128
+L5:	loc8: u128
+B0:
+	0: CopyLoc[0](Arg0: &mut Vault<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	2: ReadRef
+	3: StLoc[5](loc2: u128)
+	4: CopyLoc[0](Arg0: &mut Vault<Ty0, Ty1>)
+	5: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	6: ReadRef
+	7: StLoc[6](loc3: u128)
+	8: CopyLoc[2](Arg2: u128)
+	9: CopyLoc[0](Arg0: &mut Vault<Ty0, Ty1>)
+	10: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	11: ReadRef
+	12: Gt
+	13: BrTrue(15)
+B1:
+	14: Branch(30)
+B2:
+	15: LdU128(0)
+	16: CopyLoc[0](Arg0: &mut Vault<Ty0, Ty1>)
+	17: MutBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	18: WriteRef
+	19: CopyLoc[0](Arg0: &mut Vault<Ty0, Ty1>)
+	20: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	21: ReadRef
+	22: CopyLoc[2](Arg2: u128)
+	23: CopyLoc[6](loc3: u128)
+	24: Sub
+	25: Sub
+	26: CopyLoc[0](Arg0: &mut Vault<Ty0, Ty1>)
+	27: MutBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	28: WriteRef
+	29: Branch(38)
+B3:
+	30: CopyLoc[0](Arg0: &mut Vault<Ty0, Ty1>)
+	31: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	32: ReadRef
+	33: CopyLoc[2](Arg2: u128)
+	34: Sub
+	35: CopyLoc[0](Arg0: &mut Vault<Ty0, Ty1>)
+	36: MutBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	37: WriteRef
+B4:
+	38: CopyLoc[0](Arg0: &mut Vault<Ty0, Ty1>)
+	39: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	40: ReadRef
+	41: StLoc[3](loc0: u128)
+	42: MoveLoc[0](Arg0: &mut Vault<Ty0, Ty1>)
+	43: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	44: ReadRef
+	45: StLoc[4](loc1: u128)
+	46: CopyLoc[5](loc2: u128)
+	47: CopyLoc[3](loc0: u128)
+	48: Sub
+	49: StLoc[10](loc7: u128)
+	50: CopyLoc[6](loc3: u128)
+	51: CopyLoc[4](loc1: u128)
+	52: Sub
+	53: StLoc[11](loc8: u128)
+	54: CopyLoc[11](loc8: u128)
+	55: CopyLoc[10](loc7: u128)
+	56: Add
+	57: CopyLoc[2](Arg2: u128)
+	58: Eq
+	59: BrTrue(62)
+B5:
+	60: LdU64(501)
+	61: Abort
+B6:
+	62: MoveLoc[1](Arg1: Token<FAI>)
+	63: CopyLoc[11](loc8: u128)
+	64: Call[43](split<FAI>(Token<FAI>, u128): Token<FAI> * Token<FAI>)
+	65: StLoc[9](loc6: Token<FAI>)
+	66: StLoc[8](loc5: Token<FAI>)
+	67: Call[37](admin_address(): address)
+	68: ImmBorrowGlobal[2](SharedBurnCapability)
+	69: StLoc[7](loc4: &SharedBurnCapability)
+	70: MoveLoc[8](loc5: Token<FAI>)
+	71: MoveLoc[7](loc4: &SharedBurnCapability)
+	72: ImmBorrowField[16](SharedBurnCapability.cap: BurnCapability<FAI>)
+	73: Call[72](burn_with_cap(Token<FAI>, &BurnCapability<FAI>))
+	74: MoveLoc[9](loc6: Token<FAI>)
+	75: Call[44](deposit<FAI>(Token<FAI>))
+	76: CopyLoc[10](loc7: u128)
+	77: CopyLoc[11](loc8: u128)
+	78: Ret
+}
+public repay_fai<Ty0: copy + drop + store, Ty1: store>(Arg0: &signer, Arg1: u128): u128 * u128 {
+L0:	loc2: u128
+L1:	loc3: u128
+L2:	loc4: Token<FAI>
+L3:	loc5: &mut Vault<Ty0, Ty1>
+B0:
+	0: Call[30](check_global_switch())
+	1: CopyLoc[0](Arg0: &signer)
+	2: Call[31](address_of(&signer): address)
+	3: Call[2](vault_exist<Ty0, Ty1>(address): bool)
+	4: BrTrue(10)
+B1:
+	5: MoveLoc[0](Arg0: &signer)
+	6: Pop
+	7: LdConst[6](U64: [34, 3, 0, 0, 0, 0, 0, 0])
+	8: Call[32](custom(u64): u64)
+	9: Abort
+B2:
+	10: CopyLoc[0](Arg0: &signer)
+	11: Call[31](address_of(&signer): address)
+	12: MutBorrowGlobalGeneric[0](Vault<Ty0, Ty1>)
+	13: StLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	14: CopyLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	15: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	16: ReadRef
+	17: CopyLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	18: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	19: ReadRef
+	20: CopyLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	21: ImmBorrowFieldGeneric[5](Vault.last_update_at: u64)
+	22: ReadRef
+	23: Call[3](stability_fee<Ty0>(u128, u128, u64): u128)
+	24: StLoc[5](loc3: u128)
+	25: CopyLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	26: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	27: ReadRef
+	28: CopyLoc[5](loc3: u128)
+	29: Add
+	30: CopyLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	31: MutBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	32: WriteRef
+	33: Call[34](now_seconds(): u64)
+	34: CopyLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	35: MutBorrowFieldGeneric[5](Vault.last_update_at: u64)
+	36: WriteRef
+	37: CopyLoc[0](Arg0: &signer)
+	38: Call[31](address_of(&signer): address)
+	39: Call[34](balance<FAI>(address): u128)
+	40: StLoc[2](loc0: u128)
+	41: CopyLoc[1](Arg1: u128)
+	42: LdU128(0)
+	43: Eq
+	44: BrTrue(46)
+B3:
+	45: Branch(61)
+B4:
+	46: CopyLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	47: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	48: ReadRef
+	49: CopyLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	50: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	51: ReadRef
+	52: Add
+	53: StLoc[1](Arg1: u128)
+	54: CopyLoc[1](Arg1: u128)
+	55: CopyLoc[2](loc0: u128)
+	56: Gt
+	57: BrTrue(59)
+B5:
+	58: Branch(61)
+B6:
+	59: CopyLoc[2](loc0: u128)
+	60: StLoc[1](Arg1: u128)
+B7:
+	61: CopyLoc[2](loc0: u128)
+	62: CopyLoc[1](Arg1: u128)
+	63: Ge
+	64: BrTrue(72)
+B8:
+	65: MoveLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	66: Pop
+	67: MoveLoc[0](Arg0: &signer)
+	68: Pop
+	69: LdConst[2](U64: [35, 3, 0, 0, 0, 0, 0, 0])
+	70: Call[49](invalid_argument(u64): u64)
+	71: Abort
+B9:
+	72: CopyLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	73: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	74: ReadRef
+	75: CopyLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	76: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	77: ReadRef
+	78: Add
+	79: CopyLoc[1](Arg1: u128)
+	80: Ge
+	81: BrTrue(89)
+B10:
+	82: MoveLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	83: Pop
+	84: MoveLoc[0](Arg0: &signer)
+	85: Pop
+	86: LdConst[7](U64: [36, 3, 0, 0, 0, 0, 0, 0])
+	87: Call[49](invalid_argument(u64): u64)
+	88: Abort
+B11:
+	89: MoveLoc[0](Arg0: &signer)
+	90: CopyLoc[1](Arg1: u128)
+	91: Call[35](withdraw<FAI>(&signer, u128): Token<FAI>)
+	92: StLoc[6](loc4: Token<FAI>)
+	93: MoveLoc[7](loc5: &mut Vault<Ty0, Ty1>)
+	94: MoveLoc[6](loc4: Token<FAI>)
+	95: CopyLoc[1](Arg1: u128)
+	96: Call[41](repay<Ty0, Ty1>(&mut Vault<Ty0, Ty1>, Token<FAI>, u128): u128 * u128)
+	97: StLoc[4](loc2: u128)
+	98: StLoc[3](loc1: u128)
+	99: CopyLoc[3](loc1: u128)
+	100: CopyLoc[4](loc2: u128)
+	101: Ret
+}
+repay_lock<Ty0: copy + drop + store, Ty1: store>(Arg0: &mut Lock<Ty0, Ty1>, Arg1: Token<FAI>, Arg2: u128): u128 * u128 {
+L0:	loc3: u128
+L1:	loc4: &SharedBurnCapability
+L2:	loc5: Token<FAI>
+L3:	loc6: Token<FAI>
+L4:	loc7: u128
+L5:	loc8: u128
+B0:
+	0: CopyLoc[0](Arg0: &mut Lock<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	2: ReadRef
+	3: StLoc[5](loc2: u128)
+	4: CopyLoc[0](Arg0: &mut Lock<Ty0, Ty1>)
+	5: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	6: ReadRef
+	7: StLoc[6](loc3: u128)
+	8: CopyLoc[2](Arg2: u128)
+	9: CopyLoc[0](Arg0: &mut Lock<Ty0, Ty1>)
+	10: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	11: ReadRef
+	12: Gt
+	13: BrTrue(15)
+B1:
+	14: Branch(30)
+B2:
+	15: LdU128(0)
+	16: CopyLoc[0](Arg0: &mut Lock<Ty0, Ty1>)
+	17: MutBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	18: WriteRef
+	19: CopyLoc[0](Arg0: &mut Lock<Ty0, Ty1>)
+	20: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	21: ReadRef
+	22: CopyLoc[2](Arg2: u128)
+	23: CopyLoc[6](loc3: u128)
+	24: Sub
+	25: Sub
+	26: CopyLoc[0](Arg0: &mut Lock<Ty0, Ty1>)
+	27: MutBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	28: WriteRef
+	29: Branch(38)
+B3:
+	30: CopyLoc[0](Arg0: &mut Lock<Ty0, Ty1>)
+	31: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	32: ReadRef
+	33: CopyLoc[2](Arg2: u128)
+	34: Sub
+	35: CopyLoc[0](Arg0: &mut Lock<Ty0, Ty1>)
+	36: MutBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	37: WriteRef
+B4:
+	38: CopyLoc[0](Arg0: &mut Lock<Ty0, Ty1>)
+	39: ImmBorrowFieldGeneric[9](Lock.debt_fai_amount: u128)
+	40: ReadRef
+	41: StLoc[3](loc0: u128)
+	42: MoveLoc[0](Arg0: &mut Lock<Ty0, Ty1>)
+	43: ImmBorrowFieldGeneric[10](Lock.unpay_stability_fee: u128)
+	44: ReadRef
+	45: StLoc[4](loc1: u128)
+	46: CopyLoc[5](loc2: u128)
+	47: CopyLoc[3](loc0: u128)
+	48: Sub
+	49: StLoc[10](loc7: u128)
+	50: CopyLoc[6](loc3: u128)
+	51: CopyLoc[4](loc1: u128)
+	52: Sub
+	53: StLoc[11](loc8: u128)
+	54: CopyLoc[11](loc8: u128)
+	55: CopyLoc[10](loc7: u128)
+	56: Add
+	57: CopyLoc[2](Arg2: u128)
+	58: Eq
+	59: BrTrue(62)
+B5:
+	60: LdU64(501)
+	61: Abort
+B6:
+	62: MoveLoc[1](Arg1: Token<FAI>)
+	63: CopyLoc[11](loc8: u128)
+	64: Call[43](split<FAI>(Token<FAI>, u128): Token<FAI> * Token<FAI>)
+	65: StLoc[9](loc6: Token<FAI>)
+	66: StLoc[8](loc5: Token<FAI>)
+	67: Call[37](admin_address(): address)
+	68: ImmBorrowGlobal[2](SharedBurnCapability)
+	69: StLoc[7](loc4: &SharedBurnCapability)
+	70: MoveLoc[8](loc5: Token<FAI>)
+	71: MoveLoc[7](loc4: &SharedBurnCapability)
+	72: ImmBorrowField[16](SharedBurnCapability.cap: BurnCapability<FAI>)
+	73: Call[72](burn_with_cap(Token<FAI>, &BurnCapability<FAI>))
+	74: MoveLoc[9](loc6: Token<FAI>)
+	75: Call[44](deposit<FAI>(Token<FAI>))
+	76: CopyLoc[10](loc7: u128)
+	77: CopyLoc[11](loc8: u128)
+	78: Ret
+}
+public vault_exist<Ty0: store, Ty1: store>(Arg0: address): bool {
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: ExistsGeneric[0](Vault<Ty0, Ty1>)
+	2: Ret
+}
+public withdraw<Ty0: copy + drop + store, Ty1: store>(Arg0: &signer, Arg1: u128): u128 {
+L0:	loc2: Token<Ty1>
+L1:	loc3: &mut Vault<Ty0, Ty1>
+B0:
+	0: Call[30](check_global_switch())
+	1: CopyLoc[0](Arg0: &signer)
+	2: Call[31](address_of(&signer): address)
+	3: Call[2](vault_exist<Ty0, Ty1>(address): bool)
+	4: BrTrue(10)
+B1:
+	5: MoveLoc[0](Arg0: &signer)
+	6: Pop
+	7: LdConst[6](U64: [34, 3, 0, 0, 0, 0, 0, 0])
+	8: Call[32](custom(u64): u64)
+	9: Abort
+B2:
+	10: CopyLoc[0](Arg0: &signer)
+	11: Call[31](address_of(&signer): address)
+	12: MutBorrowGlobalGeneric[0](Vault<Ty0, Ty1>)
+	13: StLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	14: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	15: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	16: ReadRef
+	17: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	18: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	19: ReadRef
+	20: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	21: ImmBorrowFieldGeneric[5](Vault.last_update_at: u64)
+	22: ReadRef
+	23: Call[3](stability_fee<Ty0>(u128, u128, u64): u128)
+	24: StLoc[3](loc1: u128)
+	25: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	26: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	27: ReadRef
+	28: CopyLoc[3](loc1: u128)
+	29: Add
+	30: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	31: MutBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	32: WriteRef
+	33: Call[34](now_seconds(): u64)
+	34: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	35: MutBorrowFieldGeneric[5](Vault.last_update_at: u64)
+	36: WriteRef
+	37: CopyLoc[1](Arg1: u128)
+	38: LdU128(0)
+	39: Eq
+	40: BrTrue(42)
+B3:
+	41: Branch(53)
+B4:
+	42: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	43: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	44: ReadRef
+	45: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	46: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	47: ReadRef
+	48: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	49: FreezeRef
+	50: Call[0](balance_for<Ty0, Ty1>(&Vault<Ty0, Ty1>): u128)
+	51: Call[45](cal_max_withdraw_v2<Ty0, Ty1>(u128, u128, u128): u128)
+	52: StLoc[1](Arg1: u128)
+B5:
+	53: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	54: FreezeRef
+	55: Call[0](balance_for<Ty0, Ty1>(&Vault<Ty0, Ty1>): u128)
+	56: StLoc[2](loc0: u128)
+	57: LdU128(0)
+	58: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	59: ImmBorrowFieldGeneric[4](Vault.unpay_stability_fee: u128)
+	60: ReadRef
+	61: CopyLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	62: ImmBorrowFieldGeneric[3](Vault.debt_fai_amount: u128)
+	63: ReadRef
+	64: CopyLoc[2](loc0: u128)
+	65: CopyLoc[1](Arg1: u128)
+	66: Sub
+	67: Call[5](check_health_factor<Ty0, Ty1>(u128, u128, u128, u128))
+	68: MoveLoc[5](loc3: &mut Vault<Ty0, Ty1>)
+	69: MutBorrowFieldGeneric[0](Vault.token: Token<Ty1>)
+	70: CopyLoc[1](Arg1: u128)
+	71: Call[40](withdraw<Ty1>(&mut Token<Ty1>, u128): Token<Ty1>)
+	72: StLoc[4](loc2: Token<Ty1>)
+	73: MoveLoc[0](Arg0: &signer)
+	74: MoveLoc[4](loc2: Token<Ty1>)
+	75: Call[38](deposit_to_self<Ty1>(&signer, Token<Ty1>))
+	76: CopyLoc[1](Arg1: u128)
+	77: Ret
+}
+}

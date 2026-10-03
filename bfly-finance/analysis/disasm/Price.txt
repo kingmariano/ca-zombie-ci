@@ -1,0 +1,25 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.Price {
+struct PriceNumber has copy, drop {
+	value: u128,
+	scaling_factor: u128
+}
+
+public of(Arg0: u128, Arg1: u128): PriceNumber {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: CopyLoc[1](Arg1: u128)
+	2: Pack[0](PriceNumber)
+	3: Ret
+}
+public unpack(Arg0: PriceNumber): u128 * u128 {
+B0:
+	0: ImmBorrowLoc[0](Arg0: PriceNumber)
+	1: ImmBorrowField[0](PriceNumber.value: u128)
+	2: ReadRef
+	3: ImmBorrowLoc[0](Arg0: PriceNumber)
+	4: ImmBorrowField[1](PriceNumber.scaling_factor: u128)
+	5: ReadRef
+	6: Ret
+}
+}

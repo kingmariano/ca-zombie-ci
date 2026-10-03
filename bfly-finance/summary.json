@@ -1,0 +1,62 @@
+{
+  "finding": "H-15",
+  "title": "BFly Finance (Starcoin) — mispriced FAI in live DEX pool enables profitable liquidation of the 4M-STC whale vault",
+  "chains": ["starcoin"],
+  "headline_extractable_usd": 775.10,
+  "headline_confidence": "medium",
+  "categories": {
+    "E-U": 775.10,
+    "H-O": 1112.29,
+    "P": 0.0,
+    "S": 330.11
+  },
+  "latest_block": 32904523,
+  "block_numbers": {
+    "starcoin": 32904523
+  },
+  "targets_checked": 30,
+  "live_targets": 1,
+  "closed_reasons": [
+    "Config::update_config is deprecated in the deployed bytecode (aborts); update_config_sign and set_global_switch assert the admin address",
+    "Treasury::get_with_capability requires a WithdrawCapability that was never created at the admin address; Treasury::withdraw only touches the signer's own vault",
+    "lock_* paths require a VaultPoolConfigExtension resource that does not exist; STCTreasury and STCVaultPoolB are uninitialized",
+    "STCVaultPoolA::crack and Vault::rearrange are public(friend); the clip ratio (111.111 STC per FAI) is enforced",
+    "Minting FAI through the protocol costs 300 STC per FAI (ccr=300%) vs 111.11 STC seized -> structural loss",
+    "ETHVaultPoolA liquidation is a silent no-op: Liquidation::clip gates the crack call on is_same_token<Ty1, STC>",
+    "Oracle account (0x82e35b...) is the only updater of STCUSD; price $0.01 is not attacker-manipulable",
+    "Healthy vaults' collateral is only withdrawable by their owners; unhealthy whale vault cannot be withdrawn by its owner (HF 0.7158 < 1)"
+  ],
+  "poc": {
+    "tests_passed": 1,
+    "tests_total": 1,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37138697284",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37136137184",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37133323542"
+    ]
+  },
+  "key_facts": [
+    "Starcoin mainnet head 32,904,523 (2026-10-03); protocol admin 0x4ffcc98f43ce74668264a0cf6eebe42b; global freeze switch OFF",
+    "Live protocol value: 14,060,938.315 STC locked in STCVaultPoolA across 189 vaults, 34,928.867 FAI principal debt; ETH pool 0.011012 ETH / 7.008 FAI",
+    "Protocol oracle STCUSD = $0.01 (updated every ~10 min by the team's oracle bot) vs last market print $0.00011112 (CoinGecko/Coinbase/TradingView) — 90x",
+    "Deployed clip formula (from on-chain bytecode): collateral_seized = cover * 1e8 / (price_value*(100-penalty)) = 111.111 STC per 1 FAI repaid; borrow capacity = 300 STC per 1 FAI minted (ccr=30000)",
+    "31 vaults are liquidatable now (HF <= 1e18): 4,051,161 STC collateral vs 37,718 FAI debt+fee; whale vault 0x0c357315f9351540114596324f41006e (id 10041) has 4,000,000 STC collateral, 33,472.93 FAI debt + 3,779.43 fee, HF 0.7158",
+    "Starswap TokenSwapPair<STC,FAI> at 0x8c109349c6bd91411d6bc962e080c4a3 holds 410,813.79 STC / 21,413.90 FAI -> FAI spot 19.18 STC; 0.3% fee; freeze off; traded 2026-10-01",
+    "Full-cycle exploit (exact integer AMM math, validated by on-chain get_amount_out): spend 786.34 XUSDT -> 574,795 STC -> 12,472.68 FAI -> liquidate whale -> seize 1,385,854 STC -> sell -> 1,561.44 XUSDT = NET +775.10 XUSDT (1.9857x)",
+    "STC-holder variant: net +811,059 STC, sellable for 778.14 XUSDT; small trades earn 4.6-4.8x (e.g. 10,000 STC -> +46,375 STC)",
+    "The clip formula was independently calibrated against the protocol's own 9 historical ClipEvents (2022-07-18): all imply the then-oracle price $0.0398-0.0407, consistent",
+    "Explorer census: 1,266 BFly transactions / 2,949 unique events recovered; all 34,928.867 FAI principal debt attributed to 158 STC vaults; remaining ~9.8M STC pool collateral is in debt-free (non-liquidatable) vaults",
+    "Independent subagent review falsified the initial no-extraction hypothesis and reproduced the same exploit (+811,070 STC), and separately confirmed the gated paths",
+    "Treasury holds 4,822.212531853 FAI with no WithdrawCapability ever created -> permanently locked; ETH pool liquidation is a no-op by code"
+  ],
+  "caveats": [
+    "USD headline is XUSDT-denominated (Starcoin-bridged USDT via LockProxy, assumed ~1:1); if XUSDT is discounted, the STC-denominated result (+811,059 STC) still holds; at the last STC market price that is ~$90",
+    "Starcoin has no EVM-style fork framework: the PoC is live view-call + exact bytecode model + historical event calibration, not a forked state transition; contract.call_v2 cannot pass signer args (verified), so no dry-run of the state-changing call was possible",
+    "The arbitrage is self-extinguishing: pool reserves/prices change as soon as anyone trades; numbers are a snapshot at head 32,904,523",
+    "Public mempool allows copy-trading; no active searchers observed on this chain",
+    "H-O is valued at the last STC market price ($0.00011112): healthy-vault collateral 10,009,777 STC ~= $1,112; at the protocol oracle price it would be $100,098 (not externally realizable)",
+    "S combines the ETH pool (0.011012 ETH ~= $40 at ETH $3,600; liquidation no-op) and the whale's post-arb residual collateral (~2.6M STC ~= $290 at market), which remains liquidatable if other FAI holders act",
+    "Deployed module source is not public (public repo ends at v1.0.1, 2022-03); the deployed v1.0.x was audited entirely from on-chain bytecode disassembly"
+  ],
+  "one_liner": "External unprivileged attacker can net ~775 XUSDT (~$775) today by buying FAI at ~19-40 STC from the live Starswap STC/FAI pool and liquidating the protocol's 4M-STC underwater whale vault (111.11 STC seized per FAI repaid); all admin/capability/mint paths are closed, and the opportunity is self-extinguishing."
+}

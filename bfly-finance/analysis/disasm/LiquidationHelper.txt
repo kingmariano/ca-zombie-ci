@@ -1,0 +1,272 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.LiquidationHelper {
+
+
+public cal_max_borrow<Ty0: copy + drop + store, Ty1: store>(Arg0: u128, Arg1: u128): u128 {
+L0:	loc2: VaultPoolConfig<Ty0>
+L1:	loc3: u128
+B0:
+	0: Call[0](get<Ty0>(): VaultPoolConfig<Ty0>)
+	1: StLoc[4](loc2: VaultPoolConfig<Ty0>)
+	2: MoveLoc[4](loc2: VaultPoolConfig<Ty0>)
+	3: Call[1](unpack<Ty0>(VaultPoolConfig<Ty0>): u128 * u128 * u128 * u128 * u128 * u128 * u128)
+	4: Pop
+	5: Pop
+	6: Pop
+	7: StLoc[3](loc1: u128)
+	8: Pop
+	9: Pop
+	10: Pop
+	11: CopyLoc[1](Arg1: u128)
+	12: LdConst[1](U8: [4])
+	13: Call[11](pow_10(u8): u128)
+	14: Call[2](max_borrow<Ty1>(u128, u128): u128)
+	15: StLoc[5](loc3: u128)
+	16: CopyLoc[5](loc3: u128)
+	17: LdConst[1](U8: [4])
+	18: Call[11](pow_10(u8): u128)
+	19: CopyLoc[3](loc1: u128)
+	20: Call[12](mul_div(u128, u128, u128): u128)
+	21: StLoc[2](loc0: u128)
+	22: CopyLoc[2](loc0: u128)
+	23: CopyLoc[0](Arg0: u128)
+	24: Sub
+	25: Ret
+}
+public cal_max_withdraw<Ty0: copy + drop + store>(Arg0: u128, Arg1: u128, Arg2: u128): u128 {
+L0:	loc3: u128
+B0:
+	0: Call[0](get<Ty0>(): VaultPoolConfig<Ty0>)
+	1: StLoc[5](loc2: VaultPoolConfig<Ty0>)
+	2: MoveLoc[5](loc2: VaultPoolConfig<Ty0>)
+	3: Call[1](unpack<Ty0>(VaultPoolConfig<Ty0>): u128 * u128 * u128 * u128 * u128 * u128 * u128)
+	4: Pop
+	5: Pop
+	6: Pop
+	7: StLoc[3](loc0: u128)
+	8: Pop
+	9: Pop
+	10: Pop
+	11: CopyLoc[0](Arg0: u128)
+	12: CopyLoc[1](Arg1: u128)
+	13: Add
+	14: StLoc[6](loc3: u128)
+	15: CopyLoc[6](loc3: u128)
+	16: CopyLoc[3](loc0: u128)
+	17: Call[5](min_collateral(u128, u128): u128)
+	18: StLoc[4](loc1: u128)
+	19: CopyLoc[2](Arg2: u128)
+	20: CopyLoc[4](loc1: u128)
+	21: Sub
+	22: Ret
+}
+public cal_max_withdraw_v2<Ty0: copy + drop + store, Ty1: store>(Arg0: u128, Arg1: u128, Arg2: u128): u128 {
+L0:	loc3: u128
+B0:
+	0: Call[0](get<Ty0>(): VaultPoolConfig<Ty0>)
+	1: StLoc[5](loc2: VaultPoolConfig<Ty0>)
+	2: MoveLoc[5](loc2: VaultPoolConfig<Ty0>)
+	3: Call[1](unpack<Ty0>(VaultPoolConfig<Ty0>): u128 * u128 * u128 * u128 * u128 * u128 * u128)
+	4: Pop
+	5: Pop
+	6: Pop
+	7: StLoc[3](loc0: u128)
+	8: Pop
+	9: Pop
+	10: Pop
+	11: CopyLoc[0](Arg0: u128)
+	12: CopyLoc[1](Arg1: u128)
+	13: Add
+	14: StLoc[6](loc3: u128)
+	15: CopyLoc[6](loc3: u128)
+	16: CopyLoc[3](loc0: u128)
+	17: Call[3](min_collateral_v2<Ty1>(u128, u128): u128)
+	18: StLoc[4](loc1: u128)
+	19: CopyLoc[2](Arg2: u128)
+	20: CopyLoc[4](loc1: u128)
+	21: Sub
+	22: Ret
+}
+public check_health_factor<Ty0: copy + drop + store, Ty1: store>(Arg0: u128, Arg1: u128, Arg2: u128, Arg3: u128) {
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: CopyLoc[3](Arg3: u128)
+	2: Call[4](cal_max_borrow<Ty0, Ty1>(u128, u128): u128)
+	3: StLoc[4](loc0: u128)
+	4: CopyLoc[0](Arg0: u128)
+	5: CopyLoc[2](Arg2: u128)
+	6: Add
+	7: CopyLoc[4](loc0: u128)
+	8: LdU128(2)
+	9: Add
+	10: Le
+	11: BrTrue(15)
+B1:
+	12: LdConst[0](U64: [45, 1, 0, 0, 0, 0, 0, 0])
+	13: Call[13](custom(u64): u64)
+	14: Abort
+B2:
+	15: Ret
+}
+max_borrow<Ty0: store>(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: Call[5](token_value_of_usd<Ty0>(u128): Exp)
+	2: StLoc[3](loc1: Exp)
+	3: MoveLoc[3](loc1: Exp)
+	4: Call[6](to_token_amount<FAI>(Exp): u128)
+	5: StLoc[2](loc0: u128)
+	6: CopyLoc[2](loc0: u128)
+	7: CopyLoc[1](Arg1: u128)
+	8: LdConst[1](U8: [4])
+	9: Call[11](pow_10(u8): u128)
+	10: Call[12](mul_div(u128, u128, u128): u128)
+	11: Ret
+}
+min_collateral(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: Call[7](token_value_of_usd<FAI>(u128): Exp)
+	2: StLoc[3](loc1: Exp)
+	3: MoveLoc[3](loc1: Exp)
+	4: Call[8](to_token_amount<STC>(Exp): u128)
+	5: StLoc[2](loc0: u128)
+	6: CopyLoc[2](loc0: u128)
+	7: CopyLoc[1](Arg1: u128)
+	8: LdConst[1](U8: [4])
+	9: Call[11](pow_10(u8): u128)
+	10: Call[12](mul_div(u128, u128, u128): u128)
+	11: Ret
+}
+min_collateral_v2<Ty0: store>(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: Call[7](token_value_of_usd<FAI>(u128): Exp)
+	2: StLoc[3](loc1: Exp)
+	3: MoveLoc[3](loc1: Exp)
+	4: Call[9](to_token_amount<Ty0>(Exp): u128)
+	5: StLoc[2](loc0: u128)
+	6: CopyLoc[2](loc0: u128)
+	7: CopyLoc[1](Arg1: u128)
+	8: LdConst[1](U8: [4])
+	9: Call[11](pow_10(u8): u128)
+	10: Call[12](mul_div(u128, u128, u128): u128)
+	11: Ret
+}
+to_token_amount<Ty0: store>(Arg0: Exp): u128 {
+L0:	loc1: u128
+L1:	loc2: u128
+L2:	loc3: Exp
+L3:	loc4: PriceNumber
+L4:	loc5: u128
+L5:	loc6: u128
+L6:	loc7: Exp
+L7:	loc8: u128
+B0:
+	0: Call[10](scaling_factor<Ty0>(): u128)
+	1: StLoc[9](loc8: u128)
+	2: Call[15](exp_scale(): u128)
+	3: StLoc[2](loc1: u128)
+	4: Call[11](usdt_price<Ty0>(): PriceNumber)
+	5: StLoc[5](loc4: PriceNumber)
+	6: MoveLoc[5](loc4: PriceNumber)
+	7: Call[17](unpack(PriceNumber): u128 * u128)
+	8: StLoc[6](loc5: u128)
+	9: StLoc[3](loc2: u128)
+	10: CopyLoc[3](loc2: u128)
+	11: Call[18](exp_direct(u128): Exp)
+	12: StLoc[4](loc3: Exp)
+	13: MoveLoc[0](Arg0: Exp)
+	14: CopyLoc[6](loc5: u128)
+	15: Call[19](mul_scalar_exp(Exp, u128): Exp)
+	16: StLoc[1](loc0: Exp)
+	17: MoveLoc[1](loc0: Exp)
+	18: MoveLoc[4](loc3: Exp)
+	19: Call[20](mantissa(Exp): u128)
+	20: Call[21](div_scalar_exp(Exp, u128): Exp)
+	21: StLoc[8](loc7: Exp)
+	22: MoveLoc[8](loc7: Exp)
+	23: Call[20](mantissa(Exp): u128)
+	24: CopyLoc[2](loc1: u128)
+	25: CopyLoc[9](loc8: u128)
+	26: Div
+	27: Div
+	28: StLoc[7](loc6: u128)
+	29: CopyLoc[7](loc6: u128)
+	30: Ret
+}
+token_value_of_usd<Ty0: store>(Arg0: u128): Exp {
+L0:	loc1: Exp
+L1:	loc2: u128
+L2:	loc3: u128
+L3:	loc4: Exp
+L4:	loc5: PriceNumber
+L5:	loc6: u128
+L6:	loc7: u128
+L7:	loc8: u128
+L8:	loc9: Exp
+L9:	loc10: u128
+B0:
+	0: Call[15](exp_scale(): u128)
+	1: StLoc[3](loc2: u128)
+	2: Call[10](scaling_factor<Ty0>(): u128)
+	3: StLoc[9](loc8: u128)
+	4: Call[11](usdt_price<Ty0>(): PriceNumber)
+	5: StLoc[6](loc5: PriceNumber)
+	6: MoveLoc[6](loc5: PriceNumber)
+	7: Call[17](unpack(PriceNumber): u128 * u128)
+	8: StLoc[7](loc6: u128)
+	9: StLoc[4](loc3: u128)
+	10: CopyLoc[4](loc3: u128)
+	11: Call[18](exp_direct(u128): Exp)
+	12: StLoc[5](loc4: Exp)
+	13: CopyLoc[0](Arg0: u128)
+	14: Call[18](exp_direct(u128): Exp)
+	15: StLoc[2](loc1: Exp)
+	16: MoveLoc[2](loc1: Exp)
+	17: MoveLoc[5](loc4: Exp)
+	18: Call[20](mantissa(Exp): u128)
+	19: Call[19](mul_scalar_exp(Exp, u128): Exp)
+	20: StLoc[10](loc9: Exp)
+	21: CopyLoc[7](loc6: u128)
+	22: LdU128(0)
+	23: Eq
+	24: BrTrue(26)
+B1:
+	25: Branch(28)
+B2:
+	26: LdU128(1)
+	27: StLoc[7](loc6: u128)
+B3:
+	28: CopyLoc[9](loc8: u128)
+	29: CopyLoc[7](loc6: u128)
+	30: Mul
+	31: StLoc[11](loc10: u128)
+	32: CopyLoc[11](loc10: u128)
+	33: CopyLoc[3](loc2: u128)
+	34: Ge
+	35: BrTrue(37)
+B4:
+	36: Branch(44)
+B5:
+	37: MoveLoc[10](loc9: Exp)
+	38: CopyLoc[11](loc10: u128)
+	39: CopyLoc[3](loc2: u128)
+	40: Div
+	41: Call[21](div_scalar_exp(Exp, u128): Exp)
+	42: StLoc[1](loc0: Exp)
+	43: Branch(52)
+B6:
+	44: CopyLoc[3](loc2: u128)
+	45: CopyLoc[11](loc10: u128)
+	46: Div
+	47: StLoc[8](loc7: u128)
+	48: MoveLoc[10](loc9: Exp)
+	49: CopyLoc[8](loc7: u128)
+	50: Call[19](mul_scalar_exp(Exp, u128): Exp)
+	51: StLoc[1](loc0: Exp)
+B7:
+	52: MoveLoc[1](loc0: Exp)
+	53: Ret
+}
+}

@@ -1,0 +1,34 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.Initialize {
+
+
+public initialize(Arg0: &signer) {
+L0:	loc1: u128
+L1:	loc2: u128
+L2:	loc3: u128
+L3:	loc4: u128
+L4:	loc5: u128
+L5:	loc6: u128
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[1](initialize(&signer))
+	2: LdU128(200000000000)
+	3: Call[0](scaling_factor<FAI>(): u128)
+	4: Mul
+	5: StLoc[5](loc4: u128)
+	6: LdU128(1)
+	7: Call[0](scaling_factor<FAI>(): u128)
+	8: Mul
+	9: StLoc[6](loc5: u128)
+	10: MoveLoc[0](Arg0: &signer)
+	11: CopyLoc[5](loc4: u128)
+	12: CopyLoc[6](loc5: u128)
+	13: LdU128(300)
+	14: LdU128(30000)
+	15: LdU128(10000000000000)
+	16: LdU128(10)
+	17: LdU128(8000)
+	18: Call[3](initialize(&signer, u128, u128, u128, u128, u128, u128, u128))
+	19: Ret
+}
+}

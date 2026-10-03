@@ -1,0 +1,182 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.MarketScript {
+
+
+entry public borrow_fai(Arg0: signer, Arg1: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[21](borrow_fai(&signer, u128))
+	3: Ret
+}
+entry public borrow_fai_from_eth_pool(Arg0: signer, Arg1: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[22](borrow_fai(&signer, u128))
+	3: Ret
+}
+entry public create_eth_vault(Arg0: signer) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: Call[23](create_vault(&signer): u64)
+	2: Pop
+	3: Ret
+}
+entry public create_vault(Arg0: signer) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: Call[24](create_vault(&signer): u64)
+	2: Pop
+	3: Ret
+}
+entry public deposit(Arg0: signer, Arg1: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[25](deposit(&signer, u128): u128)
+	3: Pop
+	4: Ret
+}
+entry public deposit_eth(Arg0: signer, Arg1: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[26](deposit(&signer, u128): u128)
+	3: Pop
+	4: Ret
+}
+entry public init_event(Arg0: signer) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: Call[27](initialize_event(&signer))
+	2: Ret
+}
+entry public init_event_of_eth_pool(Arg0: signer) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: Call[28](initialize_event(&signer))
+	2: Ret
+}
+entry public liquidation(Arg0: signer, Arg1: address, Arg2: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: address)
+	2: CopyLoc[2](Arg2: u128)
+	3: Call[0](clip<VaultPool, STC>(&signer, address, u128))
+	4: Ret
+}
+entry public liquidation_eth_pool(Arg0: signer, Arg1: address, Arg2: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: address)
+	2: CopyLoc[2](Arg2: u128)
+	3: Call[1](clip<VaultPool, XETH>(&signer, address, u128))
+	4: Ret
+}
+entry public lock_borrow<Ty0>(Arg0: signer, Arg1: u64, Arg2: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u64)
+	2: CopyLoc[2](Arg2: u128)
+	3: Call[2](borrow<Ty0>(&signer, u64, u128))
+	4: Ret
+}
+entry public lock_lock<Ty0>(Arg0: signer, Arg1: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[3](lock_lock<Ty0>(&signer, u128))
+	3: Ret
+}
+entry public lock_repay<Ty0>(Arg0: signer, Arg1: u64, Arg2: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u64)
+	2: CopyLoc[2](Arg2: u128)
+	3: Call[4](repay<Ty0>(&signer, u64, u128): u128 * u128)
+	4: Pop
+	5: Pop
+	6: Ret
+}
+entry public lock_unlock<Ty0>(Arg0: signer, Arg1: u64) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u64)
+	2: Call[5](unlock<Ty0>(&signer, u64))
+	3: Ret
+}
+entry public repay_fai(Arg0: signer, Arg1: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[34](repay_fai(&signer, u128): u128 * u128)
+	3: Pop
+	4: Pop
+	5: Ret
+}
+entry public repay_fai_from_eth_pool(Arg0: signer, Arg1: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[35](repay_fai(&signer, u128): u128 * u128)
+	3: Pop
+	4: Pop
+	5: Ret
+}
+entry public set_global_switch(Arg0: signer, Arg1: bool) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: bool)
+	2: Call[36](set_global_switch(&signer, bool))
+	3: Ret
+}
+entry public update_config(Arg0: signer, Arg1: u128, Arg2: u128, Arg3: u128, Arg4: u128, Arg5: u128, Arg6: u128, Arg7: u128) {
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: CopyLoc[2](Arg2: u128)
+	2: CopyLoc[3](Arg3: u128)
+	3: CopyLoc[4](Arg4: u128)
+	4: CopyLoc[5](Arg5: u128)
+	5: CopyLoc[6](Arg6: u128)
+	6: CopyLoc[7](Arg7: u128)
+	7: Call[6](new_config<VaultPool>(u128, u128, u128, u128, u128, u128, u128): VaultPoolConfig<VaultPool>)
+	8: StLoc[8](loc0: VaultPoolConfig<VaultPool>)
+	9: ImmBorrowLoc[0](Arg0: signer)
+	10: MoveLoc[8](loc0: VaultPoolConfig<VaultPool>)
+	11: Call[7](update_config_sign<VaultPool>(&signer, VaultPoolConfig<VaultPool>))
+	12: Ret
+}
+entry public update_eth_pool_config(Arg0: signer, Arg1: u128, Arg2: u128, Arg3: u128, Arg4: u128, Arg5: u128, Arg6: u128, Arg7: u128) {
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: CopyLoc[2](Arg2: u128)
+	2: CopyLoc[3](Arg3: u128)
+	3: CopyLoc[4](Arg4: u128)
+	4: CopyLoc[5](Arg5: u128)
+	5: CopyLoc[6](Arg6: u128)
+	6: CopyLoc[7](Arg7: u128)
+	7: Call[8](new_config<VaultPool>(u128, u128, u128, u128, u128, u128, u128): VaultPoolConfig<VaultPool>)
+	8: StLoc[8](loc0: VaultPoolConfig<VaultPool>)
+	9: ImmBorrowLoc[0](Arg0: signer)
+	10: MoveLoc[8](loc0: VaultPoolConfig<VaultPool>)
+	11: Call[9](update_config_sign<VaultPool>(&signer, VaultPoolConfig<VaultPool>))
+	12: Ret
+}
+entry public withdraw(Arg0: signer, Arg1: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[39](withdraw(&signer, u128): u128)
+	3: Pop
+	4: Ret
+}
+entry public withdraw_eth(Arg0: signer, Arg1: u128) {
+B0:
+	0: ImmBorrowLoc[0](Arg0: signer)
+	1: CopyLoc[1](Arg1: u128)
+	2: Call[40](withdraw(&signer, u128): u128)
+	3: Pop
+	4: Ret
+}
+}

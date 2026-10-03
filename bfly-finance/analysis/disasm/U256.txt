@@ -1,0 +1,1613 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.U256 {
+struct U256 has copy, drop, store {
+	val: vector<u8>
+}
+
+public add(Arg0: U256, Arg1: U256, Arg2: u8): U256 {
+B0:
+	0: MoveLoc[0](Arg0: U256)
+	1: Call[25](val(U256): vector<u8>)
+	2: StLoc[3](loc0: vector<u8>)
+	3: MoveLoc[1](Arg1: U256)
+	4: Call[25](val(U256): vector<u8>)
+	5: StLoc[4](loc1: vector<u8>)
+	6: MoveLoc[3](loc0: vector<u8>)
+	7: MoveLoc[4](loc1: vector<u8>)
+	8: CopyLoc[2](Arg2: u8)
+	9: Call[13](inner_add(vector<u8>, vector<u8>, u8): vector<u8>)
+	10: StLoc[5](loc2: vector<u8>)
+	11: MoveLoc[5](loc2: vector<u8>)
+	12: Pack[0](U256)
+	13: Ret
+}
+public as_u128(Arg0: U256): u128 {
+B0:
+	0: MoveLoc[0](Arg0: U256)
+	1: Call[25](val(U256): vector<u8>)
+	2: StLoc[1](loc0: vector<u8>)
+	3: MoveLoc[1](loc0: vector<u8>)
+	4: Call[14](inner_as_u128(vector<u8>): u128)
+	5: Ret
+}
+public as_u64(Arg0: U256): u64 {
+B0:
+	0: MoveLoc[0](Arg0: U256)
+	1: Call[1](as_u128(U256): u128)
+	2: StLoc[1](loc0: u128)
+	3: CopyLoc[1](loc0: u128)
+	4: LdConst[3](U64: [255, 255, 255, 255, 255, 255, 255, 255])
+	5: CastU128
+	6: Le
+	7: BrTrue(11)
+B1:
+	8: LdConst[0](U64: [1, 0, 0, 0, 0, 0, 0, 0])
+	9: Call[26](invalid_argument(u64): u64)
+	10: Abort
+B2:
+	11: CopyLoc[1](loc0: u128)
+	12: CastU64
+	13: Ret
+}
+public as_u8(Arg0: U256): u8 {
+B0:
+	0: MoveLoc[0](Arg0: U256)
+	1: Call[1](as_u128(U256): u128)
+	2: StLoc[1](loc0: u128)
+	3: CopyLoc[1](loc0: u128)
+	4: LdConst[4](U8: [255])
+	5: CastU128
+	6: Le
+	7: BrTrue(11)
+B1:
+	8: LdConst[0](U64: [1, 0, 0, 0, 0, 0, 0, 0])
+	9: Call[26](invalid_argument(u64): u64)
+	10: Abort
+B2:
+	11: CopyLoc[1](loc0: u128)
+	12: CastU8
+	13: Ret
+}
+public binary_to_u128(Arg0: vector<u8>): u128 {
+L0:	loc1: u64
+L1:	loc2: u64
+L2:	loc3: u128
+L3:	loc4: u8
+L4:	loc5: u128
+L5:	loc6: u128
+B0:
+	0: ImmBorrowLoc[0](Arg0: vector<u8>)
+	1: Call[0](length<u8>(&vector<u8>): u64)
+	2: StLoc[3](loc2: u64)
+	3: CopyLoc[3](loc2: u64)
+	4: LdU64(128)
+	5: Le
+	6: BrTrue(10)
+B1:
+	7: LdConst[0](U64: [1, 0, 0, 0, 0, 0, 0, 0])
+	8: Call[26](invalid_argument(u64): u64)
+	9: Abort
+B2:
+	10: LdU64(0)
+	11: StLoc[1](loc0: u64)
+	12: CopyLoc[3](loc2: u64)
+	13: LdU64(1)
+	14: Sub
+	15: StLoc[2](loc1: u64)
+	16: LdU128(0)
+	17: StLoc[6](loc5: u128)
+B3:
+	18: CopyLoc[1](loc0: u64)
+	19: CopyLoc[3](loc2: u64)
+	20: Lt
+	21: BrTrue(23)
+B4:
+	22: Branch(60)
+B5:
+	23: ImmBorrowLoc[0](Arg0: vector<u8>)
+	24: CopyLoc[1](loc0: u64)
+	25: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	26: ReadRef
+	27: StLoc[5](loc4: u8)
+	28: LdU128(0)
+	29: StLoc[7](loc6: u128)
+	30: CopyLoc[2](loc1: u64)
+	31: LdU64(0)
+	32: Gt
+	33: BrTrue(35)
+B6:
+	34: Branch(46)
+B7:
+	35: LdU128(2)
+	36: CopyLoc[2](loc1: u64)
+	37: LdU64(1)
+	38: Sub
+	39: CastU8
+	40: Shl
+	41: StLoc[7](loc6: u128)
+	42: CopyLoc[2](loc1: u64)
+	43: LdU64(1)
+	44: Sub
+	45: StLoc[2](loc1: u64)
+B8:
+	46: CopyLoc[7](loc6: u128)
+	47: CopyLoc[5](loc4: u8)
+	48: CastU128
+	49: Mul
+	50: StLoc[4](loc3: u128)
+	51: CopyLoc[4](loc3: u128)
+	52: CopyLoc[6](loc5: u128)
+	53: Add
+	54: StLoc[6](loc5: u128)
+	55: CopyLoc[1](loc0: u64)
+	56: LdU64(1)
+	57: Add
+	58: StLoc[1](loc0: u64)
+	59: Branch(18)
+B9:
+	60: CopyLoc[6](loc5: u128)
+	61: Ret
+}
+public div(Arg0: U256, Arg1: U256): U256 {
+B0:
+	0: Call[2](empty<u8>(): vector<u8>)
+	1: Pack[0](U256)
+	2: Ret
+}
+public from_binary_string(Arg0: vector<u8>): vector<u8> {
+L0:	loc1: bool
+L1:	loc2: u64
+L2:	loc3: u64
+L3:	loc4: u64
+L4:	loc5: u8
+L5:	loc6: vector<u8>
+L6:	loc7: vector<u8>
+B0:
+	0: LdU64(0)
+	1: StLoc[3](loc2: u64)
+	2: ImmBorrowLoc[0](Arg0: vector<u8>)
+	3: Call[0](length<u8>(&vector<u8>): u64)
+	4: StLoc[5](loc4: u64)
+	5: Call[2](empty<u8>(): vector<u8>)
+	6: StLoc[8](loc7: vector<u8>)
+B1:
+	7: CopyLoc[3](loc2: u64)
+	8: CopyLoc[5](loc4: u64)
+	9: Lt
+	10: BrTrue(12)
+B2:
+	11: Branch(39)
+B3:
+	12: MutBorrowLoc[0](Arg0: vector<u8>)
+	13: Call[3](pop_back<u8>(&mut vector<u8>): u8)
+	14: StLoc[6](loc5: u8)
+	15: LdConst[1](Vector(U8): [10, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57])
+	16: StLoc[1](loc0: vector<u8>)
+	17: ImmBorrowLoc[1](loc0: vector<u8>)
+	18: ImmBorrowLoc[6](loc5: u8)
+	19: Call[4](index_of<u8>(&vector<u8>, &u8): bool * u64)
+	20: StLoc[4](loc3: u64)
+	21: StLoc[2](loc1: bool)
+	22: CopyLoc[2](loc1: bool)
+	23: BrTrue(27)
+B4:
+	24: LdConst[0](U64: [1, 0, 0, 0, 0, 0, 0, 0])
+	25: Call[26](invalid_argument(u64): u64)
+	26: Abort
+B5:
+	27: CopyLoc[4](loc3: u64)
+	28: CastU8
+	29: Call[24](u8_to_binary(u8): vector<u8>)
+	30: StLoc[7](loc6: vector<u8>)
+	31: MutBorrowLoc[8](loc7: vector<u8>)
+	32: MoveLoc[7](loc6: vector<u8>)
+	33: Call[5](append<u8>(&mut vector<u8>, vector<u8>))
+	34: CopyLoc[3](loc2: u64)
+	35: LdU64(1)
+	36: Add
+	37: StLoc[3](loc2: u64)
+	38: Branch(7)
+B6:
+	39: MutBorrowLoc[8](loc7: vector<u8>)
+	40: Call[6](reverse<u8>(&mut vector<u8>))
+	41: MoveLoc[8](loc7: vector<u8>)
+	42: Ret
+}
+public from_string(Arg0: vector<u8>): U256 {
+L0:	loc1: bool
+L1:	loc2: u64
+L2:	loc3: u64
+L3:	loc4: u64
+L4:	loc5: u8
+L5:	loc6: vector<u8>
+B0:
+	0: ImmBorrowLoc[0](Arg0: vector<u8>)
+	1: Call[7](is_empty<u8>(&vector<u8>): bool)
+	2: BrTrue(4)
+B1:
+	3: Branch(7)
+B2:
+	4: LdU8(0)
+	5: Call[10](from_u8(u8): U256)
+	6: Ret
+B3:
+	7: LdU64(0)
+	8: StLoc[3](loc2: u64)
+	9: ImmBorrowLoc[0](Arg0: vector<u8>)
+	10: Call[0](length<u8>(&vector<u8>): u64)
+	11: StLoc[5](loc4: u64)
+	12: Call[2](empty<u8>(): vector<u8>)
+	13: StLoc[7](loc6: vector<u8>)
+B4:
+	14: CopyLoc[3](loc2: u64)
+	15: CopyLoc[5](loc4: u64)
+	16: Lt
+	17: BrTrue(19)
+B5:
+	18: Branch(43)
+B6:
+	19: MutBorrowLoc[0](Arg0: vector<u8>)
+	20: Call[3](pop_back<u8>(&mut vector<u8>): u8)
+	21: StLoc[6](loc5: u8)
+	22: LdConst[1](Vector(U8): [10, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57])
+	23: StLoc[1](loc0: vector<u8>)
+	24: ImmBorrowLoc[1](loc0: vector<u8>)
+	25: ImmBorrowLoc[6](loc5: u8)
+	26: Call[4](index_of<u8>(&vector<u8>, &u8): bool * u64)
+	27: StLoc[4](loc3: u64)
+	28: StLoc[2](loc1: bool)
+	29: CopyLoc[2](loc1: bool)
+	30: BrTrue(34)
+B7:
+	31: LdConst[0](U64: [1, 0, 0, 0, 0, 0, 0, 0])
+	32: Call[26](invalid_argument(u64): u64)
+	33: Abort
+B8:
+	34: MutBorrowLoc[7](loc6: vector<u8>)
+	35: CopyLoc[4](loc3: u64)
+	36: CastU8
+	37: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	38: CopyLoc[3](loc2: u64)
+	39: LdU64(1)
+	40: Add
+	41: StLoc[3](loc2: u64)
+	42: Branch(14)
+B9:
+	43: MutBorrowLoc[7](loc6: vector<u8>)
+	44: Call[6](reverse<u8>(&mut vector<u8>))
+	45: MoveLoc[7](loc6: vector<u8>)
+	46: Pack[0](U256)
+	47: Ret
+}
+public from_u128(Arg0: u128): U256 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: Call[19](pack(u128): vector<u8>)
+	2: Pack[0](U256)
+	3: Ret
+}
+public from_u64(Arg0: u64): U256 {
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: CastU128
+	2: Call[8](from_u128(u128): U256)
+	3: Ret
+}
+public from_u8(Arg0: u8): U256 {
+B0:
+	0: CopyLoc[0](Arg0: u8)
+	1: CastU128
+	2: Call[8](from_u128(u128): U256)
+	3: Ret
+}
+get_lower(Arg0: &vector<u8>, Arg1: u64): vector<u8> {
+L0:	loc2: vector<u8>
+L1:	loc3: u64
+B0:
+	0: CopyLoc[0](Arg0: &vector<u8>)
+	1: Call[0](length<u8>(&vector<u8>): u64)
+	2: StLoc[2](loc0: u64)
+	3: CopyLoc[2](loc0: u64)
+	4: CopyLoc[1](Arg1: u64)
+	5: Le
+	6: BrTrue(8)
+B1:
+	7: Branch(11)
+B2:
+	8: MoveLoc[0](Arg0: &vector<u8>)
+	9: ReadRef
+	10: Ret
+B3:
+	11: Call[2](empty<u8>(): vector<u8>)
+	12: StLoc[4](loc2: vector<u8>)
+	13: CopyLoc[2](loc0: u64)
+	14: CopyLoc[1](Arg1: u64)
+	15: Sub
+	16: StLoc[5](loc3: u64)
+B4:
+	17: CopyLoc[5](loc3: u64)
+	18: CopyLoc[2](loc0: u64)
+	19: Lt
+	20: BrTrue(22)
+B5:
+	21: Branch(35)
+B6:
+	22: CopyLoc[0](Arg0: &vector<u8>)
+	23: CopyLoc[5](loc3: u64)
+	24: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	25: ReadRef
+	26: StLoc[3](loc1: u8)
+	27: MutBorrowLoc[4](loc2: vector<u8>)
+	28: CopyLoc[3](loc1: u8)
+	29: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	30: CopyLoc[5](loc3: u64)
+	31: LdU64(1)
+	32: Add
+	33: StLoc[5](loc3: u64)
+	34: Branch(17)
+B7:
+	35: MoveLoc[0](Arg0: &vector<u8>)
+	36: Pop
+	37: MoveLoc[4](loc2: vector<u8>)
+	38: Ret
+}
+get_upper(Arg0: &vector<u8>, Arg1: u64): vector<u8> {
+L0:	loc2: u8
+L1:	loc3: vector<u8>
+L2:	loc4: u64
+B0:
+	0: CopyLoc[0](Arg0: &vector<u8>)
+	1: Call[0](length<u8>(&vector<u8>): u64)
+	2: StLoc[3](loc1: u64)
+	3: CopyLoc[3](loc1: u64)
+	4: CopyLoc[1](Arg1: u64)
+	5: Le
+	6: BrTrue(8)
+B1:
+	7: Branch(12)
+B2:
+	8: MoveLoc[0](Arg0: &vector<u8>)
+	9: Pop
+	10: Call[2](empty<u8>(): vector<u8>)
+	11: Ret
+B3:
+	12: Call[2](empty<u8>(): vector<u8>)
+	13: StLoc[5](loc3: vector<u8>)
+	14: LdU64(0)
+	15: StLoc[6](loc4: u64)
+	16: CopyLoc[3](loc1: u64)
+	17: CopyLoc[1](Arg1: u64)
+	18: Sub
+	19: StLoc[2](loc0: u64)
+B4:
+	20: CopyLoc[6](loc4: u64)
+	21: CopyLoc[2](loc0: u64)
+	22: Lt
+	23: BrTrue(25)
+B5:
+	24: Branch(38)
+B6:
+	25: CopyLoc[0](Arg0: &vector<u8>)
+	26: CopyLoc[6](loc4: u64)
+	27: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	28: ReadRef
+	29: StLoc[4](loc2: u8)
+	30: MutBorrowLoc[5](loc3: vector<u8>)
+	31: CopyLoc[4](loc2: u8)
+	32: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	33: CopyLoc[6](loc4: u64)
+	34: LdU64(1)
+	35: Add
+	36: StLoc[6](loc4: u64)
+	37: Branch(20)
+B7:
+	38: MoveLoc[0](Arg0: &vector<u8>)
+	39: Pop
+	40: MoveLoc[5](loc3: vector<u8>)
+	41: Ret
+}
+public inner_add(Arg0: vector<u8>, Arg1: vector<u8>, Arg2: u8): vector<u8> {
+L0:	loc3: bool
+L1:	loc4: u8
+L2:	loc5: u64
+L3:	loc6: u64
+L4:	loc7: u64
+L5:	loc8: u64
+L6:	loc9: u64
+L7:	loc10: u8
+L8:	loc11: vector<u8>
+L9:	loc12: u8
+L10:	loc13: u8
+B0:
+	0: Call[2](empty<u8>(): vector<u8>)
+	1: StLoc[14](loc11: vector<u8>)
+	2: ImmBorrowLoc[0](Arg0: vector<u8>)
+	3: Call[0](length<u8>(&vector<u8>): u64)
+	4: ImmBorrowLoc[1](Arg1: vector<u8>)
+	5: Call[0](length<u8>(&vector<u8>): u64)
+	6: StLoc[10](loc7: u64)
+	7: StLoc[9](loc6: u64)
+	8: LdU8(0)
+	9: CopyLoc[9](loc6: u64)
+	10: LdU64(1)
+	11: Sub
+	12: CopyLoc[10](loc7: u64)
+	13: LdU64(1)
+	14: Sub
+	15: StLoc[12](loc9: u64)
+	16: StLoc[11](loc8: u64)
+	17: StLoc[7](loc4: u8)
+	18: LdU64(0)
+	19: StLoc[8](loc5: u64)
+B1:
+	20: CopyLoc[11](loc8: u64)
+	21: LdU64(0)
+	22: Ge
+	23: BrTrue(25)
+B2:
+	24: Branch(28)
+B3:
+	25: LdTrue
+	26: StLoc[3](loc0: bool)
+	27: Branch(32)
+B4:
+	28: CopyLoc[12](loc9: u64)
+	29: LdU64(0)
+	30: Ge
+	31: StLoc[3](loc0: bool)
+B5:
+	32: MoveLoc[3](loc0: bool)
+	33: BrTrue(35)
+B6:
+	34: Branch(133)
+B7:
+	35: LdU8(0)
+	36: LdU8(0)
+	37: StLoc[16](loc13: u8)
+	38: StLoc[15](loc12: u8)
+	39: CopyLoc[11](loc8: u64)
+	40: LdU64(0)
+	41: Ge
+	42: BrTrue(44)
+B8:
+	43: Branch(49)
+B9:
+	44: CopyLoc[8](loc5: u64)
+	45: CopyLoc[9](loc6: u64)
+	46: Lt
+	47: StLoc[4](loc1: bool)
+	48: Branch(51)
+B10:
+	49: LdFalse
+	50: StLoc[4](loc1: bool)
+B11:
+	51: MoveLoc[4](loc1: bool)
+	52: BrTrue(54)
+B12:
+	53: Branch(59)
+B13:
+	54: ImmBorrowLoc[0](Arg0: vector<u8>)
+	55: CopyLoc[11](loc8: u64)
+	56: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	57: ReadRef
+	58: StLoc[15](loc12: u8)
+B14:
+	59: CopyLoc[12](loc9: u64)
+	60: LdU64(0)
+	61: Ge
+	62: BrTrue(64)
+B15:
+	63: Branch(69)
+B16:
+	64: CopyLoc[8](loc5: u64)
+	65: CopyLoc[10](loc7: u64)
+	66: Lt
+	67: StLoc[5](loc2: bool)
+	68: Branch(71)
+B17:
+	69: LdFalse
+	70: StLoc[5](loc2: bool)
+B18:
+	71: MoveLoc[5](loc2: bool)
+	72: BrTrue(74)
+B19:
+	73: Branch(79)
+B20:
+	74: ImmBorrowLoc[1](Arg1: vector<u8>)
+	75: CopyLoc[12](loc9: u64)
+	76: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	77: ReadRef
+	78: StLoc[16](loc13: u8)
+B21:
+	79: CopyLoc[15](loc12: u8)
+	80: CopyLoc[16](loc13: u8)
+	81: Add
+	82: CopyLoc[7](loc4: u8)
+	83: Add
+	84: StLoc[13](loc10: u8)
+	85: CopyLoc[13](loc10: u8)
+	86: CopyLoc[2](Arg2: u8)
+	87: Div
+	88: StLoc[7](loc4: u8)
+	89: MutBorrowLoc[14](loc11: vector<u8>)
+	90: CopyLoc[13](loc10: u8)
+	91: CopyLoc[2](Arg2: u8)
+	92: Mod
+	93: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	94: CopyLoc[8](loc5: u64)
+	95: LdU64(1)
+	96: Add
+	97: StLoc[8](loc5: u64)
+	98: CopyLoc[11](loc8: u64)
+	99: LdU64(0)
+	100: Eq
+	101: BrTrue(103)
+B22:
+	102: Branch(108)
+B23:
+	103: CopyLoc[12](loc9: u64)
+	104: LdU64(0)
+	105: Eq
+	106: StLoc[6](loc3: bool)
+	107: Branch(110)
+B24:
+	108: LdFalse
+	109: StLoc[6](loc3: bool)
+B25:
+	110: MoveLoc[6](loc3: bool)
+	111: BrTrue(113)
+B26:
+	112: Branch(114)
+B27:
+	113: Branch(133)
+B28:
+	114: CopyLoc[11](loc8: u64)
+	115: LdU64(0)
+	116: Gt
+	117: BrTrue(119)
+B29:
+	118: Branch(123)
+B30:
+	119: CopyLoc[11](loc8: u64)
+	120: LdU64(1)
+	121: Sub
+	122: StLoc[11](loc8: u64)
+B31:
+	123: CopyLoc[12](loc9: u64)
+	124: LdU64(0)
+	125: Gt
+	126: BrTrue(128)
+B32:
+	127: Branch(132)
+B33:
+	128: CopyLoc[12](loc9: u64)
+	129: LdU64(1)
+	130: Sub
+	131: StLoc[12](loc9: u64)
+B34:
+	132: Branch(20)
+B35:
+	133: CopyLoc[7](loc4: u8)
+	134: LdU8(1)
+	135: Eq
+	136: BrTrue(138)
+B36:
+	137: Branch(141)
+B37:
+	138: MutBorrowLoc[14](loc11: vector<u8>)
+	139: LdU8(1)
+	140: Call[8](push_back<u8>(&mut vector<u8>, u8))
+B38:
+	141: MutBorrowLoc[14](loc11: vector<u8>)
+	142: Call[6](reverse<u8>(&mut vector<u8>))
+	143: MoveLoc[14](loc11: vector<u8>)
+	144: Ret
+}
+inner_as_u128(Arg0: vector<u8>): u128 {
+L0:	loc1: u64
+L1:	loc2: u128
+L2:	loc3: u8
+B0:
+	0: ImmBorrowLoc[0](Arg0: vector<u8>)
+	1: Call[0](length<u8>(&vector<u8>): u64)
+	2: StLoc[2](loc1: u64)
+	3: LdU64(0)
+	4: StLoc[1](loc0: u64)
+	5: LdU128(0)
+	6: StLoc[3](loc2: u128)
+B1:
+	7: CopyLoc[1](loc0: u64)
+	8: CopyLoc[2](loc1: u64)
+	9: Lt
+	10: BrTrue(12)
+B2:
+	11: Branch(29)
+B3:
+	12: MutBorrowLoc[0](Arg0: vector<u8>)
+	13: Call[3](pop_back<u8>(&mut vector<u8>): u8)
+	14: StLoc[4](loc3: u8)
+	15: CopyLoc[3](loc2: u128)
+	16: CopyLoc[4](loc3: u8)
+	17: CastU128
+	18: LdU64(10)
+	19: CopyLoc[1](loc0: u64)
+	20: Call[20](pow(u64, u64): u128)
+	21: Mul
+	22: Add
+	23: StLoc[3](loc2: u128)
+	24: CopyLoc[1](loc0: u64)
+	25: LdU64(1)
+	26: Add
+	27: StLoc[1](loc0: u64)
+	28: Branch(7)
+B4:
+	29: CopyLoc[3](loc2: u128)
+	30: Ret
+}
+public inner_sub(Arg0: vector<u8>, Arg1: vector<u8>, Arg2: u8): vector<u8> {
+L0:	loc3: bool
+L1:	loc4: u8
+L2:	loc5: u64
+L3:	loc6: u64
+L4:	loc7: u64
+L5:	loc8: u64
+L6:	loc9: u64
+L7:	loc10: u8
+L8:	loc11: vector<u8>
+L9:	loc12: u8
+L10:	loc13: u8
+B0:
+	0: Call[2](empty<u8>(): vector<u8>)
+	1: StLoc[14](loc11: vector<u8>)
+	2: ImmBorrowLoc[0](Arg0: vector<u8>)
+	3: Call[0](length<u8>(&vector<u8>): u64)
+	4: ImmBorrowLoc[1](Arg1: vector<u8>)
+	5: Call[0](length<u8>(&vector<u8>): u64)
+	6: StLoc[10](loc7: u64)
+	7: StLoc[9](loc6: u64)
+	8: LdU8(0)
+	9: CopyLoc[9](loc6: u64)
+	10: LdU64(1)
+	11: Sub
+	12: CopyLoc[10](loc7: u64)
+	13: LdU64(1)
+	14: Sub
+	15: StLoc[12](loc9: u64)
+	16: StLoc[11](loc8: u64)
+	17: StLoc[7](loc4: u8)
+	18: LdU64(0)
+	19: StLoc[8](loc5: u64)
+B1:
+	20: CopyLoc[11](loc8: u64)
+	21: LdU64(0)
+	22: Ge
+	23: BrTrue(25)
+B2:
+	24: Branch(28)
+B3:
+	25: LdTrue
+	26: StLoc[3](loc0: bool)
+	27: Branch(32)
+B4:
+	28: CopyLoc[12](loc9: u64)
+	29: LdU64(0)
+	30: Ge
+	31: StLoc[3](loc0: bool)
+B5:
+	32: MoveLoc[3](loc0: bool)
+	33: BrTrue(35)
+B6:
+	34: Branch(143)
+B7:
+	35: LdU8(0)
+	36: LdU8(0)
+	37: StLoc[16](loc13: u8)
+	38: StLoc[15](loc12: u8)
+	39: CopyLoc[11](loc8: u64)
+	40: LdU64(0)
+	41: Ge
+	42: BrTrue(44)
+B8:
+	43: Branch(49)
+B9:
+	44: CopyLoc[8](loc5: u64)
+	45: CopyLoc[9](loc6: u64)
+	46: Lt
+	47: StLoc[4](loc1: bool)
+	48: Branch(51)
+B10:
+	49: LdFalse
+	50: StLoc[4](loc1: bool)
+B11:
+	51: MoveLoc[4](loc1: bool)
+	52: BrTrue(54)
+B12:
+	53: Branch(59)
+B13:
+	54: ImmBorrowLoc[0](Arg0: vector<u8>)
+	55: CopyLoc[11](loc8: u64)
+	56: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	57: ReadRef
+	58: StLoc[15](loc12: u8)
+B14:
+	59: CopyLoc[12](loc9: u64)
+	60: LdU64(0)
+	61: Ge
+	62: BrTrue(64)
+B15:
+	63: Branch(69)
+B16:
+	64: CopyLoc[8](loc5: u64)
+	65: CopyLoc[10](loc7: u64)
+	66: Lt
+	67: StLoc[5](loc2: bool)
+	68: Branch(71)
+B17:
+	69: LdFalse
+	70: StLoc[5](loc2: bool)
+B18:
+	71: MoveLoc[5](loc2: bool)
+	72: BrTrue(74)
+B19:
+	73: Branch(79)
+B20:
+	74: ImmBorrowLoc[1](Arg1: vector<u8>)
+	75: CopyLoc[12](loc9: u64)
+	76: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	77: ReadRef
+	78: StLoc[16](loc13: u8)
+B21:
+	79: CopyLoc[2](Arg2: u8)
+	80: CopyLoc[15](loc12: u8)
+	81: Add
+	82: CopyLoc[16](loc13: u8)
+	83: Sub
+	84: CopyLoc[7](loc4: u8)
+	85: Sub
+	86: CopyLoc[2](Arg2: u8)
+	87: Mod
+	88: StLoc[13](loc10: u8)
+	89: CopyLoc[15](loc12: u8)
+	90: CopyLoc[16](loc13: u8)
+	91: CopyLoc[7](loc4: u8)
+	92: Add
+	93: Ge
+	94: BrTrue(96)
+B22:
+	95: Branch(99)
+B23:
+	96: LdU8(0)
+	97: StLoc[7](loc4: u8)
+	98: Branch(101)
+B24:
+	99: LdU8(1)
+	100: StLoc[7](loc4: u8)
+B25:
+	101: MutBorrowLoc[14](loc11: vector<u8>)
+	102: CopyLoc[13](loc10: u8)
+	103: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	104: CopyLoc[8](loc5: u64)
+	105: LdU64(1)
+	106: Add
+	107: StLoc[8](loc5: u64)
+	108: CopyLoc[11](loc8: u64)
+	109: LdU64(0)
+	110: Eq
+	111: BrTrue(113)
+B26:
+	112: Branch(118)
+B27:
+	113: CopyLoc[12](loc9: u64)
+	114: LdU64(0)
+	115: Eq
+	116: StLoc[6](loc3: bool)
+	117: Branch(120)
+B28:
+	118: LdFalse
+	119: StLoc[6](loc3: bool)
+B29:
+	120: MoveLoc[6](loc3: bool)
+	121: BrTrue(123)
+B30:
+	122: Branch(124)
+B31:
+	123: Branch(143)
+B32:
+	124: CopyLoc[11](loc8: u64)
+	125: LdU64(0)
+	126: Gt
+	127: BrTrue(129)
+B33:
+	128: Branch(133)
+B34:
+	129: CopyLoc[11](loc8: u64)
+	130: LdU64(1)
+	131: Sub
+	132: StLoc[11](loc8: u64)
+B35:
+	133: CopyLoc[12](loc9: u64)
+	134: LdU64(0)
+	135: Gt
+	136: BrTrue(138)
+B36:
+	137: Branch(142)
+B37:
+	138: CopyLoc[12](loc9: u64)
+	139: LdU64(1)
+	140: Sub
+	141: StLoc[12](loc9: u64)
+B38:
+	142: Branch(20)
+B39:
+	143: CopyLoc[7](loc4: u8)
+	144: LdU8(0)
+	145: Eq
+	146: BrTrue(150)
+B40:
+	147: LdConst[0](U64: [1, 0, 0, 0, 0, 0, 0, 0])
+	148: Call[26](invalid_argument(u64): u64)
+	149: Abort
+B41:
+	150: MutBorrowLoc[14](loc11: vector<u8>)
+	151: Call[6](reverse<u8>(&mut vector<u8>))
+	152: MoveLoc[14](loc11: vector<u8>)
+	153: Ret
+}
+max(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: CopyLoc[1](Arg1: u128)
+	2: Gt
+	3: BrTrue(5)
+B1:
+	4: Branch(7)
+B2:
+	5: CopyLoc[0](Arg0: u128)
+	6: Ret
+B3:
+	7: CopyLoc[1](Arg1: u128)
+	8: Ret
+}
+public multiply(Arg0: U256, Arg1: U256): U256 {
+L0:	loc2: &mut u8
+L1:	loc3: u64
+L2:	loc4: u64
+L3:	loc5: vector<u8>
+L4:	loc6: u64
+L5:	loc7: u64
+L6:	loc8: u64
+L7:	loc9: u64
+L8:	loc10: u64
+L9:	loc11: u8
+L10:	loc12: u8
+L11:	loc13: u64
+L12:	loc14: u8
+L13:	loc15: vector<u8>
+L14:	loc16: vector<u8>
+L15:	loc17: u128
+L16:	loc18: bool
+L17:	loc19: u8
+L18:	loc20: vector<u8>
+L19:	loc21: u64
+L20:	loc22: vector<u8>
+L21:	loc23: u8
+L22:	loc24: u8
+B0:
+	0: MoveLoc[0](Arg0: U256)
+	1: Call[25](val(U256): vector<u8>)
+	2: StLoc[7](loc5: vector<u8>)
+	3: MoveLoc[1](Arg1: U256)
+	4: Call[25](val(U256): vector<u8>)
+	5: StLoc[17](loc15: vector<u8>)
+	6: ImmBorrowLoc[7](loc5: vector<u8>)
+	7: Call[0](length<u8>(&vector<u8>): u64)
+	8: ImmBorrowLoc[17](loc15: vector<u8>)
+	9: Call[0](length<u8>(&vector<u8>): u64)
+	10: StLoc[10](loc8: u64)
+	11: StLoc[8](loc6: u64)
+	12: CopyLoc[8](loc6: u64)
+	13: CopyLoc[10](loc8: u64)
+	14: Add
+	15: StLoc[12](loc10: u64)
+	16: CopyLoc[12](loc10: u64)
+	17: LdU64(32)
+	18: Lt
+	19: BrTrue(21)
+B1:
+	20: Branch(30)
+B2:
+	21: MoveLoc[7](loc5: vector<u8>)
+	22: Call[14](inner_as_u128(vector<u8>): u128)
+	23: MoveLoc[17](loc15: vector<u8>)
+	24: Call[14](inner_as_u128(vector<u8>): u128)
+	25: Mul
+	26: StLoc[19](loc17: u128)
+	27: CopyLoc[19](loc17: u128)
+	28: Call[8](from_u128(u128): U256)
+	29: Ret
+B3:
+	30: Call[2](empty<u8>(): vector<u8>)
+	31: StLoc[24](loc22: vector<u8>)
+	32: LdU64(0)
+	33: StLoc[23](loc21: u64)
+B4:
+	34: CopyLoc[23](loc21: u64)
+	35: CopyLoc[8](loc6: u64)
+	36: CopyLoc[10](loc8: u64)
+	37: Add
+	38: Lt
+	39: BrTrue(41)
+B5:
+	40: Branch(49)
+B6:
+	41: MutBorrowLoc[24](loc22: vector<u8>)
+	42: LdU8(0)
+	43: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	44: CopyLoc[23](loc21: u64)
+	45: LdU64(1)
+	46: Add
+	47: StLoc[23](loc21: u64)
+	48: Branch(34)
+B7:
+	49: CopyLoc[8](loc6: u64)
+	50: CopyLoc[10](loc8: u64)
+	51: Lt
+	52: BrTrue(54)
+B8:
+	53: Branch(60)
+B9:
+	54: CopyLoc[7](loc5: vector<u8>)
+	55: StLoc[22](loc20: vector<u8>)
+	56: CopyLoc[17](loc15: vector<u8>)
+	57: StLoc[7](loc5: vector<u8>)
+	58: MoveLoc[22](loc20: vector<u8>)
+	59: StLoc[17](loc15: vector<u8>)
+B10:
+	60: ImmBorrowLoc[7](loc5: vector<u8>)
+	61: Call[0](length<u8>(&vector<u8>): u64)
+	62: ImmBorrowLoc[17](loc15: vector<u8>)
+	63: Call[0](length<u8>(&vector<u8>): u64)
+	64: StLoc[11](loc9: u64)
+	65: StLoc[9](loc7: u64)
+	66: CopyLoc[9](loc7: u64)
+	67: LdU64(1)
+	68: Sub
+	69: StLoc[5](loc3: u64)
+B11:
+	70: CopyLoc[5](loc3: u64)
+	71: LdU64(0)
+	72: Ge
+	73: BrTrue(75)
+B12:
+	74: Branch(163)
+B13:
+	75: ImmBorrowLoc[7](loc5: vector<u8>)
+	76: CopyLoc[5](loc3: u64)
+	77: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	78: ReadRef
+	79: StLoc[13](loc11: u8)
+	80: CopyLoc[11](loc9: u64)
+	81: LdU64(1)
+	82: Sub
+	83: StLoc[6](loc4: u64)
+B14:
+	84: CopyLoc[6](loc4: u64)
+	85: LdU64(0)
+	86: Ge
+	87: BrTrue(89)
+B15:
+	88: Branch(152)
+B16:
+	89: ImmBorrowLoc[17](loc15: vector<u8>)
+	90: CopyLoc[6](loc4: u64)
+	91: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	92: ReadRef
+	93: StLoc[14](loc12: u8)
+	94: ImmBorrowLoc[24](loc22: vector<u8>)
+	95: CopyLoc[5](loc3: u64)
+	96: CopyLoc[6](loc4: u64)
+	97: Add
+	98: LdU64(1)
+	99: Add
+	100: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	101: ReadRef
+	102: CopyLoc[13](loc11: u8)
+	103: CopyLoc[14](loc12: u8)
+	104: Mul
+	105: Add
+	106: StLoc[21](loc19: u8)
+	107: MutBorrowLoc[24](loc22: vector<u8>)
+	108: CopyLoc[5](loc3: u64)
+	109: CopyLoc[6](loc4: u64)
+	110: Add
+	111: LdU64(1)
+	112: Add
+	113: Call[9](borrow_mut<u8>(&mut vector<u8>, u64): &mut u8)
+	114: StLoc[3](loc1: &mut u8)
+	115: CopyLoc[21](loc19: u8)
+	116: LdU8(10)
+	117: Mod
+	118: StLoc[25](loc23: u8)
+	119: CopyLoc[25](loc23: u8)
+	120: CastU8
+	121: MoveLoc[3](loc1: &mut u8)
+	122: WriteRef
+	123: MutBorrowLoc[24](loc22: vector<u8>)
+	124: CopyLoc[5](loc3: u64)
+	125: CopyLoc[6](loc4: u64)
+	126: Add
+	127: Call[9](borrow_mut<u8>(&mut vector<u8>, u64): &mut u8)
+	128: StLoc[4](loc2: &mut u8)
+	129: CopyLoc[21](loc19: u8)
+	130: LdU8(10)
+	131: Div
+	132: StLoc[26](loc24: u8)
+	133: CopyLoc[4](loc2: &mut u8)
+	134: ReadRef
+	135: CastU8
+	136: CopyLoc[26](loc24: u8)
+	137: Add
+	138: CastU8
+	139: MoveLoc[4](loc2: &mut u8)
+	140: WriteRef
+	141: CopyLoc[6](loc4: u64)
+	142: LdU64(0)
+	143: Eq
+	144: BrTrue(146)
+B17:
+	145: Branch(147)
+B18:
+	146: Branch(152)
+B19:
+	147: CopyLoc[6](loc4: u64)
+	148: LdU64(1)
+	149: Sub
+	150: StLoc[6](loc4: u64)
+	151: Branch(84)
+B20:
+	152: CopyLoc[5](loc3: u64)
+	153: LdU64(0)
+	154: Eq
+	155: BrTrue(157)
+B21:
+	156: Branch(158)
+B22:
+	157: Branch(163)
+B23:
+	158: CopyLoc[5](loc3: u64)
+	159: LdU64(1)
+	160: Sub
+	161: StLoc[5](loc3: u64)
+	162: Branch(70)
+B24:
+	163: Call[2](empty<u8>(): vector<u8>)
+	164: StLoc[18](loc16: vector<u8>)
+	165: LdU64(0)
+	166: StLoc[15](loc13: u64)
+	167: LdFalse
+	168: StLoc[20](loc18: bool)
+B25:
+	169: CopyLoc[15](loc13: u64)
+	170: CopyLoc[9](loc7: u64)
+	171: CopyLoc[11](loc9: u64)
+	172: Add
+	173: Lt
+	174: BrTrue(176)
+B26:
+	175: Branch(208)
+B27:
+	176: ImmBorrowLoc[24](loc22: vector<u8>)
+	177: CopyLoc[15](loc13: u64)
+	178: Call[1](borrow<u8>(&vector<u8>, u64): &u8)
+	179: ReadRef
+	180: StLoc[16](loc14: u8)
+	181: CopyLoc[20](loc18: bool)
+	182: Not
+	183: BrTrue(185)
+B28:
+	184: Branch(190)
+B29:
+	185: CopyLoc[16](loc14: u8)
+	186: LdU8(0)
+	187: Gt
+	188: StLoc[2](loc0: bool)
+	189: Branch(192)
+B30:
+	190: LdFalse
+	191: StLoc[2](loc0: bool)
+B31:
+	192: MoveLoc[2](loc0: bool)
+	193: BrTrue(195)
+B32:
+	194: Branch(197)
+B33:
+	195: LdTrue
+	196: StLoc[20](loc18: bool)
+B34:
+	197: CopyLoc[20](loc18: bool)
+	198: BrTrue(200)
+B35:
+	199: Branch(203)
+B36:
+	200: MutBorrowLoc[18](loc16: vector<u8>)
+	201: CopyLoc[16](loc14: u8)
+	202: Call[8](push_back<u8>(&mut vector<u8>, u8))
+B37:
+	203: CopyLoc[15](loc13: u64)
+	204: LdU64(1)
+	205: Add
+	206: StLoc[15](loc13: u64)
+	207: Branch(169)
+B38:
+	208: MoveLoc[18](loc16: vector<u8>)
+	209: Pack[0](U256)
+	210: Ret
+}
+public multiply_karatsuba(Arg0: U256, Arg1: U256): U256 {
+L0:	loc2: vector<u8>
+L1:	loc3: u64
+L2:	loc4: u64
+L3:	loc5: U256
+L4:	loc6: U256
+L5:	loc7: U256
+L6:	loc8: U256
+L7:	loc9: U256
+L8:	loc10: U256
+L9:	loc11: U256
+L10:	loc12: U256
+L11:	loc13: vector<u8>
+L12:	loc14: u128
+L13:	loc15: U256
+L14:	loc16: U256
+L15:	loc17: vector<u8>
+L16:	loc18: vector<u8>
+L17:	loc19: vector<u8>
+L18:	loc20: vector<u8>
+B0:
+	0: CopyLoc[0](Arg0: U256)
+	1: Call[25](val(U256): vector<u8>)
+	2: StLoc[4](loc2: vector<u8>)
+	3: CopyLoc[1](Arg1: U256)
+	4: Call[25](val(U256): vector<u8>)
+	5: StLoc[15](loc13: vector<u8>)
+	6: ImmBorrowLoc[4](loc2: vector<u8>)
+	7: Call[0](length<u8>(&vector<u8>): u64)
+	8: ImmBorrowLoc[15](loc13: vector<u8>)
+	9: Call[0](length<u8>(&vector<u8>): u64)
+	10: StLoc[6](loc4: u64)
+	11: StLoc[5](loc3: u64)
+	12: CopyLoc[5](loc3: u64)
+	13: LdU64(10)
+	14: Lt
+	15: BrTrue(17)
+B1:
+	16: Branch(22)
+B2:
+	17: CopyLoc[6](loc4: u64)
+	18: LdU64(10)
+	19: Lt
+	20: StLoc[2](loc0: bool)
+	21: Branch(24)
+B3:
+	22: LdFalse
+	23: StLoc[2](loc0: bool)
+B4:
+	24: MoveLoc[2](loc0: bool)
+	25: BrTrue(27)
+B5:
+	26: Branch(36)
+B6:
+	27: MoveLoc[0](Arg0: U256)
+	28: Call[1](as_u128(U256): u128)
+	29: MoveLoc[1](Arg1: U256)
+	30: Call[1](as_u128(U256): u128)
+	31: Mul
+	32: StLoc[16](loc14: u128)
+	33: CopyLoc[16](loc14: u128)
+	34: Call[8](from_u128(u128): U256)
+	35: Ret
+B7:
+	36: CopyLoc[5](loc3: u64)
+	37: CastU128
+	38: CopyLoc[6](loc4: u64)
+	39: CastU128
+	40: Call[16](max(u128, u128): u128)
+	41: LdU128(1)
+	42: Add
+	43: LdU128(2)
+	44: Div
+	45: StLoc[3](loc1: u128)
+	46: ImmBorrowLoc[4](loc2: vector<u8>)
+	47: CopyLoc[3](loc1: u128)
+	48: CastU64
+	49: Call[11](get_lower(&vector<u8>, u64): vector<u8>)
+	50: StLoc[20](loc18: vector<u8>)
+	51: ImmBorrowLoc[4](loc2: vector<u8>)
+	52: CopyLoc[3](loc1: u128)
+	53: CastU64
+	54: Call[12](get_upper(&vector<u8>, u64): vector<u8>)
+	55: StLoc[19](loc17: vector<u8>)
+	56: ImmBorrowLoc[15](loc13: vector<u8>)
+	57: CopyLoc[3](loc1: u128)
+	58: CastU64
+	59: Call[11](get_lower(&vector<u8>, u64): vector<u8>)
+	60: StLoc[22](loc20: vector<u8>)
+	61: ImmBorrowLoc[15](loc13: vector<u8>)
+	62: CopyLoc[3](loc1: u128)
+	63: CastU64
+	64: Call[12](get_upper(&vector<u8>, u64): vector<u8>)
+	65: StLoc[21](loc19: vector<u8>)
+	66: CopyLoc[19](loc17: vector<u8>)
+	67: Pack[0](U256)
+	68: CopyLoc[21](loc19: vector<u8>)
+	69: Pack[0](U256)
+	70: Call[18](multiply_karatsuba(U256, U256): U256)
+	71: StLoc[12](loc10: U256)
+	72: CopyLoc[20](loc18: vector<u8>)
+	73: Pack[0](U256)
+	74: CopyLoc[22](loc20: vector<u8>)
+	75: Pack[0](U256)
+	76: Call[18](multiply_karatsuba(U256, U256): U256)
+	77: StLoc[13](loc11: U256)
+	78: CopyLoc[19](loc17: vector<u8>)
+	79: Pack[0](U256)
+	80: CopyLoc[20](loc18: vector<u8>)
+	81: Pack[0](U256)
+	82: LdU8(10)
+	83: Call[0](add(U256, U256, u8): U256)
+	84: StLoc[17](loc15: U256)
+	85: CopyLoc[21](loc19: vector<u8>)
+	86: Pack[0](U256)
+	87: CopyLoc[22](loc20: vector<u8>)
+	88: Pack[0](U256)
+	89: LdU8(10)
+	90: Call[0](add(U256, U256, u8): U256)
+	91: StLoc[18](loc16: U256)
+	92: MoveLoc[17](loc15: U256)
+	93: MoveLoc[18](loc16: U256)
+	94: Call[18](multiply_karatsuba(U256, U256): U256)
+	95: StLoc[14](loc12: U256)
+	96: CopyLoc[12](loc10: U256)
+	97: LdU64(32)
+	98: CopyLoc[3](loc1: u128)
+	99: CastU64
+	100: Mul
+	101: Call[21](shift_left(U256, u64): U256)
+	102: StLoc[7](loc5: U256)
+	103: CopyLoc[14](loc12: U256)
+	104: CopyLoc[12](loc10: U256)
+	105: LdU8(10)
+	106: Call[22](sub(U256, U256, u8): U256)
+	107: CopyLoc[13](loc11: U256)
+	108: LdU8(10)
+	109: Call[22](sub(U256, U256, u8): U256)
+	110: StLoc[9](loc7: U256)
+	111: CopyLoc[9](loc7: U256)
+	112: LdU64(32)
+	113: CopyLoc[3](loc1: u128)
+	114: CastU64
+	115: Mul
+	116: Call[21](shift_left(U256, u64): U256)
+	117: StLoc[8](loc6: U256)
+	118: CopyLoc[7](loc5: U256)
+	119: CopyLoc[8](loc6: U256)
+	120: LdU8(10)
+	121: Call[0](add(U256, U256, u8): U256)
+	122: StLoc[10](loc8: U256)
+	123: CopyLoc[10](loc8: U256)
+	124: CopyLoc[13](loc11: U256)
+	125: LdU8(10)
+	126: Call[0](add(U256, U256, u8): U256)
+	127: StLoc[11](loc9: U256)
+	128: MoveLoc[11](loc9: U256)
+	129: Ret
+}
+pack(Arg0: u128): vector<u8> {
+L0:	loc1: vector<u8>
+B0:
+	0: Call[2](empty<u8>(): vector<u8>)
+	1: StLoc[2](loc1: vector<u8>)
+	2: CopyLoc[0](Arg0: u128)
+	3: LdU128(10)
+	4: Lt
+	5: BrTrue(7)
+B1:
+	6: Branch(11)
+B2:
+	7: CopyLoc[0](Arg0: u128)
+	8: CastU8
+	9: Call[10](singleton<u8>(u8): vector<u8>)
+	10: Ret
+B3:
+	11: CopyLoc[0](Arg0: u128)
+	12: LdU128(0)
+	13: Gt
+	14: BrTrue(16)
+B4:
+	15: Branch(29)
+B5:
+	16: CopyLoc[0](Arg0: u128)
+	17: LdU128(10)
+	18: Mod
+	19: StLoc[1](loc0: u128)
+	20: MutBorrowLoc[2](loc1: vector<u8>)
+	21: CopyLoc[1](loc0: u128)
+	22: CastU8
+	23: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	24: CopyLoc[0](Arg0: u128)
+	25: LdU128(10)
+	26: Div
+	27: StLoc[0](Arg0: u128)
+	28: Branch(11)
+B6:
+	29: MutBorrowLoc[2](loc1: vector<u8>)
+	30: Call[6](reverse<u8>(&mut vector<u8>))
+	31: MoveLoc[2](loc1: vector<u8>)
+	32: Ret
+}
+pow(Arg0: u64, Arg1: u64): u128 {
+B0:
+	0: LdU128(1)
+	1: StLoc[3](loc1: u128)
+	2: LdU64(0)
+	3: StLoc[2](loc0: u64)
+B1:
+	4: CopyLoc[2](loc0: u64)
+	5: CopyLoc[1](Arg1: u64)
+	6: Lt
+	7: BrTrue(9)
+B2:
+	8: Branch(19)
+B3:
+	9: CopyLoc[3](loc1: u128)
+	10: CopyLoc[0](Arg0: u64)
+	11: CastU128
+	12: Mul
+	13: StLoc[3](loc1: u128)
+	14: CopyLoc[2](loc0: u64)
+	15: LdU64(1)
+	16: Add
+	17: StLoc[2](loc0: u64)
+	18: Branch(4)
+B4:
+	19: CopyLoc[3](loc1: u128)
+	20: Ret
+}
+shift_left(Arg0: U256, Arg1: u64): U256 {
+B0:
+	0: MoveLoc[0](Arg0: U256)
+	1: Call[1](as_u128(U256): u128)
+	2: StLoc[2](loc0: u128)
+	3: CopyLoc[2](loc0: u128)
+	4: CopyLoc[1](Arg1: u64)
+	5: CastU8
+	6: Shl
+	7: StLoc[3](loc1: u128)
+	8: CopyLoc[3](loc1: u128)
+	9: Call[8](from_u128(u128): U256)
+	10: Ret
+}
+public sub(Arg0: U256, Arg1: U256, Arg2: u8): U256 {
+B0:
+	0: MoveLoc[0](Arg0: U256)
+	1: Call[25](val(U256): vector<u8>)
+	2: StLoc[3](loc0: vector<u8>)
+	3: MoveLoc[1](Arg1: U256)
+	4: Call[25](val(U256): vector<u8>)
+	5: StLoc[4](loc1: vector<u8>)
+	6: MoveLoc[3](loc0: vector<u8>)
+	7: MoveLoc[4](loc1: vector<u8>)
+	8: CopyLoc[2](Arg2: u8)
+	9: Call[15](inner_sub(vector<u8>, vector<u8>, u8): vector<u8>)
+	10: StLoc[5](loc2: vector<u8>)
+	11: MoveLoc[5](loc2: vector<u8>)
+	12: Pack[0](U256)
+	13: Ret
+}
+public to_radix_2(Arg0: U256): vector<u8> {
+L0:	loc1: u64
+L1:	loc2: u8
+L2:	loc3: u8
+L3:	loc4: u8
+L4:	loc5: vector<u8>
+L5:	loc6: vector<u8>
+L6:	loc7: vector<u8>
+L7:	loc8: vector<u8>
+L8:	loc9: vector<u8>
+L9:	loc10: vector<u8>
+L10:	loc11: vector<u8>
+B0:
+	0: MoveLoc[0](Arg0: U256)
+	1: Call[25](val(U256): vector<u8>)
+	2: StLoc[11](loc10: vector<u8>)
+	3: LdU64(0)
+	4: StLoc[1](loc0: u64)
+	5: ImmBorrowLoc[11](loc10: vector<u8>)
+	6: Call[0](length<u8>(&vector<u8>): u64)
+	7: StLoc[2](loc1: u64)
+	8: CopyLoc[2](loc1: u64)
+	9: LdU64(1)
+	10: Eq
+	11: BrTrue(13)
+B1:
+	12: Branch(20)
+B2:
+	13: MutBorrowLoc[11](loc10: vector<u8>)
+	14: LdU64(0)
+	15: Call[11](remove<u8>(&mut vector<u8>, u64): u8)
+	16: Call[24](u8_to_binary(u8): vector<u8>)
+	17: StLoc[7](loc6: vector<u8>)
+	18: MoveLoc[7](loc6: vector<u8>)
+	19: Ret
+B3:
+	20: Call[2](empty<u8>(): vector<u8>)
+	21: StLoc[12](loc11: vector<u8>)
+B4:
+	22: CopyLoc[1](loc0: u64)
+	23: CopyLoc[2](loc1: u64)
+	24: Lt
+	25: BrTrue(27)
+B5:
+	26: Branch(111)
+B6:
+	27: CopyLoc[1](loc0: u64)
+	28: LdU64(0)
+	29: Eq
+	30: BrTrue(32)
+B7:
+	31: Branch(56)
+B8:
+	32: MutBorrowLoc[11](loc10: vector<u8>)
+	33: LdU64(0)
+	34: Call[11](remove<u8>(&mut vector<u8>, u64): u8)
+	35: StLoc[3](loc2: u8)
+	36: CopyLoc[3](loc2: u8)
+	37: Call[24](u8_to_binary(u8): vector<u8>)
+	38: StLoc[8](loc7: vector<u8>)
+	39: MutBorrowLoc[12](loc11: vector<u8>)
+	40: CopyLoc[8](loc7: vector<u8>)
+	41: Call[5](append<u8>(&mut vector<u8>, vector<u8>))
+	42: MutBorrowLoc[12](loc11: vector<u8>)
+	43: LdU8(0)
+	44: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	45: MutBorrowLoc[12](loc11: vector<u8>)
+	46: LdU8(0)
+	47: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	48: CopyLoc[12](loc11: vector<u8>)
+	49: MoveLoc[8](loc7: vector<u8>)
+	50: LdU8(2)
+	51: Call[13](inner_add(vector<u8>, vector<u8>, u8): vector<u8>)
+	52: StLoc[12](loc11: vector<u8>)
+	53: MutBorrowLoc[12](loc11: vector<u8>)
+	54: LdU8(0)
+	55: Call[8](push_back<u8>(&mut vector<u8>, u8))
+B9:
+	56: CopyLoc[1](loc0: u64)
+	57: LdU64(1)
+	58: Eq
+	59: BrTrue(61)
+B10:
+	60: Branch(73)
+B11:
+	61: MutBorrowLoc[11](loc10: vector<u8>)
+	62: LdU64(0)
+	63: Call[11](remove<u8>(&mut vector<u8>, u64): u8)
+	64: StLoc[4](loc3: u8)
+	65: CopyLoc[4](loc3: u8)
+	66: Call[24](u8_to_binary(u8): vector<u8>)
+	67: StLoc[9](loc8: vector<u8>)
+	68: CopyLoc[12](loc11: vector<u8>)
+	69: MoveLoc[9](loc8: vector<u8>)
+	70: LdU8(2)
+	71: Call[13](inner_add(vector<u8>, vector<u8>, u8): vector<u8>)
+	72: StLoc[12](loc11: vector<u8>)
+B12:
+	73: CopyLoc[1](loc0: u64)
+	74: LdU64(1)
+	75: Gt
+	76: BrTrue(78)
+B13:
+	77: Branch(106)
+B14:
+	78: CopyLoc[12](loc11: vector<u8>)
+	79: StLoc[6](loc5: vector<u8>)
+	80: MutBorrowLoc[12](loc11: vector<u8>)
+	81: LdU8(0)
+	82: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	83: MutBorrowLoc[12](loc11: vector<u8>)
+	84: LdU8(0)
+	85: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	86: CopyLoc[12](loc11: vector<u8>)
+	87: MoveLoc[6](loc5: vector<u8>)
+	88: LdU8(2)
+	89: Call[13](inner_add(vector<u8>, vector<u8>, u8): vector<u8>)
+	90: StLoc[12](loc11: vector<u8>)
+	91: MutBorrowLoc[12](loc11: vector<u8>)
+	92: LdU8(0)
+	93: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	94: MutBorrowLoc[11](loc10: vector<u8>)
+	95: LdU64(0)
+	96: Call[11](remove<u8>(&mut vector<u8>, u64): u8)
+	97: StLoc[5](loc4: u8)
+	98: CopyLoc[5](loc4: u8)
+	99: Call[24](u8_to_binary(u8): vector<u8>)
+	100: StLoc[10](loc9: vector<u8>)
+	101: CopyLoc[12](loc11: vector<u8>)
+	102: MoveLoc[10](loc9: vector<u8>)
+	103: LdU8(2)
+	104: Call[13](inner_add(vector<u8>, vector<u8>, u8): vector<u8>)
+	105: StLoc[12](loc11: vector<u8>)
+B15:
+	106: CopyLoc[1](loc0: u64)
+	107: LdU64(1)
+	108: Add
+	109: StLoc[1](loc0: u64)
+	110: Branch(22)
+B16:
+	111: MoveLoc[12](loc11: vector<u8>)
+	112: Ret
+}
+public u8_to_binary(Arg0: u8): vector<u8> {
+L0:	loc1: vector<u8>
+B0:
+	0: CopyLoc[0](Arg0: u8)
+	1: LdU8(0)
+	2: Eq
+	3: BrTrue(5)
+B1:
+	4: Branch(8)
+B2:
+	5: LdU8(0)
+	6: Call[10](singleton<u8>(u8): vector<u8>)
+	7: Ret
+B3:
+	8: CopyLoc[0](Arg0: u8)
+	9: LdU8(1)
+	10: Eq
+	11: BrTrue(13)
+B4:
+	12: Branch(16)
+B5:
+	13: LdU8(1)
+	14: Call[10](singleton<u8>(u8): vector<u8>)
+	15: Ret
+B6:
+	16: Call[2](empty<u8>(): vector<u8>)
+	17: StLoc[2](loc1: vector<u8>)
+B7:
+	18: CopyLoc[0](Arg0: u8)
+	19: LdU8(0)
+	20: Gt
+	21: BrTrue(23)
+B8:
+	22: Branch(36)
+B9:
+	23: CopyLoc[0](Arg0: u8)
+	24: LdU8(2)
+	25: Mod
+	26: StLoc[1](loc0: u8)
+	27: MutBorrowLoc[2](loc1: vector<u8>)
+	28: CopyLoc[1](loc0: u8)
+	29: CastU8
+	30: Call[8](push_back<u8>(&mut vector<u8>, u8))
+	31: CopyLoc[0](Arg0: u8)
+	32: LdU8(2)
+	33: Div
+	34: StLoc[0](Arg0: u8)
+	35: Branch(18)
+B10:
+	36: MutBorrowLoc[2](loc1: vector<u8>)
+	37: Call[6](reverse<u8>(&mut vector<u8>))
+	38: MoveLoc[2](loc1: vector<u8>)
+	39: Ret
+}
+public val(Arg0: U256): vector<u8> {
+B0:
+	0: ImmBorrowLoc[0](Arg0: U256)
+	1: ImmBorrowField[0](U256.val: vector<u8>)
+	2: ReadRef
+	3: StLoc[1](loc0: vector<u8>)
+	4: MoveLoc[1](loc0: vector<u8>)
+	5: Ret
+}
+}

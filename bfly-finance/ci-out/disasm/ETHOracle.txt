@@ -1,0 +1,60 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.ETHOracle {
+
+
+oracle_address(): address {
+B0:
+	0: Call[3](is_dev(): bool)
+	1: Not
+	2: BrTrue(4)
+B1:
+	3: Branch(11)
+B2:
+	4: Call[4](is_barnard(): bool)
+	5: BrTrue(7)
+B3:
+	6: Branch(9)
+B4:
+	7: LdConst[0](Address: [7, 250, 8, 168, 85, 117, 63, 15, 247, 41, 47, 220, 190, 135, 18, 22])
+	8: Ret
+B5:
+	9: LdConst[1](Address: [130, 227, 91, 52, 9, 111, 50, 196, 32, 97, 113, 124, 6, 228, 74, 89])
+	10: Ret
+B6:
+	11: Call[5](admin_address(): address)
+	12: Ret
+}
+usd_price<Ty0: copy + drop + store>(Arg0: address): Exp * u128 {
+L0:	loc1: u128
+L1:	loc2: u128
+B0:
+	0: CopyLoc[0](Arg0: address)
+	1: Call[0](read<Ty0>(address): u128)
+	2: StLoc[2](loc1: u128)
+	3: Call[1](get_scaling_factor<Ty0>(): u128)
+	4: StLoc[3](loc2: u128)
+	5: CopyLoc[2](loc1: u128)
+	6: Call[8](exp_direct(u128): Exp)
+	7: StLoc[1](loc0: Exp)
+	8: MoveLoc[1](loc0: Exp)
+	9: CopyLoc[3](loc2: u128)
+	10: Ret
+}
+public usdt_price(): PriceNumber {
+L0:	loc0: Exp
+L1:	loc1: address
+L2:	loc2: u128
+B0:
+	0: Call[0](oracle_address(): address)
+	1: StLoc[1](loc1: address)
+	2: CopyLoc[1](loc1: address)
+	3: Call[2](usd_price<ETH_USD>(address): Exp * u128)
+	4: StLoc[2](loc2: u128)
+	5: StLoc[0](loc0: Exp)
+	6: MoveLoc[0](loc0: Exp)
+	7: Call[9](mantissa(Exp): u128)
+	8: CopyLoc[2](loc2: u128)
+	9: Call[10](of(u128, u128): PriceNumber)
+	10: Ret
+}
+}

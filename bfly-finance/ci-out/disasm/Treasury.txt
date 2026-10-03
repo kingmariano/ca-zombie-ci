@@ -1,0 +1,104 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.Treasury {
+struct Vault<phantom Ty0: store> has store, key {
+	token: Token<Ty0>
+}
+struct WithdrawCapability<phantom Ty0> has store {
+	dummy_field: bool
+}
+
+public create_treasury<Ty0: store>(Arg0: &signer): WithdrawCapability<Ty0> {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[6](address_of(&signer): address)
+	2: Call[7](is_admin_address(address))
+	3: MoveLoc[0](Arg0: &signer)
+	4: Call[0](zero<Ty0>(): Token<Ty0>)
+	5: PackGeneric[0](Vault<Ty0>)
+	6: MoveToGeneric[0](Vault<Ty0>)
+	7: LdFalse
+	8: PackGeneric[1](WithdrawCapability<Ty0>)
+	9: Ret
+}
+public deposit<Ty0: store>(Arg0: Token<Ty0>) {
+L0:	loc1: &mut Vault<Ty0>
+B0:
+	0: Call[9](check_global_switch())
+	1: Call[10](admin_address(): address)
+	2: StLoc[1](loc0: address)
+	3: CopyLoc[1](loc0: address)
+	4: MutBorrowGlobalGeneric[0](Vault<Ty0>)
+	5: StLoc[2](loc1: &mut Vault<Ty0>)
+	6: MoveLoc[2](loc1: &mut Vault<Ty0>)
+	7: MutBorrowFieldGeneric[0](Vault.token: Token<Ty0>)
+	8: MoveLoc[0](Arg0: Token<Ty0>)
+	9: Call[1](deposit<Ty0>(&mut Token<Ty0>, Token<Ty0>))
+	10: Ret
+}
+public get_with_capability<Ty0: store>(Arg0: &WithdrawCapability<Ty0>, Arg1: u128): Token<Ty0> {
+B0:
+	0: Call[10](admin_address(): address)
+	1: StLoc[2](loc0: address)
+	2: CopyLoc[2](loc0: address)
+	3: MutBorrowGlobalGeneric[0](Vault<Ty0>)
+	4: StLoc[3](loc1: &mut Vault<Ty0>)
+	5: MoveLoc[3](loc1: &mut Vault<Ty0>)
+	6: MutBorrowFieldGeneric[0](Vault.token: Token<Ty0>)
+	7: CopyLoc[1](Arg1: u128)
+	8: Call[2](withdraw<Ty0>(&mut Token<Ty0>, u128): Token<Ty0>)
+	9: Ret
+}
+public initialize<Ty0: store>(Arg0: &signer) {
+B0:
+	0: CopyLoc[0](Arg0: &signer)
+	1: Call[6](address_of(&signer): address)
+	2: Call[7](is_admin_address(address))
+	3: MoveLoc[0](Arg0: &signer)
+	4: Call[0](zero<Ty0>(): Token<Ty0>)
+	5: PackGeneric[0](Vault<Ty0>)
+	6: MoveToGeneric[0](Vault<Ty0>)
+	7: Ret
+}
+public treasury_balance<Ty0: store>(): u128 {
+L0:	loc0: address
+L1:	loc1: &Vault<Ty0>
+B0:
+	0: Call[10](admin_address(): address)
+	1: StLoc[0](loc0: address)
+	2: CopyLoc[0](loc0: address)
+	3: ImmBorrowGlobalGeneric[0](Vault<Ty0>)
+	4: StLoc[1](loc1: &Vault<Ty0>)
+	5: MoveLoc[1](loc1: &Vault<Ty0>)
+	6: ImmBorrowFieldGeneric[0](Vault.token: Token<Ty0>)
+	7: Call[3](value<Ty0>(&Token<Ty0>): u128)
+	8: Ret
+}
+public withdraw<Ty0: store>(Arg0: &signer, Arg1: u128): Token<Ty0> {
+B0:
+	0: Call[9](check_global_switch())
+	1: MoveLoc[0](Arg0: &signer)
+	2: Call[6](address_of(&signer): address)
+	3: MutBorrowGlobalGeneric[0](Vault<Ty0>)
+	4: StLoc[3](loc1: &mut Vault<Ty0>)
+	5: CopyLoc[3](loc1: &mut Vault<Ty0>)
+	6: ImmBorrowFieldGeneric[0](Vault.token: Token<Ty0>)
+	7: Call[3](value<Ty0>(&Token<Ty0>): u128)
+	8: StLoc[2](loc0: u128)
+	9: CopyLoc[2](loc0: u128)
+	10: CopyLoc[1](Arg1: u128)
+	11: Ge
+	12: BrTrue(18)
+B1:
+	13: MoveLoc[3](loc1: &mut Vault<Ty0>)
+	14: Pop
+	15: LdConst[0](U64: [189, 2, 0, 0, 0, 0, 0, 0])
+	16: Call[14](invalid_argument(u64): u64)
+	17: Abort
+B2:
+	18: MoveLoc[3](loc1: &mut Vault<Ty0>)
+	19: MutBorrowFieldGeneric[0](Vault.token: Token<Ty0>)
+	20: CopyLoc[1](Arg1: u128)
+	21: Call[2](withdraw<Ty0>(&mut Token<Ty0>, u128): Token<Ty0>)
+	22: Ret
+}
+}

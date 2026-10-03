@@ -1,0 +1,35 @@
+// Move bytecode v4
+module 4ffcc98f43ce74668264a0cf6eebe42b.PriceOracle {
+
+
+public usdt_price<Ty0: store>(): PriceNumber {
+B0:
+	0: Call[0](is_same_token<Ty0, STC>(): bool)
+	1: BrTrue(3)
+B1:
+	2: Branch(5)
+B2:
+	3: Call[2](usdt_price(): PriceNumber)
+	4: Ret
+B3:
+	5: Call[1](is_same_token<Ty0, FAI>(): bool)
+	6: BrTrue(8)
+B4:
+	7: Branch(10)
+B5:
+	8: Call[3](usdt_price(): PriceNumber)
+	9: Ret
+B6:
+	10: Call[2](is_same_token<Ty0, XETH>(): bool)
+	11: BrTrue(13)
+B7:
+	12: Branch(15)
+B8:
+	13: Call[4](usdt_price(): PriceNumber)
+	14: Ret
+B9:
+	15: LdConst[0](U64: [89, 2, 0, 0, 0, 0, 0, 0])
+	16: Call[5](invalid_argument(u64): u64)
+	17: Abort
+}
+}
