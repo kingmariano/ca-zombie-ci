@@ -34,6 +34,16 @@ jobs:
       DRPC_API_KEY: ${{ secrets.DRPC_API_KEY }}
       INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
       DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
+      ARB_RPC_URL: ${{ secrets.ARB_RPC_URL }}
+      BSC_RPC_URL: ${{ secrets.BSC_RPC_URL }}
+      BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+      OP_RPC_URL: ${{ secrets.OP_RPC_URL }}
+      POLYGON_RPC_URL: ${{ secrets.POLYGON_RPC_URL }}
+      FANTOM_RPC_URL: ${{ secrets.FANTOM_RPC_URL }}
+      CRONOS_RPC_URL: ${{ secrets.CRONOS_RPC_URL }}
+      MOONRIVER_RPC_URL: ${{ secrets.MOONRIVER_RPC_URL }}
+      GNOSIS_RPC_URL: ${{ secrets.GNOSIS_RPC_URL }}
+      SONIC_RPC_URL: ${{ secrets.SONIC_RPC_URL }}
       FOUNDRY_FUZZ_RUNS: "256"
     steps:
       - uses: actions/checkout@v4
@@ -47,6 +57,20 @@ jobs:
           forge --version
           python3 --version
           node --version || true
+      - name: select ETH fork RPC
+        run: |
+          pick() {
+            for u in "$@"; do
+              [ -z "$u" ] && continue
+              r=$(curl -s -m 12 -X POST -H 'Content-Type: application/json' \
+                    --data '{"jsonrpc":"2.0","id":1,"method":"eth_blockNumber","params":[]}' "$u" 2>/dev/null)
+              case "$r" in *result*) echo "$u"; return 0;; esac
+            done
+            echo ""; return 1
+          }
+          PICK=$(pick "$RPC_URL" "https://ethereum-rpc.publicnode.com" "https://eth.drpc.org" "https://1rpc.io/eth" || true)
+          if [ -z "$PICK" ]; then echo "WARNING: no working ETH RPC"; else echo "ETH fork RPC selected"; fi
+          echo "FORK_RPC_URL=$PICK" >> "$GITHUB_ENV"
       - name: custom CI script
         if: ${{ hashFiles(format('{0}/ci/run.sh', github.event.inputs.finding)) != '' }}
         working-directory: ${{ github.event.inputs.finding }}
