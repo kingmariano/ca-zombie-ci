@@ -68,7 +68,7 @@ jobs:
             done
             echo ""; return 1
           }
-          PICK=$(pick "$RPC_URL" "https://ethereum-rpc.publicnode.com" "https://eth.drpc.org" "https://1rpc.io/eth" || true)
+          PICK=$(pick "https://ethereum-rpc.publicnode.com" "https://eth.drpc.org" "https://1rpc.io/eth" "$RPC_URL" || true)
           if [ -z "$PICK" ]; then
             echo "WARNING: no working ETH RPC found; FORK_RPC_URL left unset"
           else
