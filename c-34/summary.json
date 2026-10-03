@@ -1,0 +1,57 @@
+{
+  "finding": "C-34",
+  "title": "Claim/locker periphery with standing authority: Hedgey ClaimCampaigns, Hemi MerkleBox, Socket/Bungee gateway",
+  "chains": [
+    "ethereum",
+    "arbitrum",
+    "optimism",
+    "base",
+    "bsc",
+    "hemi"
+  ],
+  "headline_extractable_usd": 0.37,
+  "headline_confidence": "medium",
+  "categories": {
+    "E-U": 0.37,
+    "H-O": 0,
+    "P": 0,
+    "S": 0
+  },
+  "latest_block": 26109126,
+  "block_numbers": {
+    "ethereum": 26109126,
+    "arbitrum": 511184580,
+    "optimism": 157699714,
+    "base": 52104430,
+    "bsc": 125412624,
+    "hemi": 5427470,
+    "ethereum_census_latest": 26109311
+  },
+  "targets_checked": 3,
+  "live_targets": 1,
+  "closed_reasons": [
+    "Socket route 406 (WrappedTokenSwapperImpl 0xCC5FdA5e...) disabled at block 19021526; executeRoute(406,...) reverts RouteDisabled(); no enabled route contains the vulnerable bytecode; all live impls use msg.sender as transferFrom from",
+    "Hemi MerkleBox 0x9Ab3660c... HEMI balance 0, holdings 15/16 empty; reentrancy path structurally present but nothing left to extract",
+    "Hedgey ClaimCampaigns bug is live on 5 chains but only dust/no-market token balances remain (~$0.37)"
+  ],
+  "poc": {
+    "tests_passed": 0,
+    "tests_total": 13,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Socket gateway 0x3a23F943181408EAC424116Af7b7790c94Cb97a5: route 406 = WrappedTokenSwapperImpl 0xCC5FdA5e3cA925bd0bb428C8b2669496Ee43067e, added block 18996162, disabled block 19021526; 2024-01-16 attack tx 0xc6c3331f... used routeId 406 + performAction(USDC, NATIVE, amount=0, receiver, swapExtraData=transferFrom(victim, attacker, X)); 129 calls / 2,570,850.82 USDC in that tx",
+    "39/129 2024 Socket victims still have USDC allowance to the gateway; 16 have balance too, totalling $15,755.11 USDC (latent, not extractable while route 406 stays disabled)",
+    "Socket gateway deployed at same address on Arbitrum, Optimism, Base, BSC, Avalanche, Gnosis; per-chain route tables scanned for the wrappedTokenSwapperImpl marker",
+    "Hedgey ClaimCampaigns 0xBc452fdC... identical bytecode (codehash 0x725bc4ce48b9a71a4fd491b1f7bdcf29c772d92f8ee7a5cd6c3264f570f70db4) on ETH/ARB/OP/Base/BSC; createLockedCampaign grants allowance to caller-supplied tokenLocker, cancelCampaign does not revoke it",
+    "Hedgey live balances: ETH BIGCAT 10,354 + HDSF 34 (no market), ARB TACO 100,061 (no market), OP SEAL 4,000 (no market), Base NEGED 7,920 ($0.136), BSC USDT 0.237074968053996660 ($0.237)",
+    "Hemi MerkleBox 0x9Ab3660c...: HEMI 0, native 0, holdings 15/16 balance 0, claimGroupCount 16; second MerkleBox 0x112de51b... also 0; only valueless TT 'Test' token remains",
+    "Full-lifetime approval census to the Socket gateway: 547,194 Approval events, 242,106 unique (token,owner) pairs, 197,372 latest-nonzero (blocks 16,848,303-26,109,311); live sample of 3,000 most recent pairs: 11 live allowances / 5 with balance (~$220); 129 2024 victims: 39 live allowances / 16 with balance = $15,755.11 USDC (latent)"
+  ],
+  "caveats": [
+    "Hedgey USD depends on thin-market DexScreener prices captured 2026-10-03; exploitability fork-proven, price point-in-time",
+    "Socket standing-approval live check is sampled (3,000 most recent pairs + 129 known victims); the full census of 242,106 pairs is complete but not individually live-checked",
+    "Historical Socket replay requires an archive RPC; the pinned-block test is skipped if the CI RPC lacks archive state"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0.37 (net ~$0.35) live, all of it dust in Hedgey ClaimCampaigns on BSC/Base; Socket route 406 is disabled (standing approvals of $15.7k remain latent) and Hemi MerkleBox is drained to $0."
+}
