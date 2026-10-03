@@ -1,0 +1,1731 @@
+# Palkeoramix decompiler. 
+
+const FEATURE_VERSION = unknown10000000()
+const FEATURE_NAME = 'SailUniswapFeature', 0
+
+#
+#  Regular functions
+#
+
+def _fallback(?) payable: # default function
+  revert
+
+def unknown171a2517(array _param1) payable: 
+  require calldata.size - 4 >=′ 256
+  require _param1 <= LOCK8605463013()
+  require _param1 + 35 <′ calldata.size
+  require _param1.length <= LOCK8605463013()
+  require (32 * _param1.length) + 128 <= LOCK8605463013() and (32 * _param1.length) + 128 >= 96
+  require calldata.size >= _param1 + (32 * _param1.length) + 36
+  ...  # Decompilation aborted, sorry: ("decompilation didn't finish",)
+
+def unknown78a9f28b(array _param1) payable: 
+  require calldata.size - 4 >=′ 320
+  require _param1 <= LOCK8605463013()
+  require _param1 + 35 <′ calldata.size
+  require _param1.length <= LOCK8605463013()
+  require (32 * _param1.length) + 128 <= LOCK8605463013() and (32 * _param1.length) + 128 >= 96
+  require calldata.size >= _param1 + (32 * _param1.length) + 36
+  ...  # Decompilation aborted, sorry: ("decompilation didn't finish",)
+
+def uniswapV3SwapCallback(int256 amount0Delta, int256 amount1Delta, bytes data): # not payable
+  require calldata.size - 4 >=′ 96
+  require data <= LOCK8605463013()
+  require data + 35 <′ calldata.size
+  require data.length <= LOCK8605463013()
+  require data + data.length + 36 <= calldata.size
+  static call caller.token0() with:
+          gas gas_remaining wei
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+  static call caller.token1() with:
+          gas gas_remaining wei
+  static call caller.fee() with:
+          gas gas_remaining wei
+  if address(sha3(1204786273842544410698595, sha3(ext_call.return_data[0], ext_call.return_data[0], ext_call.return_data[0]), 0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54)) != caller:
+      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a2062616420706f6f6c
+  if amount0Delta <=′ 0:
+      if amount1Delta <=′ 0:
+          stop
+  if eth.balance(this.address) < 0:
+      revert with 0, 'Address: insufficient balance for call'
+  if not ext_code.size(address(ext_call.return_data[0])):
+      revert with 0, 'Address: call to non-contract'
+  ...  # Decompilation aborted, sorry: ("decompilation didn't finish",)
+
+def unknown1770400e(array _param1, uint256 _param2, uint256 _param3, uint256 _param4, bool _param5, uint256 _param6, array _param7) payable: 
+  require calldata.size - 4 >=′ 256
+  require _param1 <= LOCK8605463013()
+  require _param1 + 35 <′ calldata.size
+  require _param1.length <= LOCK8605463013()
+  require _param1 + (32 * _param1.length) + 36 <= calldata.size
+  require _param2 == address(_param2)
+  require _param3 == address(_param3)
+  require _param4 == address(_param4)
+  require _param6 == address(_param6)
+  require _param7 <= LOCK8605463013()
+  require _param7 + 35 <′ calldata.size
+  require _param7.length <= LOCK8605463013()
+  require _param7 + (32 * _param7.length) + 36 <= calldata.size
+  if _param7.length != _param1.length:
+      revert with 0, 'UNI: length mismatch'
+  if address(_param2) != 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:
+      if call.value:
+          revert with 0, 'UNI: msg.value > 0'
+      if _param5:
+          if eth.balance(this.address) < 0:
+              revert with 0, 'Address: insufficient balance for call'
+          if not ext_code.size(address(_param2)):
+              revert with 0, 'Address: call to non-contract'
+  ...  # Decompilation aborted, sorry: ("decompilation didn't finish",)
+
+def migrate(): # not payable
+  require ext_code.size(this.address)
+  call this.address.extend(bytes4 selector, address impl) with:
+       gas gas_remaining wei
+      args 0xe2a7c86f00000000000000000000000000000000000000000000000000000000, 0x51429f2e88533de64d86fb86edabadac962c1743
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+  require ext_code.size(this.address)
+  call this.address.extend(bytes4 selector, address impl) with:
+       gas gas_remaining wei
+      args 0x1770400e00000000000000000000000000000000000000000000000000000000, 0x51429f2e88533de64d86fb86edabadac962c1743
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+  require ext_code.size(this.address)
+  call this.address.extend(bytes4 selector, address impl) with:
+       gas gas_remaining wei
+      args 0x171a251700000000000000000000000000000000000000000000000000000000, 0x51429f2e88533de64d86fb86edabadac962c1743
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+  require ext_code.size(this.address)
+  call this.address.extend(bytes4 selector, address impl) with:
+       gas gas_remaining wei
+      args 0x78a9f28b00000000000000000000000000000000000000000000000000000000, 0x51429f2e88533de64d86fb86edabadac962c1743
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+  require ext_code.size(this.address)
+  call this.address.extend(bytes4 selector, address impl) with:
+       gas gas_remaining wei
+      args 0xfa461e3300000000000000000000000000000000000000000000000000000000, 0x51429f2e88533de64d86fb86edabadac962c1743
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+  return 0x2c64c5ef00000000000000000000000000000000000000000000000000000000
+
+def unknowne2a7c86f() payable: 
+  require calldata.size - 4 >=′ 160
+  require cd[4] <= LOCK8605463013()
+  require cd[4] + 35 <′ calldata.size
+  require ('cd', 4).length <= LOCK8605463013()
+  require cd[4] + (32 * ('cd', 4).length) + 36 <= calldata.size
+  require cd[68] == address(cd[68])
+  require cd[100] == address(cd[100])
+  require cd[132] <= LOCK8605463013()
+  require cd[132] + 35 <′ calldata.size
+  require ('cd', 132).length <= LOCK8605463013()
+  require cd[132] + (32 * ('cd', 132).length) + 36 <= calldata.size
+  if ('cd', 132).length != ('cd', 4).length:
+      revert with 0, 'UNI: length mismatch'
+  require ('cd', 132).length
+  require ('cd', 132)[0] <′ calldata.size + -cd[132] - 67
+  require cd[(cd[132] + ('cd', 132)[0] + 36)] <= LOCK8605463013()
+  require cd[132] + ('cd', 132)[0] + 68 <=′ calldata.size - (32 * cd[(cd[132] + ('cd', 132)[0] + 36)])
+  require 0 < ('cd', 132).length
+  require ('cd', 132)[0] <′ calldata.size + -cd[132] - 67
+  require cd[(cd[132] + ('cd', 132)[0] + 36)] <= LOCK8605463013()
+  require cd[132] + ('cd', 132)[0] + 68 <=′ calldata.size - (32 * cd[(cd[132] + ('cd', 132)[0] + 36)])
+  require cd[(cd[132] + ('cd', 132)[0] + 36)] - 1 < cd[(cd[132] + ('cd', 132)[0] + 36)]
+  if not call.value:
+      if address(cd[100]):
+          if 0 >= ('cd', 132).length:
+              if 0 < cd[36]:
+                  revert with 0, 'UNI: min return'
+              if cd[((32 * cd[(cd[132] + ('cd', 132)[0] + 36)] - 1) + cd[132] + ('cd', 132)[0] + 68)] and ' ' > 0:
+                  require ext_code.size(0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2)
+                  call 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.withdraw(uint256 amount) with:
+                       gas gas_remaining wei
+                      args 0
+                  if not ext_call.success:
+                      revert with ext_call.return_data[0 len return_data.size]
+                  call address(cd[100]) with:
+                       gas gas_remaining wei
+                  return 0
+              else:
+                  return 0
+          require 0 < ('cd', 4).length
+          require 0 < ('cd', 132).length
+          require ('cd', 132)[0] <′ calldata.size + -cd[132] - 67
+          require cd[(cd[132] + ('cd', 132)[0] + 36)] <= LOCK8605463013()
+          require cd[132] + ('cd', 132)[0] + 68 <=′ calldata.size - (32 * cd[(cd[132] + ('cd', 132)[0] + 36)])
+          mem[128 len 32 * cd[(cd[132] + ('cd', 132)[0] + 36)]] = call.data[cd[132] + ('cd', 132)[0] + 68 len 32 * cd[(cd[132] + ('cd', 132)[0] + 36)]]
+          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0
+          if call.value:
+              if call.value:
+                  if cd[((32 * cd[(cd[132] + ('cd', 132)[0] + 36)] - 1) + cd[132] + ('cd', 132)[0] + 68)] and ' ' > 0:
+                      _58 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 >= 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if mem[128] and '@':
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                              else:
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                           gas gas_remaining wei
+                                          args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                      else:
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                                          if not ext_call.success:
+                                              revert with ext_call.return_data[0 len return_data.size]
+                          else:
+                              if not mem[160] or not '@':
+                                  if not mem[128] or not '@':
+                                      if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                      if Mask(1, 255, mem[128]):
+                                  else:
+                                      static call mem[140 len 20].getReserves() with:
+                                              gas gas_remaining wei
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                      if 96 != return_data.size:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                               gas gas_remaining wei
+                                              args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                              else:
+                                  if not mem[128] or not '@':
+                                      if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                      if Mask(1, 255, mem[128]):
+                                  else:
+                                      static call mem[140 len 20].getReserves() with:
+                                              gas gas_remaining wei
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                      if 96 != return_data.size:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                               gas gas_remaining wei
+                                              args 0, 0 / 10^9 * ext_call.return_data[0], address(mem[160]), 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = this.address
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_58)
+                          call 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args this.address, address(_58), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _58 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_58).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _58 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if not Mask(1, 255, _58):
+                                      call _58.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                           gas gas_remaining wei
+                                          args address(this.address), not Mask(1, 255, _58) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                  else:
+                                      if Mask(1, 255, _58):
+                                          call _58.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, _58) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call address(_58).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _58):
+                                      call address(_58).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call address(_58).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                  else:
+                      _75 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                           gas gas_remaining wei
+                                          args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                  else:
+                                      if Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], cd[100], 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, cd[100], 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = this.address
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_75)
+                          call 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args this.address, address(_75), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _75 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_75).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _75 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, _75):
+                              else:
+                                  static call address(_75).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _75):
+                                      call address(_75).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], cd[100], 128, 0
+              else:
+                  if cd[((32 * cd[(cd[132] + ('cd', 132)[0] + 36)] - 1) + cd[132] + ('cd', 132)[0] + 68)] and ' ' > 0:
+                      _61 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 >= 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if mem[128] and '@':
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                              else:
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if ('cd', 4)[0] == ('cd', 4)[0] == 1:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, caller
+                                          if not ext_call.success:
+                                              revert with ext_call.return_data[0 len return_data.size]
+                                      else:
+                                          if not Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, caller
+                                          else:
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, caller
+                                              if not ext_call.success:
+                                                  revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                          if not ext_call.success:
+                                              revert with ext_call.return_data[0 len return_data.size]
+                                      else:
+                                          if not Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                          else:
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                                              if not ext_call.success:
+                                                  revert with ext_call.return_data[0 len return_data.size]
+                          else:
+                              if not mem[160] or not '@':
+                                  if not mem[128] or not '@':
+                                      if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                      if Mask(1, 255, mem[128]):
+                                  else:
+                                      static call mem[140 len 20].getReserves() with:
+                                              gas gas_remaining wei
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                      if 96 != return_data.size:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                               gas gas_remaining wei
+                                              args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                              else:
+                                  if not mem[128] or not '@':
+                                      if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                      if Mask(1, 255, mem[128]):
+                                  else:
+                                      static call mem[140 len 20].getReserves() with:
+                                              gas gas_remaining wei
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                      if 96 != return_data.size:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                               gas gas_remaining wei
+                                              args 0, 0 / 10^9 * ext_call.return_data[0], address(mem[160]), 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = caller
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_61)
+                          call 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args caller, address(_61), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _61 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_61).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _61 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if ('cd', 4)[0] == ('cd', 4)[0] == 1:
+                                      if not Mask(1, 255, _61):
+                                          call _61.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, _61) << 248, ('cd', 4)[0], 4295128740, 160, 32, caller
+                                      else:
+                                          if Mask(1, 255, _61):
+                                              call _61.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, _61) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, caller
+                                  else:
+                                      if not Mask(1, 255, _61):
+                                          call _61.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, _61) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                      else:
+                                          if Mask(1, 255, _61):
+                                              call _61.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, _61) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call address(_61).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _61):
+                                      call address(_61).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call address(_61).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                  else:
+                      _78 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if ('cd', 4)[0] == ('cd', 4)[0] == 1:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, caller
+                                      else:
+                                          if Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, caller
+                                  else:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                      else:
+                                          if Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], cd[100], 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, cd[100], 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = caller
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_78)
+                          call 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args caller, address(_78), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _78 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_78).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _78 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, _78):
+                              else:
+                                  static call address(_78).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _78):
+                                      call address(_78).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], cd[100], 128, 0
+          else:
+              if call.value:
+                  if cd[((32 * cd[(cd[132] + ('cd', 132)[0] + 36)] - 1) + cd[132] + ('cd', 132)[0] + 68)] and ' ' > 0:
+                      _64 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 >= 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if mem[128] and '@':
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                              else:
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                           gas gas_remaining wei
+                                          args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                      else:
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                                          if not ext_call.success:
+                                              revert with ext_call.return_data[0 len return_data.size]
+                          else:
+                              if not mem[160] or not '@':
+                                  if not mem[128] or not '@':
+                                      if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                      if Mask(1, 255, mem[128]):
+                                  else:
+                                      static call mem[140 len 20].getReserves() with:
+                                              gas gas_remaining wei
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                      if 96 != return_data.size:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                               gas gas_remaining wei
+                                              args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                              else:
+                                  if not mem[128] or not '@':
+                                      if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                      if Mask(1, 255, mem[128]):
+                                  else:
+                                      static call mem[140 len 20].getReserves() with:
+                                              gas gas_remaining wei
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                      if 96 != return_data.size:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                               gas gas_remaining wei
+                                              args 0, 0 / 10^9 * ext_call.return_data[0], address(mem[160]), 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = this.address
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_64)
+                          call cd[68].transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args this.address, address(_64), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _64 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_64).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _64 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if not Mask(1, 255, _64):
+                                      call _64.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                           gas gas_remaining wei
+                                          args address(this.address), not Mask(1, 255, _64) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                  else:
+                                      if Mask(1, 255, _64):
+                                          call _64.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, _64) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call address(_64).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _64):
+                                      call address(_64).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call address(_64).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                  else:
+                      _81 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                           gas gas_remaining wei
+                                          args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                  else:
+                                      if Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], cd[100], 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, cd[100], 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = this.address
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_81)
+                          call cd[68].transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args this.address, address(_81), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _81 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_81).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _81 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, _81):
+                              else:
+                                  static call address(_81).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _81):
+                                      call address(_81).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], cd[100], 128, 0
+              else:
+                  if cd[((32 * cd[(cd[132] + ('cd', 132)[0] + 36)] - 1) + cd[132] + ('cd', 132)[0] + 68)] and ' ' > 0:
+                      _67 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 >= 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if mem[128] and '@':
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                              else:
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if ('cd', 4)[0] == ('cd', 4)[0] == 1:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, caller
+                                          if not ext_call.success:
+                                              revert with ext_call.return_data[0 len return_data.size]
+                                      else:
+                                          if not Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, caller
+                                          else:
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, caller
+                                              if not ext_call.success:
+                                                  revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                          if not ext_call.success:
+                                              revert with ext_call.return_data[0 len return_data.size]
+                                      else:
+                                          if not Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                          else:
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                                              if not ext_call.success:
+                                                  revert with ext_call.return_data[0 len return_data.size]
+                          else:
+                              if not mem[160] or not '@':
+                                  if not mem[128] or not '@':
+                                      if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                      if Mask(1, 255, mem[128]):
+                                  else:
+                                      static call mem[140 len 20].getReserves() with:
+                                              gas gas_remaining wei
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                      if 96 != return_data.size:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                               gas gas_remaining wei
+                                              args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                              else:
+                                  if not mem[128] or not '@':
+                                      if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                      if Mask(1, 255, mem[128]):
+                                  else:
+                                      static call mem[140 len 20].getReserves() with:
+                                              gas gas_remaining wei
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                      if 96 != return_data.size:
+                                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                               gas gas_remaining wei
+                                              args 0, 0 / 10^9 * ext_call.return_data[0], address(mem[160]), 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = caller
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_67)
+                          call cd[68].transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args caller, address(_67), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _67 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_67).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _67 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if ('cd', 4)[0] == ('cd', 4)[0] == 1:
+                                      if not Mask(1, 255, _67):
+                                          call _67.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, _67) << 248, ('cd', 4)[0], 4295128740, 160, 32, caller
+                                      else:
+                                          if Mask(1, 255, _67):
+                                              call _67.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, _67) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, caller
+                                  else:
+                                      if not Mask(1, 255, _67):
+                                          call _67.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, _67) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                      else:
+                                          if Mask(1, 255, _67):
+                                              call _67.swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, _67) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call address(_67).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _67):
+                                      call address(_67).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call address(_67).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                  else:
+                      _84 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if ('cd', 4)[0] == ('cd', 4)[0] == 1:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, caller
+                                      else:
+                                          if Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, caller
+                                  else:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                      else:
+                                          if Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(cd[100]), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], cd[100], 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, cd[100], 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = caller
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_84)
+                          call cd[68].transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args caller, address(_84), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _84 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_84).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _84 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, _84):
+                              else:
+                                  static call address(_84).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _84):
+                                      call address(_84).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], cd[100], 128, 0
+      else:
+          if 0 >= ('cd', 132).length:
+              if 0 < cd[36]:
+                  revert with 0, 'UNI: min return'
+              if cd[((32 * cd[(cd[132] + ('cd', 132)[0] + 36)] - 1) + cd[132] + ('cd', 132)[0] + 68)] and ' ' > 0:
+                  require ext_code.size(0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2)
+                  call 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.withdraw(uint256 amount) with:
+                       gas gas_remaining wei
+                      args 0
+                  if not ext_call.success:
+                      revert with ext_call.return_data[0 len return_data.size]
+                  call caller with:
+                       gas gas_remaining wei
+                  return 0
+              else:
+                  return 0
+          require 0 < ('cd', 4).length
+          require 0 < ('cd', 132).length
+          require ('cd', 132)[0] <′ calldata.size + -cd[132] - 67
+          require cd[(cd[132] + ('cd', 132)[0] + 36)] <= LOCK8605463013()
+          require cd[132] + ('cd', 132)[0] + 68 <=′ calldata.size - (32 * cd[(cd[132] + ('cd', 132)[0] + 36)])
+          mem[128 len 32 * cd[(cd[132] + ('cd', 132)[0] + 36)]] = call.data[cd[132] + ('cd', 132)[0] + 68 len 32 * cd[(cd[132] + ('cd', 132)[0] + 36)]]
+          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0
+          if call.value:
+              if call.value:
+                  if cd[((32 * cd[(cd[132] + ('cd', 132)[0] + 36)] - 1) + cd[132] + ('cd', 132)[0] + 68)] and ' ' <= 0:
+                      _103 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, mem[128]):
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], caller, 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = this.address
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_103)
+                          call 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args this.address, address(_103), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 >= 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _103 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_103).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if _103 and '@':
+                                  static call address(_103).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if return_data.size == 96:
+                  else:
+                      _89 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                           gas gas_remaining wei
+                                          args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                  else:
+                                      if Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = this.address
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_89)
+                          call 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args this.address, address(_89), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _89 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_89).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _89 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, _89):
+                              else:
+                                  static call address(_89).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _89):
+                                      call address(_89).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+              else:
+                  if cd[((32 * cd[(cd[132] + ('cd', 132)[0] + 36)] - 1) + cd[132] + ('cd', 132)[0] + 68)] and ' ' <= 0:
+                      _106 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, mem[128]):
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], caller, 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = caller
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_106)
+                          call 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args caller, address(_106), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 >= 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _106 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_106).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if _106 and '@':
+                                  static call address(_106).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if return_data.size == 96:
+                  else:
+                      _92 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if ('cd', 4)[0] == ('cd', 4)[0] == 1:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, caller
+                                      else:
+                                          if Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, caller
+                                  else:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                      else:
+                                          if Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = caller
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_92)
+                          call 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args caller, address(_92), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _92 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_92).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _92 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, _92):
+                              else:
+                                  static call address(_92).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _92):
+                                      call address(_92).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+          else:
+              if call.value:
+                  if cd[((32 * cd[(cd[132] + ('cd', 132)[0] + 36)] - 1) + cd[132] + ('cd', 132)[0] + 68)] and ' ' <= 0:
+                      _109 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, mem[128]):
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], caller, 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = this.address
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_109)
+                          call cd[68].transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args this.address, address(_109), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 >= 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _109 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_109).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if _109 and '@':
+                                  static call address(_109).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if return_data.size == 96:
+                  else:
+                      _95 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                           gas gas_remaining wei
+                                          args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                  else:
+                                      if Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = this.address
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_95)
+                          call cd[68].transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args this.address, address(_95), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _95 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_95).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _95 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, _95):
+                              else:
+                                  static call address(_95).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _95):
+                                      call address(_95).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+              else:
+                  if cd[((32 * cd[(cd[132] + ('cd', 132)[0] + 36)] - 1) + cd[132] + ('cd', 132)[0] + 68)] and ' ' <= 0:
+                      _112 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, mem[128]):
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], caller, 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = caller
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_112)
+                          call cd[68].transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args caller, address(_112), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 >= 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _112 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_112).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if _112 and '@':
+                                  static call address(_112).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if return_data.size == 96:
+                  else:
+                      _98 = mem[128]
+                      if cd[(cd[132] + ('cd', 132)[0] + 36)] <= 0:
+                          revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, 
+                                      ' ',
+                                      0x10554e493a20656d70747920706f6f6c73000000000000000000000000
+                      if mem[128] and '@' != '@':
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not mem[128] or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if ('cd', 4)[0] == ('cd', 4)[0] == 1:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, caller
+                                      else:
+                                          if Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, caller
+                                  else:
+                                      if not Mask(1, 255, mem[128]):
+                                          call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                               gas gas_remaining wei
+                                              args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 4295128740, 160, 32, this.address
+                                      else:
+                                          if Mask(1, 255, mem[128]):
+                                              call mem[128].swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes data) with:
+                                                   gas gas_remaining wei
+                                                  args address(this.address), not Mask(1, 255, mem[128]) << 248, ('cd', 4)[0], 0xfffd8963efd1fc6a506488495d951d5263988d25, 160, 32, this.address
+                              else:
+                                  static call mem[140 len 20].getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, mem[128]):
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+                                      if not ext_call.success:
+                                          revert with ext_call.return_data[0 len return_data.size]
+                                  else:
+                                      call mem[140 len 20].swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0 / 10^9 * ext_call.return_data[32], 0, this.address, 128, 0
+                      else:
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 128] = 0x23b872dd00000000000000000000000000000000000000000000000000000000
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 132] = caller
+                          mem[(32 * cd[(cd[132] + ('cd', 132)[0] + 36)]) + 164] = address(_98)
+                          call cd[68].transferFrom(address sender, address recipient, uint256 amount) with:
+                               gas gas_remaining wei
+                              args caller, address(_98), ('cd', 4)[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          if 64 < 32 * cd[(cd[132] + ('cd', 132)[0] + 36)] + 1:
+                              if not _98 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                              else:
+                                  static call address(_98).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                          else:
+                              if not _98 or not '@':
+                                  if ('cd', 4)[0] >= 0x8000000000000000000000000000000000000000000000000000000000000000:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x10554e495633523a206f766572666c6f77
+                                  if Mask(1, 255, _98):
+                              else:
+                                  static call address(_98).getReserves() with:
+                                          gas gas_remaining wei
+                                  if not ext_call.success:
+                                      revert with ext_call.return_data[0 len return_data.size]
+                                  if 96 != return_data.size:
+                                      revert with 0x8c379a000000000000000000000000000000000000000000000000000000000, ' ', 0x1b554e4956323a2072657365727665732063616c6c20
+                                  if not Mask(1, 255, _98):
+                                      call address(_98).swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data) with:
+                                           gas gas_remaining wei
+                                          args 0, 0 / 10^9 * ext_call.return_data[0], this.address, 128, 0
+  ...  # Decompilation aborted, sorry: ("decompilation didn't finish",)
+
+

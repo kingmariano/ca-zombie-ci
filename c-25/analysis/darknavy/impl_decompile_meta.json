@@ -1,0 +1,20 @@
+{
+  "method": "agent-native",
+  "bytecode_size": 8828,
+  "opcodes_count": 5742,
+  "strategy": "selective",
+  "selectors_recovered": [
+    "0xea7faa61",
+    "0x4112e1c2"
+  ],
+  "selectors_requested": [
+    "0xea7faa61",
+    "0x4112e1c2"
+  ],
+  "coverage": 1.0,
+  "confidence": "medium",
+  "tac_server_used": false,
+  "fallback_only": false,
+  "disassembly_truncated": false,
+  "notes": "Unverified runtime recovered from live bytecode and exploit trace. Dispatcher exposes owner(), maxExpiry(), isSupportedToken(address), removeTokenSupport(address), getOrderStatus(address,bytes32), registerAllowedOrderSigner(address,bool), and unresolved administrative selectors. Trace shows registerAllowedOrderSigner mutates signer authorization before four successful 0x4112e1c2 drains. Each drain performs ecrecover precompile checks, token decimals lookups, Chainlink latestRoundData calls, and ERC20 transferFrom pulls for approved victim assets. Exact calldata schema for 0x4112e1c2 remains partially inferred from trace length and side effects."
+}

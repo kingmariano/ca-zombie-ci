@@ -1,0 +1,56 @@
+{
+  "report_path": "analysis_0xc5c61b3ac39d854773b9dc34bd0cdbc8b5bbf75f18551802a0b5881fcb990513/report.md",
+  "tx_hash": "0xc5c61b3ac39d854773b9dc34bd0cdbc8b5bbf75f18551802a0b5881fcb990513",
+  "chain": "eth",
+  "incident_name": "trustedvolumes-rfq-proxy-drain",
+  "debate_round": 1,
+  "stage1": {
+    "stage": 1,
+    "result": "PASS_WITH_WARNINGS",
+    "confidence": 0.9,
+    "checks": {
+      "source_found": true,
+      "snippet_matches": true,
+      "flaw_consistent": true,
+      "selectors_valid": true,
+      "financials_consistent": true
+    },
+    "critical_issues": [],
+    "warnings": [
+      "Recovered pseudocode for selector 0x4112e1c2 is only approximate; the report should treat trace evidence as authoritative for exact signer-check/control-flow details rather than implying a fully resolved implementation."
+    ],
+    "alternative_causes": [],
+    "revision_guidance": []
+  },
+  "stage1_5": {
+    "stage": 1.5,
+    "fixes_applied": [
+      "Added an explicit note that the recovered 0x4112e1c2 pseudocode is approximate and that the on-chain trace is authoritative for exact control flow.",
+      "Softened wording in the expected-behavior explanation so the report no longer implies the allowlist necessarily bypasses every signature-recovery-style step shown in trace."
+    ],
+    "report_updated": true
+  },
+  "stage2": {
+    "stage": 2,
+    "result": "PASS_WITH_WARNINGS",
+    "checks": {
+      "tx_exists": true,
+      "tx_metadata_matches": true,
+      "receipt_status_ok": true,
+      "transfer_amounts_match": true,
+      "funds_flow_profit_matches": true,
+      "call_trace_matches": true,
+      "call_trace_matches_na_reason": null,
+      "proxy_resolution_matches": "N/A",
+      "storage_claims_verified": "N/A"
+    },
+    "critical_issues": [],
+    "warnings": [
+      "EIP-1967 proxy-slot verification could not be completed because the runtime RPC endpoint was unauthenticated (cast storage returned HTTP 401); delegatecalls in trace_callTracer.json still corroborate implementation 0x88eb28009351fb414a5746f5d8ca91cdc02760d8."
+    ],
+    "revision_guidance": []
+  },
+  "pipeline_halt": false,
+  "halt_reason": null,
+  "revision_guidance": []
+}
