@@ -1,0 +1,863 @@
+{
+ "segment": "A",
+ "reviewed_at_block": 26111193,
+ "eth_balances_block": 26111101,
+ "summary": {
+  "contracts": 58,
+  "eu_candidates": 0,
+  "class_counts": {
+   "H-O": 53,
+   "P": 5
+  }
+ },
+ "results": [
+  {
+   "address": "0x4d1886daf2617cbd9e27abfd0f18a54f04f33c41",
+   "name": "SpankChain Auction",
+   "live_eth": 107.53279583344022,
+   "mapped": 107.532796,
+   "classification": "H-O",
+   "claim_model": "SpankChain Auction (unverified): deposit()/withdraw() pool; withdraw(1e18) reverts for non-depositor; top depositor withdraw() sim OK.",
+   "evidence": [
+    "unverified; selector set incl. deposit()/withdraw()/balanceOf/transfer/token",
+    "cast call withdraw() from top depositor (69 ETH) -> OK; withdraw(1e18) from fresh -> revert; deposit()/fail-style admin fns revert for randoms"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": "Source unverified; self-scoping inferred from live probes (depositor sims succeed, non-depositor withdraw reverts)."
+  },
+  {
+   "address": "0xf058ee35f381a12b3a0f504025419dcaf047ce7f",
+   "name": "Presale Pool (LINO/HEALP/Bulleon)",
+   "live_eth": 91.23443342600001,
+   "mapped": 91.23443343,
+   "classification": "H-O",
+   "claim_model": "Presale Pool LINO/HEALP/Bulleon (unverified): withdraw() from top depositor (14 ETH) -> OK; owner()/transferOwnership present.",
+   "evidence": [
+    "top depositor withdraw() -> OK",
+    "selectors: 3ccfd60b withdraw, 8da5cb5b owner, f2fde38b transferOwnership, 3af32abf isWhitelisted"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": ""
+  },
+  {
+   "address": "0xcc89405e3cfd38412093840a3ac2f851dd395dfb",
+   "name": "Status Buyer",
+   "live_eth": 76.59997743803571,
+   "mapped": 76.34737137,
+   "classification": "H-O",
+   "claim_model": "Status Buyer.withdraw(): deposits[msg.sender] zeroed then paid (with bounty adjustment).",
+   "evidence": [
+    "verified source StatusBuyer: user_deposit = deposits[msg.sender]; deposits[msg.sender] = 0"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x48c128eafc3b937fb1f97889ad174ac02b4952cb",
+   "name": "Presale Pool 0x48c128",
+   "live_eth": 98.4788271595895,
+   "mapped": 98.47882716,
+   "classification": "H-O",
+   "claim_model": "Presale Pool 0x48c128 (unverified pool family): withdrawAll()/withdraw(uint) self-scoped; fail()/transferFees()/deposit() revert for randoms.",
+   "evidence": [
+    "top depositor (45.8 ETH) withdrawAll() -> OK; fresh address withdrawAll() -> success with 0; withdraw(1e18) -> revert; fail()/transferFees() -> revert"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": "7-pool family (284.9 ETH total) shares the same selector set; all probed members behave self-scoped."
+  },
+  {
+   "address": "0xff2c689cb750f2a7d46e7471521189ced948f965",
+   "name": "Presale Pool 0xff2c68",
+   "live_eth": 50.0,
+   "mapped": 50.0,
+   "classification": "H-O",
+   "claim_model": "Presale Pool 0xff2c68 (same family): withdrawAll() from sole 50 ETH depositor -> OK.",
+   "evidence": [
+    "holder sim OK"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": "Family member."
+  },
+  {
+   "address": "0xb9906cf500d5e61b9673115151104c990a804dcb",
+   "name": "Presale Pool 0xb9906c",
+   "live_eth": 2.5,
+   "mapped": 2.5,
+   "classification": "H-O",
+   "claim_model": "Presale Pool 0xb9906c (same family).",
+   "evidence": [
+    "family selector match"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": "Family member."
+  },
+  {
+   "address": "0xd6770aac65a48f5715889a4cdbf30a4faf73a073",
+   "name": "Presale Pool 0xd6770a",
+   "live_eth": 36.91881783198048,
+   "mapped": 36.91881783,
+   "classification": "H-O",
+   "claim_model": "Presale Pool 0xd6770a (same family).",
+   "evidence": [
+    "family selector match; self-scoped withdraw pattern"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": "Family member."
+  },
+  {
+   "address": "0x796dbc51b37f2d92b0af1271fd9520c8efd1be61",
+   "name": "Presale Pool 0x796dbc",
+   "live_eth": 34.99542362621426,
+   "mapped": 34.99542363,
+   "classification": "H-O",
+   "claim_model": "Presale Pool 0x796dbc (same family).",
+   "evidence": [
+    "family selector match"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": "Family member."
+  },
+  {
+   "address": "0x50c19ffdbda85d1a07c09f01e113a94923801d32",
+   "name": "Presale Pool 0x50c19f",
+   "live_eth": 34.307,
+   "mapped": 34.307,
+   "classification": "H-O",
+   "claim_model": "Presale Pool 0x50c19f (same family).",
+   "evidence": [
+    "family selector match"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": "Family member."
+  },
+  {
+   "address": "0x6f40d96713b60d5083bc2493251907ca673de1b8",
+   "name": "Presale Pool 0x6f40d9",
+   "live_eth": 27.7245508960425,
+   "mapped": 25.9116584,
+   "classification": "H-O",
+   "claim_model": "Presale Pool 0x6f40d9 (same family).",
+   "evidence": [
+    "family selector match"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": "Family member."
+  },
+  {
+   "address": "0xe9426198aec621203ba1fe07cf292b3796ba6248",
+   "name": "Ambassadors Fund",
+   "live_eth": 17.5056,
+   "mapped": 17.5056,
+   "classification": "H-O",
+   "claim_model": "Ambassadors Fund is an OZ PaymentSplitter: release(account) pays the account per its shares; caller gets nothing.",
+   "evidence": [
+    "verified source: release(address payable account) sends to account, not msg.sender"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x344285b2082d9c7981241dcc160beca6057637e6",
+   "name": "JustHodlIt",
+   "live_eth": 18.169033852173705,
+   "mapped": 14.69529878,
+   "classification": "H-O",
+   "claim_model": "JustHodlIt: withdrawAll()/withdrawDividends() use users[msg.sender].",
+   "evidence": [
+    "verified source JustHodlIt: User storage user = users[msg.sender]; msg.sender.transfer(payout)"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xa812137eff2b368d0b2880a39b609fb60c426850",
+   "name": "Contribution Pool",
+   "live_eth": 10.6092169,
+   "mapped": 10.6092169,
+   "classification": "P",
+   "claim_model": "Contribution Pool: withdraw() onlyBeneficiary sends full balance to beneficiary.",
+   "evidence": [
+    "verified source: withdraw external onlyBeneficiary"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xb59a226a2b8a2f2b0512baa35cc348b6b213b671",
+   "name": "Neufund EtherToken",
+   "live_eth": 3385.428922792327,
+   "mapped": 2.07036066,
+   "classification": "H-O",
+   "claim_model": "EtherToken.withdraw(amount) pays caller's own _balances[msg.sender]; reclaim(token) is ROLE_RECLAIMER-gated.",
+   "evidence": [
+    "verified source EtherToken: withdraw requires _balances[msg.sender]; msg.sender.transfer",
+    "prior deep-dive: v1 fully backed, self-only; index +3,383 gap is a counting artifact"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "Index blind spot (3,385 live vs 2.07 mapped) = un-enumerated holders, not extractable."
+  },
+  {
+   "address": "0x0b7dc5a43ce121b4eaaa41b0f4f43bba47bb8951",
+   "name": "Neufund EtherToken v2",
+   "live_eth": 375.67913018062393,
+   "mapped": 90.05044997,
+   "classification": "H-O",
+   "claim_model": "EtherToken v2 withdraw/withdrawPrivate pays caller's own _balances[msg.sender].",
+   "evidence": [
+    "verified source: withdrawPrivate requires _balances[msg.sender]; withdraw/withdrawAndSend wrap it",
+    "index note: 329.83 ETH tracked under LockedAccount, 54.18 excluded (withdraw reverts) -> +285.6 gap is not a shortfall"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "Prior deep-dive covered v1+v2 conflation; all claim flows self-only."
+  },
+  {
+   "address": "0x899f9a0440face1397a1ee1e3f6bf3580a6633d1",
+   "name": "Delphi RedemptionContract",
+   "live_eth": 205.8446241458989,
+   "mapped": 195.20978739,
+   "classification": "H-O",
+   "claim_model": "Delphi.redeemTokens(amount): transferFrom(msg.sender) burns caller's DEL for ETH at fixed exchangeRate.",
+   "evidence": [
+    "verified source: require(Token(token).transferFrom(msg.sender, this, amount)); msg.sender.transfer(amount/exchangeRate)"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xb1E4675f0dBE360bA90447A7e58c62C762Ad62D4",
+   "name": "Neufund",
+   "live_eth": 0.0,
+   "mapped": 3713.19256734,
+   "classification": "H-O",
+   "claim_model": "LockedAccount v1 withdraw pays caller's own balance; 0 ETH on contract (backing lives in paired EtherToken v1).",
+   "evidence": [
+    "verified source LockedAccount: withdraw requires _balances[msg.sender]",
+    "prior deep-dive: v1 LockedAccount holds exactly its totalLockedAmount (100% backed)"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "No live ETH on this address."
+  },
+  {
+   "address": "0xD76b5c2A23ef78368d8E34288B5b65D616B746aE",
+   "name": "Bancor Old ETH Token",
+   "live_eth": 94.42426154352533,
+   "mapped": 94.51830658,
+   "classification": "H-O",
+   "claim_model": "Bancor Old ETH Token: withdraw(_amount) debits balanceOf[msg.sender]; withdrawTokens is ownerOnly.",
+   "evidence": [
+    "verified source: balanceOf[msg.sender] = safeSub(...); assert(msg.sender.send(_amount))",
+    "withdrawTokens ownerOnly"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x2956356cd2a2bf3202f771f50d3d14a367b48070",
+   "name": "Maker W-ETH",
+   "live_eth": 169.05749654101567,
+   "mapped": 168.84856154,
+   "classification": "H-O",
+   "claim_model": "Maker W-ETH: withdraw(amount) requires balances[msg.sender] >= amount; sends to caller.",
+   "evidence": [
+    "verified source EtherToken: balances[msg.sender] = safeSub(...); require(msg.sender.send(amount))"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xECF8F87f810EcF450940c9f60066b4a7a501d6A7",
+   "name": "Old WETH",
+   "live_eth": 1511.346986629329,
+   "mapped": 1512.058885,
+   "classification": "H-O",
+   "claim_model": "Original 2016 WETH wrapper: withdraw() burns caller's own balance and sends ETH.",
+   "evidence": [
+    "unverified bytecode, standard WETH runtime; selector set matches WETH (deposit/withdraw/transfer/approve/balanceOf)",
+    "holder simulation (child A): withdraw(own balance) OK 824/986, ok_sum 1,367.90 of 1,512.06 ETH; failures are contract wallets / stale balances"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "~144 ETH tail may be stuck for non-EOA/stale holders, but $0 to a non-holder attacker."
+  },
+  {
+   "address": "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a",
+   "name": "DigixDAO",
+   "live_eth": 25.38187152426876,
+   "mapped": 10908.623691,
+   "classification": "H-O",
+   "claim_model": "DigixDAO: ETH claimable by DGD holders via Acid.burn() (approve DGD + burn flow); Acid child holds 11,681.83 ETH.",
+   "evidence": [
+    "Acid verified source: burn() uses DGD.balanceOf(msg.sender) + transferFrom; 0.193054 ETH/DGD",
+    "DGD/WETH UniV2 pair price 0.1925 ETH ~= redemption rate -> no arb; pool covers ~3% of DGD supply -> holder race"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "Child Acid 0x23ea10cc verified H-O; no E-U."
+  },
+  {
+   "address": "0xe9778e69a961e64d3cdbb34cf6778281d34667c2",
+   "name": "NuCypher WorkLock",
+   "live_eth": 103.69487903687114,
+   "mapped": 103.69487905,
+   "classification": "H-O",
+   "claim_model": "NuCypher WorkLock: refund() pays msg.sender's own deposit; forceRefund(bidders) pays the listed bidders, never the caller.",
+   "evidence": [
+    "verified source WorkLock: refund uses workInfo[msg.sender]; forceRefund transfers to _biddersForRefund entries"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "forceRefund is a permissionless accounting/refund trigger but sends only to recorded bidders."
+  },
+  {
+   "address": "0xbb9bc244d798123fde783fcc1c72d3bb8c189413",
+   "name": "The DAO",
+   "live_eth": 0.0006,
+   "mapped": 81479.79119443,
+   "classification": "H-O",
+   "claim_model": "The DAO token (0 ETH); backing WithdrawDAO child holds 81,399.81 ETH. withdraw() pays caller's own DAO balance; trusteeWithdraw() underflows to a no-op.",
+   "evidence": [
+    "WithdrawDAO verified source; negative-control probe: withdraw() from fresh -> throw; trusteeWithdraw() -> no ETH moves",
+    "DAO token transferFrom/approve standard; no non-holder path found"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "Largest pot in the index; holder-only."
+  },
+  {
+   "address": "0x575cb87ab3c2329a0248c7d70e0ead8e57f3e3f7",
+   "name": "Ahoolee Token Sale",
+   "live_eth": 191.10951842732308,
+   "mapped": 191.50951843,
+   "classification": "H-O",
+   "claim_model": "Ahoolee.refund(): saleBalances[msg.sender] only, refunded[msg.sender] guard; withdraw() is onlyOwner (softCapReached).",
+   "evidence": [
+    "verified source AhooleeTokenSale: require(!refunded[msg.sender]); require(saleBalances[msg.sender] != 0)"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xcd806502ad2f9aeb32e23f8d647341d4b568201d",
+   "name": "TruckHash Token Sale",
+   "live_eth": 45.135189252314994,
+   "mapped": 45.135189,
+   "classification": "H-O",
+   "claim_model": "TruckHash.refund(): weiBalances[msg.sender] zeroed then paid; refundAllowed=true, softCapReached=false live.",
+   "evidence": [
+    "live refundAllowed=true, softCapReached=false; verified source refund uses weiBalances[msg.sender]",
+    "top balance-file address has weiBalances=0 on-chain (stale entry), so sim reverts for that address only"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xb3b33f59174f2ef62167770e4c9cabaa3879eb5d",
+   "name": "Jincor Token ICO",
+   "live_eth": 19.061644895117563,
+   "mapped": 19.0616449,
+   "classification": "H-O",
+   "claim_model": "Jincor.refund(): deposited[msg.sender] zeroed then paid; withdraw() onlyOwner.",
+   "evidence": [
+    "holder simulation from top depositor -> OK",
+    "verified source: deposited[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x3fD30f3E1fbF4F3Ea6BDf3E3bb11826266708869",
+   "name": "AgroTechFarm Crowdsale",
+   "live_eth": 16.691711126,
+   "mapped": 16.69171113,
+   "classification": "H-O",
+   "claim_model": "AgroTechFarm.refund(): balances[msg.sender] zeroed then paid; state Refunding live (state=1).",
+   "evidence": [
+    "live state=1; verified source: balances[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x18777Aec0B231D1a4A9C66B51253088a03affDFc",
+   "name": "Luckchemy Crowdsale",
+   "live_eth": 10.767637830000002,
+   "mapped": 10.76763783,
+   "classification": "H-O",
+   "claim_model": "Luckchemy.refund(): deposits[msg.sender] zeroed then paid.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: deposits[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x9fa8fa61a10ff892e4ebceb7f4e0fc684c2ce0a9",
+   "name": "HONG",
+   "live_eth": 727.9738432374239,
+   "mapped": 727.97384324,
+   "classification": "H-O",
+   "claim_model": "HONG.refundMyIcoInvestment(): refunds caller's tracked weiGiven (requires holding HONG); 100% covered.",
+   "evidence": [
+    "child A simulation at block 26,111,193: 43/43 outstanding holders refund OK, sum exactly 727.9738 ETH vs 727.9738 outstanding",
+    "verified source: weiGiven[msg.sender], onlyTokenHolders, notLocked",
+    "extraBalanceWallet child 0x034Cf4F8 holds 0 ETH"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "Historical overflow was worked around; every recorded entitlement is claimable by its own holder. $0 non-holder."
+  },
+  {
+   "address": "0xd7e011ad27b6128934e2afd1763120ede1274ae4",
+   "name": "VLB Token",
+   "live_eth": 0.0,
+   "mapped": 81.14424602591906,
+   "classification": "H-O",
+   "claim_model": "VLB RefundableCrowdsale: ETH sits in sibling RefundVault; depositors claimRefund() self-only (vault state).",
+   "evidence": [
+    "verified source VLBCrowdsale/RefundVault: claimRefund -> vault.refund(msg.sender); refund(investor) pays investor"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "Listed contract holds 0 ETH; sibling vault value."
+  },
+  {
+   "address": "0x5113309c84f7292b5f780748df5869cb9d0e3ad5",
+   "name": "Trend (TND)",
+   "live_eth": 0.0,
+   "mapped": 27.22707236,
+   "classification": "H-O",
+   "claim_model": "Trend (TND) OZ RefundableCrowdsale; ETH in sibling RefundVault; refund path depositor-only.",
+   "evidence": [
+    "selector set = OZ MintableToken+RefundableCrowdsale (fa89401a refund, 8d4e4083 isFinalized, fbfa77cf vault)",
+    "unverified source"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": "Listed contract holds 0 ETH; vault child not enumerated."
+  },
+  {
+   "address": "0xb4f10530e531c32490c68062662eb5684057afb4",
+   "name": "PallyCoin (PAL)",
+   "live_eth": 0.0,
+   "mapped": 43.262955374268074,
+   "classification": "H-O",
+   "claim_model": "PallyCoin RefundableCrowdsale: vault.refund(msg.sender) via claimRefund(); refundTokens onlyCrowdsale.",
+   "evidence": [
+    "verified source: claimRefund requires hasEnded && !goalReached && isRefunding; vault.refund(msg.sender)"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "Listed contract holds 0 ETH."
+  },
+  {
+   "address": "0x943e99d9efd4b44d808f6c83373a9a2c1e15e0f8",
+   "name": "ForegroundTokenSale (DEAL)",
+   "live_eth": 12.145,
+   "mapped": 12.145,
+   "classification": "H-O",
+   "claim_model": "Foreground.claimRefund(): purchases[msg.sender].weiBalance zeroed then paid; state Refunding live.",
+   "evidence": [
+    "holder simulation -> OK; live state=6 (Refunding)",
+    "verified source: purchases[msg.sender].weiBalance"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xcba6f10d1147b2c5a3d8d8cbd93c373b31c6c2c8",
+   "name": "VuePayTokenSale (VUP)",
+   "live_eth": 1.208,
+   "mapped": 1.208,
+   "classification": "H-O",
+   "claim_model": "VuePay.claimRefund(): ETHContributed[msg.sender] zeroed then paid; allowRefund=true live.",
+   "evidence": [
+    "holder simulation -> OK; live allowRefund=true",
+    "verified source: ETHContributed[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xf8f6e626af09b0455acd9162beb5a484724f25b5",
+   "name": "PresalePool 2018",
+   "live_eth": 39.200826189999994,
+   "mapped": 39.20082619,
+   "classification": "H-O",
+   "claim_model": "PresalePool 2018 (unverified): withdrawAll() from top depositor (10 ETH) -> OK; index note says participants call withdrawAll().",
+   "evidence": [
+    "top depositor withdrawAll() -> OK",
+    "unverified; selector set shares withdraw/withdrawAll/deposit with the presale family"
+   ],
+   "eu_candidate": null,
+   "confidence": "medium",
+   "notes": ""
+  },
+  {
+   "address": "0x9AcA6aBFe63A5ae0Dc6258cefB65207eC990Aa4D",
+   "name": "DigiPulse Token Sale (DGT)",
+   "live_eth": 100.58346934562455,
+   "mapped": 97.08346935,
+   "classification": "H-O",
+   "claim_model": "DigiPulse.refundEther(): ethBalanceOf[msg.sender] zeroed then paid; requires icoFailed.",
+   "evidence": [
+    "holder simulation from top depositor (10 ETH) -> OK; random address -> revert",
+    "verified source: ethBalanceOf[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x12d5b7c26DD8dc6E2F71f5bF240d5e76452b2FE5",
+   "name": "DirectCrypt Token Presale (DRCT)",
+   "live_eth": 81.88591778879976,
+   "mapped": 81.88591779,
+   "classification": "H-O",
+   "claim_model": "DirectCrypt.refund(): deposited[msg.sender] zeroed then paid; withdraw() onlyOwner.",
+   "evidence": [
+    "holder simulation from top depositor -> OK",
+    "verified source: refunded[msg.sender] guard, deposited[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x3A8A97123bcCd826228e5EB4144b48cce169517B",
+   "name": "QCOToken ICO (QCO)",
+   "live_eth": 31.447416153614775,
+   "mapped": 31.44741615,
+   "classification": "H-O",
+   "claim_model": "QCO.requestRefund(): ethPossibleRefunds[msg.sender] zeroed then paid; state Aborted live.",
+   "evidence": [
+    "holder simulation from top depositor (11.4 ETH) -> OK; random -> revert",
+    "verified source: requireState(States.Aborted); ethPossibleRefunds[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x1BB28e79f2482df6bf60efc7a33365703bCF1536",
+   "name": "hodlEthereum",
+   "live_eth": 21.528081,
+   "mapped": 21.528081,
+   "classification": "H-O",
+   "claim_model": "hodlEthereum.party(): hodlers[msg.sender] zeroed then paid.",
+   "evidence": [
+    "verified source: require(hodlers[msg.sender] > 0); msg.sender.transfer(value)"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x9EA80e204045329Ba752D03C395F82A12799f13d",
+   "name": "Blocklancer Token Sale (LNC)",
+   "live_eth": 21.661372541,
+   "mapped": 21.66137254,
+   "classification": "H-O",
+   "claim_model": "Blocklancer.refund(): balances[msg.sender] / balancesEther[msg.sender] zeroed then paid.",
+   "evidence": [
+    "holder simulation from top depositor (7 ETH) -> OK",
+    "verified source: var ethValue = balancesEther[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xaf7aeA249098F2c2f50cc11d4000cCf798194373",
+   "name": "ZeroTraffic Crowdsale (ZTT)",
+   "live_eth": 21.17467,
+   "mapped": 21.17467,
+   "classification": "H-O",
+   "claim_model": "ZeroTraffic.refund(): balances[msg.sender] zeroed then sent; requires stage Ended. endCrowdsale() is permissionless after end but pays only depositors.",
+   "evidence": [
+    "verified source: refund atStage(Ended) uses balances[msg.sender]; endCrowdsale requires now >= end",
+    "live stage=0, raised 28.4 ETH < min 20,000 ETH"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "Permissionless state transition exists but yields no value to the caller."
+  },
+  {
+   "address": "0xe4972421f88c1f47986f54cbfd2d1e2e671680ac",
+   "name": "Abyss DAICO Fund (PollManagedFund)",
+   "live_eth": 9.899950774,
+   "mapped": 9.89995077,
+   "classification": "H-O",
+   "claim_model": "Abyss.refundCrowdsaleContributor(): contributions[msg.sender] zeroed then paid; state CrowdsaleRefund live.",
+   "evidence": [
+    "holder simulation from top depositor -> OK",
+    "verified source: require(state == FundState.CrowdsaleRefund); contributions[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xe8b1b40f2d307bce891833f46eef1f69560e6926",
+   "name": "Bayesin (BYS) CrowSale",
+   "live_eth": 5.4279,
+   "mapped": 5.4279,
+   "classification": "H-O",
+   "claim_model": "Bayesin.safeWithdrawal(): fundBalance[msg.sender] zeroed then paid.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: fundBalance[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x17681500757628c7aa56d7e6546e119f94dd9479",
+   "name": "Confideal Campaign",
+   "live_eth": 8.625,
+   "mapped": 8.2,
+   "classification": "H-O",
+   "claim_model": "Confideal.withdrawRefund(): contributions[msg.sender] zeroed then paid; stage Failure live.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: withdrawRefund atStage(Failure) uses contributions[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x4363b5d64f228c819dc706889b09a0dc76e22fb0",
+   "name": "Crowdsale (0x4363b5)",
+   "live_eth": 8.476,
+   "mapped": 8.28,
+   "classification": "H-O",
+   "claim_model": "Crowdsale 0x4363b5: releaseEthers() pays etherHoldings[msg.sender]; returnETher(address) is a view.",
+   "evidence": [
+    "verified source: releaseEthers uses msg.sender; returnETher is `return etherHoldings[_addr]`"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xc699d90671cb8373f21060592d41a7c92280adc4",
+   "name": "Crowdsale (0xc699d9)",
+   "live_eth": 2.3175959018217096,
+   "mapped": 2.3175959,
+   "classification": "H-O",
+   "claim_model": "Crowdsale 0xc699d9.refund(): balances[msg.sender] zeroed then paid.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: balances[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xe8205644fef286a2af423b72669e662feec127cd",
+   "name": "Crowdsale (0xe82056)",
+   "live_eth": 2.41,
+   "mapped": 2.21,
+   "classification": "H-O",
+   "claim_model": "Crowdsale 0xe82056.safeWithdrawal(): balanceOf[msg.sender] zeroed then sent.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: balanceOf[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x6f303642844f734ad4176d0dfe93ef7e0776ef46",
+   "name": "CrowdsaleWatch",
+   "live_eth": 2.0,
+   "mapped": 2.0,
+   "classification": "H-O",
+   "claim_model": "CrowdsaleWatch.safeWithdrawal(): balanceOf[msg.sender] zeroed then sent.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: balanceOf[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x3091d37ef18cb33af72cf7ca63714733172ce724",
+   "name": "Gateway ICO (0x3091d3)",
+   "live_eth": 1.4125781320996762,
+   "mapped": 1.40079855,
+   "classification": "H-O",
+   "claim_model": "Gateway.refund(): balances[msg.sender] zeroed then paid.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: balances[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xa8df33a40fe2e3278e4d94a974f70778043fbd20",
+   "name": "I2 Presale",
+   "live_eth": 5.795,
+   "mapped": 5.795,
+   "classification": "H-O",
+   "claim_model": "I2 Presale.safeWithdrawal(): balanceOf[msg.sender] zeroed then sent.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: balanceOf[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xe117bb9d1e0fc6e859d9bf174c53baa7c673547a",
+   "name": "Mahala Coin (MHC) Crowdsale",
+   "live_eth": 2.948375767,
+   "mapped": 2.94837577,
+   "classification": "H-O",
+   "claim_model": "Mahala.refund(): balances[msg.sender] zeroed then paid.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: balances[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xde0b79f5e66fdc8a4ffb2c470756a1629e8ad569",
+   "name": "Reservation2",
+   "live_eth": 1.9,
+   "mapped": 1.9,
+   "classification": "H-O",
+   "claim_model": "Reservation2.withdraw(): balanceOf[msg.sender] zeroed then paid.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: balanceOf[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x6feaf4e8f386c08b4518c175874b332329d0d6ba",
+   "name": "SingularDTV Launch (ConsenSys)",
+   "live_eth": 1.0206,
+   "mapped": 1.0206,
+   "classification": "H-O",
+   "claim_model": "SingularDTV.withdrawContribution(): sentTokens[msg.sender]/contributions[msg.sender] only (needs token approval).",
+   "evidence": [
+    "verified source: withdrawContribution uses sentTokens[msg.sender], contributions[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xe8da050c3140183d4f5f01e048ac136e2da5253f",
+   "name": "Start Mining (STM) Token Sale",
+   "live_eth": 5.9811379310344,
+   "mapped": 5.98113793,
+   "classification": "H-O",
+   "claim_model": "Start Mining.manualRefund(): ico_buyers_eth[msg.sender] zeroed then paid.",
+   "evidence": [
+    "holder simulation -> OK",
+    "verified source: ico_buyers_eth[msg.sender]"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0xc213f258f4142f53d086f9edb7a36e67eb347f63",
+   "name": "Transit Finance Refund (admin unlock required)",
+   "live_eth": 160.7458,
+   "mapped": 0.1122,
+   "classification": "P",
+   "claim_model": "Transit refund: owner must setClaim(false,0); claim() pays _refund[msg.sender] (recorded entitlement) after unpause; emergencyWithdraw onlyExecutor.",
+   "evidence": [
+    "verified source: setClaim onlyOwner; claim requires !_claimed[msg.sender] and _refund[msg.sender].amount > 0"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "Unlock is privileged; then holder-only."
+  },
+  {
+   "address": "0xaf5fc45258b5d0af72031ab154bf6dfcfec74b99",
+   "name": "RemovePutinBounty (admin unlock required)",
+   "live_eth": 100.12,
+   "mapped": 100.12,
+   "classification": "P",
+   "claim_model": "RemovePutinBounty: state Initial; owner must cancel(); redeem() requires state cancelled and pays balanceOf[msg.sender]; cancelNoWinner requires executed.",
+   "evidence": [
+    "verified source: cancel isOwner; redeem requires cancelled; state live = initial",
+    "PBTY token is transferable but no market found"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": "No permissionless transition from Initial."
+  },
+  {
+   "address": "0x5535a72556727c221c567e0fc4208c5a99dba1cc",
+   "name": "PembiCoinICO (admin unlock required)",
+   "live_eth": 69.23904994,
+   "mapped": 69.23904994,
+   "classification": "P",
+   "claim_model": "PembiCoinICO: state Idle; owner must setFailed(); refund() inState(Failed) pays amounts[msg.sender].",
+   "evidence": [
+    "verified source: refund inState(Failed); setFailed onlyOwner"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  },
+  {
+   "address": "0x93d812bf90a575d628e246b0966505a9e466f534",
+   "name": "Circles RefundVault (admin unlock required)",
+   "live_eth": 24.098949808,
+   "mapped": 24.09894981,
+   "classification": "P",
+   "claim_model": "Circles RefundVault: state Active; owner must enableRefunds(); refund(buyer) pays recorded depositor.",
+   "evidence": [
+    "verified source: enableRefunds onlyOwner; refund requires state Refunding; state live = 0 (Active)",
+    "owner is a contract (multisig/controller)"
+   ],
+   "eu_candidate": null,
+   "confidence": "high",
+   "notes": ""
+  }
+ ]
+}

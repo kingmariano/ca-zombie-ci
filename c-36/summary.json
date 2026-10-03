@@ -1,0 +1,34 @@
+{
+  "finding": "C-36",
+  "title": "forgotten-eth recovery index — attacker-extractable value across 295 legacy contracts + backing children",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "medium",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 26111001,
+  "block_numbers": {"ethereum": 26111001, "ethereum_tokens": 26111067, "fork_tests": 26111184},
+  "targets_checked": 295,
+  "live_targets": 220,
+  "closed_reasons": [
+    "self-service withdraw/refund/redeem pays only the caller's own recorded position (top pots)",
+    "privileged owner/admin gating intact (FETH ProxyAdmin, Augur controller owner, etc.)",
+    "no market for race tokens (PoWH3D: no UniV2/UniV3 pair)",
+    "merkle/root claims verified self-only in prior sweep (zkSync Lite, 0x0 Rewards)",
+    "underflow/no-op paths (WithdrawDAO.trusteeWithdraw)"
+  ],
+  "poc": {"tests_passed": 2, "tests_total": 2, "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37116289035"]},
+  "key_facts": [
+    "295 listed contracts re-measured live at block 26111001: 71,667.72 ETH + ~$39.0M major tokens",
+    "The DAO WithdrawDAO child holds 81,399.81 ETH (~$218.3M) — self-service only; trusteeWithdraw underflows to a no-op",
+    "DigixDAO Acid child holds 11,681.83 ETH (~$31.3M) — holder-only burn redemption",
+    "zkSync Lite 10,926.66 ETH + $5.54M tokens — prior deep-dive verified root immutable, claims self-only",
+    "16 negative-control probes on the largest pots: unprivileged attacker net gain = 0",
+    "Unindexed TribeRedeemer holds ~$10.2M (DAI+stETH) but TRIBE market price already equals redeem value"
+  ],
+  "caveats": [
+    "headline pending final child-segment E-U candidates",
+    "live balances drift; zkSync Lite and ENS registrar actively being claimed",
+    "token-sourced entries are not comparable on the ETH column"
+  ],
+  "one_liner": "external unprivileged attacker can extract ~$0 live; every large pot is self-service, privileged, or stuck, with no market to buy claim tokens below redemption value"
+}

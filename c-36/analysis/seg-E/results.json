@@ -1,0 +1,817 @@
+[
+ {
+  "address": "0xDd9fd6b6F8f7ea932997992bbE67EabB3e316f3C",
+  "name": "Last Winner",
+  "live_eth": 2425.427564,
+  "mapped": 2424.763769,
+  "classification": "S",
+  "claim_model": "No working claim path. Prior zombie-deep verdict: only a probabilistic airdrop selector worth <=0.29 ETH total, negative EV.",
+  "evidence": [
+   "cast balance 2425.427564 ETH at block 26111147 (unchanged since index measurement)",
+   "bytecode selectors identical to worklist (immutable, no new selector added)",
+   "PRIOR: zombie-deep proved $0 for Last Winner 0xdd9fd6b..."
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "47,685 addresses with recorded balances; no permissionless sweep; prior verdict not re-litigated. No new surface."
+ },
+ {
+  "address": "0x87ae4928f6582376a0489e9f70750334bbc2eb35",
+  "name": "ChickenChef",
+  "live_eth": 0.0,
+  "mapped": 48.20481881476927,
+  "classification": "H-O",
+  "claim_model": "Stakers self-withdraw staked WETH via emergencyWithdraw(0) or withdraw(0,amount); no non-staker path.",
+  "evidence": [
+   "verified source ChickenChef (Blockscout) - standard MasterChef; pool 0 lpToken=WETH, contract WETH balance 48204818814769265174 wei (48.2048188)",
+   "userInfo(0,*) for all 107 WETH counterparties: 7 non-zero stakers, sum=48.20481881476927 == contract WETH balance exactly",
+   "cast call --from staker emergencyWithdraw(0) succeeds; withdraw(0,amount) succeeds; non-staker userInfo=0",
+   "updatePool/massUpdatePools permissionless but only mint/account CHIFI (dead token); updatePool returns early (blockReward=0, halving>40) without state change"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Rewards are CHIFI mint (not WETH). Note: _chickenHalving() 2**parseHalving will wrap to 0 at parseHalving>=256 (approx block 32.0M, ~2 years), making getChickenBlockReward div-by-zero and bricking withdraw/deposit; emergencyWithdraw is unaffected. No E-U."
+ },
+ {
+  "address": "0x4dac3e07316d2a31baabb252d89663dee8f76f09",
+  "name": "GovTreasurer",
+  "live_eth": 0.0,
+  "mapped": 18.99736196605838,
+  "classification": "H-O",
+  "claim_model": "Stakers self-withdraw via withdraw(2,amount) (works). emergencyWithdraw(2) is broken and destructive: it zeroes user.amount BEFORE transferring, so a mined call would pay 0 and destroy the claim.",
+  "evidence": [
+   "verified source GovTreasurer; pool 2 = WETH; contract WETH balance 18997361966058381030 (18.997361966)",
+   "userInfo(2,*) for 86 WETH counterparties: 21 non-zero stakers, sum=18.99736196605838 == contract WETH balance exactly",
+   "cast call --from 0xBd786740... withdraw(2,1e18) -> success (0x); cast call --from same emergencyWithdraw(2) -> success but source transfers user.amount after setting it to 0 => 0 wei paid",
+   "updatePool calls safeGDAOTransfer(address(this),reward) = self-transfer no-op; GDAO rewards accounted but not reserved"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "DO NOT call emergencyWithdraw(2): a mined call permanently forfeits the position (funds stay in contract, claim wiped). Only withdraw(2,amount) is safe. No E-U (non-staker cannot call for another user; userInfo keyed by msg.sender)."
+ },
+ {
+  "address": "0x07261a6e37adbfab11e6474bca54634c7782b195",
+  "name": "MysteryMan",
+  "live_eth": 0.0,
+  "mapped": 4.0,
+  "classification": "H-O",
+  "claim_model": "Stakers self-withdraw staked WETH via emergencyWithdraw(0) or withdraw(0,amount).",
+  "evidence": [
+   "verified source MysteryMan; pool 0 = WETH; contract WETH balance 4000000000000000000 (4.0)",
+   "userInfo(0,*) for 5 WETH counterparties: 2 stakers x 2.0 WETH, sum=4.0 == contract balance exactly",
+   "cast call --from 0x8A0E28... withdraw(0,1e18) -> success; emergencyWithdraw order is correct (transfer then zero)"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Standard MasterChef; rewards are MYSTERY mint (5.38e24 held, no ETH relevance). No E-U."
+ },
+ {
+  "address": "0xb60c12d2a4069d339f49943fc45df6785b436096",
+  "name": "MasterStar",
+  "live_eth": 0.0,
+  "mapped": 3.0,
+  "classification": "H-O",
+  "claim_model": "Single staker self-withdraws 3.0 WETH via emergencyWithdraw(0) or withdraw(0,amount). Extra 0.1 WETH in contract is an unaccounted donation, stuck.",
+  "evidence": [
+   "verified source MasterStar; pool 0 = WETH allocPoint 0; contract WETH balance 3100000000000000000 (3.1)",
+   "userInfo(0,0xb156d84E...) = 3.0e18; sum over all 348 WETH counterparties = 3.0 == 1 staker; 0.1 WETH surplus (donation, no sweep => stuck)",
+   "cast call --from 0xb156... withdraw(0,1e18) -> success; emergencyWithdraw(0) -> success",
+   "migrate(0) permissionless but reverts: migratePoolAddrs(0)=0x0 (migrator set to 0xAaBc605b...); tokenConvert(pid,to) only moves caller's own amount"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "No E-U: migrate() cannot move pool-0 WETH (no cmoon addr); tokenConvert self-only. 0.1 WETH surplus unrecoverable (S for that dust)."
+ },
+ {
+  "address": "0x0de845955e2bf089012f682fe9bc81dd5f11b372",
+  "name": "BDPMaster",
+  "live_eth": 0.0,
+  "mapped": 1.743,
+  "classification": "H-O",
+  "claim_model": "Stakers self-withdraw staked WETH ONLY via emergencyWithdraw(1). withdraw/deposit/claimReward are BROKEN (revert) but funds are not stranded.",
+  "evidence": [
+   "verified source BDPMaster; pool 1 = WETH; contract WETH balance 1743000000000000000 (1.743)",
+   "userInfo(1,*) for 1454 WETH counterparties: 8 stakers, sum=1.743 == contract balance exactly",
+   "BDP.seedPoolAmount()=0; cast call --from staker withdraw(1,0.1e18) -> revert 'BDPToken: cannot mint for pool'; claimReward(1) same revert; deposit(1,0) same revert",
+   "cast call --from 0x20957291... emergencyWithdraw(1) -> success (does not call updatePool, so no BDP.mint)"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Index note 'withdraw() BROKEN' confirmed: updatePool->BDP.mint reverts when seedPoolAmount==0, bricking withdraw/deposit/claimReward. emergencyWithdraw(1) still pays full stake. No E-U."
+ },
+ {
+  "address": "0x9465A32618a9172b3c14d82cecdCa788dE1ef878",
+  "name": "P4RTY DAO Vault",
+  "live_eth": 0.430478,
+  "mapped": 0.43342334,
+  "classification": "H-O",
+  "claim_model": "Stakers self-withdraw accrued ETH dividends via withdraw() (requires myDividends()>0). No unstake exists; P4RTY is permanently locked once staked.",
+  "evidence": [
+   "verified source P4RTYDaoVault; contract balance 430478168407513971 wei",
+   "dividendsOf() summed over all 92 stakers from onStake logs: 54 non-zero, sum=0.43047816840578185 == contract balance exactly",
+   "withdraw() updates payoutsTo_ before .transfer; reentrancy yields 0 dividends (onlyDivis reverts)",
+   "no sweep function; owner can only manage whitelist; reinvestByProxy is onlyWhitelisted (no whitelisted address found among sampled accounts); stake() requires holding P4RTY and sets payoutsTo_ so new stakers get no past dividends"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "H-O: existing stakers claim own dividends. Buying P4RTY and staking now yields zero past dividends (payoutsTo_ reset at stake). No E-U."
+ },
+ {
+  "address": "0xbf4ed7b27f1d666546e30d74d50d173d20bca754",
+  "name": "The DAO WithdrawDAO",
+  "live_eth": 81399.811926,
+  "mapped": 81399.81,
+  "classification": "H-O",
+  "claim_model": "DAO token holders self-withdraw via withdraw() (self-only). trusteeWithdraw() is a no-op (underflow).",
+  "evidence": [
+   "cast balance 81399.811926 ETH at block 26111147",
+   "PRIOR child note: verified source; withdraw() self-only; trusteeWithdraw() underflow no-op"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Live balance unchanged vs index. Prior $0 for unprivileged attacker - cited, not re-litigated."
+ },
+ {
+  "address": "0x23ea10cc1e6ebdb499d24e45369a35f43627062f",
+  "name": "DigixDAO Acid",
+  "live_eth": 11681.827614,
+  "mapped": 11681.83,
+  "classification": "H-O",
+  "claim_model": "DGD holder-only burn/redemption (Acid.burn()).",
+  "evidence": [
+   "cast balance 11681.827614 ETH at block 26111147",
+   "PRIOR child note: Acid.burn() holder-only"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Live balance unchanged. Cited prior."
+ },
+ {
+  "address": "0x707f9118e33a9b8998bea41dd0d46f38bb963fc8",
+  "name": "Lido bETH",
+  "live_eth": 0.0,
+  "mapped": 0.0,
+  "classification": "H-O",
+  "claim_model": "bETH holders redeem against AnchorVault's stETH pro-rata. bETH supply 1013.43 vs 745.47 stETH backing => ~26% shortfall, first-mover race among bETH holders.",
+  "evidence": [
+   "cast balance 0 ETH; bETH.totalSupply()=1013425683039695139443 (1013.43)",
+   "AnchorVault stETH balance=745468272457990202737 (745.468) at block 26111147",
+   "PRIOR child note: AnchorVault share token"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "H-O with race: claims (1013.43 bETH) exceed assets (745.47 stETH). Holder-only; no non-holder entry without market. Cited prior + live re-check."
+ },
+ {
+  "address": "0xa2f987a546d4cd1c607ee8141276876c26b72bdf",
+  "name": "Lido AnchorVault",
+  "live_eth": 0.0,
+  "mapped": 0.0,
+  "classification": "H-O",
+  "claim_model": "Vault backing contract for bETH; pays stETH only to bETH burners (pro-rata).",
+  "evidence": [
+   "cast balance 0 ETH; holds 745468272457990202737 stETH (745.468) at block 26111147",
+   "PRIOR child note: holds 745.47 stETH"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Backing contract of bETH entry; same shortfall race. No E-U."
+ },
+ {
+  "address": "0x3dfd23a6c5e8bbcfc9581d2e864a68feb6a076d3",
+  "name": "Aave v1 LendingPoolCore",
+  "live_eth": 926.001454,
+  "mapped": 926.0,
+  "classification": "H-O",
+  "claim_model": "Aave v1 depositors withdraw their own reserves (aToken redeem).",
+  "evidence": [
+   "cast balance 926.001454 ETH at block 26111147",
+   "PRIOR: zombie-deep proved $0 for Aave v1 core 0x3dfd23a... (holder-only)"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Live balance ~unchanged. Cited prior."
+ },
+ {
+  "address": "0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e",
+  "name": "dYdX Solo Margin",
+  "live_eth": 0.0,
+  "mapped": 0.0,
+  "classification": "S",
+  "claim_model": "No unprivileged extraction; only residual liquidation-spread value ($16-18 max per prior).",
+  "evidence": [
+   "cast balance 0 ETH at block 26111147",
+   "PRIOR: zombie-deep proved <=$16-18 liquidation spread only"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Cited prior; live balance 0. No new surface."
+ },
+ {
+  "address": "0x0a14b696350546110a0d8acdb86226983af9d2a0",
+  "name": "zkSync Lite L1 exit",
+  "live_eth": 10775.085193,
+  "mapped": 10926.66,
+  "classification": "H-O",
+  "claim_model": "zkSync account owners exit via Merkle-proof claim (self-only, root immutable).",
+  "evidence": [
+   "cast balance 10775.085193 ETH at block 26111147 (was 10926.66 at prior measurement; -151.6 ETH of legitimate self-claims since)",
+   "PRIOR: zombie-deep proved $0 (root immutable, claims self-only)"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Balance declined by ~151.6 ETH since index scan - consistent with users self-exiting; no unprivileged path. Cited prior."
+ },
+ {
+  "address": "0x347e3513ca6d5118cb2df3bc386eade1e8f25ceb",
+  "name": "SAW Games Pass",
+  "live_eth": 0.0,
+  "mapped": 0.0,
+  "classification": "S",
+  "claim_model": "NFT contract; mint ETH was withdrawn by owner (withdraw() onlyOwner). No claimable value.",
+  "evidence": [
+   "verified source SAWGamesPass; cast balance 0; totalSupply 3397; mintPrice 0.04 ETH; withdraw() onlyOwner"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "No ETH/token value. Dust."
+ },
+ {
+  "address": "0xf61a285edf078536a410a5fbc28013f9660e54a8",
+  "name": "TradexOne",
+  "live_eth": 0.47122565,
+  "mapped": 0.47122565,
+  "classification": "H-O",
+  "claim_model": "EtherDelta fork: depositors withdraw their own recorded balance via withdraw(amount)/withdrawToken().",
+  "evidence": [
+   "verified source TradexOne (EtherDelta fork); admin()=0x35509562..., feeAccount()=0x3E2cd610...",
+   "all admin setters guarded by msg.sender!=admin; no admin sweep of user balances; withdraw() checks tokens[0][msg.sender] and updates state before call",
+   "contract holds 0.47122565 ETH (user balances)"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Fee account can only withdraw its own fee balance. No E-U."
+ },
+ {
+  "address": "0xe8fff15bb5e14095bfdfa8bb85d83cc900c23c56",
+  "name": "Afrodex",
+  "live_eth": 0.4517076590505233,
+  "mapped": 0.4517076590505233,
+  "classification": "H-O",
+  "claim_model": "EtherDelta fork: depositors withdraw their own recorded balance via withdraw(amount)/withdrawToken().",
+  "evidence": [
+   "verified source Afrodex; admin()=feeAccount()=0x56D2550b...; admin setters guarded; withdraw self-only",
+   "contract holds 0.4517076590505233 ETH (user balances)"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "No E-U."
+ },
+ {
+  "address": "0x96a4ed03206667017777f010dea4445823acb0fc",
+  "name": "P4D",
+  "live_eth": 1e-18,
+  "mapped": 7.63688338,
+  "classification": "S",
+  "claim_model": "Mapped 7.64 ETH is PHANTOM: contract holds 1 wei. withdrawSubdivs()/withdrawSubdivsAmount() revert (INVALID) for real holders due to broken lastContractBalance_ accounting.",
+  "evidence": [
+   "verified source P4D (P3D v2 fork); cast balance = 1 wei; P3D.dividendsOf(P4D)=13323748237178983 (0.0133 ETH) is the only real backing",
+   "sum subdividendsOf() over top-50 holders = 83.7 ETH (top holder alone 16.68) vs 1 wei actual => over-committed accounting",
+   "cast call --from 0xE2B9f5ca... withdrawSubdivs(false) -> invalid opcode; withdrawSubdivsAmount(1e18) -> invalid opcode (SafeMath underflow on lastContractBalance_)",
+   "updateSubdivsFor pulls P3D dividends (0.0133 ETH max) and distributes only balance deltas"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Index over-mapped by ~7.63 ETH. Only ~0.0133 ETH (P3D dividends) is physically present for a small holder first-mover race; mapped amount unbacked. Not E-U (holders only, tiny real value)."
+ },
+ {
+  "address": "0xdea2bc436d38d4f8ee6f9e63b63b72a399c24e2c",
+  "name": "VLB / Lino",
+  "live_eth": 0.0,
+  "mapped": 17.28,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x2CbC6812CfF0B1113BF2808fFCe6D83B97Afd345; vault.state() = 1 (Refunding); vault balance = 17.28 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x7c33f3d417ef65a5299998bf7bbd35921963336c",
+  "name": "Friend Network Token",
+  "live_eth": 0.0,
+  "mapped": 16.450310367,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x62BbB9FFfd33d70A39feD4E7874163E8B97eA41b; vault.state() = 1 (Refunding); vault balance = 16.450310367 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xd005c3dccd6e7056883dc612770021bc09837098",
+  "name": "Global ICO Token (GLIF)",
+  "live_eth": 0.0,
+  "mapped": 16.126694288,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x91BF99CA34268d407f3CC8d6525CE83c6eA7Bcf5; vault.state() = 1 (Refunding); vault balance = 16.126694288 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xb8f1437c742dc042af73d5bd18c8fc985ec8e3b4",
+  "name": "CryptoHunt (CH)",
+  "live_eth": 0.0,
+  "mapped": 10.33265,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xebc7E601f7DaF56b602334D6a3b081BB4d7D86E4; vault.state() = 1 (Refunding); vault balance = 10.33265 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x12c33d513d4534e6cb5dc06c56683be52a936d24",
+  "name": "Alttradex (ATXT)",
+  "live_eth": 0.0,
+  "mapped": 5.163656609,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xE84E9f28a721010B8a2934810ce22975B15de46F; vault.state() = 1 (Refunding); vault balance = 5.163656609 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xc49e03bdd6809fd168565b26d27d5cf72f9e9525",
+  "name": "Etcetera (ERA)",
+  "live_eth": 0.0,
+  "mapped": 4.884108742851736,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x17bE2C0acA46dd60CfC58DBb13F0b1c6c1921dB8; vault.state() = 1 (Refunding); vault balance = 4.884108742851736 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xda3fa12b3d41cd9948db6437f27c0c9978c55cbb",
+  "name": "Enkronos Token (ENK)",
+  "live_eth": 0.0,
+  "mapped": 0.13,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xfe911bD81E9e7295dCd997973036F723d3E02300; vault.state() = 1 (Refunding); vault balance = 0.13 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x6e776e93291620dac8f3dde4a0b98c42a5359293",
+  "name": "DeskBell (DBT)",
+  "live_eth": 0.0,
+  "mapped": 3.82,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x5A08600CbB2a6dD073A62CDdb07861Efe59D40f5; vault.state() = 1 (Refunding); vault balance = 3.82 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xc86554bee96fdb3c85f85b576ed52d5e1eacc3a6",
+  "name": "Quintessence (QST)",
+  "live_eth": 0.0,
+  "mapped": 1.529,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xc178d4Fe4451d863cd01FD3E240D17194FD178BC; vault.state() = 1 (Refunding); vault balance = 1.529 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xcb7f070fda083e8e5f40559376c360f0709e985c",
+  "name": "Deck Coin (DEK)",
+  "live_eth": 0.0,
+  "mapped": 1.217727526,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x05B3aBD9031A31a45121bda59c7bb52fc7dB2590; vault.state() = 1 (Refunding); vault balance = 1.217727526 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x5e6a22ef928d09e9159737393ca155e9eb021d54",
+  "name": "Tokpie (TKP)",
+  "live_eth": 0.0,
+  "mapped": 1.154832441,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x7D7417ED0748018f540aA0F68DF31d8f44A342F7; vault.state() = 1 (Refunding); vault balance = 1.154832441 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x05711090b4d375431e841ea79e52666f623d3353",
+  "name": "GlobalSpy (SPY)",
+  "live_eth": 0.0,
+  "mapped": 0.969807447,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xAae985547c1512ffCCEe43Ce5F55d73D5Df6eDca; vault.state() = 1 (Refunding); vault balance = 0.969807447 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x2f4330e833c76860ea54f15b0195ff80a2c519c4",
+  "name": "BigToken (BTK)",
+  "live_eth": 0.0,
+  "mapped": 4.4064455,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xbAd9B65CFB0c2E89bc9543B86849780Baa52C605; vault.state() = 1 (Refunding); vault balance = 4.4064455 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x3448295659daad4c834e5ce1c18c4e4ef73c7f06",
+  "name": "WINiota (WIT)",
+  "live_eth": 0.0,
+  "mapped": 4.991631624,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x028857f9E565D7E3e1d84B5F5736B53651C2778F; vault.state() = 1 (Refunding); vault balance = 4.991631624 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xea864a114c648eff4f92e55b870fe1e71fd60083",
+  "name": "Grapevine (GVINE)",
+  "live_eth": 0.0,
+  "mapped": 0.9768,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x57d1FbC0404eC7b431914cdEa7A040953eAf925d; vault.state() = 1 (Refunding); vault balance = 0.9768 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x269b4c23ddab676e2869ae72cd6ae4f24bdfea45",
+  "name": "IRB Tokens (IRB)",
+  "live_eth": 0.0,
+  "mapped": 5.2961,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xCbE98a2b1f756bEbe53d41Eb3b94e566A0777EDe; vault.state() = 1 (Refunding); vault balance = 5.2961 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xa785ecdc8f166d0644b853f29732ae128c5d775b",
+  "name": "CamToken (CAM)",
+  "live_eth": 0.0,
+  "mapped": 3.453017621,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x59450e7A13bb0Ff6D6D58f60E3E6b3e07b7A32E1; vault.state() = 1 (Refunding); vault balance = 3.453017621 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x8519f68a987048b879bed6afab25a0414828c236",
+  "name": "LINDA Token (Presale)",
+  "live_eth": 0.0,
+  "mapped": 2.92692333,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xd782aE82c167De179DEc25278d855375D8174B60; vault.state() = 1 (Refunding); vault balance = 2.92692333 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xfcbc3a54c5663295d075b086441ee51c32ad152c",
+  "name": "LINDA Token (Main Sale)",
+  "live_eth": 0.0,
+  "mapped": 2.74850272,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x551Ccb65f02a5dddA909f181b1eB67c9226c6A2E; vault.state() = 1 (Refunding); vault balance = 2.74850272 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x65320b9aeac77e45369e4892da896b7a987a97f3",
+  "name": "Monoreto (MNR)",
+  "live_eth": 0.0,
+  "mapped": 2.5553377429999995,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xf671ab8f66212917D122e7Cf52094440D6aedc82; vault.state() = 1 (Refunding); vault balance = 2.5553377429999995 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x79c59c24465fc3cc92e6419d4b59fdd285d874cf",
+  "name": "Unverified ICO Refund (79c5)",
+  "live_eth": 0.0,
+  "mapped": 1.541439442,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xe853148ef66505508b46b30511eeb4c7a4eAa370; vault.state() = 1 (Refunding); vault balance = 1.541439442 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xf36358e9c7f6bf26d9cff44f95bf9521fc3feed4",
+  "name": "TREECHAIN NETWORK (TREECOIN)",
+  "live_eth": 0.0,
+  "mapped": 1.0,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x1394D3612343D05d57e482E0Cf4C8E9B0dF626b0; vault.state() = 1 (Refunding); vault balance = 1.0 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x3adf5ee8777f471407e04a7453133477a2dc0c2c",
+  "name": "Lendsbay Token (LBT)",
+  "live_eth": 0.0,
+  "mapped": 0.845,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x4539d820C582c8A196891CD03Ed0967dc3823656; vault.state() = 1 (Refunding); vault balance = 0.845 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xf563549daf64f684858e863e2731f19633d1acb1",
+  "name": "FURT COIN (FRT)",
+  "live_eth": 0.0,
+  "mapped": 0.694374789862119,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xc2a1BFc612aDdee098c723f5deDB298D44F49EbB; vault.state() = 1 (Refunding); vault balance = 0.694374789862119 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x09b8aaa7a883e60c23c6a0635940000c6e2e7560",
+  "name": "Kryptopy Token (KPY)",
+  "live_eth": 0.0,
+  "mapped": 0.59,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x1bd8C0ed1Cd007B7C7fbE092569905B6cc854bAF; vault.state() = 1 (Refunding); vault balance = 0.59 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x9527551ca444f6e5d9a0b281116586427366862a",
+  "name": "DigitizeCoin Presale (DTZ)",
+  "live_eth": 0.0,
+  "mapped": 1.1,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0x0547D2Aa5a072f7e8281fF7C422b43C9168EA2f3; vault.state() = 1 (Refunding); vault balance = 1.1 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0x77b275827eb3cf1792852b128a6dbc7a699bbd91",
+  "name": "PallyCoin Fork (PAL2)",
+  "live_eth": 0.0,
+  "mapped": 3.77,
+  "classification": "H-O",
+  "claim_model": "OZ RefundableCrowdsale: ETH sits in sibling RefundVault (state=Refunding). Original depositors self-claim via crowdsale claimRefund() or vault refund(investor); payments go to the recorded depositor only.",
+  "evidence": [
+   "crowdsale.vault() = 0xAD256F5183b2479A63fe06974485104DdAd1b8Ce; vault.state() = 1 (Refunding); vault balance = 3.77 ETH at blocks ~26111147",
+   "verified RefundVault sources: 0x91BF99CA... (OZ) and 0x2CbC6812... (VLB) both have public refund(address investor) requiring state==Refunding and paying investor.transfer(deposited[investor])",
+   "crowdsale isFinalized=true, goalReached=false (refunds enabled); claimRefund() selector 0xb5545a3c present on all 27 crowdsales"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Third party may trigger refund(investor) but ETH always goes to the depositor - no redirect. 27 vaults hold 115.954 ETH total in unclaimed ICO refunds. No E-U."
+ },
+ {
+  "address": "0xb9ed94c6d594b2517c4296e24a8c517ff133fb6d",
+  "name": "Hegic V1 Call",
+  "live_eth": 0.0,
+  "mapped": 2.302797,
+  "classification": "H-O",
+  "claim_model": "LP tranche owners (ERC-721) withdraw principal via withdraw(trancheID)/withdrawWithoutHedge(trancheID). unlock(id) is permissionless but only releases expired-option accounting.",
+  "evidence": [
+   "verified source HegicCALL + HegicPool; token()=WETH; contract WETH balance=2302796914471849637 (2.302797)",
+   "HegicPool._withdraw has require(_isApprovedOrOwner(_msgSender(), trancheID)) - only tranche owner/approved",
+   "unlock(id) external, no auth, but only flips Active->Expired accounting for an expired option; funds go to the pool"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "No E-U. WETH == LP principal; only tranche owners can withdraw."
+ },
+ {
+  "address": "0xb1236770ed9015e331c021347e005b00c8b8a01b",
+  "name": "Kitten Finance",
+  "live_eth": 0.0,
+  "mapped": 19.626407,
+  "classification": "H-O",
+  "claim_model": "Stakers exit own WETH via withdraw(amount)/exit() (Synthetix StakingRewards); owner renounced.",
+  "evidence": [
+   "verified source KittenRewards (Synthetix StakingRewards fork); contract WETH balance=19626406829598170938 == totalSupply() exactly",
+   "owner()=0x0 (renounced); no recoverERC20/sweep selector; stake/withdraw/exit/getReward are self-service",
+   "rewardRate()=1576842454 (KITTEN rewards, negligible)"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "No E-U. 19.6264 WETH is staker principal, fully backed by totalSupply."
+ },
+ {
+  "address": "0x4d9629e80118082b939e3d59e69c82a2ec08b4d5",
+  "name": "Tribe Redeemer",
+  "live_eth": 0.0,
+  "mapped": 0.0,
+  "classification": "H-O",
+  "claim_model": "TRIBE holders call redeem(to, amountIn): transfer TRIBE in, receive pro-rata basket [stETH, LQTY, FOX, DAI]. redeemBase decrements by amountIn.",
+  "evidence": [
+   "verified source TribeRedeemer; redeemBase()=24992277239836591066637131 (~24.99M TRIBE left to redeem)",
+   "basket balances at block 26111147: stETH 3141.109, LQTY 59969.7, FOX 834049.6, DAI 1788335.6 (basket value roughly $14M+ vs 24.99M TRIBE base)",
+   "previewRedeem uses amountIn*balance/base; redeem decrements base by amountIn - pro-rata consistent (no rounding profit)"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Only TRIBE holders can redeem (H-O). No contract bug; any market arb is an off-contract price question (TRIBE price vs redemption value), not an E-U path in the contract."
+ },
+ {
+  "address": "0x02c133b9fbffb8d2e8cb7b7a94c7c880b331c720",
+  "name": "Gro UST Compensation",
+  "live_eth": 0.0,
+  "mapped": 0.0,
+  "classification": "H-O",
+  "claim_model": "Compensation beneficiaries claim via initialClaim(proof, amount) then claim() on a 2-year vesting schedule (ended 2024-05-31). Merkle proof required.",
+  "evidence": [
+   "verified source GMerkleVestor; token()=PWRD 0xF0a93d49...; contract PWRD balance=996759093702560061263482 (996,759 PWRD, ~$1M) at block 26111147",
+   "initialClaim(bytes32[] proof, uint256 amount) verifies merkle leaf; claim() pays msg.sender vested amount",
+   "sweep(uint256) is onlyOwner (owner 0x359F4fe8...) - privileged path"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "H-O for beneficiaries (proof-gated); owner sweep exists (P). No E-U. Index mapped 0 (only tracked DAI)."
+ },
+ {
+  "address": "0x090D4613473dEE047c3f2706764f49E0821D256e",
+  "name": "Uniswap UNI Airdrop",
+  "live_eth": 0.0,
+  "mapped": 0.0,
+  "classification": "H-O",
+  "claim_model": "UNI genesis MerkleDistributor: claim(index, account, amount, merkleProof) pays the leaf `account` (not msg.sender). Proof-gated.",
+  "evidence": [
+   "verified source MerkleDistributor; UNI balance=12499565688379843000000000 (12,499,565.7 UNI) at block 26111147",
+   "claim verifies keccak256(index,account,amount) against immutable merkleRoot; transfer goes to `account`; claimedBitMap prevents double-claim",
+   "no owner function (owner() reverts)"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Notable H-O pool: ~12.5M UNI still unclaimed by airdrop recipients (proofs are public in the Uniswap merkle repo). No E-U: proof required and payment cannot be redirected."
+ },
+ {
+  "address": "0x0c48250eb1f29491f1efbeec0261eb556f0973c7",
+  "name": "AimBot",
+  "live_eth": 0.0,
+  "mapped": null,
+  "classification": "H-O",
+  "claim_model": "AIMBOT holders claim own dividends via AimBot.claim() -> AimBotDividends.claim(msg.sender) -> pays withdrawableDividendOf(msg.sender).",
+  "evidence": [
+   "AimBotDividends child 0x93314Ee69BF8F943504654f9a8ECed0071526439 holds 67458694474256203200 wei (67.4586 ETH) at block 26111147 - index mapped None (missed)",
+   "verified AimBot source includes contracts/AimBotDividends.sol: withdrawDividend() reverts ('disabled'), claim(address) onlyOwner (owner = AimBot token), takeFunds() onlyOwner and unreachable (token has no forwarding call)",
+   "public AimBot.claim() calls dividends.claim(msg.sender); _withdrawDividendOfUser pays user.call{value: withdrawable}",
+   "scan of first 3000 AIMBOT holders: 1347 with positive withdrawable, sum=35.81 ETH (remaining unclaimed across further holders)",
+   "updateBalance(address) public only syncs shares to current token balance with magnifiedDividendCorrection = -mpps*delta => buyers after distributions get 0 past dividends"
+  ],
+  "eu_candidate": null,
+  "confidence": "high",
+  "notes": "Notable H-O: 67.46 ETH of unclaimed AIMBOT dividends claimable by holders (self-only). Non-holder cannot extract (correction math cancels past dividends on sync). Index missed the child entirely."
+ }
+]

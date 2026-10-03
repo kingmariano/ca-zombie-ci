@@ -1,0 +1,332 @@
+========================================================================================================================
+SpankChain Auction                         live=  107.533 0x4d1886daf2617cbd9e27abfd0f18a54f04f33c41
+  index: SpankChain SPANK Auction
+  (unverified / empty source)
+========================================================================================================================
+Presale Pool (LINO/HEALP/Bulleon)          live=   91.234 0xf058ee35f381a12b3a0f504025419dcaf047ce7f
+  index: Presale Pool (2018)
+  (unverified / empty source)
+========================================================================================================================
+Status Buyer                               live=   76.600 0xcc89405e3cfd38412093840a3ac2f851dd395dfb
+  index: Status Buyer (SNT ICO pool)
+  fn withdraw() :: uint256 user_deposit = deposits[msg.sender]; | deposits[msg.sender] = 0; | uint256 contract_eth_balance = this.balance - bounty; | uint256 contract_snt_balance = token.balanceOf(address(this)); | uint256 contract_value = (contract_eth_balance * 10000) + contra
+========================================================================================================================
+Presale Pool 0x48c128                      live=   98.479 0x48c128eafc3b937fb1f97889ad174ac02b4952cb
+  index: Presale Pool 0x48c128
+  (unverified / empty source)
+========================================================================================================================
+Presale Pool 0xff2c68                      live=   50.000 0xff2c689cb750f2a7d46e7471521189ced948f965
+  index: Presale Pool 0xff2c68
+  (unverified / empty source)
+========================================================================================================================
+Presale Pool 0xb9906c                      live=    2.500 0xb9906cf500d5e61b9673115151104c990a804dcb
+  index: Presale Pool 0xb9906c
+  (unverified / empty source)
+========================================================================================================================
+Presale Pool 0xd6770a                      live=   36.919 0xd6770aac65a48f5715889a4cdbf30a4faf73a073
+  index: Presale Pool 0xd6770a
+  (unverified / empty source)
+========================================================================================================================
+Presale Pool 0x796dbc                      live=   34.995 0x796dbc51b37f2d92b0af1271fd9520c8efd1be61
+  index: Presale Pool 0x796dbc
+  (unverified / empty source)
+========================================================================================================================
+Presale Pool 0x50c19f                      live=   34.307 0x50c19ffdbda85d1a07c09f01e113a94923801d32
+  index: Presale Pool 0x50c19f
+  (unverified / empty source)
+========================================================================================================================
+Presale Pool 0x6f40d9                      live=   27.725 0x6f40d96713b60d5083bc2493251907ca673de1b8
+  index: Presale Pool 0x6f40d9
+  (unverified / empty source)
+========================================================================================================================
+Ambassadors Fund                           live=   17.506 0xe9426198aec621203ba1fe07cf292b3796ba6248
+  index: Ambassadors Fund
+========================================================================================================================
+JustHodlIt                                 live=   18.169 0x344285b2082d9c7981241dcc160beca6057637e6
+  index: Just HODL It (dividend contract)
+  fn withdrawAll() public :: User storage user = users[msg.sender]; | uint256 deposit = user.deposit; | uint256 dividends = getDividends(msg.sender); | require(deposit > 0, "User has no deposit"); | user.payoutsTo += (deposit + dividends) * _magnitude; | _totalBank -= user.deposit;
+  fn withdrawDividends() public :: User storage user = users[msg.sender]; | uint256 payout = getDividends(msg.sender); | require(payout > 0, "User has no dividends"); | user.payoutsTo += payout * _magnitude; | user.lastActivity = block.timestamp; | msg.sender.transfer(payout);
+========================================================================================================================
+Contribution Pool                          live=   10.609 0xa812137eff2b368d0b2880a39b609fb60c426850
+  index: Contribution Pool
+  fn withdraw() external onlyBeneficiary :: require(materialReleaseConditionMet, "Material has not been set for a release."); | uint256 balance = address(this).balance; | beneficiary.transfer(balance); | emit Withdraw(beneficiary, balance);
+========================================================================================================================
+Neufund EtherToken                         live= 3385.429 0xb59a226a2b8a2f2b0512baa35cc348b6b213b671
+  index: ETH balances in defunct Neufund EtherToken contract
+  fn reclaim(IBasicToken token) public
+        only(ROLE_RECLAIMER) :: address reclaimer = msg.sender; | if(token == RECLAIM_ETHER) { | reclaimer.transfer(this.balance); | } else { | uint256 balance = token.balanceOf(this); | require(token.transfer(reclaimer, balance));
+  fn withdraw(uint256 amount) public :: require(_balances[msg.sender] >= amount); | _balances[msg.sender] = sub(_balances[msg.sender], amount); | _totalSupply = sub(_totalSupply, amount); | msg.sender.transfer(amount); | LogWithdrawal(msg.sender, amount); | Transfer(msg.sender, address(0), amount);
+  fn reclaim(IBasicToken token) public :: require(token != RECLAIM_ETHER); | Reclaimable.reclaim(token);
+========================================================================================================================
+Neufund EtherToken v2                      live=  375.679 0x0b7dc5a43ce121b4eaaa41b0f4f43bba47bb8951
+  index: Directly withdrawable Neufund EtherToken v2 ETH-T balances
+  fn reclaim(IBasicToken token) public
+        only(ROLE_RECLAIMER) :: address reclaimer = msg.sender; | if(token == RECLAIM_ETHER) { | reclaimer.transfer(address(this).balance); | } else { | uint256 balance = token.balanceOf(this); | require(token.transfer(reclaimer, balance));
+  fn withdraw(uint256 amount) public :: withdrawPrivate(amount); | msg.sender.transfer(amount);
+  fn withdrawAndSend(address sendTo, uint256 amount) public
+        payable :: require(amount >= msg.value, "NF_ET_NO_DEPOSIT"); | if (amount > msg.value) { | uint256 withdrawRemainder = amount - msg.value; | withdrawPrivate(withdrawRemainder); | } | emit LogWithdrawAndSend(msg.sender, sendTo, amount);
+  fn reclaim(IBasicToken token) public :: require(token != RECLAIM_ETHER); | Reclaimable.reclaim(token);
+  fn withdrawPrivate(uint256 amount) private :: require(_balances[msg.sender] >= amount); | _balances[msg.sender] = sub(_balances[msg.sender], amount); | _totalSupply = sub(_totalSupply, amount); | emit LogWithdrawal(msg.sender, amount); | emit Transfer(msg.sender, address(0), amount);
+========================================================================================================================
+Delphi RedemptionContract                  live=  205.845 0x899f9a0440face1397a1ee1e3f6bf3580a6633d1
+  index: Delphi's 2017 token redemption contract lets DEL holders approve the redemption contract and call redeemTokens(uint256), burning DEL for native ETH at a fixed 1
+  fn redeemTokens(uint amount) :: require(Token(token).transferFrom(msg.sender, this, amount)); | uint redemptionValue = amount / exchangeRate; | msg.sender.transfer(redemptionValue); | Redemption(msg.sender, amount, redemptionValue);
+========================================================================================================================
+Neufund                                    live=    0.000 0xb1E4675f0dBE360bA90447A7e58c62C762Ad62D4
+  index: ETH balances in defunct Neufund LockedAccount contract
+  fn reclaim(IBasicToken token) public
+        only(ROLE_RECLAIMER) :: address reclaimer = msg.sender; | if(token == RECLAIM_ETHER) { | reclaimer.transfer(this.balance); | } else { | uint256 balance = token.balanceOf(this); | require(token.transfer(reclaimer, balance));
+  fn withdraw(uint256 amount) public :: require(_balances[msg.sender] >= amount); | _balances[msg.sender] = sub(_balances[msg.sender], amount); | _totalSupply = sub(_totalSupply, amount); | msg.sender.transfer(amount); | LogWithdrawal(msg.sender, amount); | Transfer(msg.sender, address(0), amount);
+  fn reclaim(IBasicToken token) public :: require(token != RECLAIM_ETHER); | Reclaimable.reclaim(token);
+  fn reclaim(IBasicToken token) public :: require(token != ASSET_TOKEN); | Reclaimable.reclaim(token);
+========================================================================================================================
+Bancor Old ETH Token                       live=   94.424 0xD76b5c2A23ef78368d8E34288B5b65D616B746aE
+  index: ETH balances in defunct Bancor Old ETH Token contract
+  fn withdrawTokens(IERC20Token _token, address _to, uint256) public
+        ownerOnly
+        validAddress(_t :: assert(_token.transfer(_to, _amount));
+  fn withdraw(uint256 _amount) public :: balanceOf[msg.sender] = safeSub(balanceOf[msg.sender], _amount); | totalSupply = safeSub(totalSupply, _amount); | assert(msg.sender.send(_amount)); | Transfer(msg.sender, this, _amount); | Destruction(_amount);
+========================================================================================================================
+Maker W-ETH                                live=  169.057 0x2956356cd2a2bf3202f771f50d3d14a367b48070
+  index: ETH balances in defunct Maker W-ETH contract
+  fn withdraw(uint amount) public :: balances[msg.sender] = safeSub(balances[msg.sender], amount); | totalSupply = safeSub(totalSupply, amount); | require(msg.sender.send(amount));
+========================================================================================================================
+Old WETH                                   live= 1511.347 0xECF8F87f810EcF450940c9f60066b4a7a501d6A7
+  index: 
+  (unverified / empty source)
+========================================================================================================================
+DigixDAO                                   live=   25.382 0xe0b7927c4af23765cb51314a0e0521a9645f0e2a
+  index: ETH claimable by DGD holders via Acid.burn() (approve DGD + burn flow)
+  (unverified / empty source)
+========================================================================================================================
+NuCypher WorkLock                          live=  103.695 0xe9778e69a961e64d3cdbb34cf6778281d34667c2
+  index: 
+  fn cancelBid() external :: require(block.timestamp < endCancellationDate, | "Cancellation allowed only during cancellation window"); | WorkInfo storage info = workInfo[msg.sender]; | require(info.depositedETH > 0, "No bid to cancel"); | require(!info.claimed, "Tokens are already claimed
+  fn forceRefund(address payable[] calldata _biddersForRe) external afterCancellationWindow :: require(nextBidderToCheck != bidders.length, "Bidders have already been checked"); | uint256 length = _biddersForRefund.length; | require(length > 0, "Must be at least one bidder for a refund"); | uint256 minNumberOfBidders = tokenSupply.divCeil(maxAllowableLo
+  fn withdrawCompensation() external :: uint256 refund = compensation[msg.sender]; | require(refund > 0, "There is no compensation"); | compensation[msg.sender] = 0; | msg.sender.sendValue(refund); | emit CompensationWithdrawn(msg.sender, refund);
+  fn isClaimingAvailable() public view returns (bool) :: return block.timestamp >= endCancellationDate && | nextBidderToCheck == bidders.length;
+  fn claim() external returns (uint256 claimedTokens) :: require(isClaimingAvailable(), "Claiming has not been enabled yet"); | WorkInfo storage info = workInfo[msg.sender]; | require(!info.claimed, "Tokens are already claimed"); | claimedTokens = ethToTokens(info.depositedETH); | require(claimedTokens > 0, "Nothing
+  fn getAvailableRefund(address _bidder) public view returns (uint256) :: WorkInfo storage info = workInfo[_bidder]; | if (info.depositedETH == 0) { | return 0; | } | uint256 currentWork = escrow.getCompletedWork(_bidder); | uint256 completedWork = currentWork.sub(info.completedWork);
+  fn refund() external returns (uint256 refundETH) :: WorkInfo storage info = workInfo[msg.sender]; | require(info.claimed, "Tokens must be claimed before refund"); | refundETH = getAvailableRefund(msg.sender); | require(refundETH > 0, "Nothing to refund: there is no ETH to refund or no completed work"); | if (re
+========================================================================================================================
+The DAO                                    live=    0.001 0xbb9bc244d798123fde783fcc1c72d3bb8c189413
+  index: 
+  (unverified / empty source)
+========================================================================================================================
+Ahoolee Token Sale                         live=  191.110 0x575cb87ab3c2329a0248c7d70e0ead8e57f3e3f7
+  index: Ahoolee Token Sale (September 2017). Soft cap missed, refund mode active. Eligible contributors call refund() on the contract to claim their original ETH deposi
+  fn claimedOf(address _owner) constant returns (bool) :: return claimed[_owner];
+  fn claim() :: require (crowdsaleFinished); | require (!claimed[msg.sender]); | uint price = HARD_CAP_TOKENS * 1 ether / hardCapLow; | if(collected > hardCapLow){ | price = HARD_CAP_TOKENS * 1 ether / collected; | }
+  fn withdraw() onlyOwner :: require (softCapReached); | require (beneficiary.send(collected)); | crowdsaleFinished = true;
+  fn refund() public onlyAfter(endTime) :: require (!softCapReached); | require (!refunded[msg.sender]); | require (saleBalances[msg.sender] != 0) ; | uint refund = saleBalances[msg.sender]; | require (msg.sender.send(refund)); | refunded[msg.sender] = true;
+========================================================================================================================
+TruckHash Token Sale                       live=   45.135 0xcd806502ad2f9aeb32e23f8d647341d4b568201d
+  index: THTokenSale (Mar 2018). Soft cap missed — refundAllowed mode. Public refund() returns the user's wei deposit.
+  fn withdraw() onlyOwner public :: require(softCapReached); | require(this.balance > 0); | wallet.transfer(this.balance);
+  fn withdrawCoreTeamTokens() onlyOwner public :: require(saleSuccessfullyFinished); | if (now > startTime + 720 days && vestedTeam[3] > 0) { | token.transfer(walletCoreTeam, vestedTeam[3]); | vestedTeam[3] = 0; | } | if (now > startTime + 600 days && vestedTeam[2] > 0) {
+  fn withdrawAdvisorTokens() onlyOwner public :: require(saleSuccessfullyFinished); | if (now > startTime + 180 days && vestedAdvisors > 0) { | token.transfer(walletBountyAndAdvisors, vestedAdvisors); | vestedAdvisors = 0; | }
+  fn refund() public :: require(refundAllowed); | require(!softCapReached); | require(weiBalances[msg.sender] > 0); | uint256 currentBalance = weiBalances[msg.sender]; | weiBalances[msg.sender] = 0; | msg.sender.transfer(currentBalance);
+  fn finalizeCurrentStage() internal :: uint256 _stageIndex = activeStage; | if (_stageIndex == 0) { | softCapReached = true; | SoftCapReached(); | } else if (_stageIndex == stageCaps.length - 1) { | hardCapReached = true;
+========================================================================================================================
+Jincor Token ICO                           live=   19.062 0xb3b33f59174f2ef62167770e4c9cabaa3879eb5d
+  index: JincorTokenICO (Nov 2017). Soft cap missed — refund mode. Public refund() returns the user's deposited ETH.
+  fn refund() external icoEnded :: require(softCapReached == false); | require(deposited[msg.sender] > 0); | uint refund = deposited[msg.sender]; | deposited[msg.sender] = 0; | msg.sender.transfer(refund); | weiRefunded = weiRefunded.add(refund);
+  fn withdraw() external onlyOwner :: require(softCapReached); | beneficiary.transfer(collected); | token.transfer(beneficiary, token.balanceOf(this)); | crowdsaleFinished = true;
+========================================================================================================================
+AgroTechFarm Crowdsale                     live=   16.692 0x3fD30f3E1fbF4F3Ea6BDf3E3bb11826266708869
+  index: Failed-ICO direct refund ledger — AgroTechFarm Crowdsale. ETH is held in the sale contract and the claim flow is refund().
+  fn closeRefunds() onlyOwner public :: require(state == State.Active && address(this).balance >= softcap); | state = State.Closed; | emit RefundsClosed(); | multisig.transfer(address(this).balance);
+  fn enableRefunds() onlyOwner public :: require(address(this).balance < softcap && state == State.Active  && now > end); | state = State.Refunding; | emit RefundsEnabled();
+  fn refund() public :: require(state == State.Refunding); | uint value = balances[msg.sender]; | balances[msg.sender] = 0; | msg.sender.transfer(value);
+========================================================================================================================
+Luckchemy Crowdsale                        live=   10.768 0x18777Aec0B231D1a4A9C66B51253088a03affDFc
+  index: Failed-ICO direct refund ledger — Luckchemy Crowdsale. ETH is held in the sale contract and the claim flow is refund().
+  fn payoutTokens(address beneficiary, uint256 tokenAmount) private :: uint256 stage = uint256(currentStage); | tokensSold = tokensSold.add(tokenAmount); | tokenPools[stage] = tokenPools[stage].sub(tokenAmount); | deposits[beneficiary] = deposits[beneficiary].add(weiAmount); | ethBalance = ethBalance.add(weiAmount); | token.trans
+  fn refund() public :: require(hasEnded()); | require(!softCapReached() || ((now > END_TIME_SALE + 30 days) && !token.released())); | uint256 amount = deposits[msg.sender]; | require(amount > 0); | deposits[msg.sender] = 0; | msg.sender.transfer(amount);
+  fn claimOwnership() onlyPendingOwner public :: OwnershipTransferred(owner, pendingOwner); | owner = pendingOwner; | pendingOwner = address(0);
+========================================================================================================================
+HONG                                       live=  727.974 0x9fa8fa61a10ff892e4ebceb7f4e0fc684c2ce0a9
+  index: HONG duplicate contract. Verified source exposes refundMyIcoInvestment(), which refunds the caller's tracked weiGiven amount while the fund is not locked. Balan
+  fn payOutPercentage(address _recipient, uint _percent) internal onlyOwner noEther :: payOutAmount(_recipient, (this.balance * _percent) / 100);
+  fn payOutAmount(address _recipient, uint _amount) internal onlyOwner noEther :: if (!_recipient.call.value(_amount)()) | doThrow("payOut:sendFailed"); | else | evPayOut(msg.sender, msg.value, _recipient, _amount);
+  fn refundMyIcoInvestment() noEther notLocked onlyTokenHolders :: if (weiGiven[msg.sender] == 0) { | doThrow("noWeiGiven"); | return; | } | if (balances[msg.sender] > tokensCreated) { | doThrow("invalidTokenCount");
+========================================================================================================================
+VLB Token                                  live=    0.000 0xd7e011ad27b6128934e2afd1763120ede1274ae4
+  index: OZ RefundableCrowdsale — VLB Token. ETH stored in sibling RefundVault.
+  fn VLBRefundVault() :: state = State.Active;
+  fn enableRefunds() onlyCrowdsaleContract external :: require(state == State.Active); | state = State.Refunding; | RefundsEnabled();
+  fn refund(address investor) public :: require(state == State.Refunding); | uint256 depositedValue = deposited[investor]; | deposited[investor] = 0; | investor.transfer(depositedValue); | Refunded(investor, depositedValue);
+  fn claimRefund() public :: require(isFinalized); | require(!goalReached()); | vault.refund(msg.sender);
+  fn finalize() onlyOwner public :: require(!isFinalized); | require(hasEnded()); | if (goalReached()) { | vault.close(token.wingsWallet()); | } else { | vault.enableRefunds();
+========================================================================================================================
+Trend (TND)                                live=    0.000 0x5113309c84f7292b5f780748df5869cb9d0e3ad5
+  index: OZ RefundableCrowdsale — Trend (TND). ETH stored in sibling RefundVault.
+  (unverified / empty source)
+========================================================================================================================
+PallyCoin (PAL)                            live=    0.000 0xb4f10530e531c32490c68062662eb5684057afb4
+  index: OZ RefundableCrowdsale — PallyCoin (PAL). ETH stored in sibling RefundVault.
+  fn RefundVault(address _wallet) :: require(_wallet != 0x0); | wallet = _wallet; | state = State.Active;
+  fn enableRefunds() onlyOwner :: require(state == State.Active); | state = State.Refunding; | RefundsEnabled();
+  fn refund(address investor) :: require(state == State.Refunding); | uint256 depositedValue = deposited[investor]; | deposited[investor] = 0; | investor.transfer(depositedValue); | Refunded(investor, depositedValue);
+  fn refundTokens(address _buyer, uint256 tokens) external onlyCrowdsale whenNotPaused :: require(_buyer != address(0)); | require(tokens > 0); | require(balances[_buyer] >= tokens); | balances[_buyer] = balances[_buyer].sub(tokens); | RefundedTokens(_buyer, tokens);
+  fn claimRefund() public whenNotPaused :: require(hasEnded() && !goalReached() && isRefunding); | vault.refund(msg.sender); | token.refundTokens(msg.sender, tokensBought[msg.sender]);
+========================================================================================================================
+ForegroundTokenSale (DEAL)                 live=   12.145 0x943e99d9efd4b44d808f6c83373a9a2c1e15e0f8
+  index: Direct-refund ICO crowdsale — ForegroundTokenSale (DEAL). ETH stored in the crowdsale itself, not a vault.
+  fn claimToken() external
+        evaluateSaleState :: require(state == SaleState.Finalized); | require(purchases[msg.sender].tokenBalance > 0); | uint256 _tokensPurchased = purchases[msg.sender].tokenBalance; | purchases[msg.sender].tokenBalance = 0; | purchases[msg.sender].weiBalance = 0; | dealToken.transfer(ms
+  fn claimRefund() external :: require(state == SaleState.Refunding); | uint256 _amountToRefund = purchases[msg.sender].weiBalance; | require(_amountToRefund > 0); | purchases[msg.sender].weiBalance = 0; | purchases[msg.sender].tokenBalance = 0; | msg.sender.transfer(_amountToRefund);
+  fn finalizeSale() internal :: state = SaleState.Finalized; | saleWalletAddress.transfer(this.balance);
+========================================================================================================================
+VuePayTokenSale (VUP)                      live=    1.208 0xcba6f10d1147b2c5a3d8d8cbd93c373b31c6c2c8
+  index: Direct-refund ICO crowdsale — VuePayTokenSale (VUP). ETH stored in the crowdsale itself, not a vault.
+  fn withdrawFunds() public onlyOwner :: require(minCapReached); | require(this.balance > 0); | if(this.balance > 0) { | vuePayETHDestination.transfer(this.balance); | }
+  fn triggerRefund() public onlyOwner :: require(!saleHasEnded); | require(!minCapReached); | require(block.number >icoEndBlock); | require(msg.sender == executor); | allowRefund = true;
+  fn claimRefund() external :: require(allowRefund); | require(ETHContributed[msg.sender]!=0); | uint256 etherAmount = ETHContributed[msg.sender]; | ETHContributed[msg.sender] = 0; | VUPRefundedForWei(msg.sender, etherAmount); | msg.sender.transfer(etherAmount);
+========================================================================================================================
+PresalePool 2018                           live=   39.201 0xf8f6e626af09b0455acd9162beb5a484724f25b5
+  index: Failed 2018 ICO presale pool currently in Refund state. Participants call withdrawAll() to claim their share. The pool was frozen after the underlying presale w
+  (unverified / empty source)
+========================================================================================================================
+DigiPulse Token Sale (DGT)                 live=  100.583 0x9AcA6aBFe63A5ae0Dc6258cefB65207eC990Aa4D
+  index: Failed-ICO direct refund ledger — DigiPulse Token Sale (DGT). ETH is held in the sale contract and the claim flow is refundEther().
+  fn refundEther() external :: require (icoFailed); | var ethValue = ethBalanceOf[msg.sender]; | require (ethValue != 0); | ethBalanceOf[msg.sender] = 0; | msg.sender.transfer(ethValue); | Refund(msg.sender, ethValue);
+  fn withdrawFundsToOwner(uint256 _amount) :: require (icoFulfilled); | require (this.balance >= _amount); | owner.transfer(_amount);
+========================================================================================================================
+DirectCrypt Token Presale (DRCT)           live=   81.886 0x12d5b7c26DD8dc6E2F71f5bF240d5e76452b2FE5
+  index: Failed-ICO direct refund ledger — DirectCrypt Token Presale (DRCT). ETH is held in the sale contract and the claim flow is refund().
+  fn refund() external preSaleEnded inNormalState :: require(softCapReached == false); | require(refunded[msg.sender] == false); | uint refund = deposited[msg.sender]; | require(refund > 0); | msg.sender.transfer(refund); | deposited[msg.sender] = 0;
+  fn withdraw() external onlyOwner :: require(softCapReached); | beneficiary.transfer(collected); | token.transfer(beneficiary, token.balanceOf(this)); | crowdsaleFinished = true;
+========================================================================================================================
+QCOToken ICO (QCO)                         live=   31.447 0x3A8A97123bcCd826228e5EB4144b48cce169517B
+  index: Failed-ICO direct refund ledger — QCOToken ICO (QCO). ETH is held in the sale contract and the claim flow is requestRefund().
+  fn requestRefund() public
+    requireState(States.Aborted) :: require(ethPossibleRefunds[msg.sender] > 0); | uint256 payout = ethPossibleRefunds[msg.sender]; | ethPossibleRefunds[msg.sender] = 0; | msg.sender.transfer(payout);
+  fn requestPayout(uint _amount) public
+    onlyWithdraw //very important!
+    re :: msg.sender.transfer(_amount);
+========================================================================================================================
+hodlEthereum                               live=   21.528 0x1BB28e79f2482df6bf60efc7a33365703bCF1536
+  index: Failed-ICO direct refund ledger — hodlEthereum. ETH is held in the sale contract and the claim flow is party().
+========================================================================================================================
+Blocklancer Token Sale (LNC)               live=   21.661 0x9EA80e204045329Ba752D03C395F82A12799f13d
+  index: Failed-ICO direct refund ledger — Blocklancer Token Sale (LNC). ETH is held in the sale contract and the claim flow is refund().
+  fn finalize() external :: if(!funding) throw; | if((block.timestamp <= fundingEnd || | totalTokens < tokenCreationMin) && | (totalTokens+5000000000000000000000) < tokenCreationCap) throw; | funding = false; | uint256 percentOfTotal = 12;
+  fn refund() external :: if(!funding) throw; | if(block.timestamp <= fundingEnd) throw; | if(totalTokens >= tokenCreationMin) throw; | var lncValue = balances[msg.sender]; | var ethValue = balancesEther[msg.sender]; | if (lncValue == 0) throw;
+========================================================================================================================
+ZeroTraffic Crowdsale (ZTT)                live=   21.175 0xaf7aeA249098F2c2f50cc11d4000cCf798194373
+  index: Failed-ICO direct refund ledger — ZeroTraffic Crowdsale (ZTT). ETH is held in the sale contract and the claim flow is endCrowdsale() then refund().
+  fn withdraw() atStage(Stages.Ended) :: require(raised >= minAmount); | uint256 ethBalance = this.balance; | uint256 ethFees = ethBalance * 5 / 10**3; | creator.transfer(ethFees); | beneficiary.transfer(ethBalance - ethFees); | stage = Stages.Withdrawn;
+  fn refund() atStage(Stages.Ended) :: require(raised < minAmount); | uint256 receivedAmount = balances[msg.sender]; | balances[msg.sender] = 0; | if (receivedAmount > 0 && !msg.sender.send(receivedAmount)) { | balances[msg.sender] = receivedAmount; | }
+========================================================================================================================
+Abyss DAICO Fund (PollManagedFund)         live=    9.900 0xe4972421f88c1f47986f54cbfd2d1e2e671680ac
+  index: Failed-ICO direct refund ledger — Abyss DAICO Fund (PollManagedFund). ETH is held in the sale contract and the claim flow is refundCrowdsaleContributor().
+  fn enableCrowdsaleRefund() external onlyCrowdsale :: require(state == FundState.Crowdsale); | state = FundState.CrowdsaleRefund;
+  fn refundCrowdsaleContributor() external :: require(state == FundState.CrowdsaleRefund); | require(contributions[msg.sender] > 0); | uint256 refundAmount = contributions[msg.sender]; | contributions[msg.sender] = 0; | token.destroy(msg.sender, token.balanceOf(msg.sender)); | msg.sender.transfer(refundAm
+  fn firstWithdraw() public onlyOwner withdrawEnabled :: require(firstWithdrawAmount > 0); | uint256 amount = firstWithdrawAmount; | firstWithdrawAmount = 0; | teamWallet.transfer(amount); | Withdraw(amount, now);
+  fn withdraw() public onlyOwner withdrawEnabled :: require(state == FundState.TeamWithdraw); | uint256 amount = calcTapAmount(); | lastWithdrawTime = now; | teamWallet.transfer(amount); | Withdraw(amount, now);
+  fn enableRefund() internal :: require(state == FundState.TeamWithdraw); | state = FundState.Refund; | token.destroy(companyTokenWallet, token.balanceOf(companyTokenWallet)); | token.destroy(reserveTokenWallet, token.balanceOf(reserveTokenWallet)); | token.destroy(foundationTokenWallet, tok
+  fn refundTokenHolder() public :: require(state == FundState.Refund); | uint256 tokenBalance = token.balanceOf(msg.sender); | require(tokenBalance > 0); | uint256 refundAmount = safeDiv(safeMul(tokenBalance, address(this).balance), token.totalSupply()); | require(refundAmount > 0); | token.des
+  fn tryToFinalize() public notFinalized returns(bool) :: if(now < endTime) { | return false; | } | finalized = true; | onPollFinish(isSubjectApproved()); | return true;
+  fn RefundPoll(address _tokenAddress,
+        address ) public
+        BasePoll(_tokenAddress, _fundAddre :: holdEndTime = _holdEndTime;
+========================================================================================================================
+Bayesin (BYS) CrowSale                     live=    5.428 0xe8b1b40f2d307bce891833f46eef1f69560e6926
+  index: Failed-ICO direct refund ledger — Bayesin (BYS) CrowSale. ETH is held in the sale contract and the claim flow is safeWithdrawal().
+  fn safeWithdrawal() public afterDeadline :: if (!fundingGoalReached && beneficiary != msg.sender) { | uint amount = fundBalance[msg.sender]; | if (amount > 0) { | msg.sender.transfer(amount); | emit FundTransfer(msg.sender, amount, false); | fundBalance[msg.sender] = 0;
+  fn perSaleWithDrawal() public :: require(beneficiary == msg.sender); | if(perAmountRaised > 0) { | msg.sender.transfer(perAmountRaised); | emit FundTransfer(beneficiary, perAmountRaised, false); | perAmountRaised = 0; | }
+========================================================================================================================
+Confideal Campaign                         live=    8.625 0x17681500757628c7aa56d7e6546e119f94dd9479
+  index: Failed-ICO direct refund ledger — Confideal Campaign. ETH is held in the sale contract and the claim flow is withdrawRefund().
+  fn claimOwnership() onlyPendingOwner public :: OwnershipTransferred(owner, pendingOwner); | owner = pendingOwner; | pendingOwner = 0x0;
+  fn reclaimContract(address contractAddr) external onlyOwner :: Ownable contractInst = Ownable(contractAddr); | contractInst.transferOwnership(owner);
+  fn reclaimEther() external onlyOwner :: assert(owner.send(this.balance));
+  fn reclaimToken(ERC20Basic token) external onlyOwner :: uint256 balance = token.balanceOf(this); | token.safeTransfer(owner, balance);
+  fn withdrawPayout() public
+    atStage(Stage.Success) :: require(msg.sender == beneficiary); | if (!token.mintingFinished()) { | token.finishMinting(); | } | var _amount = this.balance; | require(beneficiary.call.value(_amount)());
+  fn withdrawRefund() public
+    atStage(Stage.Failure)
+    nonReentra :: var _amount = contributions[msg.sender]; | require(_amount > 0); | contributions[msg.sender] = 0; | msg.sender.transfer(_amount); | Refund(msg.sender, _amount);
+========================================================================================================================
+Crowdsale (0x4363b5)                       live=    8.476 0x4363b5d64f228c819dc706889b09a0dc76e22fb0
+  index: Failed-ICO direct refund ledger — Crowdsale (0x4363b5). ETH is held in the sale contract and the claim flow is releaseEthers().
+  fn safeWithdrawal() public onlyOwner softCapReached :: uint amount = address(this).balance; | owner.transfer(amount);
+  fn withdrawTokens() public onlyOwner saleSuccessful :: uint Ownerbalance = rewardToken.balanceOf(this); | rewardToken.transfer(owner, Ownerbalance);
+========================================================================================================================
+Crowdsale (0xc699d9)                       live=    2.318 0xc699d90671cb8373f21060592d41a7c92280adc4
+  index: Failed-ICO direct refund ledger — Crowdsale (0xc699d9). ETH is held in the sale contract and the claim flow is refund().
+  fn refund() public :: address _this = this; | require(_this.balance < softcap && now > endIco); | require(balances[msg.sender] > 0); | uint value = balances[msg.sender]; | balances[msg.sender] = 0; | msg.sender.transfer(value);
+========================================================================================================================
+Crowdsale (0xe82056)                       live=    2.410 0xe8205644fef286a2af423b72669e662feec127cd
+  index: Failed-ICO direct refund ledger — Crowdsale (0xe82056). ETH is held in the sale contract and the claim flow is safeWithdrawal().
+  fn safeWithdrawal() afterDeadline :: if (!fundingGoalReached) { | uint amount = balanceOf[msg.sender]; | balanceOf[msg.sender] = 0; | if (amount > 0) { | if (msg.sender.send(amount)) { | FundTransfer(msg.sender, amount, false);
+========================================================================================================================
+CrowdsaleWatch                             live=    2.000 0x6f303642844f734ad4176d0dfe93ef7e0776ef46
+  index: Failed-ICO direct refund ledger — CrowdsaleWatch. ETH is held in the sale contract and the claim flow is safeWithdrawal().
+  fn safeWithdrawal() afterDeadline :: checkGoalReached(); | if (!fundingGoalReached) { | uint amount = balanceOf[msg.sender]; | balanceOf[msg.sender] = 0; | if (amount > 0) { | if (msg.sender.send(amount)) {
+  fn tokenWithdraw(uint256 amount) afterDeadline :: if(beneficiary == msg.sender){ | tokenReward.transfer(msg.sender, amount); | }
+========================================================================================================================
+Gateway ICO (0x3091d3)                     live=    1.413 0x3091d37ef18cb33af72cf7ca63714733172ce724
+  index: Failed-ICO direct refund ledger — Gateway ICO (0x3091d3). ETH is held in the sale contract and the claim flow is refund().
+  fn refund() public :: require(balances[msg.sender] > 0); | uint value = balances[msg.sender]; | balances[msg.sender] = 0; | msg.sender.transfer(value);
+========================================================================================================================
+I2 Presale                                 live=    5.795 0xa8df33a40fe2e3278e4d94a974f70778043fbd20
+  index: Failed-ICO direct refund ledger — I2 Presale. ETH is held in the sale contract and the claim flow is safeWithdrawal().
+  fn safeWithdrawal() public afterDeadline :: if (!fundingGoalReached) { | uint amount = balanceOf[msg.sender]; | balanceOf[msg.sender] = 0; | if (amount > 0) { | if (msg.sender.send(amount)) { | FundTransfer(msg.sender, amount, false);
+========================================================================================================================
+Mahala Coin (MHC) Crowdsale                live=    2.948 0xe117bb9d1e0fc6e859d9bf174c53baa7c673547a
+  index: Failed-ICO direct refund ledger — Mahala Coin (MHC) Crowdsale. ETH is held in the sale contract and the claim flow is refund().
+  fn refund() public :: address _this = this; | require(_this.balance < softcap && now > endIco); | require(balances[msg.sender] > 0); | uint value = balances[msg.sender]; | balances[msg.sender] = 0; | msg.sender.transfer(value);
+========================================================================================================================
+Reservation2                               live=    1.900 0xde0b79f5e66fdc8a4ffb2c470756a1629e8ad569
+  index: Failed-ICO direct refund ledger — Reservation2. ETH is held in the sale contract and the claim flow is withdraw().
+  fn withdraw() :: uint amount = balanceOf[msg.sender]; | require(amount > 0); | balanceOf[msg.sender] = 0; | msg.sender.transfer(amount);
+========================================================================================================================
+SingularDTV Launch (ConsenSys)             live=    1.021 0x6feaf4e8f386c08b4518c175874b332329d0d6ba
+  index: Failed-ICO direct refund ledger — SingularDTV Launch (ConsenSys). ETH is held in the sale contract and the claim flow is approve(token, launch) then withdrawCon
+  fn withdrawContribution() public
+        timedTransitions
+        atStage( :: uint tokensReceived = sentTokens[msg.sender]; | sentTokens[msg.sender] = 0; | if (!singularDTVToken.transferFrom(msg.sender, owner, tokensReceived)) { | revert(); | } | uint contribution = contributions[msg.sender];
+  fn withdrawForWorkshop() public
+        timedTransitions
+        atStage( :: uint value = fundBalance; | fundBalance = 0; | require(value > 0); | uint networkFee = value * SingularDTVWorkshopFee / 100; | workshop.transfer(value - networkFee); | SingularDTVWorkshop.transfer(networkFee);
+  fn withdrawUnsentTokensForOwner() public
+        timedTransitions
+        atStage( :: uint remainingTokens = CAP - tokensSent; | if (remainingTokens > 0 && !singularDTVToken.transfer(owner, remainingTokens)) { | revert(); | } | checkInvariants(); | return remainingTokens;
+========================================================================================================================
+Start Mining (STM) Token Sale              live=    5.981 0xe8da050c3140183d4f5f01e048ac136e2da5253f
+  index: Failed-ICO direct refund ledger — Start Mining (STM) Token Sale. ETH is held in the sale contract and the claim flow is manualRefund().
+  fn manualRefund() public :: if (mintingFinished) { | if(ico_buyers_eth[msg.sender] != 0) { | uint256 amount = ico_buyers_eth[msg.sender]; | msg.sender.transfer(amount); | ico_buyers_eth[msg.sender] = 0; | } else {
+  fn refund(uint256 _amount) private :: msg.sender.transfer(_amount);
+  fn refund(address _address, uint256 _amount) private :: _address.transfer(_amount);
+========================================================================================================================
+Transit Finance Refund (admin unlock req   live=  160.746 0xc213f258f4142f53d086f9edb7a36e67eb347f63
+  index: Transit Finance refunds with ETH-denominated user entitlements. Current state is admin-paused; owner must call setClaim(false, 0) before users can claim.
+  fn refundAsset(address user) public view returns (refund memory asset, bool cla :: asset = _refund[user]; | claimed = _claimed[user];
+  fn setRefunder(refund[] calldata refunds) public onlyExecutor :: for (uint i; i < refunds.length; i++) { | emit SetRefunder(refunds[i].user, refunds[i].token, refunds[i].amount); | _refund[refunds[i].user] = refunds[i]; | }
+  fn setClaim(bool pause, uint256 time) public onlyOwner :: emit SetClaim(claimStartTime, time, claimPause, pause); | if(time != 0) { | claimStartTime = time; | } | claimPause = pause;
+  fn claim() public checkClaimAndNonReentrant :: require(!_claimed[msg.sender], "Refunded"); | refund memory thisRefund = _refund[msg.sender]; | require(thisRefund.amount > 0, "No accessible refund"); | _claimed[msg.sender] = true; | if (thisRefund.token == address(0)) { | TransferHelper.safeTransferETH(this
+  fn emergencyWithdraw(address[] memory tokens, uint256[] memor) external onlyExecutor :: require(tokens.length == amounts.length, "Invalid data"); | require(claimPause, "Refunding"); | for (uint256 i; i < tokens.length; i++) { | if (tokens[i] == address(0)) { | TransferHelper.safeTransferETH(recipient, amounts[i]); | } else {
+========================================================================================================================
+RemovePutinBounty (admin unlock required   live=  100.120 0xaf5fc45258b5d0af72031ab154bf6dfcfec74b99
+  index: RemovePutinBounty contributor balances. The contract remains Initial; owner must cancel() before contributors can redeem().
+  fn cancel() external isOwner :: require(state == State.initial); | state = State.cancelled; | cancellationTime = block.timestamp;
+  fn redeem() external :: require(state == State.cancelled); | uint toGive = balanceOf[msg.sender]; | emit Transfer(msg.sender, address(0), balanceOf[msg.sender]); | totalSupply -= toGive; | balanceOf[msg.sender] = 0; | payable(msg.sender).transfer(toGive);
+  fn cancelNoWinner() external :: require(state == State.executed); | require(block.timestamp >= executionTime + REVEAL_TIME); | require(totalPredictionShares == 0); | state = State.cancelled; | cancellationTime = block.timestamp;
+  fn withdraw() external :: require(state == State.executed); | require(block.timestamp >= executionTime + REVEAL_TIME); | uint toGive = (predictionShares[msg.sender] * totalBounty) / totalPredictionShares; | predictionShares[msg.sender] = 0; | payable(msg.sender).transfer(toGive);
+  fn withdrawRemaining() external isOwner :: require(state == State.cancelled); | require(block.timestamp > cancellationTime + REDEEM_TIME); | payable(owner).transfer(address(this).balance);
+========================================================================================================================
+PembiCoinICO (admin unlock required)       live=   69.239 0x5535a72556727c221c567e0fc4208c5a99dba1cc
+  index: PembiCoinICO contributor balances. The crowdsale is Idle; owner must setFailed() before contributors can refund().
+  fn refund() external inState(State.Failed) :: uint256 amount = amounts[msg.sender]; | assert(amount > 0 && amount <= this.balance); | amounts[msg.sender] = 0; | msg.sender.transfer(amount); | Transferred(address(this), msg.sender, amount);
+  fn payout() external inState(State.Successful) onlyOwner :: uint256 amount = this.balance; | owner.transfer(amount); | Transferred(address(this), owner, amount);
+========================================================================================================================
+Circles RefundVault (admin unlock requir   live=   24.099 0x93d812bf90a575d628e246b0966505a9e466f534
+  index: CirclesTokenOffering RefundVault deposits. Crowdsale owner must finalize() and enable refunds before depositors can call claimRefund().
+  fn RefundVault(address _wallet) :: require(_wallet != 0x0); | wallet = _wallet; | state = State.Active;
+  fn enableRefunds() onlyOwner :: require(state == State.Active); | state = State.Refunding; | RefundsEnabled();
+  fn refund(address buyer) :: require(state == State.Refunding); | uint256 depositedValue = deposited[buyer]; | deposited[buyer] = 0; | buyer.transfer(depositedValue); | Refunded(buyer, depositedValue);
+  fn claimTokens() :: require(isFinalized); | require(goalReached()); | uint256 amount = token.balanceOf(this); | require(amount > 0); | uint256 tokens = allocations[msg.sender]; | allocations[msg.sender] = 0;
+  fn claimRefund() :: require(isFinalized); | require(!goalReached()); | vault.refund(msg.sender);
+  fn finalize() onlyOwner :: require(!isFinalized); | if (goalReached()) { | vault.close(); | } else { | vault.enableRefunds(); | }
