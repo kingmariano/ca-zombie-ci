@@ -1,0 +1,56 @@
+{
+  "finding": "H-01",
+  "title": "Bucket Farm (Sui) — $16.18M live but no unprivileged extraction path",
+  "chains": ["sui"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 89417.68,
+    "P": 16090053.35,
+    "S": 0
+  },
+  "latest_block": 329860258,
+  "block_numbers": {"sui": 329860258},
+  "targets_checked": 39,
+  "live_targets": 34,
+  "closed_reasons": [
+    "Per-user bound: point::fulfill_unstake -> stake::sub aborts err_not_enough_to_unstake for over-unstake (dry-run PASS)",
+    "Non-depositors abort err_account_not_found; profiles are keyed by tx sender, no identity forgery",
+    "Unstake/Stake responses are no-drop hot potatoes; only point::fulfill_* can consume them, atomically bounding payout to recorded stake",
+    "pool::loan_by_stake_res requires the debtor to already be in the pool's sheet credits; only NAVI_POND/NAVI_UNI_POND/SCALLOP_POND qualify (dry-run PASS: err_invalid_debtor for bool)",
+    "Cross-version mixing of v7-created values into v1 package calls is rejected with InvalidLinkage (dry-run PASS)",
+    "Live stake/unstake policy requires v7 wrapper::WrapperRule witness; old v1-v6 entry points cannot satisfy it",
+    "v7 pool::fulfill_stake/unstake check request.pool_id == pool.id; wrapper re-checks asset type; the only same-asset pair (two SUI pools) has an empty second pool (0 balance/credits)",
+    "Permissionless pond withdrawals (withdraw_from_navi_v2/v3, withdraw_from_surplus) only repay dun Collectors into the pool and still pass the per-user point check",
+    "Scallop pond supply/withdraw/claim require AdminCap",
+    "point::mint/levy need a Privilege object; none were ever created (0 txs)",
+    "All 33 pool flow_rates are 0: no new DROP accrual; claim only pays each user's own settled points from the 402K DROP buffer",
+    "ButConvertor is public but requires Coin<DROP>; rate is correct 0.543090379 BUT/DROP and reserve is only 9.30M BUT (~$6.45K), holder-only value"
+  ],
+  "poc": {
+    "tests_passed": 6,
+    "tests_total": 6,
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37137479809"]
+  },
+  "key_facts": [
+    "Live value at checkpoint 329860258: idle pool balances $89,417.68 + lent credits $16,090,053.35 = $16,179,471.03 (DefiLlama prices 2026-10-03)",
+    "Credits by debtor: SCALLOP_POND $8,461,885.85; NAVI_POND $7,525,432.40; NAVI_UNI_POND $102,735.10",
+    "Farm package has 7 immutable versions (v1 0x0db143... to v7 0xf6248808...); all old versions remain callable but are policy- and linkage-blocked",
+    "PointCenter 0xc60fb413... holds TreasuryCap<DROP>, 402,143.28 DROP buffer, 13,718 user profiles, 33 pool states; policies = [v7::wrapper::WrapperRule]",
+    "Farm AdminCap 0x8b9a4362... owned by 0xa7caa2a3...; pond AdminCap 0xd602cfa0... owned by 0xbfd2e22f... (both EOAs, privileged paths)",
+    "No Privilege objects exist; point::mint/levy unreachable",
+    "ButConvertor 0xa9a29be9... is public (is_public=true), reserve 9,301,105.59 BUT, conversion rate 0.543090379 BUT/DROP; 20+ real conversions observed with matching ConvertEvent amounts",
+    "Sheet (store, no drop) can be neutralised via dynamic_field+object::delete (dry-run PASS) but this yields no value because loans are debtor-allowlisted",
+    "DefiLlama last-known $37.98M (2025-09-09) is stale: live value is $16.18M after price declines and interim withdrawals"
+  ],
+  "caveats": [
+    "All proofs are sui_dryRunTransactionBlock simulations plus bytecode analysis; no mainnet transaction was signed or sent",
+    "NAVI/Bucket/Scallop position liquidity was not exhaustively valued; H-O figures for lent funds are conditional on those protocols",
+    "Pools credited to SCALLOP_POND (AFSUI/HASUI/CERT ~$8.46M) have no permissionless repayment path; they are admin-gated and would become stuck (S) if the admin keys are lost",
+    "Admin key control is not verifiable from public data",
+    "AF_LP x2, LP_TOKEN, KOTO, ALPHAFI_LP have no DefiLlama price and are excluded from USD totals (small balances)",
+    "total_stake in ci-out/state.json is null by design (stakes live in PointCenter.pool_states); use analysis/pool_states.json"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Bucket Farm: every value path is bounded by the per-account profile stake, hot-potato accounting, a debtor allow-list, the v7 WrapperRule policy and InvalidLinkage cross-version checks; $16.18M remains, $89.4K user-self-service (H-O) and $16.09M admin-gated (P)."
+}

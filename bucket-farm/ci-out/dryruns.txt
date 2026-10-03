@@ -1,0 +1,25 @@
+# using Sui RPC: https://sui.blockpi.network/v1/rpc/public
+
+[PASS] 0) probe: dry-run pipeline
+      expected: success
+      got     : {"status":"success"}
+
+[PASS] 1) dispose Sheet via dynamic_field+object::delete
+      expected: success
+      got     : {"status":"success"}
+
+[PASS] 2) stake 1 SUI then unstake 2 SUI
+      expected: err_not_enough_to_unstake
+      got     : {"status":"failure","error":"MoveAbort(MoveLocation { module: ModuleId { address: f62488082fb7ad62c92d66c26b587728e987f160413b6b8aafe169d0c423098c, name: Identifier(\"stake\") }, function: 0, instruction: 1, function_name: Some(\"err_not_enough_to_unstake\") }, 0) in command 11"}
+
+[PASS] 3) unstake with no stake at all
+      expected: err_account_not_found
+      got     : {"status":"failure","error":"MoveAbort(MoveLocation { module: ModuleId { address: f62488082fb7ad62c92d66c26b587728e987f160413b6b8aafe169d0c423098c, name: Identifier(\"point\") }, function: 4, instruction: 1, function_name: Some(\"err_account_not_found\") }, 4) in command 5"}
+
+[PASS] 4) v7-created StakeResponse -> v1 pool::loan_by_stake_res
+      expected: InvalidLinkage
+      got     : {"status":"failure","error":"InvalidLinkage in command 5"}
+
+[PASS] 5) v7 loan_by_stake_res with unknown debtor (bool)
+      expected: err_invalid_debtor
+      got     : {"status":"failure","error":"MoveAbort(MoveLocation { module: ModuleId { address: f62488082fb7ad62c92d66c26b587728e987f160413b6b8aafe169d0c423098c, name: Identifier(\"pool\") }, function: 2, instruction: 1, function_name: Some(\"err_invalid_debtor\") }, 2) in command 5"}
