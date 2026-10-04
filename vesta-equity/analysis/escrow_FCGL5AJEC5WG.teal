@@ -1,0 +1,449 @@
+#pragma version 5
+intcblock 1 4 0 940972792 31566704 2 3 58000000
+bytecblock 0x8c110820f8314bc6c7ae1ae5862ba43126716333d606042df6e31a40978ea4d3 0x897c2afd1147d852c42f8998097aecd9aa37d2c3e301de7f998fe335df6a4698 0xd322d93ec813b5ddaee97b304a9953240ac1dee5655f0789d891c94f406bfe70 0x0c6cde80fdf2dc13b6384cf0d37ecf9178e57e1b46eebda0fbaa48764c6a4437
+pushbytes 0x37343662326430652d303365372d343530362d616436352d653235356161626433663832 // "746b2d0e-03e7-4506-ad65-e255aabd3f82"
+len
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+txn Fee
+global MinTxnFee
+<=
+assert
+arg_0
+pushbytes 0x637265617465 // "create"
+==
+bnz label1
+arg_0
+pushbytes 0x616363657074 // "accept"
+==
+bnz label2
+arg_0
+pushbytes 0x6d6f7274676167652d70726f63657373 // "mortgage-process"
+==
+bnz label3
+arg_0
+pushbytes 0x6d6f7274676167652d726566756e64 // "mortgage-refund"
+==
+bnz label4
+arg_0
+pushbytes 0x6d6f7274676167655f636f6d706c657465 // "mortgage_complete"
+==
+bnz label5
+arg_0
+pushbytes 0x6d6f7274676167652d6661696c // "mortgage-fail"
+==
+bnz label6
+arg_0
+pushbytes 0x72656a656374 // "reject"
+==
+bnz label7
+err
+label7:
+global GroupSize
+intc 6 // 3
+==
+assert
+intc_0 // 1
+b label8
+label6:
+global GroupSize
+intc_1 // 4
+==
+assert
+gtxn 0 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 0 Sender
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 0 AssetSender
+txn Sender
+==
+assert
+gtxn 0 AssetReceiver
+bytec_1 // addr RF6CV7IRI7MFFRBPRGMAS6XM3GVDPUWD4MA5474ZR7RTLX3KI2MLH4RHDE
+==
+assert
+gtxn 0 AssetAmount
+intc_0 // 1
+==
+assert
+gtxn 0 XferAsset
+intc_3 // 940972792
+==
+assert
+gtxn 1 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 1 Sender
+txn Sender
+==
+assert
+gtxn 1 AssetReceiver
+bytec_2 // addr 2MRNSPWICO253LXJPMYEVGKTEQFMDXXFMVPQPCOYSHEU6QDL7ZYPZWVA5I
+==
+assert
+gtxn 1 AssetCloseTo
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 1 AssetAmount
+intc 7 // 58000000
+==
+assert
+gtxn 1 XferAsset
+intc 4 // 31566704
+==
+assert
+gtxn 2 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 2 Sender
+txn Sender
+==
+assert
+gtxn 2 AssetReceiver
+bytec_1 // addr RF6CV7IRI7MFFRBPRGMAS6XM3GVDPUWD4MA5474ZR7RTLX3KI2MLH4RHDE
+==
+assert
+gtxn 2 AssetCloseTo
+bytec_1 // addr RF6CV7IRI7MFFRBPRGMAS6XM3GVDPUWD4MA5474ZR7RTLX3KI2MLH4RHDE
+==
+assert
+gtxn 2 AssetAmount
+intc_2 // 0
+==
+assert
+gtxn 2 XferAsset
+intc_3 // 940972792
+==
+assert
+gtxn 3 TypeEnum
+intc_0 // 1
+==
+assert
+gtxn 3 Sender
+txn Sender
+==
+assert
+gtxn 3 Receiver
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 3 CloseRemainderTo
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 3 Amount
+intc_2 // 0
+==
+assert
+intc_0 // 1
+b label8
+label5:
+global GroupSize
+intc_1 // 4
+==
+assert
+gtxn 0 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 0 Sender
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 0 AssetSender
+txn Sender
+==
+assert
+gtxn 0 AssetReceiver
+bytec_2 // addr 2MRNSPWICO253LXJPMYEVGKTEQFMDXXFMVPQPCOYSHEU6QDL7ZYPZWVA5I
+==
+assert
+gtxn 0 AssetAmount
+intc_0 // 1
+==
+assert
+gtxn 0 XferAsset
+intc_3 // 940972792
+==
+assert
+gtxn 1 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 1 Sender
+txn Sender
+==
+assert
+gtxn 1 AssetReceiver
+bytec_1 // addr RF6CV7IRI7MFFRBPRGMAS6XM3GVDPUWD4MA5474ZR7RTLX3KI2MLH4RHDE
+==
+assert
+gtxn 1 AssetCloseTo
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 1 XferAsset
+intc 4 // 31566704
+==
+assert
+gtxn 2 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 2 Sender
+txn Sender
+==
+assert
+gtxn 2 AssetReceiver
+bytec_1 // addr RF6CV7IRI7MFFRBPRGMAS6XM3GVDPUWD4MA5474ZR7RTLX3KI2MLH4RHDE
+==
+assert
+gtxn 2 AssetCloseTo
+bytec_1 // addr RF6CV7IRI7MFFRBPRGMAS6XM3GVDPUWD4MA5474ZR7RTLX3KI2MLH4RHDE
+==
+assert
+gtxn 2 AssetAmount
+intc_2 // 0
+==
+assert
+gtxn 2 XferAsset
+intc_3 // 940972792
+==
+assert
+gtxn 3 TypeEnum
+intc_0 // 1
+==
+assert
+gtxn 3 Sender
+txn Sender
+==
+assert
+gtxn 3 Receiver
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 3 CloseRemainderTo
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 3 Amount
+intc_2 // 0
+==
+assert
+intc_0 // 1
+b label8
+label4:
+global GroupSize
+intc 5 // 2
+==
+assert
+gtxn 0 TypeEnum
+intc_0 // 1
+==
+assert
+gtxn 0 Sender
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 0 Receiver
+txn Sender
+==
+assert
+gtxn 0 Amount
+intc_2 // 0
+==
+assert
+gtxn 1 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 1 Sender
+bytec_3 // addr BRWN5AH56LOBHNRYJTYNG7WPSF4OK7Q3I3XL3IH3VJEHMTDKIQ35FAPLCU
+==
+assert
+gtxn 1 AssetReceiver
+txn Sender
+==
+assert
+gtxn 1 XferAsset
+intc 4 // 31566704
+==
+assert
+intc_0 // 1
+b label8
+label3:
+global GroupSize
+intc 5 // 2
+==
+assert
+gtxn 0 TypeEnum
+intc_0 // 1
+==
+assert
+gtxn 0 Sender
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 0 Receiver
+txn Sender
+==
+assert
+gtxn 0 Amount
+intc_2 // 0
+==
+assert
+gtxn 1 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 1 Sender
+txn Sender
+==
+assert
+gtxn 1 AssetReceiver
+bytec_3 // addr BRWN5AH56LOBHNRYJTYNG7WPSF4OK7Q3I3XL3IH3VJEHMTDKIQ35FAPLCU
+==
+assert
+gtxn 1 XferAsset
+intc 4 // 31566704
+==
+assert
+intc_0 // 1
+b label8
+label2:
+global GroupSize
+intc 5 // 2
+==
+assert
+gtxn 0 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 0 Sender
+txn Sender
+==
+assert
+gtxn 0 AssetReceiver
+gtxn 0 Sender
+==
+assert
+gtxn 0 AssetCloseTo
+global ZeroAddress
+==
+assert
+gtxn 0 AssetAmount
+intc_2 // 0
+==
+assert
+gtxn 0 XferAsset
+intc_3 // 940972792
+==
+assert
+gtxn 1 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 1 Sender
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 1 AssetSender
+bytec_1 // addr RF6CV7IRI7MFFRBPRGMAS6XM3GVDPUWD4MA5474ZR7RTLX3KI2MLH4RHDE
+==
+assert
+gtxn 1 AssetReceiver
+txn Sender
+==
+assert
+gtxn 1 AssetAmount
+intc_0 // 1
+==
+assert
+gtxn 1 XferAsset
+intc_3 // 940972792
+==
+assert
+intc_0 // 1
+b label8
+label1:
+global GroupSize
+intc 6 // 3
+>=
+assert
+txn GroupIndex
+intc_0 // 1
+==
+assert
+gtxn 0 TypeEnum
+intc_0 // 1
+==
+assert
+gtxn 0 Sender
+bytec_0 // addr RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI
+==
+assert
+gtxn 0 Receiver
+txn Sender
+==
+assert
+gtxn 0 Amount
+pushint 325000
+==
+assert
+gtxn 1 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 1 Sender
+txn Sender
+==
+assert
+gtxn 1 AssetReceiver
+gtxn 1 Sender
+==
+assert
+gtxn 1 AssetCloseTo
+global ZeroAddress
+==
+assert
+gtxn 1 AssetAmount
+intc_2 // 0
+==
+assert
+gtxn 1 XferAsset
+intc 4 // 31566704
+==
+assert
+gtxn 2 TypeEnum
+intc_1 // 4
+==
+assert
+gtxn 2 Sender
+bytec_2 // addr 2MRNSPWICO253LXJPMYEVGKTEQFMDXXFMVPQPCOYSHEU6QDL7ZYPZWVA5I
+==
+assert
+gtxn 2 AssetReceiver
+txn Sender
+==
+assert
+gtxn 2 AssetAmount
+intc 7 // 58000000
+==
+assert
+gtxn 2 XferAsset
+intc 4 // 31566704
+==
+assert
+intc_0 // 1
+label8:
+return

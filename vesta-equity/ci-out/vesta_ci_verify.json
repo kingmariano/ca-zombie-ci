@@ -1,0 +1,103 @@
+{
+ "finding": "H-23",
+ "title": "Vesta Equity (Algorand) read-only CI verification",
+ "generated_utc": "2026-10-04T08:21:59Z",
+ "algod": "https://mainnet-api.algonode.cloud",
+ "indexer": "https://mainnet-idx.algonode.cloud",
+ "escrow": "LGWHT7EDRGXQMRTLQDL54WKQU2FYRMNTGF6QXVDMZRCXHBUOLR3BSIJQBY",
+ "no_broadcast": true,
+ "escrow_state": {
+  "algo_microalgos": 323000,
+  "usdc_base_units": 75000000,
+  "other_assets": [
+   [
+    1135235829,
+    1019545,
+    true
+   ]
+  ],
+  "auth_addr": null,
+  "round": 65657739
+ },
+ "program": {
+  "sha256": "ad23f25a14639823ea020ae3e3b9fc994ac70613556f3dbc174b37a0466fe9b8",
+  "bytes": 975,
+  "computed_address": "LGWHT7EDRGXQMRTLQDL54WKQU2FYRMNTGF6QXVDMZRCXHBUOLR3BSIJQBY",
+  "address_matches": true,
+  "lsig_args_sample": [
+   "accept"
+  ]
+ },
+ "reject_branch": {
+  "lines": [
+   "==",
+   "bnz label7",
+   "err",
+   "label7:",
+   "global GroupSize",
+   "intc 7 // 3",
+   "==",
+   "assert",
+   "intc_1 // 1"
+  ],
+  "is_unconditional_3tx_approval": true
+ },
+ "simulate": {
+  "failed_at": null,
+  "failure_message": null,
+  "drained_usdc_base_units": 75000000,
+  "drained_algo_microalgos": 121000,
+  "fresh_recipient": "4ERZH2JZVOPVOTFUW4UPQS5YH3CBI2QSFUY5DLV6NOJZHJJ5WGFQQEG4JY",
+  "arg": "reject",
+  "group_size": 3,
+  "success": true
+ },
+ "created_apps": {
+  "RQIQQIHYGFF4NR5ODLSYMK5EGETHCYZT2YDAILPW4MNEBF4OUTJTMWDSOI": [],
+  "3JMMSUISULB5JGEKBG654UVBXTH5UEEFDZWO5XLJUCTHPYUS6CUEGIBHYU": [],
+  "CWNSUHA2IC4I3SL67H5UI7OV2ZWMLGBKI32RX2RDQ75BXGUVFKVW32TONU": [],
+  "FCGL5AJEC5WGM7VHBLL5WXGHSM3HCLHJD4WYSZW3H5KVYZT6EU2Z7PQSEY": [],
+  "FJMNV6SXJWJXMPMUOLASTHFW3OCW5ZGWLZTISVVD7ZN3ICPH4XFQVTKIDQ": [],
+  "IQXC57YUU2DEXYW6L2KA4HIKUPXXOP7AOPKJPG24RZQTEWRI3RHQUCYI2Q": [],
+  "LGWHT7EDRGXQMRTLQDL54WKQU2FYRMNTGF6QXVDMZRCXHBUOLR3BSIJQBY": [],
+  "PJRCTS5SB7773PGKWF2IRYQX5WVO5CLSVQ236AZF72LDHQMA52ALDBCUFM": [],
+  "VYC7JZCMQ5OW2XO3JZML4MWTZSV2MTSQ4K64TMRXVJDMRGVPTKHL6NQALY": []
+ },
+ "census": {
+  "rqi_txs": 332,
+  "rqi_payment_counterparties": 227,
+  "lsig_accounts": [
+   "3JMMSUISULB5JGEKBG654UVBXTH5UEEFDZWO5XLJUCTHPYUS6CUEGIBHYU",
+   "CWNSUHA2IC4I3SL67H5UI7OV2ZWMLGBKI32RX2RDQ75BXGUVFKVW32TONU",
+   "FCGL5AJEC5WGM7VHBLL5WXGHSM3HCLHJD4WYSZW3H5KVYZT6EU2Z7PQSEY",
+   "FJMNV6SXJWJXMPMUOLASTHFW3OCW5ZGWLZTISVVD7ZN3ICPH4XFQVTKIDQ",
+   "IQXC57YUU2DEXYW6L2KA4HIKUPXXOP7AOPKJPG24RZQTEWRI3RHQUCYI2Q",
+   "LGWHT7EDRGXQMRTLQDL54WKQU2FYRMNTGF6QXVDMZRCXHBUOLR3BSIJQBY",
+   "PJRCTS5SB7773PGKWF2IRYQX5WVO5CLSVQ236AZF72LDHQMA52ALDBCUFM",
+   "VYC7JZCMQ5OW2XO3JZML4MWTZSV2MTSQ4K64TMRXVJDMRGVPTKHL6NQALY"
+  ],
+  "lsig_count": 8,
+  "escrows_match_expected": true
+ },
+ "nonempty_escrows": {
+  "LGWHT7EDRGXQMRTLQDL54WKQU2FYRMNTGF6QXVDMZRCXHBUOLR3BSIJQBY": {
+   "algo": 323000,
+   "assets": [
+    {
+     "amount": 75000000,
+     "asset-id": 31566704,
+     "deleted": false,
+     "is-frozen": false,
+     "opted-in-at-round": 30410209
+    },
+    {
+     "amount": 1019545,
+     "asset-id": 1135235829,
+     "deleted": false,
+     "is-frozen": true,
+     "opted-in-at-round": 30435488
+    }
+   ]
+  }
+ }
+}
