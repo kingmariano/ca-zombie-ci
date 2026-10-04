@@ -1,0 +1,48 @@
+{
+  "finding": "H-39/H-40",
+  "title": "Harmony 'ONE for BSC/Ethereum' NativeOFT escrows + four Gnosis Safe L2 treasury multisigs",
+  "chains": ["harmony"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 339218.85, "S": 185824.14},
+  "latest_block": 93624315,
+  "block_numbers": {"harmony": 93624315},
+  "targets_checked": 6,
+  "live_targets": 6,
+  "closed_reasons": [
+    "H-39 OFT withdraw() is self-only and every external address has 0 internal balance (100% of internal supply is escrowed at the contract address itself)",
+    "H-39 lzReceive() reverts 'LzApp: invalid endpoint caller' for anyone but the LZ endpoint, and even the genuine endpoint is rejected because trustedRemoteLookup(101/102) was cleared to 0x on 2026-08-30",
+    "H-39 sendFrom(_from=contract) reverts 'ERC20: insufficient allowance' (the escrow cannot be debited by outsiders); outbound is additionally blocked by LayerZero BLOCK_VERSION (65535) send/receive versions",
+    "H-39 owner functions are Ownable-gated to a single EOA (0xAC0248e9C78774bA0ef9E71B1Ce1393a10C17E3C)",
+    "H-40 Safes are canonical Gnosis Safe L2 v1.3.0 (proxy+singleton+fallback handler code hashes match Ethereum) with no modules and no guard; execTransaction reverts GS020/GS021/GS026 without threshold owner signatures"
+  ],
+  "poc": {
+    "tests_passed": 11,
+    "tests_total": 11,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37188265963",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37190077676",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37190500939"
+    ]
+  },
+  "key_facts": [
+    "H-39a 0x5B18a4E73F9A4fe337A072516b317863Ad3046aA 'ONE for BSC' (LZ v1 NativeOFT, code keccak 0x4310a9b2...): 62,531,259.468551870330371539 ONE; totalSupply == native balance == balanceOf(contract) exactly",
+    "H-39b 0x905582f21fB9855c809d5b8933272a292dfbB138 'ONE for Ethereum' (same code/owner/state): 13,101,396.431214960428021286 ONE",
+    "H-39 freeze: owner cleared trusted remotes and set send/receive versions to BLOCK_VERSION on 2026-08-30 (blocks 93,144,294 / 93,144,382); last inbound bridge event 2026-08-11 (block 92,723,721); hasStoredPayload=false (nothing to replay)",
+    "H-40 resolved addresses: 0x85049A5abed20A50d587C113F1Ef03d0Fd796453 (42,654,070 ONE, 3/5), 0x3Ef056E3220f270f4815219Dc1cF2A1854b96d80 (40,421,863.773437 ONE, 2/4), 0x399b8bB5d6677B557345D4D2c7a3B1986E448bAf (30,990,103 ONE, 3/5), 0x59f93F30fc4B1429E2016DB36346299d80927690 (24,000,105 ONE, 3/5); total 138,066,141.773437 ONE",
+    "H-40 4th address resolved by enumerating 330 Safe proxy factory (0xc22834581ebc8527d974f8a1c97e1bea4ef910bc) ProxyCreation events",
+    "Code identity: Safe proxy keccak 0xb89c1b3bdf2cf8827818646bce9a8f6e372885f8c55e5c07acbd307cb133b000; SafeL2 v1.3.0 singleton keccak 0x21842597390c4c6e3c1239e434a682b054bd9548eee5e9b1d6a4482731023c0f; CompatibilityFallbackHandler keccak 0x03e69f7ce809e81687c69b19a7d7cca45b6d551ffdec73d9bb87178476de1abf",
+    "H-40 owners: 19 unique EOAs, no overlaps, none is the H-39 OFT owner; only owner-churn (addOwnerWithThreshold/removeOwner) was ever executed",
+    "Prices: ONE = $0.00245693 (DefiLlama 2026-10-04); P = $339,218.85 (Safes); S = $185,824.14 (OFT escrows); total in scope $525,042.99",
+    "Historical remotes (set 2022-10-17, cleared 2026-08-30): BSC 0x2332137ae0386783ffbcf40d9f17e50890917e15 (ProxyOFT, still wired to the Harmony OFT, holds 211,111 BEP-20 ONE), Ethereum 0x234784ec001db36c9c22785cad902221fd831352; gen-1 sibling OFTs on Harmony hold 0 and 10 ONE",
+    "Category split avoids double counting: the OFT escrow is classified S today (owner-only unfreeze path is latent P, not counted again)"
+  ],
+  "caveats": [
+    "H-39 'stuck' is today's frozen state: the single EOA owner can re-enable versions + trusted remote; wrapped-ONE holders on BSC/Ethereum could then redeem (their claims not quantified here)",
+    "Owner-key compromise of 0xAC0248... would enable a full drain of the 75.63M ONE escrow (privileged path, not E-U)",
+    "Safe owner-key liveness cannot be read on-chain; lost owner sets would turn P into S",
+    "Remote BSC/Ethereum counterpart contracts were not re-audited; the Harmony-side E-U=$0 verdict does not depend on them",
+    "Balances are point-in-time at block 93,624,315 and are asserted exactly in the CI fork tests"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from the Harmony 'ONE for BSC/Ethereum' escrows and the four treasury Safes (high confidence); 75.63M ONE is owner-frozen bridge escrow and 138.07M ONE sits behind canonical 2/3-of-4/5 EOA multisigs."
+}
