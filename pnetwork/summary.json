@@ -1,0 +1,44 @@
+{
+  "finding": "H-18",
+  "title": "pNetwork bridge — EVM live-extractability audit (dead Nov-2024, frozen $13.1M TVL)",
+  "chains": ["ethereum", "bsc"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 17081, "S": 1500000},
+  "latest_block": 26117846,
+  "block_numbers": {"ethereum": 26117846, "bsc": 125645713},
+  "targets_checked": 100,
+  "live_targets": 47,
+  "closed_reasons": [
+    "Erc20Vault pegOut/adminWithdraw are onlyPNetwork (single EOA per vault); all live vaults already initialized",
+    "PToken mint requires MINTER_ROLE granted to single EOAs; redeem only burns caller's own balance and relies on dead off-chain relayer",
+    "v3 PNetworkHub deployments are uninitialized/dead (factory/epochsManager/interimChainNetworkId = 0, isLockedDown reverts) — optimistic permissionless mint unreachable",
+    "v4 Adapter.settle requires TEE ECDSA signature; XERC20Lockbox releases only against caller-burned xERC20; no live collateral found",
+    "GSN meta-tx path requires gsnTrustedSigner ECDSA approval",
+    "No leaked/compromised key matches any live role-holder; no contract-mediated privileged path"
+  ],
+  "poc": {
+    "tests_passed": 9,
+    "tests_total": 9,
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37189482964"]
+  },
+  "key_facts": [
+    "ETH vault 0x112334f50cb6efcff4e35ae51a022dbe41a48135 holds DAI 5,921.19 + BAT 44,982 + ZRX 24,989 + LRC 46,236 + PNK 79,962 + PNT 27,978 + PTERIA 950,000 (unpriced) + dust; PNETWORK=0xDffE7AC6B538B4A7Fd81c98C5fba0415d63fB132",
+    "ETH vault 0xa55d3a3fe645e1f47f11c13b157e3767c7fda913 holds LINK 12.685 + PNT 1,980; PNETWORK=0x053183A456B45E726010A39607C5AB562C497CE7",
+    "V2-generation vaults 0xe01a9c36/0xfbc34797/0x3f22c568/0xd331e3eb/0x34d08551 are empty and already initialized",
+    "MINTER_ROLE on ETH pBTC/pOATH/pFTM = single EOA 0x0e3bde3d39ded57813f0d0727e574d16d675938b (RoleGranted blocks 14320559/14584085/14622605)",
+    "BSC pGALA owner 0x2161Ba0493b02b5e207C38C013ff82DF006D0d54 (EOA); proxy admin 0xA626Ec238A80B5C400E3BF77E046F83A17910786 (contract)",
+    "v3 hubs 0x09D286748DbE6fD1316dE765C748f4685352F50c, 0x26b9EF42c92c41667A8688e61C44818Ca620986F, 0x8ABED5154f1A1DD2C5a579105D871a22eB9dbA6c, 0x142Ef2835A90CAE341de9bA39e8063e220d65778 are all dead",
+    "Frozen DefiLlama $13.10M (BSC 6.42M / ETH 3.46M / Ultra 3.13M) is host-chain attribution of 2024-11-29 pToken value from pnetwork.watch Grafana, not current collateral",
+    "Outstanding EVM pTokens ≈ $1.5M notional (pBTC 8.92=$757k, pGALA 94.2M=$255k, TLOS 18.05M=$297k, pLTC 303.7=$21k, pPNT 19.3M=$26k, pDOGE 149k=$14k) — unredeemable while relayer dead",
+    "9/9 fork tests PASS: unprivileged pegOut/adminWithdraw/mint/redeem/initialize all revert; PNETWORK-only pegOut succeeds; v3 hub calls revert"
+  ],
+  "caveats": [
+    "USD at 2026-10-04 spot prices (BTC $84,931, PNT $0.00133, GALA $0.00271, TLOS $0.01645); not Nov-2024 values",
+    "P vault figure excludes unpriced PTERIA (950,000 units) and spam tokens; exact raw balances in analysis/",
+    "S figure is notional with medium confidence (long-tail token prices/decimals); includes dead-token collateral (e.g. pSAFEMOON excluded)",
+    "UTXO-chain (BTC/LTC) and EOSIO/Algorand-side collateral out of EVM scope; BTC collateral sits in pNetwork multisig wallets (P/S)",
+    "Verdict assumes no live role-holder key is currently public; any future leak of minter/owner/PNETWORK/TEE keys re-opens extraction"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from pNetwork: every EVM release/mint path is gated by single pNetwork EOAs (vault pegOut, MINTER_ROLE, owners), the v3 optimistic hubs are dead, and the frozen $13.1M TVL is 2024 host-side notional — only ~$17k of vault collateral remains (P), plus ~$1.5M of unredeemable user pTokens (S)."
+}

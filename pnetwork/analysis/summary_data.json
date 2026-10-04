@@ -1,0 +1,68 @@
+{
+  "finding": "H-18",
+  "protocol": "pNetwork",
+  "chains": ["ethereum", "bsc"],
+  "as_of": "2026-10-04",
+  "defillama_frozen": {
+    "total_usd": 13099805.9,
+    "last_update": "2024-11-29",
+    "per_host_chain_usd": {"bsc": 6424728, "ethereum": 3460136, "ultra": 3128215, "algorand": 80658, "arbitrum": 4616, "polygon": 1450},
+    "source": "https://api.llama.fi/protocol/pnetwork ; adapter queried pnetwork.watch Grafana tvl_dist grouped by host_blockchain (deadFrom 2024-11-29)"
+  },
+  "live_state_checked": {
+    "ethereum": {
+      "vault_candidates_enumerated": 42,
+      "vaults_with_supported_tokens": 4,
+      "vaults_with_nonzero_major_balances": 2,
+      "vault_0x112334f50cb6efcff4e35ae51a022dbe41a48135": {
+        "PNETWORK": "0xDffE7AC6B538B4A7Fd81c98C5fba0415d63fB132",
+        "balances_raw": {
+          "DAI": 5921188900000000000000,
+          "BAT": 44982041500010000000000,
+          "ZRX": 24989360900000000000000,
+          "LRC": 46235700159882718700334,
+          "PNK": 79961504900000000000000,
+          "UNI": 158014417937000000000,
+          "MKR": 184198113119732905,
+          "BAL": 66379600000000000000,
+          "SNX": 44009500000000000000,
+          "YFI": 3473191848656491,
+          "UMA": 1597285900000000000000,
+          "COMP": 59500000000000000,
+          "LINK": 2819839990000000000,
+          "PNT": 27978249984018390267153,
+          "PTERIA": 950000078000000000000000
+        },
+        "usd_est_excl_unpriced": 16900
+      },
+      "vault_0xa55d3a3fe645e1f47f11c13b157e3767c7fda913": {
+        "PNETWORK": "0x053183A456B45E726010A39607C5AB562C497CE7",
+        "balances_raw": {"LINK": 12685129528104148131, "PNT": 1980189241882254068329, "NCDT": 10025000000000000},
+        "usd_est": 181
+      },
+      "v3_hubs": {
+        "addresses": ["0x09D286748DbE6fD1316dE765C748f4685352F50c", "0x26b9EF42c92c41667A8688e61C44818Ca620986F", "0x8ABED5154f1A1DD2C5a579105D871a22eB9dbA6c", "0x142Ef2835A90CAE341de9bA39e8063e220d65778"],
+        "state": "uninitialized/dead: factory()/epochsManager()/interimChainNetworkId() return 0, isLockedDown() reverts"
+      },
+      "pToken_minter": {"pBTC": "0x0e3bde3d39ded57813f0d0727e574d16d675938b", "note": "single EOA minter granted at block 14320559 (RoleGranted)"}
+    },
+    "bsc": {
+      "ptokens_enumerated": 15,
+      "ptoken_admin_slots": {"pGALA/pPNT/pEFX/pBTC/pKEYS": "0xA626Ec238A80B5C400E3BF77E046F83A17910786", "TLOS": "0xdeac338bd837bd6a9d72fc2146df5e10fe2d6c4b"},
+      "protocol_eoa_balances": "negligible (checked USDT/BUSD/USDC/BTCB/ETH + BNB for 10 pNetwork EOAs)",
+      "vaults_found": "none holding collateral (BSC hosts pTokens; collateral is on native chains)"
+    }
+  },
+  "categories_usd": {
+    "E-U": 0,
+    "H-O": 0,
+    "P": 17081,
+    "S": 1500000
+  },
+  "notes": [
+    "E-U=$0: every collateral-release path is gated by the PNETWORK EOA (pegOut/adminWithdraw) and every mint path by MINTER_ROLE/owner EOA; v3 optimistic mint is dead; v4 TEE-signed.",
+    "P vault figure excludes 950,000 PTERIA (no DefiLlama price) and spam tokens; long-tail tokens in same vaults not fully priced.",
+    "S is notional value of outstanding pTokens on ETH+BSC (host-side claims) — redeem requires the dead off-chain relayer; includes pBTC 8.92 (=$757k), pGALA 94.2M (=$255k), TLOS 18.05M (=$297k), etc. Confidence medium on long-tail prices/decimals.",
+    "Frozen DefiLlama $13.1M is host-chain attribution of locked-asset value at 2024-11-29, not current EVM collateral; no on-chain EVM collateral matching the bulk was found."
+  ]
+}
