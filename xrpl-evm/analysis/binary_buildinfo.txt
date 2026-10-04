@@ -1,0 +1,19 @@
+# Official XRPL EVM node release binary inspection (v11.2.0, linux/amd64)
+# downloaded from https://github.com/xrplevm/node/releases/download/v11.2.0/node_11.2.0_Linux_amd64.tar.gz
+# sha256:
+300a6579bd0fbda56d9837bb3976e08068cb6d29289f273b19a04652869c3ac5  node_11.2.0_Linux_amd64.tar.gz
+
+## go version -m ex/bin/exrpd (relevant lines)
+	path	github.com/xrplevm/node/v10/cmd/exrpd
+	mod	github.com/xrplevm/node/v10	(devel)	
+	dep	github.com/cometbft/cometbft	v0.38.21	h1:qcIJSH9LiwU5s6ZgKR5eRbsLNucbubfraDs5bzgjtOI=
+	dep	github.com/cometbft/cometbft-db	v0.14.1	h1:SxoamPghqICBAIcGpleHbmoPqy+crij/++eZz3DlerQ=
+	dep	github.com/cosmos/cosmos-sdk	v0.53.6
+	=>	github.com/xrplevm/cosmos-sdk	v0.53.6-xrplevm.1	h1:fBMklkMKZbrVoEhGU0JyeaINkRA9lVA9K/zRY73EGh0=
+	dep	github.com/cosmos/evm	v0.6.0
+	=>	github.com/xrplevm/evm	v0.6.3-xrplevm.1	h1:HcmAPkTLnHPtT93OZnKK6lg6rgtcuX5I09V0q9Asn1U=
+	dep	github.com/jmespath/go-jmespath	v0.4.0	h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9YPoQUg=
+
+## guard strings present in binary
+state balance underflow for %s: have=%s sub=%s
+state balance overflow for %s: have=%s add=%s
