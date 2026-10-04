@@ -1,0 +1,50 @@
+{
+  "finding": "H-34",
+  "title": "Oku Trade (Sonic + Scroll/Linea/Manta/Boba) — own contracts vs stock Uniswap v3; no unprivileged extraction",
+  "chains": ["sonic", "scroll", "linea", "manta", "boba"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 30.36, "P": 62.55, "S": 0},
+  "latest_block": 80326468,
+  "block_numbers": {
+    "sonic": 80326468,
+    "scroll": 35269579,
+    "linea": 32225716,
+    "manta": 9687228,
+    "boba": 40045310
+  },
+  "targets_checked": 17,
+  "live_targets": 16,
+  "closed_reasons": [
+    "Sonic: no OkuRouter deployed; the only Oku contract (LimitOrderRegistry 0x1b35fbA9...) was never used (batchCount==1, zero orders/positions/balances)",
+    "Sonic Uniswap v3 stack is stock: verified sources + runtime metadata equal to Ethereum canonical (ProxyAdmin byte-identical); pools are LP-owned",
+    "Scroll OkuRouter has zero whitelisted swap targets (no SwapTargetAdded events ever) -> every swap reverts TARGET_NOT_AUTH",
+    "Linea/Boba OkuRouter warrant check is disabled (validSigners(address(0))==true) but every path pulls only from msg.sender and pays msg.sender; router balances are dust only",
+    "Fork-proven: a victim's standing 100 WETH approval to the OkuRouter cannot be pulled by an attacker even with the warrant bypass",
+    "LimitOrderRegistry funds are per-depositor (cancel/claim by sender only); no third-party extraction path; deployed code equals audited repo HEAD"
+  ],
+  "poc": {
+    "tests_passed": 9,
+    "tests_total": 10,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "OkuRouter v2.0 (Scroll 0xb1f3a7B816B0681188F54dFa400991B93ADf00ed, Linea same, Boba 0x7bf7770Ecd4fd573C32272Ef80c8818A8E8e289A) owner = 2-of-3 Safe 0x37333A9626E99eC2012F3cC47a062649CF741303; audited Jan+Jul 2026",
+    "validSigners(address(0)) == true on all three live routers (ValidSignerAdded(0x0) at deploy; tasks/deploy.ts deliberately enables the bypass) -> backend EIP-712 warrant signature is not enforced on-chain",
+    "Fork test: unsigned warrant (verifyingSigner=0) executes a full WRAP_ETH swap via whitelisted Uniswap UniversalRouter; non-whitelisted signer reverts INVALID_SIGNER",
+    "Fork test: attacker cannot pull a victim's 100 WETH allowance to the router; victim balance/allowance unchanged",
+    "Scroll router whitelist empty (0 SwapTargetAdded events; Permit2/WETH/aggregators false); native 0; no tokens",
+    "Linea router: 15 whitelisted aggregators (1inch, 0x Settler x2, Kyber, Odos, OpenOcean, Enso, OKX x3, Icecream, Binance, Uniswap UR/SR02, 0x8B84); native 0.000096 ETH; WETH 0",
+    "Boba router: targets icecreamswap + Uniswap UR/SR02; native dust 0.0003036 ETH",
+    "LimitOrderRegistry deployments: Sonic 0x1b35... empty/unused; Scroll 0xeC3E... shutdown, 111 positions, only 3 residual cancelable orders (21 USDC nominal); Linea 0x63c8... shutdown, 48 empty positions, source == audited repo HEAD; Manta 0xFE83... shutdown, 62.347248983703240 MANTA + 4.906544 USDC residual; Boba 0xfEFb... 25 empty positions, 0.0225 ETH + 0.000304 WETH (fees)",
+    "Sonic UniversalRouter/ProxyAdmin/v3Staker/NFPM/SwapRouter02 metadata or full bytecode equal to Ethereum canonical Uniswap v3; factory verified UniswapV3Factory",
+    "Scroll router creation tx 0xe0d5c0a2...: CREATE2 initcode hash 0x28cf331de36cac6a6b49cfc234251a6a32080f458843a96b52125c44cba159d9 -> address 0xb1f3...; CI recompiles repo HEAD and byte-compares"
+  ],
+  "caveats": [
+    "H-O/P figures are small residual balances, not attacker-extractable; prices at 2026-10-04 (ETH $2693.37, MANTA $0.0723)",
+    "Manta public RPC is flaky; its fork test auto-skips when unavailable",
+    "The zero-signer warrant bypass is a deliberate transitional mode per the repo deploy script; its latent risk depends on future whitelist/target behavior",
+    "No mainnet transactions were sent; all exploit-path checks are read-only or fork-only"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Oku Trade: Sonic runs stock Uniswap v3 with no Oku router and an empty unused LimitOrderRegistry, and although the live OkuRouters (Scroll/Linea/Boba) have the backend warrant check disabled (address(0) whitelisted), all fund flows are msg.sender-bound and fork tests confirm no third-party drain; residual user funds (~$30) are self-service and ~$62 is owner-sweepable dust."
+}
