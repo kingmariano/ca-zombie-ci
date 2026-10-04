@@ -1,0 +1,17 @@
+# Goldfinch SeniorPool upgrade tx — Ethereum block 26004942 (2026-09-15, ts 0x6aad489b)
+# tx 0xc67bf64ade1f06db975c8c33c24092bbb76f112d78ebefab4a25192255673715
+# from 0xf13eFa505444D09E176d83A4dfd50d10E399cFd5 -> Safe 0xBEb28978B2c755155f20fd3d09Cb37e300A6981f (execTransaction 0x6a761202)
+# MultiSendCallOnly 0x40a2accbd92bca938b02010e17a5b8929b49130d calldata 0x8d80ff0a:
+#   1) USDC.transfer(0x80aa1a80a30055daa084e599836532f3e58c95e2, 500000000)  [500 USDC to FIDU/USDC Curve LP]
+#   2) FIDU 0x6a445e9f..f700bf unpause() [3f4ba83a]
+#   3) SeniorPool 0x8481a6eb..f822 upgradeToAndCall(0x656cc68d76c7dea07b477ffd26f6c9766d154e5e, data)
+#      data selector 0xda13e908 with 3 dynamic arrays (offsets 0x60/0x380/0x6a0) and trailing address 0x8481a6eb..f822 (self)
+#      - array1 = 24 addresses; array2/array3 = 24 uint256 amounts
+#      - FIDU Transfer(from=each address, to=0x0) burns executed (24 events)
+#      - custom event 0xfe9efcfc0de77b34cf129acaca33f841909ae616091d69e2bab7968bcc1be717
+#        data = (0x043aa061eb24094f8f42de, 0x0d1b5a78f21284a7, 0x0f8c618bba26)
+#      - then SeniorPool Unpaused(0xBEb28978...) emitted
+# New SeniorPool impl 0x656cc68d76c7dea07b477ffd26f6c9766d154e5e: UNVERIFIED (Etherscan/Sourcify), 24,536-byte code,
+#   dispatcher = old 45 verified SeniorPool selectors + new 0x0bc35e98 (no-arg view, returns true) + 0xda13e908 (the one-time migration above).
+# Old impl (verified source) 0x361212f99a653b20ab6f8bede07cff8deb5a5f28.
+# After upgrade at block 26117051: usdcAvailable()=0; USDC balance=1,783,983.897112; paused=false; owner=0xBEb28978... (Safe).

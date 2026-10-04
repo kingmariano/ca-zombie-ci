@@ -1,0 +1,53 @@
+# Deployments for corn-mainnet
+
+| Contract Name | Contract Address |
+|--------------|-----------------|
+| AaveOracle-corn-mainnet | 0xbF8216841B3c3032381BD3f7233895Fe3b5BDCfB |
+| ACLManager-corn-mainnet | 0xF6561e93137B0d7E9809Dc149838e3006dD87D45 |
+| AToken-corn-mainnet | 0x3511257bDaEE658918e832CaCD0F9E11C3127590 |
+| BorrowLogic | 0xeF73Ca8feAe89C482Af25eFfaDf08E971912B31d |
+| BridgeLogic | 0x1Ed427533c21F5273b9C6B7B95821537DD831CeC |
+| ConfiguratorLogic | 0x411E975148DF0A06775caE46b829e07E15E076dD |
+| eBTC-AToken-corn-mainnet | 0xA122d117053B7FDe26C71007E13f513c76A22655 |
+| eBTC-StableDebtToken-corn-mainnet | 0x40FCFcceFeEe7EF80f21B5e8844216AeD49dB53a |
+| eBTC-VariableDebtToken-corn-mainnet | 0x93B61F03A5fb8a4951DE5Cf55d2032bB5c3558E1 |
+| EmissionManager-corn-mainnet | 0x98D56d03be3C0B9C58C67b209cA557d7DA9eb611 |
+| EModeLogic | 0xa7Aed266837FA31428F5e0c0cF0210A6f119b478 |
+| FlashLoanLogic | 0x7f264249bB77F6543EeEEDd2d7F44aa01301777D |
+| IncentivesProxy-corn-mainnet | 0x88aD6F9924dcA1ae5cAe343922E6734cd3417aA9 |
+| IncentivesV2-Implementation | 0x861736DdBE57932eF15e6365a1d81A8458C7beB2 |
+| LBTC-AToken-corn-mainnet | 0x997E19B4e2385fe36646AaF672c5eDB84713d4aE |
+| LBTC-StableDebtToken-corn-mainnet | 0x77661e4248573a1b180F4615B8E821e142dEe92e |
+| LBTC-VariableDebtToken-corn-mainnet | 0x2fBb88FD9C0Ea77Daf9915fe2D682f13f4060cB1 |
+| LiquidationLogic | 0xB085E58e08e0bF7cC3b9438b1d2c5D2c87e8dAF1 |
+| Pool-Implementation-corn-mainnet | 0x7DB270182E12BFe88Dca47c98cB1eF563C3Ba69B |
+| Pool-Proxy-corn-mainnet | 0x87E279BcfF5Eb6C946039C3F84A98dB4fAf1a237 |
+| PoolAddressesProvider-corn-mainnet | 0xb518f444E19446E1A3c5225A5233B908941f8be4 |
+| PoolConfigurator-Implementation | 0x38e63D8e3781E7e392a4e3AD351BcAB9BCeC7F29 |
+| PoolConfigurator-Proxy-corn-mainnet | 0x6cb63bc2798133a9945E7d7A79fa58EF707CFb85 |
+| PoolDataProvider-corn-mainnet | 0xC3F57EEf47e0a4Da4DaE2310EA692Ba360F2bBD9 |
+| PoolLogic | 0x42cd5135b8e04eD2ea29b841a7DE11788d64BC2c |
+| pumpBTC-AToken-corn-mainnet | 0xDa2a4dB39344839430b0369E99Ccc7253bBc94F2 |
+| pumpBTC-StableDebtToken-corn-mainnet | 0x376920d4D60a310F5bD69c574aFe8927d49ea5dF |
+| pumpBTC-VariableDebtToken-corn-mainnet | 0x577882FD04d3E87B44f1b9AB6d779162F302f70f |
+| ReservesSetupHelper-corn-mainnet | 0x1167d1339011e6495d4e1D3824C522F1d4a5238C |
+| ReserveStrategy-rateStrategyStableOne-corn-mainnet | 0x31EA7b92a6bd7D47Be3D6ee2D2DfF9C146d4E057 |
+| ReserveStrategy-rateStrategyStableTwo-corn-mainnet | 0x863484515FA5ce6fe083D5Dd342CcDF548Ae19EE |
+| ReserveStrategy-rateStrategyVolatileOne-corn-mainnet | 0x9595aE58aA9a6E1f4Bc585C4E7ffE95f7e7A6e7b |
+| solvBTC-AToken-corn-mainnet | 0xFd4a83b40F3Dc75c612DB3B719Def4364B085039 |
+| solvBTC-StableDebtToken-corn-mainnet | 0xEB1Ebeb363DD366811e50d5B7027E4AeB4363f3e |
+| solvBTC-VariableDebtToken-corn-mainnet | 0xf2Da185966C0514C77cf464efC31Bd06Ec281D96 |
+| StableDebtToken-corn-mainnet | 0x7A2bE8F4d864CdDAd322E62E62f1F369a405Cd51 |
+| SupplyLogic | 0x7EFa6e7D237e96702BDd6f1148cffb8019244B30 |
+| TreasuryProxy | 0xde7DDF06E85A786Fb2C89953eeACC49DbfF6E9cF |
+| UiIncentiveDataProviderV3-corn-mainnet | 0x35B9A70778d9ca973f50257314266aB620081AfF |
+| UiPoolDataProviderV3-corn-mainnet | 0x51120bFbCeC8A108D6C6494EC0843135488a72E3 |
+| USDC-AToken-corn-mainnet | 0x30C05eC3045Ab1A31979B97ee81BC2D9Da0E1444 |
+| USDC-StableDebtToken-corn-mainnet | 0xdBcb4cB2f02BCb4Cc92148fC719E0596d8ab11a9 |
+| USDC-VariableDebtToken-corn-mainnet | 0x0c0930e5826D083DFb63669dA6FDB7dB86989639 |
+| VariableDebtToken-corn-mainnet | 0x9d505479E3D2ABcEFd1f8317d213D2C3792FB787 |
+| WalletBalanceProvider-corn-mainnet | 0xE7c5cD2a2ad89A61762ab2B51586B2663660B9df |
+| WBTCN-AToken-corn-mainnet | 0x729C99d73b69C0aB7208c8f22c84cDA7C5835821 |
+| WBTCN-StableDebtToken-corn-mainnet | 0x70758Fd47dAe338a42A97769C945E7a16F4E088B |
+| WBTCN-VariableDebtToken-corn-mainnet | 0x542E1D4ba8b3935b966d157B052C0147219D4e59 |
+| WrappedGateway-corn-mainnet | 0x6Ff5bE919b2e5deB0e26c8c46603054D2d266E41 |

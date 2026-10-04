@@ -1,0 +1,31 @@
+# Ebisu / Ebisus Bay raw reads — captured 2026-10-04
+# DefiLlama protocol/ebisus-bay currentChainTvls: {"Cronos-staking":9256.2901,"Cronos zkEVM":28515.37017,"Cronos":399820.02213,"staking":9256.2901}
+# DefiLlama protocol/ebisu currentChainTvls: {"Ethereum":25112,"Plasma":0}
+# deadAdapters.json: "ebisu-finance": {ethereum:tvl_f, mode:tvl_f, deadFrom:"2026-07-28"}
+
+[Cronos RPC https://evm.cronos.org, latest]
+factory 0x5f1d751f447236f486f4268b883782897a902379 (Ebisus Bay UniV2 fork)
+  code = 0x6080604052...
+  allPairsLength() = 1051
+  owner() -> revert ("0x")
+bank 0x1E16Aa4Bb965478Df310E8444CD18Fa56603A25F
+  code = 0x6080604052...
+  owner() -> revert data "0xf3aee6338da5cb5b...0" (custom selector 0xf3aee633 + funcion id 0x8da5cb5b)
+  paused() -> revert data "0xf3aee6335c975abb...0" (custom selector 0xf3aee633 + funcion id 0x5c975abb)
+  FRTN balanceOf(bank) = 89384645358591604604766583 (89,384,645.358591604604766583 FRTN, 18dp)
+FRTN 0xaF02D78F39C0002D14b95A3bE272DA02379AfF21 (token, live)
+Cronos zkEVM factory per adapter: 0x1A695B3aC30D41F9A1D856A27DD0D9DdaaCe750d (not probed)
+
+[Ethereum RPC NodeReal, block 26117051]
+Ebisu ebUSD registry entry 0x5e159fAC2D137F7B83A12B9F30ac6aB2ba6d45E7
+  code = 0x6080604052...
+  paused() -> revert
+  owner() -> revert
+  getEntireSystemColl() -> revert
+  getEntireSystemDebt() -> revert
+  symbol()/name()/totalSupply()/decimals()/getTroveManager() -> all revert
+  => contract type not confirmed; bounded pass could not identify the live Liquity-fork core.
+
+# Adapter sources:
+# projects/ebisus-bay/index.js: getUniTVL(factory 0x5f1d..) + staking(bank 0x1E16.., FRTN 0xaF02..)
+# registries/liquity.js: 'ebisu-ebUSD' {_options:{helperType:'v2'}, ethereum:0x5e159f.., plasma:0x602096a2f43b43d11dcb3713702dda963c45adc6}
