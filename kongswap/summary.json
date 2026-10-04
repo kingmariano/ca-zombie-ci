@@ -1,0 +1,59 @@
+{
+  "finding": "H-28",
+  "title": "KongSwap (ICP) — fully wound-down SNS DEX; AMM empty, treasury governance-locked and capture-infeasible",
+  "chains": ["internet-computer"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 13.4,
+    "P": 485639.67,
+    "S": 0.01
+  },
+  "latest_block": 0,
+  "block_numbers": {
+    "internet-computer": 0
+  },
+  "targets_checked": 141,
+  "live_targets": 2,
+  "closed_reasons": [
+    "DEX canister pools(null) returns zero pools; all pools removed with balance_0 = balance_1 = 0 (KONG_ICP pool 59, ICP_ckUSDT pool 1, ckBTC_ICP pool 126 all 0/0)",
+    "No LP tokens outstanding (tokens(null): 132 IC tokens, 0 LP entries)",
+    "DEX canister holds only ~$13.40 of dust across 135 token ledgers (4 nonzero: SNEED/ICE/NUA/BIL); all majors (ICP, ckBTC, ckETH, ckUSDC, ckUSDT, CHAT, BOB, KONG, WTN, NTN, PANDA, MOTOKO) are zero",
+    "Withdrawal path send({token,to_address,amount}) has no 'from' argument (caller-keyed); claim(nat64) pays the stored to_address; swap/remove_liquidity have no pools to act on",
+    "SNS treasury (119,042.87 ICP + 544,236,777.56 KONG) is spendable only via a critical SNS proposal (>=20% of total VP YES and >=67% of cast YES)",
+    "Governance capture needs >=16.0e15 VP = ~80.0M KONG staked at max dissolve delay (2x); total live KONG liquidity is ~3.74M KONG (~$547; deepest ICPSwap pool 3.67M KONG), 24h volume $0 — not purchasable on-chain",
+    "Dominant 41.2%-VP bloc (ljxsi-... 7 neurons, 26.37e15 VP) historically votes on treasury proposals (yes on 350/352/353/358/359, no on 354/355/356)",
+    "All canisters controlled by SNS root -> SNS governance; no EOA controller; cycles funded (DEX 119.7T cycles)"
+  ],
+  "poc": {
+    "tests_passed": 5,
+    "tests_total": 5,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37184406945"
+    ]
+  },
+  "key_facts": [
+    "DEX canister 2ipq2-uqaaa-aaaar-qailq-cai ('Kong Swap v0.0.21', module hash 6892966cbbdfb24fe71568729e6f0dba3000586bb0b93735360da0273d47d36e) is running and answers queries; pools(null) = 0 pools",
+    "135 token ledgers scanned for the DEX: 80 zero, 4 nonzero (SNEED 0.154773246140 = $13.39 @ $86.49; BIL 191,485.49265102 unpriced; ICE 2.58342338; NUA 0.81281994), 51 dead/frozen/not-found",
+    "Unlisted dust stuck in DEX: DOLR 4.40395348, GHOST 88.05285829, ICPSwap 1e-8",
+    "Last KONG-ledger activity for the DEX account: all outflows; latest tx id 614056 on 2026-07-08; DEX KONG balance 0",
+    "SNS treasury ICP account f39d9b22c382c25f832fd1d3e6ad5216249623b204a7fc5498f991f4cf2df1e1 holds 119,042.86757995 ICP ($406,807.51 @ $3.4173/ICP)",
+    "SNS treasury KONG subaccount holds 544,236,777.557809 KONG (nominal $78,832 @ SNS/CMC price $0.000144849; effectively illiquid)",
+    "SNS: 3,708 neurons (1,624 NotDissolving / 300 Dissolving / 1,784 Dissolved); total VP ~63.98e15 (Apr-2026); top-100 = 61.79e15; top cluster ljxsi-... = 26.37e15 (41.2%)",
+    "Critical proposal params on-chain: minimum_yes_proportion_of_total = 2000 bp, of_exercised = 6700 bp; last proposals 362/363 (Doxa takeover motions) REJECTED 2026-04-06; total_proposals_count_30d = 0",
+    "KONG venues: ICPSwap KONG/ICP ye4fx-gqaaa-aaaag-qnara-cai = 3,672,809 KONG + 88.955 ICP ($840.60); total across all pools ~3.74M KONG (~$547); venue reserves $1,741; 24h volume $0; GeckoTerminal 'kongswap KONG/ICP $81,557' entry is stale (real pool 59 is 0/0)",
+    "Audit: Sig9 v2.0 (2024-10-07) 0 critical / 0 high / 2 medium / 2 low / 4 info; backend is closed-source today (github.com/KongSwap hosts only documentation/prediction_resolutions/spl-meta)",
+    "Frontend kongswap.io returns HTTP 530; DefiLlama deadFrom 2026-04-06; SNS sale (Oct-Nov 2024) raised 255,936.25 ICP"
+  ],
+  "caveats": [
+    "Read-only constraint: update methods (send, claim, swap) were not executed; caller-keying of send/claim is established from the recovered Candid interface + Sig9 audit, not by live execution. Impact capped at ~$13 of DEX dust anyway",
+    "Backend WASM/source is closed; SNS upgrade-proposal payloads contain the WASM blob but the public aggregator API does not serve it, so no source-level audit of the current v0.0.21 code was possible",
+    "51 token ledgers are frozen/stopped/not-found; any balances held there are unreadable and unwithdrawable (stuck)",
+    "KONG treasury nominal USD uses an illiquid price (FDV ~$147k, $0 24h volume); realizable value at scale is far lower",
+    "BIL (191,485.49) has no live price feed and is not counted in USD totals",
+    "ICP has no block height; state was read at 2026-10-04 ~06:30-07:55 UTC via https://ic0.app anonymous query calls",
+    "ICP price $3.4173 (DefiLlama) at measurement time; USD figures move with ICP"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 from KongSwap today: the ICP DEX canister is alive but fully wound down (0 pools, no LP tokens, ~$13 dust across 135 ledgers), and the SNS treasury ($406.8k ICP + 544M KONG) is governance-gated with capture infeasible because the ~80M KONG needed for the 20% quorum is not purchasable (all live KONG liquidity ~3.7M KONG, $0 volume)."
+}
