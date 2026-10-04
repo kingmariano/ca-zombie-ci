@@ -1,0 +1,68 @@
+{
+  "Q1": {
+    "short_answer": "No evidence of a critical OpenBook vulnerability reported/fixed around January 2023. Only Jan-2023 artifact: openbook-dex/program PR #27 (merged 2023-01-05), which added dependency-vulnerability scanning to CI; no protocol fix, never deployed (last on-chain deploy 2022-12-20). The only OpenBook critical is OtterSec's v2 audit (Sept 2023; place_order missing vault-side check; Resolved). OpenBook v1 was never audited. No OSV/RustSec/GitHub advisories; no v1 exploit reported 2023-2026.",
+    "sources": [
+      "https://github.com/openbook-dex/program/pull/27",
+      "https://github.com/openbook-dex/program/issues/6",
+      "https://osec.io/reports/527e1c3e-b913-4a2a-9d82-88757467e4a0"
+    ],
+    "confidence": "medium-high negative finding"
+  },
+  "Q2": {
+    "short_answer": "Serum declared itself defunct 2022-11-29 because FTX held the program upgrade authority (CoinDesk: FTX Group 'continues to hold the program update authority keys'). No post-FTX upgrade occurred (last deploy 2022-08-19; current authority 6XvcBmETaz5ZNRhwiz1ochXitHG771d6rmK4Ug3NVr1g = plain EOA, 0.0025 SOL, no data; todays keyholder not publicly attributed). Community migrated to OpenBook (deployed 2022-11-15, same code, Realms multisig). No post-FTX drains of Serum v3 markets found; markets dormant but callable; OpenOrders still closable.",
+    "sources": [
+      "https://twitter.com/ProjectSerum/status/1597463150567514112",
+      "https://www.theblock.co/news/defi/2022-11-29-ftx-backed-dex-serum-calls-itself-defunct-promotes-community-fork-190566",
+      "https://finance.yahoo.com/news/ftx-hack-sparks-revolution-serum-235117897.html",
+      "https://restructuring.ra.kroll.com/FTX/ExternalCall-DownloadPDF?id1=MzA4NDI5Mw%3D%3D&id2=0"
+    ],
+    "confidence": "high facts / medium negatives / low keyholder attribution"
+  },
+  "Q3": {
+    "short_answer": "500K-1M SOL is one back-of-envelope estimate (jnuno98, project-serum/serum-dex#268, 2025-02-10: tens of thousands x 4 SOL), reposted to openbook-dex/program#58 and SE 24425; no measurement and likely a large overestimate (minimal markets 0.3-0.4 SOL, full ~2.8 SOL). Recoverable: own OpenOrders (~0.02-0.024 SOL each) and own token accounts. Not recoverable: market/queues/bids/asks and vault token accounts (program PDAs; no CloseMarket). Fix needs a program upgrade; 2026 rent-reduction adds an 'excess rent reclaim' variant (issue #59, SE 24500).",
+    "sources": [
+      "https://github.com/project-serum/serum-dex/issues/268",
+      "https://github.com/openbook-dex/program/issues/58",
+      "https://github.com/openbook-dex/program/issues/59",
+      "https://solana.stackexchange.com/questions/24428",
+      "https://solana.stackexchange.com/questions/24500",
+      "https://raw.githubusercontent.com/openbook-dex/openbook-docs/main/src/faq.md"
+    ],
+    "confidence": "high provenance / low magnitude accuracy"
+  },
+  "Q4": {
+    "short_answer": "DefiLlama Serum $17,131,473 (2026-10-04): adapter projects/serum.js enumerates all 388-byte markets of Serum v3 (9xQeWvG...) and sums market-account fields baseDepositsTotal+baseFeesAccrued and quoteDepositsTotal+quoteFeesAccrued, priced by DefiLlama; it does NOT read vault balances (dead-market accounting can be stale). Token USD mix: USDC $9.70M (56.6%), SOL $3.78M (22.0%), WETH $2.22M (12.9%), USDT $0.64M (3.8%). OpenBook adapter $1.16M; Serum Swap $0.24M.",
+    "sources": [
+      "https://api.llama.fi/protocol/serum",
+      "https://raw.githubusercontent.com/DefiLlama/DefiLlama-Adapters/main/projects/serum.js",
+      "https://raw.githubusercontent.com/DefiLlama/DefiLlama-Adapters/main/projects/openbook/index.js"
+    ],
+    "confidence": "high"
+  },
+  "Q5": {
+    "short_answer": "OpenBook v1 is frozen and markets uncloseable: docs say 'In V1, you cannot'; last commit 2023-01-05 (CI), release v0.5.10 2022-12-14, last deploy 2022-12-20. Upgrade authority 8xYs2tGXPayMtgsqs4NuMy7bnWr7DM9tnnkbY2SHVbys = ProgramGovernanceV2 under RealmV2 'Serum Community Fork' (BtD6wKiazt4EEvfw6tqDh1BPSVchGeqyZ1e4HhV9VHJ6, Realms 'OpenBook DAO'); community mint DFnfxL8... supply 0. DAO dormant since ~2022/23 (~20 proposals, 9 members); no close/reclaim proposal ever; last relevant proposal was the v1 program upgrade (Completed ~4y ago). Upgrade needs council/multisig approvals (not SRM holders). Maintainer mschneider 2026-09-29: reclaim instruction 'seems doable'; no proposal yet.",
+    "sources": [
+      "https://raw.githubusercontent.com/openbook-dex/openbook-docs/main/src/faq.md",
+      "https://app.realms.today/dao/OPENBOOK",
+      "https://v2.realms.today/dao/BtD6wKiazt4EEvfw6tqDh1BPSVchGeqyZ1e4HhV9VHJ6",
+      "https://github.com/openbook-dex/program/issues/59",
+      "https://solana.stackexchange.com/questions/24428"
+    ],
+    "confidence": "high on docs/Realms/RPC decode"
+  },
+  "Q6": {
+    "short_answer": "No documented exploitation of abandoned Serum v3/OpenBook v1 markets 2023-2026 (OSV/RustSec/GitHub advisories/Helius Solana Hacks/Pine Analytics/news all negative). Theoretical only: stale resting orders remain takerable at stale prices while the program is callable; unquantified. Many v1 markets were scam-token markets ('99.9%... built with the purpose of being rugged').",
+    "sources": [
+      "https://www.helius.dev/blog/solana-hacks",
+      "https://pineanalytics.substack.com/p/the-history-of-solana-security-incidents",
+      "https://github.com/project-serum/serum-dex/issues/268"
+    ],
+    "confidence": "medium negative"
+  },
+  "_meta": {
+    "finding": "H-22",
+    "date": "2026-10-04",
+    "transport": "pushed to github.com/kingmariano/ca-zombie-ci branch h-22-web-research (paths h-22-web-research/web-research.md and .json); copy to /home/heisenberg/CA/serum/analysis/",
+    "read_only": true
+  }
+}
