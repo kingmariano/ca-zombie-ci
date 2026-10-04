@@ -1,0 +1,32 @@
+{
+  "finding": "L-1 (Heliobond)",
+  "title": "Heliobond investment_vault — queued withdrawals double-counted in NAV; no live deployment",
+  "chains": ["stellar"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 0,
+  "block_numbers": {"stellar": 0},
+  "targets_checked": 1,
+  "live_targets": 0,
+  "closed_reasons": [
+    "no Stellar mainnet/testnet Heliobond contract could be identified (repo, frontend, backend, CI, npm, stellar.expert index, Soroban RPC)",
+    "the double-count bug was fixed on main by e99b4cc (PR #647) on 2026-09-26 17:31 UTC, the same day it was triaged",
+    "the production frontend is demo-mode with no configured backend and no contract IDs in its bundles; heliobond.io is NXDOMAIN",
+    "GitHub Actions has never deployed: deploy.yml 33/33 failed, network-tests deploy job skipped in all 192 runs"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": []},
+  "key_facts": [
+    "vulnerable code: read_total_assets() = liquid + investments + expected, without subtracting QueuedClaim liabilities (c79daec1, queue feature 5d0a576 on 2026-06-26)",
+    "fix: total_assets() subtracts VaultKey::QueuedLiabilities (e99b4cc, merged 2026-09-26 17:31 UTC, still on main b233e10)",
+    "attacker model: existing shareholder redeems at the inflated NAV after a majority holder's redemption queues; diversion = min(TA*s_a/S_r, liquid) - s_a*(TA-Q)/S_r, approaching the queued claim for a small holder",
+    "deterministic PoC (40k victim + 10k attacker + 15k funded, 7-dec USDC): attacker nets 25,000 USDC, queued claimant shortfall 25,040 USDC, total_assets 15,000 < queued 40,040",
+    "ERC-4626 donation/inflation path infeasible (~$9.95e11 donation needed to zero a 1,000 USDC deposit)",
+    "latent TTL/archival risk on QueuedLiabilities (no explicit extend_ttl) for dormant queues"
+  ],
+  "caveats": [
+    "negative deployment conclusion depends on stellar.expert index completeness and WASM marker/hash matching; a modified-source deployment without identifying strings cannot be excluded absolutely",
+    "latent risk only materialises if someone deploys a pre-fix build with funds; current main is fixed"
+  ],
+  "one_liner": "external unprivileged attacker can extract ~$0 live: no Heliobond contract exists on Stellar mainnet and the queued-withdrawal double-count was fixed on main the same day it was reported; latent risk is up to ~the outstanding queue if a pre-fix build is ever deployed with funds."
+}
