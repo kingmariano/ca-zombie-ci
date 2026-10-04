@@ -1,0 +1,222 @@
+{
+  "finding": "H-37",
+  "subject": {
+    "name": "Mining (Metis DAC staking/mining contract)",
+    "address": "0x7077f35063f17EE1B84678334d261Ccf47980271",
+    "chain": "Metis Andromeda",
+    "chain_id": 1088,
+    "solc": "0.6.12",
+    "verified": true,
+    "source_local": "/home/heisenberg/CA/metis-orphans/analysis/h37_mining.sol",
+    "source_official_repo": "https://github.com/MetisProtocol/Metis-Mining (contracts/Mining.sol; identical to deployed source, whitespace-only diff)",
+    "creation_tx": "0x6c252441435f1521cedf654fa47b1cd684d01907b572d2f69983cac3c59838d4",
+    "creation_block": 2260,
+    "creation_time_utc": "2021-11-25T15:56:39Z",
+    "deployer_and_current_owner": "0x855E37b6068a44BdAb574c86C1817a374623225E",
+    "owner_is_contract": false
+  },
+  "pinned_block": {
+    "number": 23238720,
+    "hash": "0x0a85059fa9d18b1aac4f58222ae01b38c6389b4b9ece1e7046dfa3c41409a8f3",
+    "timestamp": 1791091696,
+    "time_utc": "2026-10-04T05:28:16Z",
+    "rpcs_used": ["https://andromeda.metis.io/?owner=1088", "https://metis.drpc.org"]
+  },
+  "live_state": {
+    "owner": "0x855E37b6068a44BdAb574c86C1817a374623225E",
+    "paused": true,
+    "Metis_token": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+    "Metis_symbol": "Metis",
+    "MetisPerSecond": "0",
+    "startTimestamp": "1637996400",
+    "startTimestamp_utc": "2021-11-27T07:00:00Z",
+    "totalAllocPoint": "100",
+    "poolLength": "2",
+    "teamAddr": "0x0000000000000000000000000000000000000000",
+    "distributor": "0xD45Ad4eE4FF123aaB5649Baf5081298372dcfE43",
+    "DAC": "0xa030a0983f3427BeD5472435A347DB334a1dC8e8",
+    "DAC_note": "TransparentUpgradeableProxy; impl 0x6aa0ABD1323AFC9d9cB6f795FCc6878a5268b279; ProxyAdmin 0x4196AAf58C5BDD5D96571b77eD5562929E307873",
+    "DACRecorder": "0xF8CafA257658131Bf781Fd2e48c916eD690267eF",
+    "MIN_DEPOSIT": "10000000000000000000",
+    "MAX_DEPOSIT": "2000000000000000000000",
+    "contract_METIS_balance_wei": "13217961828430000000000",
+    "contract_METIS_balance": "13217.96182843",
+    "balance_cross_checked_on_drpc": "13217961828430000000000"
+  },
+  "pools": [
+    {
+      "pid": 0,
+      "token": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000 (METIS)",
+      "allocPoint": "0",
+      "lastRewardTimestamp": "1642834600",
+      "lastRewardTimestamp_utc": "2022-01-22T06:56:40Z",
+      "accMetisPerShare": "0",
+      "sum_user_amount_wei": "0",
+      "nonzero_holders": 0
+    },
+    {
+      "pid": 1,
+      "token": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000 (METIS)",
+      "allocPoint": "100",
+      "lastRewardTimestamp": "1666077678",
+      "lastRewardTimestamp_utc": "2022-10-18T07:21:18Z",
+      "accMetisPerShare": "363665918906146",
+      "sum_user_amount_wei": "13217961828430000000000",
+      "sum_user_amount": "13217.96182843",
+      "nonzero_holders": 268
+    }
+  ],
+  "principal_invariant": {
+    "method": "Batched eth_call userInfo(pid,user) at pinned block for all 4850 unique participants (9700 calls, JSON-RPC batches of 100)",
+    "sum_pool0_wei": "0",
+    "sum_pool1_wei": "13217961828430000000000",
+    "sum_total_wei": "13217961828430000000000",
+    "contract_balance_wei": "13217961828430000000000",
+    "delta_wei": "0",
+    "conclusion": "Contract METIS balance equals the sum of all userInfo[_pid][user].amount exactly, wei for wei. No excess, no deficit, no unaccounted METIS."
+  },
+  "top_holders_pool1": [
+    {"address": "0xab917dabdf1f598e88f80e39942ae4fe00658e43", "amount": "2000.000000"},
+    {"address": "0x080d222fc30ac35f52d169faa9062ec29d13d187", "amount": "1400.000000"},
+    {"address": "0x10890742a1a20a936132072c20ae77b081486190", "amount": "1000.000000"},
+    {"address": "0x69258d1ed30a0e5971992921cb5787b9c7a2909d", "amount": "1000.000000"},
+    {"address": "0x1d283425c8339c5d34b41c407a582a0c90e5dd5e", "amount": "710.000000"},
+    {"address": "0x72741d54f13a63b71de4bd62ae77c100de9dca5b", "amount": "535.000000"},
+    {"address": "0x5fe3661ad3af1a2aa85001364b988cf628c38811", "amount": "422.000000"},
+    {"address": "0x36fedf4c866d2a446e9582809b87423e6258bead", "amount": "387.000000"},
+    {"address": "0x74abf717f4f069c0aaa2074fa1f80e35466079b3", "amount": "251.000000"},
+    {"address": "0x32376ec6d1ac2ad904a16ac3738cd15c039be573", "amount": "226.000000"},
+    {"address": "0xdf7b4aeba5fe638d86cdc9436b2b25c69395e46a", "amount": "170.000000"},
+    {"address": "0x03e3f8c34ba20ccf25aa0e84fe34e126b66d8c41", "amount": "149.000000"},
+    {"address": "0xf53d0fec09fe4eabf97144f8c3418ca350c90b14", "amount": "144.650000"},
+    {"address": "0xce696c80ffc62d6422a4f84819fb4bd6a4b732fb", "amount": "119.000000"},
+    {"address": "0x2e2dedc4665898f2d76c57e04e6897c86c835f01", "amount": "110.000000"}
+  ],
+  "top10_share_of_principal": "0.6000168636394093",
+  "event_history": {
+    "source": "Blockscout v1 getLogs filtered by topic0 + v2 logs pagination; deduped by (txHash, logIndex)",
+    "unique_participants_ever": 4850,
+    "unique_events": {"Deposit": 7027, "Withdraw": 10509, "EmergencyWithdraw": 763, "Mint": 11069},
+    "files": ["mining_logs_raw.json", "mining_logs_topics.json", "mining_logs_dedup.json", "userinfo_all.json"]
+  },
+  "exit_path_tests": {
+    "emergencyWithdraw_pid1_top_holder_eth_call": {
+      "from": "0xab917dabdf1f598e88f80e39942ae4fe00658e43",
+      "call": "emergencyWithdraw(1)",
+      "result": "0x (success, would transfer 2000 METIS back to the holder)",
+      "block": 23238720
+    },
+    "withdraw_pid1_top_holder_eth_call": {
+      "call": "withdraw(0x0,1,0)",
+      "result": "revert: 'paused'",
+      "block": 23238720
+    },
+    "pendingMetis_top_holder": {
+      "call": "pendingMetis(now,1,0xab917dab...)",
+      "result_wei": "5392271884962720000",
+      "result": "5.39227188496272",
+      "note": "Paid by DACRecorder vault (sendRewardToVault), NOT from Mining's METIS balance; unclaimable while paused (withdraw/deposit blocked)."
+    }
+  },
+  "DACRecorder_state": {
+    "address": "0xF8CafA257658131Bf781Fd2e48c916eD690267eF",
+    "totalWeight": "567085135200000000000",
+    "stakedMetis_wei": "105376880826690000000000",
+    "stakedMetis": "105376.88082669",
+    "MIN_MEMBER_COUNT": "20",
+    "DAO_OPEN": false,
+    "note": "Reward vault METIS is separate from the Mining contract's balance."
+  },
+  "governance_timeline": [
+    {
+      "action": "deploy Mining",
+      "tx": "0x6c252441435f1521cedf654fa47b1cd684d01907b572d2f69983cac3c59838d4",
+      "block": 2260,
+      "time_utc": "2021-11-25T15:56:39Z",
+      "by": "0x855E37b6068a44BdAb574c86C1817a374623225E"
+    },
+    {
+      "action": "setStartTimestamp",
+      "tx": "0xc87707a4f2921cc78ce9fe9c0f1b20f95bab0d50885545a845916de4981c6423",
+      "time_utc": "2021-11-26T17:04:05Z",
+      "note": "startTimestamp finalized at 1637996400 = 2021-11-27T07:00:00Z"
+    },
+    {
+      "action": "setMetisPerSecond(0)",
+      "tx": "0xa840203f79502076f0c1f7b43be89e9a4ba3f7befb8ce8078fce19dfc320633b",
+      "block": 594699,
+      "time_utc": "2022-01-22T06:56:40Z",
+      "note": "Emissions ended. MetisPerSecond is still 0."
+    },
+    {
+      "action": "setPaused(true)",
+      "tx": "0x8115169b41f5a07b9e63b84165e7ac7921dbc8484c767119cccc579050d95ee0",
+      "block": 751102,
+      "time_utc": "2022-02-04T08:36:30Z",
+      "note": "Only setPaused call in the contract's history (owner->Mining scan of all 16 admin txs). Contract has been paused since; no unpause. deposit/withdraw blocked, emergencyWithdraw enabled."
+    }
+  ],
+  "admin_surface_scan": {
+    "owner_to_mining_txs_total": 16,
+    "methods": ["add x2", "set", "setDAC", "setMetisPerSecond x7", "setPaused", "setStartTimestamp", "withdraw x2"],
+    "no_sweep_function_exists": true,
+    "note": "Owner/setter have no function that transfers METIS out of the contract to themselves or an arbitrary address."
+  },
+  "source_audit": {
+    "money_paths": [
+      {"fn": "deposit(address,address,uint256,uint256,uint256)", "guards": "onlyDAC + notPaused", "effect": "user.amount += _amount ONLY together with IERC20(pool.token).safeTransferFrom(_user, address(this), _amount); MIN_DEPOSIT=10e18, MAX_DEPOSIT=2000e18 enforced when DAC state Active", "theft": "no"},
+      {"fn": "withdraw(address,uint256,uint256)", "guards": "notPaused; creator: isCreator(msg.sender); member: !isCreator(msg.sender) && _creator == creatorOf(msg.sender)", "effect": "remaining = user.amount - _amount (SafeMath); user.amount = remaining; safeTransfer(msg.sender, _amount) <= own recorded amount", "theft": "no"},
+      {"fn": "dismissDAC(uint256,uint256,address)", "guards": "onlyDAC + notPaused + DAO_OPEN (currently false) + isCreator(_creator)", "effect": "safeTransfer(_creator, creator.amount); creator.amount=0", "theft": "no (recipient is the creator whose own amount is paid; requires DAO_OPEN)"},
+      {"fn": "emergencyWithdraw(uint256)", "guards": "require(paused) only; no DAC identity check", "effect": "safeTransfer(msg.sender, user.amount); user.amount=0; user.rewardDebt=0", "theft": "no (own amount only)"},
+      {"fn": "updatePool(uint256)/massUpdatePools()", "guards": "permissionless", "effect": "distributor.distribute(teamAddr, r/9) and distributor.distribute(DACRecorder, r) mint METIS; accMetisPerShare updated. Does not move Mining's METIS.", "theft": "no"}
+    ],
+    "classic_bug_checklist": {
+      "a_emergencyWithdraw_rewardDebt_reset": "PASS (rewardDebt=0 line 955); no principal double-dip",
+      "b_updatePool_before_actions": "PASS (deposit L820, withdraw L880, dismissDAC L937)",
+      "c_add_set_permissionless": "NO (onlySetter; setter private, immutable, = deployer 0x855e...)",
+      "d_overflow_underflow": "SafeMath used throughout (solc 0.6.12 but all arithmetic wrapped); pending subtraction reverts on underflow (DoS risk only)",
+      "e_pendingMetis_wrong_accounting": "view-only; DAC-weight based; capped by distributor balance; not used for state changes",
+      "f_DAC_membership_bypass": "deposit onlyDAC; DAC.createDAC/joinDAC/increaseDeposit require Metis.allowance(msg.sender, Mining) >= amount and Mining pulls the METIS from the beneficiary via safeTransferFrom; joinDAC invitation-gated; no uncollateralized user.amount possible",
+      "g_zero_amount_deposit_farming": "onlyDAC; sets rewardDebt = weight*share (harvest); no METIS leaves Mining",
+      "h_reentrancy": "no guard; METIS is a plain ERC20 (no hooks); balance == sum(user.amount) exactly so no excess to double-spend; withdraw updates user.amount before transfer",
+      "i_teamAddr_distributor_redirect": "owner-only setters; teamAddr=0; affects newly minted rewards only, not principal",
+      "j_paused_bypass": "deposit/withdraw blocked while paused; emergencyWithdraw intentionally requires paused; no bypass",
+      "k_startTimestamp_future": "no; 2021-11-27, past; MetisPerSecond=0 since 2022-01-22 anyway",
+      "l_permissionless_METIS_movers": "only emergencyWithdraw (own amount). No other function moves the contract's METIS."
+    },
+    "reward_source": "distributor (0xD45Ad4eE...) mints METIS to DACRecorder; DACRecorder.sendRewardToVault transfers from DACRecorder's own balance (105,376.88 METIS) to the Vault for the user. Mining's own METIS is never used for rewards."
+  },
+  "web_research": {
+    "project": "Metis DAC staking / 'Metis Mining' (official MetisProtocol/Metis-Mining repo)",
+    "official_announcement": "https://www.metis.io/blog/metis-dac-staking-starts-nov-26 (stake 10-2000 METIS, rewards start Nov 26 2021, first-second output 0.0185 METIS)",
+    "user_reports": "https://www.reddit.com/r/METIS_IO/comments/1azmey0/metis_dac_stuck_tokens_but_cant_connect/ and https://www.reddit.com/r/METIS_IO/comments/uimr56/mining/ ('DAC is already closed, only can do staking')",
+    "explorer_listing": "https://andromeda-explorer.metis.io/token/0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000/token-holders shows Mining 13,217.96182843 METIS (0.2%)",
+    "incident_search": "No exploit/hack incident found for this contract; only user confusion reports about withdrawal after the Feb-2022 pause."
+  },
+  "pricing": {
+    "task_baseline_METIS_usd": 10,
+    "usd_at_baseline": "132179.62",
+    "live_coingecko_2026-10-04": {"metis-token": {"usd": 3.41}},
+    "usd_at_live": "45073.25"
+  },
+  "verdict": {
+    "classification": "H-O",
+    "label": "user principal held for stakers",
+    "exact_amount_METIS": "13217.96182843",
+    "exact_amount_wei": "13217961828430000000000",
+    "attacker_extractable_today_METIS": "0",
+    "owner_extractable": false,
+    "stuck": false,
+    "stuck_caveat": "Principal is retrievable by each of the 268 current stakers via emergencyWithdraw (contract paused since 2022-02-04). Normal withdraw/deposit are disabled and reward claims (paid by DACRecorder vault) are frozen while paused, but principal is not locked.",
+    "confidence": "high",
+    "evidence_paths": [
+      "/home/heisenberg/CA/metis-orphans/analysis/h37/dossier.md",
+      "/home/heisenberg/CA/metis-orphans/analysis/h37/evidence.json",
+      "/home/heisenberg/CA/metis-orphans/analysis/h37/userinfo_all.json",
+      "/home/heisenberg/CA/metis-orphans/analysis/h37/mining_logs_dedup.json",
+      "/home/heisenberg/CA/metis-orphans/analysis/h37/gh_Mining.sol",
+      "/home/heisenberg/CA/metis-orphans/analysis/h37/gh_DAC.sol",
+      "/home/heisenberg/CA/metis-orphans/analysis/h37/gh_DACRecorder.sol"
+    ]
+  }
+}

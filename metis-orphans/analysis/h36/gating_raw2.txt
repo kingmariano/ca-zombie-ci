@@ -1,0 +1,11 @@
+REVERT | transferErc20(att) | AccessControl: account 0x1111111111111111111111111111111111111111 is missing role 0x8ec07e268e32cae7f300b49ad34f20106d088445cb9d9b2d62cbd864638308b2
+REVERT | batchTransferErc20(att) | AccessControl: account 0x1111111111111111111111111111111111111111 is missing role 0x8ec07e268e32cae7f300b49ad34f20106d088445cb9d9b2d62cbd864638308b2
+REVERT | transferErc721(att) | AccessControl: account 0x1111111111111111111111111111111111111111 is missing role 0x8ec07e268e32cae7f300b49ad34f20106d088445cb9d9b2d62cbd864638308b2
+REVERT | batchTransferErc721(att) | AccessControl: account 0x1111111111111111111111111111111111111111 is missing role 0x8ec07e268e32cae7f300b49ad34f20106d088445cb9d9b2d62cbd864638308b2
+REVERT | batchTransferEther(att) | AccessControl: account 0x1111111111111111111111111111111111111111 is missing role 0x8ec07e268e32cae7f300b49ad34f20106d088445cb9d9b2d62cbd864638308b2
+PASS | renounceRole(PAYER,att) | out=0x
+REVERT | renounceRole(PAYER,owner) | AccessControl: can only renounce roles for self
+REVERT | revokeRole(PAYER,owner) | AccessControl: account 0x1111111111111111111111111111111111111111 is missing role 0x0000000000000000000000000000000000000000000000000000000000000000
+REVERT | initialize from owner | Initializable: contract is already initialized
+PASS | supportsInterface(721) | out=false
+REVERT | setApprovalForAll-nonABI | 

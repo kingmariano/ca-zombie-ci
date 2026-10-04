@@ -1,0 +1,658 @@
+{
+ "meta": {
+  "campaign": "metis-orphans",
+  "finding": "H-41",
+  "scope": "Aave V3 Metis aToken 0x7314Ef2CA509490f65F52CC8FC9E0675C66390b8 (aMetMETIS)",
+  "chain_id": 1088,
+  "rpc": "https://andromeda.metis.io/?owner=1088 (fallback https://metis.drpc.org)",
+  "pinned_block": 23238719,
+  "pinned_block_timestamp": 1791091656,
+  "pinned_block_utc": "2026-10-04T05:27:36Z",
+  "mode": "read-only (eth_call/eth_getStorageAt + explorer API); no transactions signed/sent"
+ },
+ "contracts": {
+  "aMetMETIS": "0x7314Ef2CA509490f65F52CC8FC9E0675C66390b8",
+  "underlying_METIS": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+  "pool": "0x90df02551bB792286e8D4f13E0e357b4Bf1D6a57",
+  "pool_impl": "0x56b814e2ea4ae621b48fdc740850c3bba81d8251",
+  "pool_impl_name": "L2PoolInstance (aave-v3-origin, POOL_REVISION=10)",
+  "vDebtMETIS": "0x0110174183e13D5Ea59D7512226c5D5A47bA2c40",
+  "addresses_provider": "0xB9FABd7500B2C6781c35Dd48d54f81fc2299D7AF",
+  "pool_configurator": "0x69FEE8F261E004453BE0800BC9039717528645A6",
+  "configurator_impl": "0xebc4b627d8fc48d70bad7de09518677463581281",
+  "price_oracle": "0x38D36e85E47eA6ff0d18B0adF12E5fC8984A6f8e",
+  "atoken_impl": "0x9ec6457cd8953ac68b5bd612fc64bf8d50df3140 (ATokenInstance)",
+  "reserve_treasury": "0xB5b64c7E00374e766272f8B442Cd261412D4b118 (Aave Collector proxy, impl CollectorWithCustomImpl)"
+ },
+ "reserve_list": [
+  "0x4c078361FC9BbB78DF910800A991C7c3DD2F6ce0",
+  "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+  "0xEA32A96608495e54156Ae48931A7c20f0dcc1a21",
+  "0xbB06DCA3AE6887fAbF931640f67cab3e3a16F4dC",
+  "0x420000000000000000000000000000000000000A"
+ ],
+ "reserve_state": {
+  "mDAI": {
+   "asset": "0x4c078361FC9BbB78DF910800A991C7c3DD2F6ce0",
+   "aToken": "0x85ABAdDcae06efee2CB5F75f33b6471759eFDE24",
+   "variableDebtToken": "0x13Bd89aF338f3c7eAE9a75852fC2F1ca28B4DDbF",
+   "decimals": 18,
+   "aToken_totalSupply": "21358.493329623428318322",
+   "underlying_held_by_aToken": "20977.499876417961421559",
+   "vDebt_totalSupply": "395.29405611975212096",
+   "reserve_deficit": "1.302026108128326333",
+   "usd_supply_oracle": "21356.93",
+   "usd_debt_oracle": "395.27",
+   "config_v35": {
+    "LTV": 0,
+    "liqThreshold": 7700,
+    "liqBonus": 10500,
+    "decimals": 18,
+    "active": 1,
+    "frozen": 1,
+    "borrowingEnabled": 0,
+    "stableBorrowDeprecated": 0,
+    "paused": 0,
+    "borrowableInIsolation": 0,
+    "siloedBorrowing": 0,
+    "flashLoanEnabled": 1,
+    "reserveFactor": 9900,
+    "borrowCap": 1,
+    "supplyCap": 1,
+    "liqProtocolFee": 1000,
+    "eModeDeprecated": 0,
+    "unbackedMintCapDeprecated": 0,
+    "debtCeiling": 0,
+    "virtualAccountingDeprecated": 1
+   },
+   "liquidityIndex_ray": "1124527124919739123655215929",
+   "variableBorrowIndex_ray": "1208903091948688192750665525",
+   "lastUpdateTimestamp": 1789916815
+  },
+  "METIS": {
+   "asset": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+   "aToken": "0x7314Ef2CA509490f65F52CC8FC9E0675C66390b8",
+   "variableDebtToken": "0x0110174183e13D5Ea59D7512226c5D5A47bA2c40",
+   "decimals": 18,
+   "aToken_totalSupply": "26528.057591889373595056",
+   "underlying_held_by_aToken": "26448.834076746246245959",
+   "vDebt_totalSupply": "79.035015032485908383",
+   "reserve_deficit": "0.216680562557106426",
+   "usd_supply_oracle": "89346.50",
+   "usd_debt_oracle": "266.19",
+   "config_v35": {
+    "LTV": 0,
+    "liqThreshold": 4000,
+    "liqBonus": 11000,
+    "decimals": 18,
+    "active": 1,
+    "frozen": 1,
+    "borrowingEnabled": 1,
+    "stableBorrowDeprecated": 0,
+    "paused": 0,
+    "borrowableInIsolation": 0,
+    "siloedBorrowing": 0,
+    "flashLoanEnabled": 1,
+    "reserveFactor": 9900,
+    "borrowCap": 1,
+    "supplyCap": 1,
+    "liqProtocolFee": 1000,
+    "eModeDeprecated": 0,
+    "unbackedMintCapDeprecated": 0,
+    "debtCeiling": 100000000,
+    "virtualAccountingDeprecated": 1
+   },
+   "liquidityIndex_ray": "1006644315928683814051784630",
+   "variableBorrowIndex_ray": "1047922225816859130077493933",
+   "lastUpdateTimestamp": 1791035563
+  },
+  "mUSDC": {
+   "asset": "0xEA32A96608495e54156Ae48931A7c20f0dcc1a21",
+   "aToken": "0x885C8AEC5867571582545F894A5906971dB9bf27",
+   "variableDebtToken": "0x571171a7EF1e3c8c83d47EF1a50E225E9c351380",
+   "decimals": 6,
+   "aToken_totalSupply": "73617.099046",
+   "underlying_held_by_aToken": "53247.827105",
+   "vDebt_totalSupply": "20379.454023",
+   "reserve_deficit": "5.400269",
+   "usd_supply_oracle": "73615.63",
+   "usd_debt_oracle": "20379.05",
+   "config_v35": {
+    "LTV": 0,
+    "liqThreshold": 8300,
+    "liqBonus": 10500,
+    "decimals": 6,
+    "active": 1,
+    "frozen": 1,
+    "borrowingEnabled": 1,
+    "stableBorrowDeprecated": 0,
+    "paused": 0,
+    "borrowableInIsolation": 1,
+    "siloedBorrowing": 0,
+    "flashLoanEnabled": 1,
+    "reserveFactor": 9900,
+    "borrowCap": 1,
+    "supplyCap": 1,
+    "liqProtocolFee": 1000,
+    "eModeDeprecated": 0,
+    "unbackedMintCapDeprecated": 0,
+    "debtCeiling": 0,
+    "virtualAccountingDeprecated": 1
+   },
+   "liquidityIndex_ray": "1101293629351416240212197634",
+   "variableBorrowIndex_ray": "1163561533478081199345307256",
+   "lastUpdateTimestamp": 1790760299
+  },
+  "mUSDT": {
+   "asset": "0xbB06DCA3AE6887fAbF931640f67cab3e3a16F4dC",
+   "aToken": "0xd9fa75D14c26720d5ce7eE2530793a823e8f07b9",
+   "variableDebtToken": "0x6B45DcE8aF4fE5Ab3bFCF030d8fB57718eAB54e5",
+   "decimals": 6,
+   "aToken_totalSupply": "81895.282429",
+   "underlying_held_by_aToken": "80270.458615",
+   "vDebt_totalSupply": "1640.39855",
+   "reserve_deficit": "0.386137",
+   "usd_supply_oracle": "81882.45",
+   "usd_debt_oracle": "1640.14",
+   "config_v35": {
+    "LTV": 0,
+    "liqThreshold": 7800,
+    "liqBonus": 10500,
+    "decimals": 6,
+    "active": 1,
+    "frozen": 1,
+    "borrowingEnabled": 1,
+    "stableBorrowDeprecated": 0,
+    "paused": 0,
+    "borrowableInIsolation": 1,
+    "siloedBorrowing": 0,
+    "flashLoanEnabled": 1,
+    "reserveFactor": 9900,
+    "borrowCap": 1,
+    "supplyCap": 1,
+    "liqProtocolFee": 1000,
+    "eModeDeprecated": 0,
+    "unbackedMintCapDeprecated": 0,
+    "debtCeiling": 0,
+    "virtualAccountingDeprecated": 1
+   },
+   "liquidityIndex_ray": "1130883188659809819148127673",
+   "variableBorrowIndex_ray": "1188837461906951382526700936",
+   "lastUpdateTimestamp": 1791021883
+  },
+  "WETH": {
+   "asset": "0x420000000000000000000000000000000000000A",
+   "aToken": "0x8acAe35059C9aE27709028fF6689386a44c09f3a",
+   "variableDebtToken": "0x8Bb19e3DD277a73D4A95EE434F14cE4B92898421",
+   "decimals": 18,
+   "aToken_totalSupply": "15.884280483531663051",
+   "underlying_held_by_aToken": "15.096940548001234725",
+   "vDebt_totalSupply": "0.787659631062382738",
+   "reserve_deficit": "0.000137511173112147",
+   "usd_supply_oracle": "42757.41",
+   "usd_debt_oracle": "2120.23",
+   "config_v35": {
+    "LTV": 0,
+    "liqThreshold": 8300,
+    "liqBonus": 10750,
+    "decimals": 18,
+    "active": 1,
+    "frozen": 1,
+    "borrowingEnabled": 0,
+    "stableBorrowDeprecated": 0,
+    "paused": 0,
+    "borrowableInIsolation": 0,
+    "siloedBorrowing": 0,
+    "flashLoanEnabled": 1,
+    "reserveFactor": 9900,
+    "borrowCap": 1,
+    "supplyCap": 1,
+    "liqProtocolFee": 1000,
+    "eModeDeprecated": 0,
+    "unbackedMintCapDeprecated": 0,
+    "debtCeiling": 0,
+    "virtualAccountingDeprecated": 1
+   },
+   "liquidityIndex_ray": "1012885376223122503520131594",
+   "variableBorrowIndex_ray": "1061991416651858532006883131",
+   "lastUpdateTimestamp": 1790283089
+  }
+ },
+ "oracle": {
+  "prices_1e8": {
+   "mDAI": 99992671,
+   "METIS": 336800000,
+   "mUSDC": 99998000,
+   "mUSDT": 99984335,
+   "WETH": 269180647524
+  },
+  "base_currency": 0,
+  "base_currency_unit": 100000000,
+  "sources": {
+   "mDAI": "0xf577e512687c83706ccfed31c1939c75e8ea966f",
+   "METIS": "0xd4a5bb03b5d66d9bf81507379302ac2c2dfdfa6d",
+   "mUSDC": "0x0b9ca640284cf2636577703f785d5aeec466bc56",
+   "mUSDT": "0x433636cb0136cfd75145ccca608bb548e6c037de",
+   "WETH": "0x3bbe70e2f96c87aece7f67a2b0178052f62e37fe"
+  },
+  "feed_detail": {
+   "mDAI": {
+    "source": "0xf577e512687c83706ccfed31c1939c75e8ea966f",
+    "decimals": 8,
+    "description": "Capped mDAI/USD",
+    "latestAnswer": "99992671"
+   },
+   "METIS": {
+    "source": "0xd4a5bb03b5d66d9bf81507379302ac2c2dfdfa6d",
+    "latestRoundData": {
+     "roundId": "36893488147419107306",
+     "answer": "336800000",
+     "startedAt": "1791091398",
+     "updatedAt": "1791091420",
+     "answeredInRound": "36893488147419107306"
+    },
+    "decimals": 8,
+    "description": "METIS / USD",
+    "latestTimestamp": 1791091420,
+    "latestAnswer": "336800000"
+   },
+   "mUSDC": {
+    "source": "0x0b9ca640284cf2636577703f785d5aeec466bc56",
+    "decimals": 8,
+    "description": "Capped mUSDC/USD",
+    "latestAnswer": "99998000"
+   },
+   "mUSDT": {
+    "source": "0x433636cb0136cfd75145ccca608bb548e6c037de",
+    "decimals": 8,
+    "description": "Capped mUSDT/USD",
+    "latestAnswer": "99984335"
+   },
+   "WETH": {
+    "source": "0x3bbe70e2f96c87aece7f67a2b0178052f62e37fe",
+    "latestRoundData": {
+     "roundId": "36893488147419104705",
+     "answer": "269180647524",
+     "startedAt": "1791076616",
+     "updatedAt": "1791076643",
+     "answeredInRound": "36893488147419104705"
+    },
+    "decimals": 8,
+    "description": "ETH / USD",
+    "latestTimestamp": 1791076643,
+    "latestAnswer": "269180647524"
+   }
+  },
+  "notes": [
+   "METIS source 0xd4a5bb03b5d66d9bf81507379302ac2c2dfdfa6d = Chainlink EACAggregatorProxy 'METIS / USD'",
+   "mDAI/mUSDC/mUSDT sources = PriceCapAdapterStable ('Capped .../USD')",
+   "WETH source 0x3bbe70e2f96c87aece7f67a2b0178052f62e37fe = Chainlink EACAggregatorProxy 'ETH / USD'",
+   "METIS feed updatedAt 1791091420 (236s before pinned block) -> fresh"
+  ]
+ },
+ "pool_misc": {
+  "flashloan_premium_total": 5,
+  "max_stable_rate_borrow_size_pct": null,
+  "bridge_protocol_fee": null
+ },
+ "pool_probes": {
+  "getReserveDeficit(address)": "ok:0x0000000000000000000000000000000000000000000000000000000000000000",
+  "getVirtualUnderlyingBalance(address)": "ok:0x0000000000000000000000000000000000000000000000000000000000000000",
+  "paused()": "REVERT/None",
+  "FLASHLOAN_PREMIUM_TOTAL()": "ok:0x0000000000000000000000000000000000000000000000000000000000000005",
+  "getReservesList()": "ok:0x0000000000000000000000000000000000000000000000000000000000000020",
+  "ADDRESSES_PROVIDER()": "ok:0x000000000000000000000000b9fabd7500b2c6781c35dd48d54f81fc2299d7af"
+ },
+ "metis_reserve": {
+  "aToken_totalSupply_raw": "26528057591889373595056",
+  "aToken_actual_underlying_raw": "26448834076746246245959",
+  "pool_virtual_underlying_raw": "26448834047737145969705",
+  "vDebt_totalSupply_raw": "79035015032485908383",
+  "stable_debt_total": "0",
+  "deficit_raw": "216680562557106426",
+  "accruedToTreasury_raw": "9342789809185289",
+  "liquidityIndex_ray": "1006644315928683814051784630",
+  "variableBorrowIndex_ray": "1047922225816859130077493933",
+  "currentLiquidityRate_ray": "1503319675523779444402",
+  "currentVariableBorrowRate_ray": "50463408329202442865335278",
+  "lastUpdateTimestamp": 1791035563,
+  "lastUpdate_utc": "2026-10-03T13:52:43Z"
+ },
+ "atoken_holders": {
+  "blockscout_claimed_holders": 26268,
+  "fetched_top_by_value": 4050,
+  "onchain_verified_addresses": 4050,
+  "onchain_nonzero": 3907,
+  "onchain_zero_stale": 143,
+  "onchain_verified_sum_raw": "26446183222562600878652",
+  "onchain_verified_sum_metis": "26446.183222562600878652",
+  "pct_of_total_supply": "99.69%",
+  "blockscout_value_sum_metis": "27096.890157 (stale/inconsistent vs on-chain; not used)",
+  "top20_onchain": [
+   {
+    "addr": "0xA4C39Bc895E380e0B54f9b1c952c3bC151cf6FB2",
+    "balance": "4577173943612077161473",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x76c359E869494d2d92C2bb3178FF44e82e1ed56C",
+    "balance": "3656158340951764829878",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x5E308FB8A5eb8Fca2866D2B49154B849b274d914",
+    "balance": "1433216428873309728861",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x1Fd2978aC57fB2f459EF1AB7812b58f29aB437BA",
+    "balance": "1299764375460156732861",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x53f5a824CFFD118C0eE2b9ee74462fBf210B91ce",
+    "balance": "852597273369337075680",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x940EC1a9BaB489eEBbb941de5E6432Cea86d0DEF",
+    "balance": "805128943110009765912",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x4A79f354dBC45e90E517C1b9B190ef1f519A59bD",
+    "balance": "744417443580310440083",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x6361c3A0B9Fa229a3C307339ac5dc06151D4E514",
+    "balance": "667964949485842082408",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0xB5b64c7E00374e766272f8B442Cd261412D4b118",
+    "balance": "548714570554189980421",
+    "bs_is_contract": true
+   },
+   {
+    "addr": "0x1c387F940e830670e503196d990c8A72A3BAE50c",
+    "balance": "503226620898849821325",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x974aE2A04a2e669213eBE9C3f9F2EC0b8265CffD",
+    "balance": "503226655564851768880",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0xB6bf3F734d68dd6e9c03A15Ce290bB1CBE90c305",
+    "balance": "481788557510294048316",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0xE1d32AF0e10352f54A98eb39f1ecc679976Bf881",
+    "balance": "387202016569660010442",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x7348cF3b616DcB0B3eed1B64dE32a589CDE02cdb",
+    "balance": "379430952830841901002",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x2469DB7190615D335ee64e9D87C700E84D070f60",
+    "balance": "336730071929642124212",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0xddC60454e6965ccdAd192abaa459B8FF4f0b5aFc",
+    "balance": "312036012487896006257",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x9D0E80709088A7E34cbFC5208B7a8A3cddDbBc72",
+    "balance": "286846754900269775141",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0xBCbcB3A97E72fDfd684b65eA827E63B51dAAeb8f",
+    "balance": "215176475730307341248",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x69E6717964273A4b031242BfcC904469ED7171dd",
+    "balance": "211435237023383861659",
+    "bs_is_contract": false
+   },
+   {
+    "addr": "0x0A72431a12A5e72974735420D50175C9D77D629F",
+    "balance": "172249455118168306209",
+    "bs_is_contract": false
+   }
+  ],
+  "top1_metis": "4577.173943612077161473",
+  "top10_metis": "15088.362889895847618902",
+  "top10_pct": "56.88%",
+  "contract_holders_in_top_list": [
+   {
+    "addr": "0xB5b64c7E00374e766272f8B442Cd261412D4b118",
+    "balance_metis": "548.714570438941364381",
+    "identity": "Aave Collector (RESERVE_TREASURY_ADDRESS of aToken)"
+   }
+  ],
+  "tail_bound": "last fetched page values ~0.075-0.076 METIS (Blockscout value-sorted); remaining ~81.87 aTokens spread over ~22k dust addresses"
+ },
+ "borrowers": {
+  "debt_token_addresses": 83,
+  "onchain_nonzero": 77,
+  "onchain_sum_metis": "79.035015032485908424",
+  "contracts": 0,
+  "min_health_factor": "1.4500249097265923",
+  "min_hf_address": "0x887b8f7168f232d4424F9a28CC8158C30cB6f9c2",
+  "count_hf_below_1": 0,
+  "zero_collateral_with_debt": [],
+  "top": [
+   {
+    "addr": "0x24a30823bd87E785B0c4B3803a2bffD91eb6876F",
+    "vdebt_metis": "53.742939912414548001",
+    "healthFactor": "1965117347766053139",
+    "collateral_usd_1e8": "42855236889",
+    "debt_usd_1e8": "18100622163",
+    "collateral_positions": {
+     "METIS": {
+      "v": 53742939912414548001
+     },
+     "WETH": {
+      "a": 159206233004175760
+     }
+    },
+    "liq_price_metis_usd": "6.6185",
+    "upside_to_liquidation_pct": "96.51%"
+   },
+   {
+    "addr": "0xf175846de880d076204156997f30E2BA24247890",
+    "vdebt_metis": "13.849870316798243978",
+    "healthFactor": "1671399843691522872",
+    "collateral_usd_1e8": "9995477463",
+    "debt_usd_1e8": "4664636323",
+    "collateral_positions": {
+     "METIS": {
+      "v": 13849870316798243978
+     },
+     "mUSDT": {
+      "a": 99970435
+     }
+    },
+    "liq_price_metis_usd": "6.6185",
+    "upside_to_liquidation_pct": "96.51%"
+   },
+   {
+    "addr": "0x6591C5468DF6C039601B10F1434115266d4b785b",
+    "vdebt_metis": "8.291855005395794997",
+    "healthFactor": "49289869964253039851",
+    "collateral_usd_1e8": "165845374031",
+    "debt_usd_1e8": "2792696766",
+    "collateral_positions": {
+     "METIS": {
+      "v": 8291855005395794997
+     },
+     "mUSDC": {
+      "a": 849731951
+     },
+     "WETH": {
+      "a": 300444623858983655
+     }
+    },
+    "liq_price_metis_usd": "6.6185",
+    "upside_to_liquidation_pct": "96.51%"
+   },
+   {
+    "addr": "0x984f930dc6070C9011093A1289073cC4904F48D7",
+    "vdebt_metis": "0.66208527316082335",
+    "healthFactor": "30272717569432083108",
+    "collateral_usd_1e8": "8516197540",
+    "debt_usd_1e8": "222990321",
+    "collateral_positions": {
+     "METIS": {
+      "a": 543373951770548141,
+      "v": 662085273160823350
+     },
+     "mUSDC": {
+      "a": 21578217
+     },
+     "mUSDT": {
+      "a": 63594152
+     }
+    },
+    "liq_price_metis_usd": "6.6185",
+    "upside_to_liquidation_pct": "96.51%"
+   },
+   {
+    "addr": "0x11A49404B74AE8Dd718E339bcF2d152b71e08FF2",
+    "vdebt_metis": "0.364930447689538885",
+    "healthFactor": "2158652775810467095",
+    "collateral_usd_1e8": "4718514962",
+    "debt_usd_1e8": "1814264648",
+    "collateral_positions": {
+     "METIS": {
+      "a": 697447483729501414,
+      "v": 364930447689538885
+     },
+     "mUSDC": {
+      "a": 32881847,
+      "v": 16913899
+     },
+     "WETH": {
+      "a": 5313888793281719
+     }
+    },
+    "liq_price_metis_usd": "6.6185",
+    "upside_to_liquidation_pct": "96.51%"
+   }
+  ],
+  "theoretical_liq_bonus_pool_metis": "7.9035 (10% of 79.035 total debt; NOT currently liquidatable)"
+ },
+ "gating_simulations": {
+  "withdraw_4575_metis_from_top_holder": "SUCCESS (returns 4575098972608146854185)",
+  "withdraw_without_balance": "REVERT 0x47bc4b2c NotEnoughAvailableUserBalance()",
+  "supply_1_metis": "REVERT 0x6d305815 ReserveFrozen()",
+  "borrow_0.001_metis": "REVERT 0x6d305815 ReserveFrozen()",
+  "supply_1_musdc": "REVERT 0x6d305815 ReserveFrozen()",
+  "flashLoanSimple_100_metis": "validation passes (bit63=1), reverts at receiver callback (empty data, EOA receiver has no executeOperation) -> flash loans ENABLED",
+  "pool_paused_getter": "does not exist in POOL_REVISION=10; pause is per-reserve (bit60); all 5 reserves paused=0",
+  "configurator_setPoolPause": "exists; implemented as loop of setReservePause(asset,bool) over reserves; onlyEmergencyOrPoolAdmin"
+ },
+ "reserve_config_bit_layout": "v3.5 (aave-v3-origin): bit56 active, 57 frozen, 58 borrowing, 59 deprecated stable, 60 paused, 61 borrowable-in-isolation, 62 siloed, 63 flashloan-enabled, 64-79 reserveFactor, 80-115 borrowCap, 116-151 supplyCap, 152-167 liqProtocolFee, 212-251 debtCeiling",
+ "governance_timeline": [
+  {
+   "block": 5592243,
+   "utc": "2023-05-08T14:04:06Z",
+   "event": "METIS reserve initialized on Aave V3 Metis"
+  },
+  {
+   "block": 21634800,
+   "utc": "2025-11-15T14:24:12Z",
+   "event": "CollateralConfigurationChanged METIS: LTV->0, liqThreshold=4000, liqBonus=11000"
+  },
+  {
+   "block": 21940090,
+   "utc": "2026-01-09T10:54:08Z",
+   "event": "Pool impl upgraded to L2PoolInstance 0x56b814e2... (revision 10, deficit/virtual accounting); aToken+vDebt upgraded"
+  },
+  {
+   "block": 22152008,
+   "utc": "2026-02-11T15:57:57Z",
+   "event": "METIS supply cap 600,000 -> 80,000"
+  },
+  {
+   "block": 22279254,
+   "utc": "2026-03-03T12:07:08Z",
+   "event": "METIS ReserveFrozen(true) (pre-ARFC risk action; WETH etc. also frozen)"
+  },
+  {
+   "date": "2026-07-29",
+   "event": "ARFC 'Low Adoption Asset Deprecation on Aave V3' (LlamaRisk): whole-market Metis deprecation (freeze, caps->1, RF->99%, IRM base 5%)"
+  },
+  {
+   "date": "2026-08-12",
+   "event": "ARFC Snapshot vote"
+  },
+  {
+   "date": "2026-09-16",
+   "event": "AIP #521 created"
+  },
+  {
+   "block": 23173987,
+   "utc": "2026-09-20T15:06:55Z",
+   "event": "AIP #521 executed: all 5 Metis reserves caps->1, RF->99%, IRM base rate 5%"
+  }
+ ],
+ "activity": {
+  "last_atoken_transfer": "2026-10-03T13:52:43Z (burn 17.0 METIS -> withdrawal)",
+  "last_vdebt_transfer": "2026-08-17T12:16:52Z (repayment by 0x24a3... 6.098 METIS)",
+  "withdrawals_ongoing": "daily-ish aToken burns Sept-Oct 2026",
+  "top_holder_history": "0xA4C3... acquired 4,518.6371 (2024-02-16) + 29.2163 (2024-04-08); only 5 lifetime txs; no label",
+  "top_borrower_history": "0x24a3... first METIS borrow 2024-10-21 (53 METIS); monthly partial repayments through 2026-08-17; collateral 0.1592 WETH"
+ },
+ "usd_valuations": {
+  "oracle_metis_usd": "3.368",
+  "assumption_metis_usd": "10",
+  "metis_supply": {
+   "metis": "26528.057591889373595056",
+   "usd_oracle": "89346.50",
+   "usd_10": "265280.58"
+  },
+  "metis_withdrawable_now": {
+   "metis": "26448.834047737145969705 (pool virtual; token balance 26448.834076746246245959)",
+   "usd_oracle": "89079.67",
+   "usd_10": "264488.34"
+  },
+  "metis_unwithdrawable_until_repay": {
+   "metis": "79.223515143127349097",
+   "usd_oracle": "266.82",
+   "usd_10": "792.24"
+  },
+  "metis_reserve_deficit": {
+   "metis": "0.216680562557106426",
+   "usd_oracle": "0.73",
+   "usd_10": "2.17"
+  },
+  "aave_collector_amet": {
+   "metis": "548.714570438941364381",
+   "usd_oracle": "1848.07",
+   "usd_10": "5487.15"
+  },
+  "top_holder_amet": {
+   "metis": "4577.173943612077161473",
+   "usd_oracle": "15408.93",
+   "usd_10": "45750.99"
+  },
+  "total_market_supply_usd_oracle": "308958.92"
+ },
+ "classification": {
+  "verdict": "H-O (holders-only self-service exit; no unprivileged extraction)",
+  "e_u_max_extractable_usd": "0.00",
+  "p_notes": "Standard Aave governance powers only (PoolAdmin/Configurator, Umbrella-only eliminateReserveDeficit, oracle deprecation planned). No privileged drain path identified.",
+  "confidence": "0.9 (high) for no-E-U at block 23238719; caveats: single-block snapshot, read-only simulations, future price moves/governance can change liquidation landscape"
+ }
+}

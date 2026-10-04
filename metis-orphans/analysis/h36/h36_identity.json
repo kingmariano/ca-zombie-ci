@@ -1,0 +1,57 @@
+{
+ "chain": "Metis Andromeda (1088)",
+ "addresses": {
+  "vault_0x17A30350771d02409046A683b18Fe1C13cCFC4A8": {
+   "what": "ERC1967Proxy 'Vault' holding 68,713.855 METIS",
+   "created": "2024-03-21 by 0xb17575853C04cb44f86B996c39E50A65180EB017 at nonce 2 (CREATE verified by cast compute-address)",
+   "cross_chain": "same address tagged 'KuCoin 29/40' (hildobby CEX list) and listed in KuCoin Proof-of-Reserves on Avalanche C-Chain; on Avalanche the address is an ERC1967Proxy with impl 0x78ca07D0... ('Vault') also created by 0xb1757585",
+   "metis_explorer_tag": "none"
+  },
+  "impl_0xd62dEdee92074458B1C31133E6601CB6b87E844B": {
+   "what": "'Vault' implementation (OZ UUPS/AccessControlEnumerable/Ownable/ERC721Holder, solc 0.8.9, verified)",
+   "created": "2023-06-29 by 0x720d5253495EBe64D08A6aa41e0d59D5E2eC2D0F",
+   "creator_tag": "'KuCoin: Hot Wallet Vault 15' (Metisscan/routescan)"
+  },
+  "owner_0x52c904aBC83fD537a508F56Fc6F3D723fF5403e1": {
+   "what": "owner(), DEFAULT_ADMIN_ROLE, PAYER_ROLE, and one of 6 signers of the PAYER Safe",
+   "type": "EOA",
+   "labels": "none public"
+  },
+  "payer_safe_0x96ED493C74e23e4FAAd2409e59eD2eC8f64E52": {
+   "what": "3-of-6 Gnosis Safe L2 v1.3.0, PAYER_ROLE; executed 16 txs (multsig-approved payouts)",
+   "modules": "[]",
+   "guard": "0",
+   "fallback_handler": "0",
+   "nonce": 16
+  },
+  "main_counterparty_0xC519c75cF9DE75311E6797cB3a3c641a01bdB1d5": {
+   "what": "PAYEE_ROLE; source of 75,173.09 of 75,173.29 METIS deposits; recipient of 6,459.425 of 6,459.435 METIS payouts; 60,610 lifetime txs; receives from KuCoin hot wallets per routescan labels; active 2026-10-04",
+   "type": "EOA",
+   "labels": "none local"
+  },
+  "deployer_0xb17575853C04cb44f86B996c39E50A65180EB017": {
+   "what": "deployed Vault proxy + two sibling proxies (nonce 0,1,2) 2024-03-21; granted all roles; transferred ownership to 0x52c9...; revoked own admin; sent 0.0246 METIS to 0x52c9",
+   "type": "EOA",
+   "cross_chain": "active deployer on 10+ chains (Base/Avalanche/Sonic/BSC/Polygon/Celo/Moonriver)"
+  },
+  "other_parties": {
+   "0xd534b9530425E9F32b7281f4FfCcA97203A182aD": "DEFAULT_ADMIN_ROLE EOA + Safe signer",
+   "0xD6216fC19DB775Df9774a6E33526131dA7D19a2c": "PAYEE_ROLE EOA",
+   "0xE7f7F1e591c198A394335A4905D931457Faf9332": "PAYEE_ROLE EOA; deposited 0.2 METIS in 2024-03",
+   "sibling_vaults": "0x78ca07D08a80F3f19C8F664DB3D497da2aca4cB7 and 0x3D0362fD02e0f5427D2ea3E937020A8005f3bf16 (same impl, owner=0xb1757585, 0 balance)"
+  }
+ },
+ "assessment": {
+  "attribution": "KuCoin hot-wallet vault infrastructure on Metis (high confidence: exploiter-deployer tag 'KuCoin: Hot Wallet Vault 15', hildobby KuCoin tags on same address across chains, KuCoin Proof-of-Reserves listing on Avalanche)",
+  "not_orphan": "actively operated; last payout 2026-08-11; state unchanged as of 2026-10-04",
+  "confidence": "0.85 attribution; 0.97 no-unprivileged-path"
+ },
+ "sources": [
+  "https://metisscan.info/address/0x720d5253495EBe64D08A6aa41e0d59D5E2eC2D0F (tag: KuCoin: Hot Wallet Vault 15)",
+  "https://gist.github.com/xfwil/07dadf39ae559829132952734ca524f3 (KuCoin list incl. 0x17a303...)",
+  "https://assets.staticimg.com/cms/media/... KuCoin Proof of Reserves PDF (lists 0x17a303... on Avalanche C-Chain)",
+  "https://andromeda-explorer.metis.io (Blockscout data: txs, logs, tokens, counters)",
+  "https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan/api?module=contract&action=getcontractcreation&contractaddresses=0x17a303... (creator 0xb1757585)",
+  "https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan/api?module=contract&action=getsourcecode&address=0x78ca07... (ContractName Vault)"
+ ]
+}

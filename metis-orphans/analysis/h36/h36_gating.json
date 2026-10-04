@@ -1,0 +1,176 @@
+{
+ "block": 23238718,
+ "method": "eth_call simulation only; no transactions signed or sent",
+ "caller_default": "0x1111111111111111111111111111111111111111",
+ "results": [
+  {
+   "vector": "re-initialize",
+   "call": "initialize()",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "Initializable: contract is already initialized",
+   "storage_proof": "slot0=0x01 (_initialized=1)"
+  },
+  {
+   "vector": "upgradeTo",
+   "call": "upgradeTo(0x3333...)",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "Ownable: caller is not the owner"
+  },
+  {
+   "vector": "upgradeToAndCall",
+   "call": "upgradeToAndCall(0x3333...,0x)",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "Ownable: caller is not the owner"
+  },
+  {
+   "vector": "direct-impl-upgradeTo",
+   "call": "upgradeTo(0x3333...) on impl 0xd62d...",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "Function must be called through delegatecall (onlyProxy)"
+  },
+  {
+   "vector": "direct-impl-initialize",
+   "call": "initialize() on impl 0xd62d...",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "Initializable: contract is already initialized (impl locked by constructor initializer; impl slot0=0x01, impl owner=0x0)"
+  },
+  {
+   "vector": "unknown-selector",
+   "call": "0xdeadbeef on proxy",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "empty revert (impl has no fallback; no arbitrary delegatecall)"
+  },
+  {
+   "vector": "value-transfer-ether",
+   "call": "transferEther(0x2222...,1)",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "AccessControl: account is missing role PAYER_ROLE 0x8ec0..."
+  },
+  {
+   "vector": "batch-value-transfer-ether",
+   "call": "batchTransferEther([0x2222...],[1])",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "missing PAYER_ROLE"
+  },
+  {
+   "vector": "value-transfer-erc20",
+   "call": "transferErc20(token,0x2222...,1)",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "missing PAYER_ROLE"
+  },
+  {
+   "vector": "batch-value-transfer-erc20",
+   "call": "batchTransferErc20([t],[p],[1])",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "missing PAYER_ROLE"
+  },
+  {
+   "vector": "value-transfer-erc721",
+   "call": "transferErc721(token,0x2222...,1)",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "missing PAYER_ROLE"
+  },
+  {
+   "vector": "batch-value-transfer-erc721",
+   "call": "batchTransferErc721([t],[p],[1])",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "missing PAYER_ROLE"
+  },
+  {
+   "vector": "role-admin-grant",
+   "call": "grantRole(PAYER_ROLE,0x1111...)",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "missing DEFAULT_ADMIN_ROLE 0x00"
+  },
+  {
+   "vector": "role-admin-grant-admin",
+   "call": "grantRole(DEFAULT_ADMIN_ROLE,0x1111...)",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "missing DEFAULT_ADMIN_ROLE 0x00"
+  },
+  {
+   "vector": "revoke-other-role",
+   "call": "revokeRole(PAYER_ROLE,owner)",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "missing DEFAULT_ADMIN_ROLE 0x00"
+  },
+  {
+   "vector": "renounce-other-role",
+   "call": "renounceRole(PAYER_ROLE,owner)",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "AccessControl: can only renounce roles for self"
+  },
+  {
+   "vector": "renounce-own-role-noop",
+   "call": "renounceRole(PAYER_ROLE,0x1111...)",
+   "from": "0x1111...",
+   "result": "PASS(no-op)",
+   "reason": "caller holds no role; OZ _revokeRole no-ops when hasRole=false"
+  },
+  {
+   "vector": "renounceOwnership",
+   "call": "renounceOwnership()",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "Ownable: caller is not the owner"
+  },
+  {
+   "vector": "payee-gate",
+   "call": "transferEther(0x2222...,1)",
+   "from": "PAYER_EOA 0x52c9...",
+   "result": "REVERT",
+   "reason": "AccessControl: account 0x2222... is missing role PAYEE_ROLE 0x95ed..."
+  },
+  {
+   "vector": "positive-control-payer-eoa",
+   "call": "transferEther(PAYEE1,1)",
+   "from": "PAYER_EOA 0x52c9...",
+   "result": "PASS(sim)",
+   "reason": "PAYER{0x52c9}=true and PAYEE{0xD621}=true"
+  },
+  {
+   "vector": "positive-control-payer-safe",
+   "call": "transferEther(PAYEE1,1)",
+   "from": "PAYER_SAFE 0x96ED...",
+   "result": "PASS(sim)",
+   "reason": "PAYER{0x96ED}=true and PAYEE{0xD621}=true"
+  },
+  {
+   "vector": "non-abi-setApprovalForAll",
+   "call": "setApprovalForAll(0x1111...,true)",
+   "from": "0x1111...",
+   "result": "REVERT",
+   "reason": "empty revert; function not in ABI, no fallback"
+  },
+  {
+   "vector": "erc721-receiver-hook",
+   "call": "onERC721Received(0x1111...,0x1111...,0,0x)",
+   "from": "0x1111...",
+   "result": "PASS",
+   "reason": "returns 0x150b7a02 selector; no state change, no value"
+  },
+  {
+   "vector": "proxiableUUID-via-proxy",
+   "call": "proxiableUUID() on proxy",
+   "from": "any",
+   "result": "REVERT",
+   "reason": "UUPSUpgradeable: must not be called through delegatecall (OZ notDelegated)"
+  }
+ ]
+}

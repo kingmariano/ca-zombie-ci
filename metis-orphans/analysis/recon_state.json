@@ -1,0 +1,82 @@
+{
+  "campaign": "zombie-hunt",
+  "finding_set": "H-35..H-41 (Metis orphans)",
+  "chain": "metis-andromeda",
+  "chain_id": 1088,
+  "recon_block": 23238690,
+  "rpc": "https://andromeda.metis.io/?owner=1088",
+  "metis_price_usd": 3.3761506289891425,
+  "price_source": "DefiLlama coins.llama.fi (timestamp 1791091310)",
+  "targets": {
+    "H-35": {
+      "address": "0xdd7c49D1bA862b1285710A30E20C2438b13AE532",
+      "type": "GnosisSafeProxy (GnosisSafeL2 v1.3.0)",
+      "singleton_slot0": "0xfb1bffc9d739b8d520daf37df666da4c687191ea",
+      "threshold": 4,
+      "owners_count": 6,
+      "owners": [
+        "0xFA30D7D32288C2F27cD5a099dB7507B085b36071",
+        "0x0be0515B5369952e4536E0ed2c8133C7F40a0C96",
+        "0xb41b842AA0f803eA815eE9A4EEF956ddF8745a66",
+        "0x02836327aCE76966d0c062A8A25bCBB04e1A0BaB",
+        "0xAdabeccd521dAcE92c85Be0265b84Ca577937882",
+        "0x923170a08b58b18B119e4972DE8d5710b65D1a30"
+      ],
+      "modules": [],
+      "nonce": 17,
+      "fallback_handler_slot": "0x017062a1de2fe6b99be3d9d37841fed19f573804",
+      "balance_wei": "1847552364000000000000000",
+      "sibling_safe": {
+        "address": "0xeA0f824CbA2A003d599186DA41A8842E2C4Bd964",
+        "threshold": 4,
+        "owners_count": 7,
+        "balance_wei": "16025500000000000000000",
+        "note": "6 of 7 owners overlap H-35 Safe; same signer cluster"
+      }
+    },
+    "H-36": {
+      "address": "0x17A30350771d02409046A683b18Fe1C13cCFC4A8",
+      "type": "ERC1967Proxy -> Vault (UUPS)",
+      "impl": "0xd62dEdee92074458B1C31133E6601CB6b87e844B",
+      "owner": "0x52c904aBC83fD537a508F56Fc6F3D723fF5403e1",
+      "balance_wei": "68713855000000000000000",
+      "sibling_vault": {
+        "address": "0xb8e6D31e7B212b2b7250EE9c26C56cEBBFBe6B23",
+        "impl": "0xd62dEdee92074458B1C31133E6601CB6b87e844B",
+        "owner": "0xc5588FA286291c523d8fA8A30D239Aabf770dEd2",
+        "balance_wei": "35193875000000000000000"
+      }
+    },
+    "H-37": {
+      "address": "0x7077f35063f17EE1B84678334d261Ccf47980271",
+      "type": "Mining (MasterChef-style, solc 0.6.12, partially verified)",
+      "balance_wei": "13217961828430000000000",
+      "paused": true,
+      "owner": "0x855E37b6068a44BdAb574c86C1817a374623225E",
+      "poolLength": 2
+    },
+    "H-38": {
+      "factory": "0x70f51d68D16e8f9e418441280342BD43AC9Dff9f",
+      "feeTo": "0x4a642be622EBa7C40eFC06A8f8E1B3278b1fce4E",
+      "feeRate": 3,
+      "pairs": {
+        "A": {"address": "0x3D60aFEcf67e6ba950b499137A72478B2CA7c5A1", "pair": "m.USDT/METIS", "reserve0": "118441267425", "reserve1": "35117222266332723317158", "lp_totalSupply": "31909024818890984"},
+        "B": {"address": "0x59051B5F5172b69E66869048Dc69D35dB0B3610d", "pair": "WETH/METIS", "reserve0": "31651671021344017133", "reserve1": "25290279438587982530055", "lp_totalSupply": "589448711639365428610"},
+        "C": {"address": "0x5Ae3ee7fBB3Cb28C17e7ADc3a6Ae605ae2465091", "pair": "METIS/m.USDC", "reserve0": "22627157495065252967271", "reserve1": "77953153200", "lp_totalSupply": "19059985164448982"},
+        "D": {"address": "0x9dAbD9257E55230Fa17415BF9a6946085f533a00", "pair": "BANG/METIS", "reserve0": "181541968405164800717774060", "reserve1": "10212954057573204052587", "lp_totalSupply": "1146517186336354107411497"}
+      },
+      "notes": "balances == reserves on both sides for all pairs; pair self-LP = 0; standard Uniswap-v2 NetswapPair code with lock"
+    },
+    "H-41": {
+      "address": "0x7314Ef2CA509490f65F52CC8FC9E0675C66390b8",
+      "type": "Aave V3 aToken aMetMETIS (ATokenInstance proxy)",
+      "impl": "0x9ec6457cd8953ac68b5bd612fc64bf8d50df3140",
+      "underlying": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000 (METIS)",
+      "pool": "0x90df02551bB792286e8D4f13E0e357b4Bf1D6a57",
+      "atoken_totalSupply": "26528057590608342621395",
+      "atoken_metis_balance": "26448834076746246245959",
+      "variable_debt_totalSupply": "79034953567807543199",
+      "reserve_config": {"LTV": 0, "liqThreshold": 4000, "liqBonus": 11000, "isActive": 1, "isFrozen": 1, "borrowingEnabled": 1, "flashLoanEnabled": 0, "reserveFactor": 9900, "borrowCap": 1, "supplyCap": 1, "liquidationProtocolFee": 1000}
+    }
+  }
+}

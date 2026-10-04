@@ -1,0 +1,90 @@
+{
+ "block": 23238718,
+ "proxy": "0x17A30350771d02409046A683b18Fe1C13cCFC4A8",
+ "role_hashes": {
+  "DEFAULT_ADMIN_ROLE": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "PAYER_ROLE": "0x8ec07e268e32cae7f300b49ad34f20106d088445cb9d9b2d62cbd864638308b2",
+  "PAYEE_ROLE": "0x95ed160efa56927d40641b26c79df8395a2e4f8f170168fedfa462234b4c3a46"
+ },
+ "role_admins": {
+  "DEFAULT_ADMIN_ROLE": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "PAYER_ROLE": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "PAYEE_ROLE": "0x0000000000000000000000000000000000000000000000000000000000000000"
+ },
+ "roles": {
+  "DEFAULT_ADMIN_ROLE": {
+   "count": 2,
+   "members": [
+    {
+     "address": "0xd534b9530425E9F32b7281f4FfCcA97203A182aD",
+     "codesize": 0,
+     "type": "EOA"
+    },
+    {
+     "address": "0x52c904aBC83fD537a508F56Fc6F3D723fF5403e1",
+     "codesize": 0,
+     "type": "EOA",
+     "notes": "also owner(), also PAYER_ROLE, also signer of PAYER Safe"
+    }
+   ]
+  },
+  "PAYER_ROLE": {
+   "count": 2,
+   "members": [
+    {
+     "address": "0x96ED493C74e23e4FAAd2409e59eD2d4eC8f64E52",
+     "codesize": 124,
+     "type": "contract",
+     "contract": "GnosisSafeProxy (Gnosis Safe L2 v1.3.0)",
+     "threshold": 3,
+     "owners": [
+      "0x1caEB632a97F50dE9F156edD5100b3828f67b654",
+      "0xad60Ab0296f2b4B2165CCeFb664d3812d861cBE5",
+      "0xddFC422fb1bBDE85c8e4Af82b057cad66BBb603B",
+      "0x52c904aBC83fD537a508F56Fc6F3D723fF5403e1",
+      "0xd534b9530425E9F32b7281f4FfCcA97203A182aD",
+      "0xf636bDE8d51221e2a83a8C30329C296F80BdDFE7"
+     ],
+     "modules": [],
+     "guard_slot_zero": true,
+     "fallback_handler_slot_zero": true,
+     "singleton": "0xf66F5d84c6e094b57eFAa3D264f9C38E32fc9CD4",
+     "nonce": 16
+    },
+    {
+     "address": "0x52c904aBC83fD537a508F56Fc6F3D723fF5403e1",
+     "codesize": 0,
+     "type": "EOA"
+    }
+   ]
+  },
+  "PAYEE_ROLE": {
+   "count": 3,
+   "members": [
+    {
+     "address": "0xD6216fC19DB775Df9774a6E33526131dA7D19a2c",
+     "codesize": 0,
+     "type": "EOA"
+    },
+    {
+     "address": "0xC519c75cF9DE75311E6797cB3a3c641a01bdB1d5",
+     "codesize": 0,
+     "type": "EOA",
+     "notes": "main depositor + payout recipient; 60610 lifetime txs; active 2026-10-04"
+    },
+    {
+     "address": "0xE7f7F1e591c198A394335A4905D931457Faf9332",
+     "codesize": 0,
+     "type": "EOA"
+    }
+   ]
+  }
+ },
+ "owner": {
+  "address": "0x52c904aBC83fD537a508F56Fc6F3D723fF5403e1",
+  "codesize": 0,
+  "type": "EOA",
+  "storage_slot": "0x97"
+ },
+ "payment_operator_note": "All 15 payouts so far used the Safe (except the 2024-03-23 transferEther by the owner EOA); Safe executors observed: 0x857Dc443dF04dc6058B035e002225Da6e7a4aB6d (2024), 0xf636bDE8d51221e2a83a8C30329C296F80BdDFE7 (Dec 2024), 0xddFC422fb1bBDE85c8e4Af82b057cad66BBb603B (2025-2026)."
+}
