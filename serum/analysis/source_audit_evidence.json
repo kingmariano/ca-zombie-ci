@@ -1,0 +1,87 @@
+{
+  "audit": "H-22 Serum/OpenBook v1 independent source audit (read-only)",
+  "date": "2026-10-04",
+  "programs": {
+    "openbook_v1": {
+      "address": "srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX",
+      "owner": "BPFLoaderUpgradeab1e11111111111111111111111",
+      "programdata": "9K32VSPTg4PHY7Hb2QZq26e5CujwMgt8Bqq4kJrp5zp8",
+      "programdata_len": 468941,
+      "deploy_slot": 168006653,
+      "upgrade_authority": "8xYs2tGXPayMtgsqs4NuMy7bnWr7DM9tnnkbY2SHVbys",
+      "upgrade_authority_owner": "GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw",
+      "upgrade_authority_is_pda": true,
+      "embedded_security_txt": {
+        "source_revision": "546e5fe0f366ce7414424eaf5a481a917b8b5210",
+        "source_release": "v0.5.10"
+      },
+      "fee_sweeper": "GTgd6NaobHDLSFAh2kG5DTNsL4SBJH42Qq11jpjWCfXA",
+      "disable_authority": "GTgd6NaobHDLSFAh2kG5DTNsL4SBJH42Qq11jpjWCfXA",
+      "authority_on_curve": false,
+      "authority_type": "SPL Governance native treasury PDA of realm 'Serum Community Fork'",
+      "authority_creation_tx_oldest_sig": "52DriC7czkCuvHtPVPHdhUe9wBoEvvYiyFx18xx1ZkKyFbE1Ba7b1CcqBSWNcgzePXDeE6CjS7DtLbfa2DwYmYRd",
+      "authority_creation_logs_excerpt": [
+        "Program GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw invoke [1]",
+        "Program log: VERSION:\"2.2.5\"",
+        "Program log: GOVERNANCE-INSTRUCTION: CreateRealm { name: \"Serum Community Fork\", config_args: RealmConfigArgs { use_council_mint: true, min_community_weight_to_create_governance: 18446744073709551615, community_mint_max_vote_weight_source: SupplyFraction(10000000000), ... } }",
+        "Program 11111111111111111111111111111111 invoke [2]"
+      ],
+      "authority_lifetime_mentions": [
+        {"slot": 250671585, "time": 1708992626},
+        {"slot": 171925423, "time": 1673436319},
+        {"slot": 160701444, "time": 1668290354},
+        {"slot": 160701420, "time": 1668290343},
+        {"slot": 160667156, "time": 1668273417}
+      ]
+    },
+    "serum_v3": {
+      "address": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+      "programdata": "DTxcpNApaMLNfYgwQ99PmpCm8rjS7o1q2YdfzYsrYohB",
+      "deploy_slot": 146728883,
+      "deploy_date_approx": "2022-08-19 (matches commit 737c4ba)",
+      "upgrade_authority": "6XvcBmETaz5ZNRhwiz1ochXitHG771d6rmK4Ug3NVr1g",
+      "upgrade_authority_on_curve": true,
+      "fee_sweeper": "DeqYsmBd9BnrbgUwQjVH4sQWK71dEgE6eoZFw3Rp4ftE",
+      "fee_sweeper_account_exists": false,
+      "disable_authority": "5ZVJgwWxMsqXxRMYHXqMwH2hd4myX5Ef4Au2iUsuNQ7V",
+      "disable_authority_lamports": 194422050,
+      "send_take_present_in_binary": false,
+      "embedded_keys_verified": {"DeqYsm...": 1, "5ZVJgw...": 1, "GTgd...": 0}
+    }
+  },
+  "onchain_counts_openbook_slot_453191278": {
+    "markets_flags_3_v1_active": 727164,
+    "markets_flags_131_v1_disabled": 0,
+    "markets_flags_515_v2_active": 0,
+    "markets_flags_643_v2_disabled": 0,
+    "openorders_flags_5_initialized": 802133,
+    "openorders_flags_261_closed": 0,
+    "openorders_flags_0_zeroed_funded": 0
+  },
+  "overflow_checks": {
+    "deployed_binary_has_attempt_to_add_subtract_multiply_with_overflow_strings": false,
+    "deployed_binary_has_index_out_of_bounds_string": true,
+    "conclusion": "overflow checks disabled; all unchecked-arithmetic sites audited bounded or non-security-relevant"
+  },
+  "historical_fee_mismatch_scar": {
+    "market": "DMLqLtQWshKAfDndddk82A8Dwr6K3yvY7S8F8wMS6WH8",
+    "referrer_rebates_accrued": 18446744073709551614,
+    "u64_interpretation": "-2 (wrap)",
+    "mechanism": "v0.5.9 event (referrer_rebate=fee/5 accrued at match) consumed/settled under v0.5.10 (fee/2 recomputed at consume); settle underflow",
+    "reproducible_today": false,
+    "unique_among_markets": true
+  },
+  "market_account_lamports_partial_scan": {
+    "unique_markets": 725260,
+    "lamports_total": 3001453913324,
+    "note": "market accounts only; excludes req/event queues, bids/asks, OpenOrders"
+  },
+  "verdict": {
+    "E-U": 0,
+    "H-O": "owner-recoverable OpenOrders free balances / rent in OpenOrders (not audited here; parent measured)",
+    "P": ["SweepFees", "DisableMarket", "program upgrade (SPL Governance gated)"],
+    "S": ["market/queue/bids/asks rent (no CloseMarket)", "market-level referrer_rebates leftovers", "Serum v3 fees unless old fee_sweeper key exists and funds the EOA"],
+    "latent_E_U": "zeroed funded OpenOrders init+close rent capture (0 live accounts)",
+    "jan_2023_rumor": "no public advisory/audit/fix found; closest documented event is the 2022-12-20 v0.5.10 deploy breaking Raydium's integration (fee/account semantics), not a program exploit"
+  }
+}

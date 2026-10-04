@@ -1,0 +1,19 @@
+{
+  Solana {
+    init: Instructions(
+      where: {Instruction: {Program: {Address: {is: "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"}}, Data: {startsWith: "0000000000"}}}
+      limit: {count: 3}
+    ) {
+      Block { Height Time }
+      Instruction { Data Accounts { Address } }
+      Transaction { Signature }
+    }
+    cnt: Instructions(
+      where: {Instruction: {Program: {Address: {is: "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"}}, Data: {is: "000e000000"}}}
+      limit: {count: 1}
+    ) {
+      count
+      Block { Height }
+    }
+  }
+}

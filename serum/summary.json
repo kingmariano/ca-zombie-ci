@@ -1,0 +1,58 @@
+{
+  "finding": "H-22",
+  "title": "Serum v3 + OpenBook v1 (Solana): zombie order-book vaults and ~673K SOL of permanently locked dead-market rent — no permissionless extraction path",
+  "chains": ["solana"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "medium",
+  "categories": {
+    "E-U": 0,
+    "H-O": 10778820.87,
+    "P": 2540221.78,
+    "S": 81380000.0
+  },
+  "latest_block": 453199799,
+  "block_numbers": {"solana_slot": 453199799},
+  "targets_checked": 727332,
+  "live_targets": 727332,
+  "closed_reasons": [
+    "settle_funds requires OpenOrders owner signature (openbook/serum state.rs load_orders_mut owner check)",
+    "close_open_orders is owner-only and requires zero balances; zeroed OpenOrders shells count = 0",
+    "sweep_fees/disable_market require hardcoded authority keys (SigningFeeSweeper / SigningDisableAuthority)",
+    "prune requires prune_authority which is None for all V1 markets (0 V2 markets exist)",
+    "no CloseMarket instruction in either program: market/bids/asks/event-queue/request-queue/vault rent is permanently locked",
+    "program upgrades gated: Serum v3 by FTX-era EOA, OpenBook v1 by dormant SPL-Governance DAO council (8/13 tokens, community mint supply 0)",
+    "no Jan-2023 OpenBook vulnerability exists; v1 frozen 2022-12, never audited, no advisories; OtterSec critical was v2 (fixed)"
+  ],
+  "poc": {
+    "tests_passed": 0,
+    "tests_total": 0,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37190513690"
+    ],
+    "note": "Solana target: gates proven by deployed-source audit + live account state (RPC); CI job re-verifies state into ci-out/state_check.json (exit=0). No tx simulation executed. Deployed ELF embeds source_revision 546e5fe = v0.5.10, so audited source == deployed bytecode."
+  },
+  "key_facts": [
+    "OpenBook v1 program srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX: last deploy slot 168,006,653 (2022-12-20), frozen repo v0.5.10; all 727,161 initialized markets enumerated (flags=3), 0 disabled, 0 permissioned V2",
+    "OpenBook zeroed OpenOrders shells (3228B, flags=0) = 0; zeroed market shells (388B, flags=0) = 23,418",
+    "OpenBook market rent sample n=40: avg 0.9252 SOL/market (median 0.2977, min 0.293, max 2.784) => ~672,800 SOL (~$81.4M at SOL $120.98) permanently locked; no close path",
+    "OpenBook deposits: 457 markets with any deposit; priced value ~$139,679 (USDC $134,073 dominant); DefiLlama state-based TVL $1,157,329 (upper bound)",
+    "OpenBook OpenOrders: 802,133 initialized (0 closed, 0 zeroed); owner-closable rent ~18,736 SOL (~$2.27M) if empty (H-O)",
+    "OpenBook fee_sweeper/disable authority GTgd6NaobHDLSFAh2kG5DTNsL4SBJH42Qq11jpjWCfXA is an off-curve PDA = SPL Governance native treasury of realm 'Serum Community Fork' (not an EOA); sweep requires an executed DAO proposal (P)",
+    "Deployed OpenBook ELF embeds security.txt source_revision 546e5fe / source_release v0.5.10 => audited repo tag equals deployed bytecode",
+    "Serum v3 program 9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin: last deploy slot 146,728,883 (2022-08-19); upgrade authority 6XvcBmETaz5ZNRhwiz1ochXitHG771d6rmK4Ug3NVr1g (system EOA, FTX-held per court docs)",
+    "Serum v3 registry 168 markets: deposits $8,372,541.87 (H-O), accrued fees $2,540,221.78 (P/S); DefiLlama full-set state TVL $17,131,473.29",
+    "Serum v3 SOL/USDC market 9wFFyRf... vaults hold 20,290.10016133 wSOL + 2,546,686.997865 USDC (spot-verified at slot 453,199,799)",
+    "Serum v3 fee_sweeper DeqYsmBd9BnrbgUwQjVH4sQWK71dEgE6eoZFw3Rp4ftE account does not exist on-chain; OpenBook fee_sweeper GTgd6NaobHDLSFAh2kG5DTNsL4SBJH42Qq11jpjWCfXA is an EOA with no signatures",
+    "OpenBook upgrade authority = ProgramGovernanceV2 in RealmV2 'Serum Community Fork' (BtD6wKia...): community mint supply 0, council mint J7jDKSPQ... supply 13, 60% threshold => 8/13 council tokens needed",
+    "DefiLlama adapter sums market-account deposits+fees fields, not vault balances; the $17.13M is state-based but the largest vault was verified real",
+    "The '500K-1M SOL locked' claim traces to one 2025 back-of-envelope estimate; measured estimate ~672,800 SOL is stuck, not extractable"
+  ],
+  "caveats": [
+    "OpenBook v1 is unaudited frozen code; residual unknown-bug risk is why confidence is medium not high",
+    "Serum v3 registry covers 168 markets; DefiLlama full set is larger (state TVL $17.13M), so H-O/P figures are conservative lower bounds",
+    "OpenBook $1.16M state TVL was not fully vault-verified; actual owner-claimable deposits priced at ~$139.7K",
+    "No tx simulation executed; gates proven from deployed source + live account state; deployed ELF = v0.5.10 (source_revision 546e5fe)",
+    "OpenOrders count 802,133 is exact, but not all were individually checked for emptiness/owner liveness; the ~18,736 SOL closable-rent figure assumes all are empty and owner-controlled"
+  ],
+  "one_liner": "external unprivileged attacker can extract ~$0 live from Serum v3/OpenBook v1: vault payouts need the OpenOrders owner's signature, fee sweeps/upgrades are key- or DAO-gated, zeroed OpenOrders shells (the one claimable rent path) count 0, and ~673K SOL ($81M) of dead-market rent is permanently locked with no close instruction."
+}

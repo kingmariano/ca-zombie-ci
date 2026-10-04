@@ -1,0 +1,17 @@
+{
+  Solana {
+    DEXPools(
+      where: {Pool: {Dex: {ProgramAddress: {is: "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"}}}}
+      limit: {count: 3}
+    ) {
+      Pool {
+        Market {
+          MarketAddress
+          BaseCurrency { MintAddress Symbol }
+          QuoteCurrency { MintAddress Symbol }
+        }
+        Dex { ProtocolName ProgramAddress }
+      }
+    }
+  }
+}

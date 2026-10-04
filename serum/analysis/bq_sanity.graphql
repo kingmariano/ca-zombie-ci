@@ -1,0 +1,13 @@
+{
+  Solana {
+    sw: Instructions(
+      where: {Instruction: {Program: {Address: {is: "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"}}, Data: {startsWith: "000E"}}}
+      limit: {count: 2}
+    ) { Block { Height Time } Instruction { Data } }
+    first: Instructions(
+      where: {Instruction: {Program: {Address: {is: "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"}}}}
+      limit: {count: 1}
+      orderBy: {ascending: Block_Height}
+    ) { Block { Height Time } Instruction { Data Accounts { Address } } }
+  }
+}
