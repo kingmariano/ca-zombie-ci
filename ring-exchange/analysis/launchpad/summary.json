@@ -1,0 +1,34 @@
+{
+  "finding": "H-31-launchpad",
+  "title": "RingLaunchpad 0xc38f2fd5 permissionless-mint de-risk (unverified contract with MINTER_ROLE)",
+  "chains": ["hyperevm-999"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 47621191,
+  "block_numbers": {"hyperevm": 47621191},
+  "targets_checked": 3,
+  "live_targets": 1,
+  "closed_reasons": [
+    "deploy() mints fwWHYPE to address(this), never to the caller",
+    "minted fwWHYPE is always deposited into a fresh pair via addLiquidity with to=address(this); LP minted to the launchpad",
+    "launchpad has no function to move LP or fwWHYPE (15 selectors, all mapped; no upgrade/delegatecall); owner can only setThreshold/transferOwnership",
+    "extraction from the pair requires selling wrappedToken that can only be acquired by paying equivalent value into the same pair (net loss = fees)",
+    "per-call cap threshold()=1e19, MAX_THRESHOLD=1e21; live launchpad balances/allowances = 0; 0 TokenDeployed events ever"
+  ],
+  "poc": {"tests_passed": 1, "tests_total": 1, "ci_run_urls": [], "note": "local anvil fork of HyperEVM (block 47,620,747): deploy() executed; LP 100% to launchpad; attacker round trip net -1 wei fwWHYPE"},
+  "key_facts": [
+    "HyperEVM runtime byte-identical to Ethereum-verified RingLaunchpad 0x8814a2aa (same 10,507-byte code, same metadata ipfs 46b6eb63..., only 4 immutables differ: 400/400 bytes)",
+    "deploy() from random succeeds in eth_call; gas 5,037,243 (fork) / 5,222,330 (real estimate); fits 30M big blocks",
+    "fwWHYPE.mint succeeds from launchpad address and reverts from random (CoreRef: Caller is not a minter); MINTER_ROLE = launchpad + EOA 0x9336D0C8",
+    "constructor router 0xcdCC42Ec... is Etherscan-verified UniswapV2Router02 v0.6.6 on Ring's SwapV2Factory; deployed by Ring deployer 0xa3142fdc, used only by Ring EOAs",
+    "live: launchpad fwWHYPE allowance/balance 0, native 0; 2 lifetime txs; 0 TokenDeployed; 0 mints by launchpad",
+    "fwWHYPE wrapper holds 20,217.534 WHYPE vs 1,185,217.534 supply at block 47,621,191 (1.7058% backing)"
+  ],
+  "caveats": [
+    "SlowMist audit predates HyperEVM deployment; audited repo github.com/Few-Protocol/ring-launchpad now 404",
+    "E-U $0 relies on verified-source byte-match; any future chain/contract change out of scope",
+    "Owner EOA 0x9336D0C8 and its direct MINTER_ROLE are privileged (P); key compromise scenario not assessed"
+  ],
+  "one_liner": "External unprivileged attacker can trigger fwWHYPE mints (deploy) but cannot capture them: minted tokens + LP are permanently locked in a launchpad-owned pair; E-U = $0, high confidence."
+}

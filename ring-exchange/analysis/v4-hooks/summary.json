@@ -1,0 +1,65 @@
+{
+  "finding": "H-31 / Ring-v4-hooks (sub-task)",
+  "title": "Ring Protocol Uniswap-v4 hooks on HyperEVM: no deployment, $0 extractable",
+  "chains": ["hyperevm"],
+  "chain_ids": {"hyperevm": 999},
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 47621152,
+  "block_numbers": {"hyperevm": 47621152},
+  "targets_checked": 5,
+  "live_targets": 0,
+  "ring_contracts_checked": 24,
+  "ring_contracts_with_nonzero_balance": 0,
+  "foreign_hooks_found": [
+    {
+      "address": "0x893ffcbb4476f31a4a22a241513f00d5f84820cc",
+      "identity": "unverified, Purr ecosystem (deployer 0x0f9ed9c0e897fec9803a54819c8da8643de78741, Yarn/YARN ctor args)",
+      "flags_low14": "0x20cc",
+      "value_usd": 0
+    },
+    {
+      "address": "0x13d4a4e22e5c65a7567ca78c1a03487e0e94a0cc",
+      "identity": "PurrHook (verified)",
+      "flags_low14": "0x20cc",
+      "native_hype": "0.0891",
+      "value_usd": 8.0
+    },
+    {
+      "address": "0x315fd47e1f5ce6188e457a97c588230842c060cc",
+      "identity": "PurrHook (verified)",
+      "flags_low14": "0x20cc",
+      "value_usd": 0
+    },
+    {
+      "address": "0xea456a0bf66a888cd1c614516496d02608cf2444",
+      "identity": "NFTStrategyHook (verified)",
+      "flags_low14": "0x2444",
+      "value_usd": 0
+    }
+  ],
+  "closed_reasons": [
+    "No Ring Protocol v4 hook deployment exists on HyperEVM: docs (v4 sections) and the ring-swap-v2 manifest list Ethereum-only hooks",
+    "All five RingProtocol hook/lab repos deploy to Ethereum mainnet or Sepolia; no HyperEVM references (hooklist has no hyperevm chain dir)",
+    "Ring deployer 0xa3142fdc... created 23 contracts on HyperEVM; none is a v4 hook and none is referenced by any pool; all 23 plus the Timelock hold zero native/10-token balance at block 47,621,152",
+    "Ring minter EOA, LP EOA and Timelock: 0 contract creations and 0 calls to the canonical CREATE2 deployer 0x4e59b448...",
+    "Ring UniversalRouter v2 0xE65081EF... sets v4PoolManager/v4PositionManager to 0x69099cc5..., a 101-byte always-revert stub (custom error 0xea3559ef) - v4 path disabled",
+    "Live v4 hook census on HyperEVM PoolManager 0x12D4Fd... (all 8 Initialize events ever): 4 hooks, all third-party (Purr ecosystem and NFTStrategyHook); none is Ring",
+    "Uniswap v4 PoolManager has no permissionless claim of hook fees; moot since no Ring hook exists"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": [], "note": "No PoC applicable: target set empty. Read-only on-chain verification only."},
+  "key_facts": [
+    "Ring v4 hooks on HyperEVM: 0 deployments",
+    "Ring-related HyperEVM contracts with balances: 0 of 24 checked (native + WHYPE/USDC/USDT0/USDH/UETH/fwWHYPE/fwUETH/fwUSDC/fwUSDH/fwUSDT0 at block 47,621,152)",
+    "HyperEVM canonical v4 PoolManager 0x12D4Fd9C5DeDd00ab8a0bCe2CF0167bbf94b6B1F verified, 24,009 bytes; exactly 8 pools ever initialized",
+    "Only hook-held value on HyperEVM: PurrHook 0x13d4a4e2... = 0.0891 HYPE (~$8.00 at WHYPE $89.78, DefiLlama 2026-10-04) - not Ring",
+    "Ring's HyperEVM UniversalRouter v4PoolManager = 0x69099cc5... always-revert stub"
+  ],
+  "caveats": [
+    "Unverified hook 0x893ffcbb... identity inferred (deployer, ctor strings, flags); zero value; not Ring either way",
+    "A hypothetical Ring hook deployed via an unknown factory with no pool and no balance would be invisible but worth $0",
+    "Foreign hooks (Purr/NFTStrategy) were not audited for drainability - out of scope"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 from Ring v4 hooks on HyperEVM: Ring has no v4 hook deployment there (docs/repos/deployers/live-pool census all agree), all Ring contracts hold zero, and the only v4 hooks live on the chain belong to Purr/NFTStrategy (largest holding ~$8)."
+}

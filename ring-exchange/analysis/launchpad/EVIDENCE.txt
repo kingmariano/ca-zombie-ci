@@ -1,0 +1,66 @@
+RINGLAUNCHPAD H-31 — EVIDENCE (all read-only; block 47,621,191 HyperEVM unless noted)
+=====================================================================================
+
+1) PROVENANCE
+-------------
+Command: cast code 0xc38f2fd561d748ce74a5f9ce09b89d2cf421fb56 --rpc-url https://rpc.hyperliquid.xyz/evm   -> hype_runtime.hex
+Command: cast code 0x8814a2aa2384d65672c7dc0650454e56f62fba8b --rpc-url https://ethereum-rpc.publicnode.com -> eth_runtime.hex
+
+Both: size 10,507 bytes
+Both metadata tail: a264697066735822122046b6eb636edef678542bf33254b37e7543af08cb400da87491ec1ad685b70c62 64736f6c634300081a0033
+  -> ipfs metadata hash 46b6eb636edef678542bf33254b37e7543af08cb400da87491ec1ad685b70c62, solc 0.8.26
+
+Byte diff (python): 20 diff runs x 20 bytes = 400 differing bytes TOTAL; every run is one of these immutables, embedded 5x each in the runtime:
+  HYPE 5555555555555555555555555555555555555555 vs ETH c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2   (weth)
+  HYPE cdcc42ec0ecb7b5f9e4a5fe1df99eeb1bdf46a00 vs ETH 6a7c92bddb8d695cfdff5d47487a456cc46e0ee5   (uniswapRouter)
+  HYPE 9e1148bc3665a9f7c35f313d89c0432c34928aef vs ETH a250cc729bb3323e7933022a67b52200fe354767   (wrappedWETH)
+  HYPE 6b65ed7315274eb9ef06a48132eb04d808700b86 vs ETH 7d86394139bf1122e82fdf45bb4e3b038a4464dd   (wrappingFactory)
+No other byte differs -> deployed HYPE code == verified ETH RingLaunchpad source (Etherscan chain 1, v0.8.26, runs 10000, paris; sources in eth_src/).
+
+Constructor args (creation_minter_input.hex tail):
+  cdcc42ec0ecb7b5f9e4a5fe1df99eeb1bdf46a00 | 5555...5555 | 9e1148bc... | 6b65ed73...
+Constructor bytecode sets threshold 0x8ac7230489e80000 = 1e19 (10 ether) at slot 3 (creation_minter.json, block 8,636,029, deployer 0xa3142fdc...).
+transferOwnership tx 0x30166e62... block 8,636,639 -> owner 0x9336D0C82299Da0ab178271792954ADFD6f10fD7.
+Audited repo github.com/Few-Protocol/ring-launchpad (commits f958164/d758410) is 404 today; SlowMist PDF + verified ETH source used instead.
+
+2) LIVE SIMULATIONS (eth_call only, from 0x1111...1111)
+--------------------------------------------------------
+deploy("TT","TT",1)                -> SUCCESS token=0xC3396a6f... wrapped=0x729aB101...
+deploy("","",1) / name>32 / 0     -> revert 0xe5239090 = InvalidParameters()
+deploy("TT","TT",1e19)            -> SUCCESS (== threshold); 1e19+1 -> 0xe5239090
+deployWETH("TT","TT",1,0,rand)    -> SUCCESS
+deployWETH(...,buyAmount=1000)    -> revert (no WETH balance/allowance on random)
+deployETH("TT","TT",1,rand) v=0   -> SUCCESS; v=1000 -> SUCCESS
+setThreshold(1)                   -> revert 0x118cdaa7000...1111 = OwnableUnauthorizedAccount(0x1111...)
+transferOwnership(rand)           -> revert 0x118cdaa7...
+renounceOwnership()               -> revert 0x118cdaa7...
+threshold()=1e19  MAX_THRESHOLD()=1e21  TOTAL_SUPPLY()=1e27  owner()=0x9336D0C8...
+uniswapRouter()=0xcdCC42Ec...  weth()=0x5555...  wrappedWETH()=0x9e1148bC...  wrappingFactory()=0x6B65ed73...
+creators(0x1111...)=(0x0,0x0)
+
+fwWHYPE.mint(0x1111...,1) FROM launchpad address -> SUCCESS
+fwWHYPE.mint(0x1111...,1) FROM random           -> revert "CoreRef: Caller is not a minter"
+hasRole(MINTER_ROLE 0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6):
+  launchpad 0xc38f... = true; EOA 0x9336D0C8... = true; Timelock 0x03709dfd... = false
+
+eth_estimateGas deploy("T","T",1) on real HYPE RPC = 5,222,330 gas (block gas limits: small 3,000,000 / big 30,000,000 alternating; 2 big blocks in last 120 blocks scanned).
+Live launchpad: fwWHYPE allowance to router 0, fwWHYPE balance 0, native 0; LP balance 0 in all 5 existing Ring pairs.
+Launchpad history: 2 txs total (creation 0x7e27e54e..., transferOwnership 0x30166e62...); 0 TokenDeployed events; 0 fwWHYPE Mint events with launchpad as minter.
+
+3) FORK POC (local anvil --fork-url HYPE RPC, chain 999; no mainnet sends)
+----------------------------------------------------------------------------
+deploy("ZTEST","ZT",1) from 0x1111...1111 -> status 1, gasUsed 5,037,243
+  fwWHYPE totalSupply +1 (1,185,217,534,192,860,677,230,517 -> ...518)
+  Mint event amount 1, to = launchpad
+  TokenDeployed: creator 0x1111..., token 0xc3396a6f..., wrapped 0x729ab101..., pairAmount 1
+  pair 0xFeCD5d875e01516510Cfb0Ae37D434C956ade829 (token0=wrapped, token1=fwWHYPE)
+  reserves: 1e27 wrapped / 1 wei fwWHYPE
+  LP totalSupply 31,622,766,001,683 ; LP balance launchpad 31,622,776,600,683 ; LP balance attacker 0
+  launchpad fwWHYPE balance 0 ; allowance to router 0
+  attacker removeLiquidity -> revert ds-math-sub-underflow
+
+Attacker best round trip (same fork):
+  wrap 1,000,000 wei WHYPE -> 1,000,000 fwWHYPE
+  buy all wrapped with 1,000,000 fwWHYPE -> 999,998,996,991,978,944,855,622,010 wrapped (~100% supply)
+  sell all wrapped back -> 999,999 fwWHYPE   => NET -1 wei (loss); pool locked fwWHYPE grew 1 -> 2 wei.
+Conclusion: the minted fwWHYPE subsidy cannot be recovered; every extraction route pays equivalent value into the same locked pool.

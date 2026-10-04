@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "name": "Ring Swap v2 deployment manifest",
+  "updatedAt": "2026-08-28",
+  "documentation": "https://docs.ring.exchange/contracts/v2/deployments",
+  "status": "/data/ring-swap-v2-status.json",
+  "notes": [
+    "This manifest covers the four maintained mainnet sets in the public Ring Swap documentation, not every historical or testnet SDK constant.",
+    "Ring-owned contracts are separated from external dependencies.",
+    "FewToken identity must be verified with FewFactory.getWrappedToken(underlying).",
+    "Pair identity must be verified with SwapV2Factory.getPair(token0, token1).",
+    "An empty or curated pair list is not a complete factory index."
+  ],
+  "sharedCode": {
+    "swapV2PairInitCodeHash": "0xa7ae6a5ec37f0c21bbdac560794258c4089b8ae3ffa6e3909b53c6091764a676",
+    "swapV2PairRuntimeCodeHash": "0x330be2c0f89c41b8879b8015445a667347764915107aced846fd148cc7c03bc0",
+    "fewWrappedTokenInitCodeHash": "0x2bdba5734ddf754fb149ef1faa937956c52cfd1f24d68163a95f42d08ec06d38",
+    "fewWrappedTokenRuntimeCodeHash": "0xbe63f68c8de6e3f7cf411d9b117b931128468c36e0753fc5878fd5359f16acf5"
+  },
+  "networks": [
+    {
+      "chainId": 1,
+      "name": "Ethereum Mainnet",
+      "ringContracts": {
+        "core": "0xB2799ed78490EA642d2ECb23cB2cE9b8ACC087D4",
+        "fewFactory": "0x7D86394139bf1122E82FDF45Bb4e3b038A4464DD",
+        "fewWrappedNative": "0xa250CC729Bb3323e7933022a67B52200fE354767",
+        "fewETHWrapper": "0xAda6059b4F6244Acd8934095Ed0162C5Df6B5ebB",
+        "swapV2Factory": "0xeb2A625B704d73e82946D8d026E1F588Eed06416",
+        "ringSwapRouter": "0x39d1d8fcC5E6EEAf567Bce4e29B94fec956D3519",
+        "universalRouter": "0x24e743CcE93235641f2be8Ce7ffC6330903ab96f"
+      },
+      "dependencies": {
+        "wrappedNative": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3"
+      },
+      "pairListPolicy": "factory-enumeration; no static Ring Swap pair list",
+      "fewTokens": [
+        {
+          "symbol": "fwUSDC",
+          "address": "0x0492560FA7Cfd6A85E50D8bE3F77318994F8f429",
+          "decimals": 6,
+          "underlyingSymbol": "USDC",
+          "underlying": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        },
+        {
+          "symbol": "fwWBTC",
+          "address": "0x2078f336Fdd260f708BEc4a20c82b063274E1b23",
+          "decimals": 8,
+          "underlyingSymbol": "WBTC",
+          "underlying": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+        },
+        {
+          "symbol": "fwUSDR",
+          "address": "0x29A294F8FE285Dfb259705213e375eCb7Fcf9d9b",
+          "decimals": 18,
+          "underlyingSymbol": "USDR",
+          "underlying": "0x4EA40dcee961675683e0a2e1721Bd49CB9bca913"
+        },
+        {
+          "symbol": "fwUSDe",
+          "address": "0x459F878908B5D6E8A0f2eb089b0Cd29D9766aFe5",
+          "decimals": 18,
+          "underlyingSymbol": "USDe",
+          "underlying": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3"
+        },
+        {
+          "symbol": "fwEURC",
+          "address": "0x88cb762635408db93e0970A8D41b7C4692Cc6AB3",
+          "decimals": 6,
+          "underlyingSymbol": "EURC",
+          "underlying": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c"
+        },
+        {
+          "symbol": "fwDAI",
+          "address": "0x8A6fe57C08C84e0f4eE97aAe68a62e820a37d259",
+          "decimals": 18,
+          "underlyingSymbol": "DAI",
+          "underlying": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        },
+        {
+          "symbol": "fwweETH",
+          "address": "0x9553d5F1f564EDE30f5a9F0274cD0AF7A00546e7",
+          "decimals": 18,
+          "underlyingSymbol": "weETH",
+          "underlying": "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee"
+        },
+        {
+          "symbol": "fwWETH",
+          "address": "0xa250CC729Bb3323e7933022a67B52200fE354767",
+          "decimals": 18,
+          "underlyingSymbol": "WETH",
+          "underlying": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+        },
+        {
+          "symbol": "fwwstETH",
+          "address": "0xB90e63487bc6A4fa3d58F707510Dab3C28a63137",
+          "decimals": 18,
+          "underlyingSymbol": "wstETH",
+          "underlying": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"
+        },
+        {
+          "symbol": "fwUSDS",
+          "address": "0xD777151C92C05fEa839b2c21b345a78e1F1163Fe",
+          "decimals": 18,
+          "underlyingSymbol": "USDS",
+          "underlying": "0xdC035D45d973E3EC169d2276DDab16f1e407384F"
+        },
+        {
+          "symbol": "fwcbBTC",
+          "address": "0xDbf1703e5d29afEfbF1bD958ce7a6023c67f3E5d",
+          "decimals": 8,
+          "underlyingSymbol": "cbBTC",
+          "underlying": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf"
+        },
+        {
+          "symbol": "fwUNI",
+          "address": "0xE8E1F50392Bd61D0F8F48E8E7aF51D3b8a52090a",
+          "decimals": 18,
+          "underlyingSymbol": "UNI",
+          "underlying": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+        },
+        {
+          "symbol": "fwUSDT",
+          "address": "0xef87f4608e601E8564800265AeE1c1FfaDF73283",
+          "decimals": 6,
+          "underlyingSymbol": "USDT",
+          "underlying": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        }
+      ],
+      "pairs": []
+    },
+    {
+      "chainId": 56,
+      "name": "BNB Smart Chain",
+      "ringContracts": {
+        "core": "0x4Fe312cD4FE3B6F060902d9f742b9B7dfBE2AA50",
+        "fewFactory": "0xEeE400Eabfba8F60f4e6B351D8577394BeB972CD",
+        "fewWrappedNative": "0x7f0172b75d3823D8aF04feE3A3f6a14aBD68EFE1",
+        "fewETHWrapper": "0xf9d7ff2f6A0c3631A807199276a493Af8097916F",
+        "swapV2Factory": "0x4De602A30Ad7fEf8223dcf67A9fB704324C4dd9B",
+        "ringSwapRouter": "0x20504f37A95eF80e3FC7476c4801fb39AaE6bAd0",
+        "universalRouter": "0x1Fb6ef969D925f0B81245cE28F2cAD95b638CfCC"
+      },
+      "dependencies": {
+        "wrappedNative": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3"
+      },
+      "pairListPolicy": "curated reference pair; enumerate SwapV2Factory for the complete set",
+      "fewTokens": [
+        {
+          "symbol": "fwWBNB",
+          "address": "0x7f0172b75d3823D8aF04feE3A3f6a14aBD68EFE1",
+          "decimals": 18,
+          "underlyingSymbol": "WBNB",
+          "underlying": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+        },
+        {
+          "symbol": "fwETH",
+          "address": "0x86fa03945646a99A03543e7e0036361Ffadc73E6",
+          "decimals": 18,
+          "underlyingSymbol": "ETH",
+          "underlying": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8"
+        }
+      ],
+      "pairs": [
+        {
+          "symbol": "fwWBNB/fwETH",
+          "address": "0xFF1513E452a6033e2d9601a4559bF273f83D5470",
+          "token0": "0x7f0172b75d3823D8aF04feE3A3f6a14aBD68EFE1",
+          "token1": "0x86fa03945646a99A03543e7e0036361Ffadc73E6"
+        }
+      ]
+    },
+    {
+      "chainId": 999,
+      "name": "HyperEVM",
+      "ringContracts": {
+        "core": "0x1cda28aD2915356EB618518b1bDD3f462aeF3803",
+        "fewFactory": "0x6B65ed7315274eB9EF06A48132EB04D808700b86",
+        "fewWrappedNative": "0x9e1148bC3665a9f7C35F313d89c0432c34928AEf",
+        "fewETHWrapper": "0x068B60ECbC934b0a0dde20FdFf0dE925b97B971F",
+        "swapV2Factory": "0x4AfC2e4cA0844ad153B090dc32e207c1DD74a8E4",
+        "ringSwapRouter": "0x701D1d675415efA2d2429fB122ccC6dD4FCcA959",
+        "universalRouter": "0xE65081EFa5ad4A196B1Df768716c337e6AB140E9"
+      },
+      "dependencies": {
+        "wrappedNative": "0x5555555555555555555555555555555555555555",
+        "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3"
+      },
+      "pairListPolicy": "complete factory snapshot; re-enumerate before production use",
+      "fewTokens": [
+        {
+          "symbol": "fwWHYPE",
+          "address": "0x9e1148bC3665a9f7C35F313d89c0432c34928AEf",
+          "decimals": 18,
+          "underlyingSymbol": "WHYPE",
+          "underlying": "0x5555555555555555555555555555555555555555"
+        },
+        {
+          "symbol": "fwUSD₮0",
+          "address": "0x7576dd9a2775bFd789616d9eA7A2af21d06782D0",
+          "decimals": 6,
+          "underlyingSymbol": "USD₮0",
+          "underlying": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb"
+        },
+        {
+          "symbol": "fwUETH",
+          "address": "0x0C47cbbEDE5d8c6f9614cF770C26c3315205C397",
+          "decimals": 18,
+          "underlyingSymbol": "UETH",
+          "underlying": "0xBe6727B535545C67d5cAa73dEa54865B92CF7907"
+        },
+        {
+          "symbol": "fwUSDC",
+          "address": "0xd2646b9B02859416D8cBc759F85f0676f6E19974",
+          "decimals": 6,
+          "underlyingSymbol": "USDC",
+          "underlying": "0xb88339CB7199b77E23DB6E890353E22632Ba630f"
+        },
+        {
+          "symbol": "fwUSDH",
+          "address": "0x09D21E89EF332347eb3E1E496f1265a600e364C1",
+          "decimals": 6,
+          "underlyingSymbol": "USDH",
+          "underlying": "0x111111a1a0667d36bD57c0A9f569b98057111111"
+        }
+      ],
+      "pairs": [
+        {
+          "symbol": "fwUSD₮0/fwWHYPE",
+          "address": "0xf3760B19f1Baa2bFcf6Bd6e5d174e129c80aeD17",
+          "token0": "0x7576dd9a2775bFd789616d9eA7A2af21d06782D0",
+          "token1": "0x9e1148bC3665a9f7C35F313d89c0432c34928AEf"
+        },
+        {
+          "symbol": "fwUETH/fwWHYPE",
+          "address": "0x0185E8e8B7FDf22638ecB2D781b3EA7E8AA2452a",
+          "token0": "0x0C47cbbEDE5d8c6f9614cF770C26c3315205C397",
+          "token1": "0x9e1148bC3665a9f7C35F313d89c0432c34928AEf"
+        },
+        {
+          "symbol": "fwUSDH/fwUSDC",
+          "address": "0xabEd9A9aDe03a80ED98f903Eb9db62DE55C9DDF3",
+          "token0": "0x09D21E89EF332347eb3E1E496f1265a600e364C1",
+          "token1": "0xd2646b9B02859416D8cBc759F85f0676f6E19974"
+        },
+        {
+          "symbol": "fwUSDH/fwUSD₮0",
+          "address": "0xf37f1e83BEb55F1b88AF9A8Df1a746e79C222150",
+          "token0": "0x09D21E89EF332347eb3E1E496f1265a600e364C1",
+          "token1": "0x7576dd9a2775bFd789616d9eA7A2af21d06782D0"
+        },
+        {
+          "symbol": "fwUSD₮0/fwUSDC",
+          "address": "0x8868a630dD13A954D3f8B186508EF6c733BE959F",
+          "token0": "0x7576dd9a2775bFd789616d9eA7A2af21d06782D0",
+          "token1": "0xd2646b9B02859416D8cBc759F85f0676f6E19974"
+        }
+      ]
+    },
+    {
+      "chainId": 4326,
+      "name": "MegaETH Mainnet",
+      "ringContracts": {
+        "core": "0x732819C68c72D09465B8FaDF8156A79d21E87DCA",
+        "fewFactory": "0x6AE74eC9D067C734060FC5edB66fC6D48682970E",
+        "fewWrappedNative": "0x65c46c31E340D6C546309733CF50Ef4d150094C4",
+        "fewETHWrapper": "0xb0Bd0CD58551b71079F36B198276832242D02C0F",
+        "swapV2Factory": "0x47C436602d2598d0ef4b50888F29a528B6Bccc95",
+        "v2CompatibleRouter": "0xE73442C4b87283D75768F3668B411fc2348B429b",
+        "ringSwapRouter": "0x88a9A29FA981721C04fdC367ab7e3C83A4C65db9",
+        "universalRouter": "0x9256667638ED96ba4eCb30bD23efD2A182e1bC98",
+        "timelock": "0xb0BEa0daA0E57c43d92711f9dF2d0D54CebEEA72"
+      },
+      "dependencies": {
+        "wrappedNative": "0x4200000000000000000000000000000000000006",
+        "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+        "multicall3": "0xcA11bde05977b3631167028862bE2a173976CA11"
+      },
+      "pairListPolicy": "complete factory snapshot; re-enumerate before production use",
+      "fewTokens": [
+        {
+          "symbol": "fwWETH",
+          "address": "0x65c46c31E340D6C546309733CF50Ef4d150094C4",
+          "decimals": 18,
+          "underlyingSymbol": "WETH",
+          "underlying": "0x4200000000000000000000000000000000000006"
+        },
+        {
+          "symbol": "fwUSDm",
+          "address": "0xE9Cd1B2C75e648449256325d5D06b3D63DC66Aa5",
+          "decimals": 6,
+          "underlyingSymbol": "USDm",
+          "underlying": "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7"
+        }
+      ],
+      "pairs": [
+        {
+          "symbol": "fwWETH/fwUSDm",
+          "address": "0xB33FE892Dd65dD0739F3de89e69C8E98d4733556",
+          "token0": "0x65c46c31E340D6C546309733CF50Ef4d150094C4",
+          "token1": "0xE9Cd1B2C75e648449256325d5D06b3D63DC66Aa5"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "manifest": "/data/ring-swap-v2.json",
+  "verifiedAt": "2026-08-28",
+  "scope": "Onchain relationship and bytecode checks for Ring-owned contracts, documented FewTokens, and documented Ring Swap pairs.",
+  "networks": [
+    {
+      "chainId": 1,
+      "verificationBlock": 25852592,
+      "factoryPairCount": 467,
+      "fewFactoryTokenCount": 83,
+      "fewFactoryPaused": false,
+      "documentedFewTokensChecked": 13,
+      "documentedPairsChecked": 0,
+      "pairCoverage": "factory-discovery-only"
+    },
+    {
+      "chainId": 56,
+      "verificationBlock": 118545001,
+      "factoryPairCount": 52,
+      "fewFactoryTokenCount": 54,
+      "fewFactoryPaused": false,
+      "documentedFewTokensChecked": 2,
+      "documentedPairsChecked": 1,
+      "pairCoverage": "curated"
+    },
+    {
+      "chainId": 999,
+      "verificationBlock": 44377743,
+      "factoryPairCount": 5,
+      "fewFactoryTokenCount": 5,
+      "fewFactoryPaused": false,
+      "documentedFewTokensChecked": 5,
+      "documentedPairsChecked": 5,
+      "pairCoverage": "complete-at-verification-block"
+    },
+    {
+      "chainId": 4326,
+      "verificationBlock": 25102142,
+      "factoryPairCount": 1,
+      "fewFactoryTokenCount": 2,
+      "fewFactoryPaused": false,
+      "documentedFewTokensChecked": 2,
+      "documentedPairsChecked": 1,
+      "pairCoverage": "complete-at-verification-block"
+    }
+  ],
+  "checks": {
+    "ringContractCodePresent": true,
+    "routerFactoryFewFactoryAndWrappedNativeGettersMatch": true,
+    "fewETHWrapperWrappedNativeGettersMatch": true,
+    "fewTokenRuntimeCodeHashMatches": true,
+    "fewTokenFactoryAndUnderlyingMappingsMatch": true,
+    "pairRuntimeCodeHashMatches": true,
+    "pairFactoryTokenOrderingAndGetPairMatch": true,
+    "documentedPairsHadNonzeroReserves": true
+  },
+  "caveat": "This is a point-in-time verification record. Re-read counts, mappings, code, and reserves at the block used for an integration or transaction."
+}

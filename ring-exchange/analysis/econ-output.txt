@@ -1,0 +1,28 @@
+block 47619259
+pool: 28,419.484 fwUETH | 851,037.576 fwWHYPE
+spot:  29.94557 fwWHYPE per fwUETH | market 30.00420 WHYPE per UETH -> deviation -0.1954%
+spot:  0.03339392 fwUETH per fwWHYPE | market 0.03332866 UETH per WHYPE -> deviation +0.1958%
+wrapper UETH collateral 1,108.260 ($2,987,248); wrapper WHYPE collateral 20,217.534 ($1,816,251)
+
+== Buy fwUETH with WHYPE (wrap WHYPE -> swap -> unwrap UETH) ==
+  spend $     10,000 ->      3.706 fwUETH -> $      9,988 UETH | PnL $         -12 (-0.118%)
+  spend $    100,000 ->     37.013 fwUETH -> $     99,765 UETH | PnL $        -235 (-0.235%)
+  spend $  1,000,000 ->    365.837 fwUETH -> $    986,093 UETH | PnL $     -13,907 (-1.391%)
+  spend $ 10,000,000 ->  3,278.539 fwUETH -> $  8,837,107 UETH | PnL $  -1,162,893 (-11.629%)
+== Buy fwWHYPE with UETH (wrap UETH -> swap -> unwrap WHYPE) ==
+  spend $     10,000 ->    110.749 fwWHYPE -> $      9,949 WHYPE | PnL $         -51 (-0.508%)
+  spend $    100,000 ->  1,106.198 fwWHYPE -> $     99,376 WHYPE | PnL $        -624 (-0.624%)
+  spend $  1,000,000 -> 10,934.073 fwWHYPE -> $    982,267 WHYPE | PnL $     -17,733 (-1.773%)
+
+== Cost to exhaust UETH collateral (buy fwUETH with fwWHYPE, then unwrap) ==
+  buy 1,108.260 fwUETH out of pool costs 34,638.084 fwWHYPE ($3,111,728) -> unwrap $2,987,248 UETH; PnL $-124,480 (-4.000%)
+== Cost to exhaust WHYPE collateral (buy fwWHYPE with fwUETH, then unwrap) ==
+  buy 20,217.534 fwWHYPE out of pool costs 693.653 fwUETH ($1,869,701) -> unwrap $1,816,251 WHYPE; PnL $-53,449 (-2.859%)
+
+== If attacker could mint unbacked fw tokens (P / key-compromise scenario) ==
+  mint fwWHYPE -> dump for fwUETH -> unwrap: extract up to 1,108.260 UETH = $2,987,248
+  mint fwUETH -> dump for fwWHYPE -> unwrap: extract up to 20,217.534 WHYPE = $1,816,251
+  total wrapper collateral (all 5) = $4,809,501
+
+== LP view (pair1) ==
+  LP supply 150,002.862; nominal $1,020.36/LP; collateral-backed $32.02/LP (3.14%)
