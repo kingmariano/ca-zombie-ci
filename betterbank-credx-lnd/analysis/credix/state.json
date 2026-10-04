@@ -1,0 +1,543 @@
+{
+ "subject": "CrediX Finance (Sonic chain, chainId 146)",
+ "as_of_block": 80330684,
+ "as_of_block_hex": "0x4c9bfbc",
+ "rpc_used_for_final_reads": [
+  "https://sonic-rpc.publicnode.com",
+  "https://sonic.drpc.org",
+  "https://sonic.api.onfinality.io/public"
+ ],
+ "rpc_note": "rpc.soniclabs.com returned eth_blockNumber=0x0 during the session; fallbacks used.",
+ "exploit_actor": "0xF321683831Be16eeD74dfA58b02a37483cEC662e",
+ "admin_eoa": "0x0dd010513F7abB8F9c628dC164a24D953BCA09Cf",
+ "markets": {
+  "A_stability": {
+   "provider": {
+    "provider": "0x4b139f6E816934D580D9305Ca0f115145f698973",
+    "pool": "0x0850A9759165B25832E2cAa3dB3f2d04dc583D4E",
+    "getPoolConfigurator": "0x1c5d4b5dfc1a47e5db839cb8a0fb36bab1e986b7",
+    "getPriceOracle": "0xce767e508a17321c25117b44d246e4611bbecfe4",
+    "getACLManager": "0x1637b78dd5541f0db2f3d04eed39de37df71bd08",
+    "getACLAdmin": "0x3d0c177e035c30bb8681e5859eb98d114b48b935",
+    "getPoolDataProvider": "0x5d10c393f9df12bbba49b8e8d5d7fc4674d2e115",
+    "owner": "0x3d0c177e035c30bb8681e5859eb98d114b48b935",
+    "getMarketId": "Sonic Stability Credix market"
+   },
+   "reserves": [
+    "0xec26d07b5c0a99d3690375a2cc229e5b943e7726",
+    "0xa175ee511de429275d26ac5420fabeb60c67c372",
+    "0x95caf53667d912f3491173fd4712450dfcf4c89f",
+    "0x29219dd400f2bf60e5a23d13be72b486d4038894",
+    "0xd3dce716f3ef535c5ff8d041c1a41c3bd89b97ae",
+    "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38"
+   ]
+  },
+  "B_core": {
+   "provider": {
+    "provider": "0x282eDE6BbD2d224D454C995e66f08569A5508e9a",
+    "pool": "0x56eb1bcB2aA011517fD7bf32641E79Bd8471770e",
+    "getPoolConfigurator": "0xc9122e191d9bdabf9b59a31c01d4e6c4cd719e89",
+    "getPriceOracle": "0xc131ba07e9a6533e46ca539280d02a42ac9c131a",
+    "getACLManager": "0x8f0431f6adb3e81d282d0508c16e2817dc95095b",
+    "getACLAdmin": "0xd3e02c92f59a0ba5601464299d658d3a0a7cf96f",
+    "getPoolDataProvider": "0xa298a88760c64dfa3d6774a9dbec04ef4297a850",
+    "owner": "0xd3e02c92f59a0ba5601464299d658d3a0a7cf96f",
+    "getMarketId": "Sonic Credix core Market"
+   },
+   "reserves": [
+    "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+    "0x29219dd400f2bf60e5a23d13be72b486d4038894",
+    "0xd3dce716f3ef535c5ff8d041c1a41c3bd89b97ae",
+    "0x50c42deacd8fc9773493ed674b675be577f2634b",
+    "0xe5da20f15420ad15de0fa650600afc998bbe3955"
+   ]
+  },
+  "C_isolated_new": {
+   "provider": {
+    "address": "0x3BC884500E670e184eF1421a6980455fd3FA3739",
+    "getPool": "0x12144c9b3fdcc1e40083280c3fe28bb568814a91",
+    "getPoolConfigurator": "0x091d37deb0df29675a1a188ffd6647a4cf75bc0f",
+    "getPriceOracle": "0xfae2038b7b4a25aca1c3fc0ff8c7c19d09a78806",
+    "getACLManager": "0x3f8547e4b349e65853d058bc81b7ffbe3b8f12d4",
+    "getACLAdmin": "0xd3e02c92f59a0ba5601464299d658d3a0a7cf96f",
+    "getPoolDataProvider": "0x8c6a79f47ce3febe4e571747af39fb305a6070e8",
+    "getPriceOracleSentinel": "0x0000000000000000000000000000000000000000",
+    "owner": "0xd3e02c92f59a0ba5601464299d658d3a0a7cf96f",
+    "getMarketId": "Sonic Credix YT-scUSD isolated market"
+   },
+   "reserves": [
+    "0xd2901d474b351bc6ee7b119f9c920863b0f781b2",
+    "0x29219dd400f2bf60e5a23d13be72b486d4038894",
+    "0xd3dce716f3ef535c5ff8d041c1a41c3bd89b97ae"
+   ]
+  }
+ },
+ "roles": {
+  "B": {
+   "DEFAULT_ADMIN": [
+    "safe"
+   ],
+   "POOL_ADMIN": [
+    "attacker",
+    "safe"
+   ],
+   "EMERGENCY_ADMIN": [
+    "attacker",
+    "safe"
+   ],
+   "RISK_ADMIN": [
+    "attacker",
+    "safe"
+   ],
+   "BRIDGE": [
+    "attacker",
+    "safe"
+   ],
+   "ASSET_LISTING_ADMIN": [
+    "attacker",
+    "safe"
+   ]
+  },
+  "C": {
+   "DEFAULT_ADMIN": [
+    "safe"
+   ],
+   "POOL_ADMIN": [
+    "safe"
+   ],
+   "EMERGENCY_ADMIN": [
+    "safe"
+   ],
+   "RISK_ADMIN": [
+    "safe"
+   ],
+   "BRIDGE": [
+    "safe"
+   ],
+   "ASSET_LISTING_ADMIN": [
+    "safe"
+   ],
+   "FLASH_BORROWER": [
+    "safe"
+   ]
+  }
+ },
+ "balances_held_by_atokens": {
+  "B": {
+   "USDC": {
+    "raw": 1564,
+    "addr": "acUSDC",
+    "tokens": 0.001564,
+    "usd": 0.001564004087351082
+   },
+   "scUSD": {
+    "raw": 21567,
+    "addr": "acscUSD",
+    "tokens": 0.021567,
+    "usd": 0.021565896904337845
+   },
+   "wS": {
+    "raw": 66463101749,
+    "addr": "acwS",
+    "tokens": 6.6463101749e-08,
+    "usd": 2.7893515173000517e-09
+   },
+   "WETH": {
+    "raw": 128281837804,
+    "addr": "acwETH",
+    "tokens": 1.28281837804e-07,
+    "usd": 0.0003464397096757125
+   },
+   "stS": {
+    "raw": 62596374932801559,
+    "addr": "acstS",
+    "tokens": 0.06259637493280155,
+    "usd": 0.0028421407247661277
+   }
+  },
+  "C": {
+   "USDC": {
+    "raw": 21057200,
+    "addr": "aciUSDC",
+    "tokens": 21.0572,
+    "usd": 21.057255030798725
+   },
+   "scUSD": {
+    "raw": 28864500,
+    "addr": "aciscUSD",
+    "tokens": 28.8645,
+    "usd": 28.863023656292473
+   },
+   "YT-scUSD": {
+    "raw": 38307900000000000000,
+    "addr": "aciYT-scUSD",
+    "tokens": 38.3079,
+    "usd": 41.327986807722
+   }
+  },
+  "A": {
+   "acUSDC": {
+    "raw": 1766553246410,
+    "addr": "asiacUSDC",
+    "tokens": 1766553.24641,
+    "usd": 0.0
+   },
+   "acscUSD": {
+    "raw": 628927452181,
+    "addr": "asiacscUSD",
+    "tokens": 628927.452181,
+    "usd": 0.0
+   },
+   "acwS": {
+    "raw": 2577959221002575730438459,
+    "addr": "asiacwS",
+    "tokens": 2577959.221002576,
+    "usd": 0.0
+   }
+  }
+ },
+ "attacker_positions": {
+  "acUSDC": {
+   "raw": 1794050828687,
+   "tokens": 1794050.828687,
+   "addr": "0xEc26D07B5c0a99D3690375A2CC229E5b943e7726"
+  },
+  "acscUSD": {
+   "raw": 3648015528835,
+   "tokens": 3648015.528835,
+   "addr": "0xa175EE511de429275d26Ac5420fAbeb60C67C372"
+  },
+  "acwS": {
+   "raw": 14931144660761,
+   "tokens": 1.4931144660761e-05,
+   "addr": "0x95cAF53667D912F3491173fd4712450dFcf4c89f"
+  },
+  "acstS": {
+   "raw": 6114633002090,
+   "tokens": 6.11463300209e-06,
+   "addr": "0x83e2613b74b2697c85416a9a1fbb043f8056990b"
+  },
+  "asiacUSDC": {
+   "raw": 1200000250621,
+   "tokens": 1.200000250621e-06,
+   "addr": "0x0eee208934e66a6e44517e627a2475fc891b3a38"
+  },
+  "asiacscUSD": {
+   "raw": 250000000000,
+   "tokens": 2.5e-07,
+   "addr": "0x1acd539e2a76cf876889dd8119c1d873821551a1"
+  },
+  "variableDebtcUSDC": {
+   "raw": 3137089521636,
+   "tokens": 3.137089521636e-06,
+   "addr": "0xab85e40450683198a6d4865638a7f5e55e5a3fbf"
+  },
+  "variableDebtcscUSD": {
+   "raw": 1717138938663,
+   "tokens": 1.717138938663e-06,
+   "addr": "0x2060839b79391e66d2c7e7afe46c8ee4a5c4f627"
+  },
+  "variableDebtcwS": {
+   "raw": 81434732777226045922147481,
+   "tokens": 81434732.77722605,
+   "addr": "0x3822698e0160b38ffacfd91f8a14bc6ea8a4227b"
+  },
+  "variableDebtcwETH": {
+   "raw": 413209455268664078797,
+   "tokens": 413.2094552686641,
+   "addr": "0xc0e9224f045d6465d5826a5920f467cfa8690fad"
+  },
+  "variableDebtcstS": {
+   "raw": 13030969634532932916590741,
+   "tokens": 13030969.634532932,
+   "addr": "0xb1296336c2a6e20c0240a21fce0ec3228214a550"
+  },
+  "variableDebtsiUSDC": {
+   "raw": 1101477762524,
+   "tokens": 1.101477762524e-06,
+   "addr": "0x5394bf08f963ca6a41447445c0c0a5267b10ee86"
+  },
+  "variableDebtsiscUSD": {
+   "raw": 514862830156,
+   "tokens": 5.14862830156e-07,
+   "addr": "0x099d6e81771e21d4f3d43ae40a71c7e429164753"
+  },
+  "variableDebtsiwS": {
+   "raw": 1787472999876711124124290,
+   "tokens": 1787472.999876711,
+   "addr": "0x5ac446749c76c9450d4a605e9123b372da1bdb9a"
+  },
+  "USDC": {
+   "raw": 750757,
+   "tokens": 0.750757,
+   "addr": "USDC"
+  },
+  "scUSD": {
+   "raw": 500000000,
+   "tokens": 500.0,
+   "addr": "scUSD"
+  }
+ },
+ "treasury": {
+  "acUSDC": {
+   "raw": 136838168,
+   "tokens": 136.838168,
+   "addr": "acUSDC"
+  },
+  "acscUSD": {
+   "raw": 45116133,
+   "tokens": 45.116133,
+   "addr": "acscUSD"
+  },
+  "acwS": {
+   "raw": 587512779623658796113,
+   "tokens": 587.5127796236588,
+   "addr": "acwS"
+  },
+  "acwETH": {
+   "raw": 86941025338836807,
+   "tokens": 0.08694102533883681,
+   "addr": "acwETH"
+  },
+  "acstS": {
+   "raw": 6577065606899530779194,
+   "tokens": 6577.06560689953,
+   "addr": "acstS"
+  }
+ },
+ "classification": {
+  "E-U": {
+   "usd": 0.0,
+   "confidence": "high",
+   "reason": "No permissionless entry point extracts value: markets A/B have no underlying liquidity beyond $0.026 dust claimable only pro-rata by existing aToken holders; market C liquidity requires YT-scUSD collateral and its roles/ownership belong to the 2/3 Gnosis Safe; rescueTokens is POOL_ADMIN-gated and pools hold no tokens; all reserve configs active but irrelevant without liquidity; scUSD oracle revert blocks liquidation of accounts holding scUSD."
+  },
+  "H-O": {
+   "usd": 49.95,
+   "yt_scUSD_extra_nominal_usd": 41.33,
+   "confidence": "high",
+   "reason": "Existing aToken holders can withdraw underlying: market C USDC 21.0572 + scUSD 28.8645 ($49.92) plus market B dust $0.026. Market A single-market holders have $0 (only nominal ac-token claims). Market C also holds 38.3079 YT-scUSD (external SJ yield token, oracle $1.0788 -> $41.33 nominal, redemption value external/unverified)."
+  },
+  "P": {
+   "usd": 0.0,
+   "confidence": "high",
+   "reason": "Role holders control all three markets: attacker EOA 0xF321 holds 5 roles on market B ACL (incl. BRIDGE and POOL_ADMIN) \u2014 never revoked; Safe 0xD3E02C92 (2/3, owners 0x6d0F4Cec, 0x75eF5d63, 0x0dd010...) holds all roles on B/C and provider ownership; EOA 0x3d0c177e owns market A. rescueTokens confirmed callable by attacker and Safe on pool B (eth_call simulation), but pools hold no tokens ($0). Latent: any future liquidity can be drained by these keys (P), plus the Safe could upgrade pools and sweep market C's ~$49.92."
+  },
+  "S": {
+   "usd": 0.0,
+   "confidence": "high",
+   "reason": "Nominal-only stuck value: market A aToken contracts hold ac-token surplus with no sweep (acUSDC 489,597.70; acscUSD 111,987.44; acwS 2,232,649.05 excess over aToken totalSupply); market B unbacked USDC 2,500,000.25 / scUSD 3,250,000.00 and uncollected accruedToTreasury are claims on empty pools; scUSD oracle revert permanently blocks account-data/liquidation for scUSD-exposed accounts; open debts (~$11.7M nominal) uncollectible because collateral pools are empty."
+  }
+ },
+ "usd_prices": {
+  "wS": 0.0419684222357561,
+  "USDC": 1.0000026133958324,
+  "scUSD": 0.9999488526145429,
+  "WETH": 2700.613864022067,
+  "stS": 0.04540423830960214,
+  "S": 0.041588328306473174,
+  "YT-scUSD": 1.07883718
+ },
+ "role_subject_addresses": {
+  "attacker": "0xF321683831Be16eeD74dfA58b02a37483cEC662e",
+  "admin": "0x0dd010513F7abB8F9c628dC164a24D953BCA09Cf",
+  "safe": "0xD3E02C92f59a0ba5601464299D658d3a0a7cf96F"
+ },
+ "native_balances": {
+  "attacker": {
+   "raw": 23581370350887654836,
+   "S": 23.581370350887653
+  },
+  "admin": {
+   "raw": 1946014671890000000,
+   "S": 1.9460146718899998
+  }
+ },
+ "reserves_state": {
+  "A_stability": {
+   "acUSDC": {
+    "asset": "0xec26d07b5c0a99d3690375a2cc229e5b943e7726",
+    "decimals": 6,
+    "aToken": "0x0eee208934e66a6e44517e627a2475fc891b3a38",
+    "vToken": "0x7d2d5393ee253200603e026c93f098babce33a6c",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 1276955548990,
+    "vToken_totalSupply": 0,
+    "unbacked": 0,
+    "accruedToTreasury": 0,
+    "configuration": 5708990936977338997347628018444052981391573132072
+   },
+   "acscUSD": {
+    "asset": "0xa175ee511de429275d26ac5420fabeb60c67c372",
+    "decimals": 6,
+    "aToken": "0x1acd539e2a76cf876889dd8119c1d873821551a1",
+    "vToken": "0x83f711ff8c91b7a226cd35a2cabc0dc39699f721",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 516940010252,
+    "vToken_totalSupply": 0,
+    "unbacked": 0,
+    "accruedToTreasury": 0,
+    "configuration": 5708990936977338997347628018444052981391573132072
+   },
+   "acwS": {
+    "asset": "0x95caf53667d912f3491173fd4712450dfcf4c89f",
+    "decimals": 18,
+    "aToken": "0xed01f103c284253d0824c0125f673f11c14d2ea4",
+    "vToken": "0xc1203714057d667f53503ae2b67ad7621622bf47",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 345310171000000000000000,
+    "vToken_totalSupply": 0,
+    "unbacked": 0,
+    "accruedToTreasury": 0,
+    "configuration": 5708990936977338997347628018444056359091293659944
+   },
+   "USDC": {
+    "asset": "0x29219dd400f2bf60e5a23d13be72b486d4038894",
+    "decimals": 6,
+    "aToken": "0x64d0071044ef8f98b8e5ecfcb4a6c12cb8bc1ec0",
+    "vToken": "0x5394bf08f963ca6a41447445c0c0a5267b10ee86",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 956834087114,
+    "vToken_totalSupply": 1169406137144,
+    "unbacked": 0,
+    "accruedToTreasury": 0,
+    "configuration": 5708990770823839524233143905468458678012749810616
+   },
+   "scUSD": {
+    "asset": "0xd3dce716f3ef535c5ff8d041c1a41c3bd89b97ae",
+    "decimals": 6,
+    "aToken": "0x9154f0a385eef5d48cef78d9fea19995a92718a9",
+    "vToken": "0x099d6e81771e21d4f3d43ae40a71c7e429164753",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 866907019980,
+    "vToken_totalSupply": 1065685935157,
+    "unbacked": 0,
+    "accruedToTreasury": 0,
+    "configuration": 5708990770823839524233143905468458678012749810616
+   },
+   "wS": {
+    "asset": "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+    "decimals": 18,
+    "aToken": "0x61bc5ce0639aa0a24ab7ea8b574d4b0d6b619833",
+    "vToken": "0x5ac446749c76c9450d4a605e9123b372da1bdb9a",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 2071461151173797642381111,
+    "vToken_totalSupply": 2512952722128031374165636,
+    "unbacked": 0,
+    "accruedToTreasury": 0,
+    "configuration": 5708990770823839524233143905468462055712470338488
+   }
+  },
+  "B_core": {
+   "wS": {
+    "asset": "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+    "decimals": 18,
+    "aToken": "0x95caf53667d912f3491173fd4712450dfcf4c89f",
+    "vToken": "0x3822698e0160b38ffacfd91f8a14bc6ea8a4227b",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 26444996979190866204219023,
+    "vToken_totalSupply": 87348720399078236372069750,
+    "unbacked": 2000000000000,
+    "accruedToTreasury": 134264725152829405943022,
+    "configuration": 2873429139123547318413917650992414400318066341222995968000531788
+   },
+   "USDC": {
+    "asset": "0x29219dd400f2bf60e5a23d13be72b486d4038894",
+    "decimals": 6,
+    "aToken": "0xec26d07b5c0a99d3690375a2cc229e5b943e7726",
+    "vToken": "0xab85e40450683198a6d4865638a7f5e55e5a3fbf",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 5782533959905,
+    "vToken_totalSupply": 3546779968932,
+    "unbacked": 2500000250000,
+    "accruedToTreasury": 50488930415,
+    "configuration": 4789048565205908391361020667432928053866007676761399683386974016
+   },
+   "scUSD": {
+    "asset": "0xd3dce716f3ef535c5ff8d041c1a41c3bd89b97ae",
+    "decimals": 6,
+    "aToken": "0xa175ee511de429275d26ac5420fabeb60c67c372",
+    "vToken": "0x2060839b79391e66d2c7e7afe46c8ee4a5c4f627",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 5274301745217,
+    "vToken_totalSupply": 2287442806937,
+    "unbacked": 3250000000000,
+    "accruedToTreasury": 15842709386,
+    "configuration": 4789048565205908391361020667432928053866007676761399683386974016
+   },
+   "WETH": {
+    "asset": "0x50c42deacd8fc9773493ed674b675be577f2634b",
+    "decimals": 18,
+    "aToken": "0x7151f90076b54961771dfdaaf600e5b8b87cee20",
+    "vToken": "0xc0e9224f045d6465d5826a5920f467cfa8690fad",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 188823054940385255322,
+    "vToken_totalSupply": 560108021982962236993,
+    "unbacked": 0,
+    "accruedToTreasury": 1661630121134694268,
+    "configuration": 287342913912359869932960926737825843544441776196051100314378048
+   },
+   "stS": {
+    "asset": "0xe5da20f15420ad15de0fa650600afc998bbe3955",
+    "decimals": 18,
+    "aToken": "0x83e2613b74b2697c85416a9a1fbb043f8056990b",
+    "vToken": "0xb1296336c2a6e20c0240a21fce0ec3228214a550",
+    "underlying_held_at_pool": 0,
+    "aToken_totalSupply": 4019889516341956450534324,
+    "vToken_totalSupply": 14986667791219817463003670,
+    "unbacked": 1000000000000,
+    "accruedToTreasury": 17260695732624734100422,
+    "configuration": 287342913912359869933102121904760561309716251256736903987731788
+   }
+  }
+ },
+ "totals_usd": {
+  "market_A_real": 0.0,
+  "market_B_real_dust": 0.0263,
+  "market_C_real_stable": 49.9203,
+  "market_C_yt_scusd_nominal": 41.328,
+  "all_contracts_real_stable_total": 49.9466
+ },
+ "evidence": [
+  "balances.json",
+  "borrow_logs_0x0850A9759165B25832E2cAa3dB3f2d04dc583D4E.json",
+  "borrow_logs_0x56eb1bcB2aA011517fD7bf32641E79Bd8471770e.json",
+  "borrow_logs_marketC.json",
+  "completeness.json",
+  "deployer_contracts_meta.json",
+  "enumeration.json",
+  "etherscan",
+  "extra_checks.json",
+  "final_snapshot.json",
+  "flags_prices.json",
+  "getcontractcreation_marketA.json",
+  "getsourcecode_0x0850A9759165B25832E2cAa3dB3f2d04dc583D4E.json",
+  "getsourcecode_0x1637b78Dd5541F0dB2f3d04EeD39De37Df71BD08.json",
+  "getsourcecode_0x1C5D4B5DFC1A47e5Db839Cb8A0Fb36bAb1E986B7.json",
+  "getsourcecode_0x282eDE6BbD2d224D454C995e66f08569A5508e9a.json",
+  "getsourcecode_0x4b139f6E816934D580D9305Ca0f115145f698973.json",
+  "getsourcecode_0x56eb1bcB2aA011517fD7bf32641E79Bd8471770e.json",
+  "getsourcecode_0x8cc50713d3c7525fc4fc87514aa3beffeab92e96.json",
+  "getsourcecode_0x8f0431f6adb3e81d282d0508c16e2817dc95095b.json",
+  "getsourcecode_0xc9122E191d9bDaBf9b59A31C01D4e6c4cd719E89.json",
+  "getsourcecode_0xe3a900e0f0aaae2cd79c5849fa465470feb5f4f8.json",
+  "gr_probe_sonic-mainnet.json",
+  "gr_probe_sonic.json",
+  "grant_receipt.json",
+  "grant_tx.json",
+  "liquidity_at_atokens.json",
+  "marketC.json",
+  "marketC_positions.json",
+  "matrix_balances.json",
+  "matrix_run.log",
+  "prices_defillama.json",
+  "provider_A.sol",
+  "provider_B.sol",
+  "role_granted_0x1637b78Dd5541F0dB2f3d04EeD39De37Df71BD08.json",
+  "role_granted_0x8f0431F6Adb3e81D282d0508c16e2817DC95095b.json",
+  "role_revoked_0x1637b78Dd5541F0dB2f3d04EeD39De37Df71BD08.json",
+  "role_revoked_0x8f0431F6Adb3e81D282d0508c16e2817DC95095b.json",
+  "roles.json",
+  "selectors.json",
+  "tokentx_0x5dc4dd79.json"
+ ]
+}
