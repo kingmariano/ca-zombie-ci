@@ -1,0 +1,228 @@
+{
+  "generated_at": "2026-10-04T06:21:26Z",
+  "checks": [
+    {
+      "check": "contract.stopped == true",
+      "pass": true,
+      "detail": "stopped=True"
+    },
+    {
+      "check": "contract.admin",
+      "pass": true,
+      "detail": "admin=osmo1zd6zm7zxa3vz7jwwy808q2hv3wd34zgfgxem4f"
+    },
+    {
+      "check": "liquid_stake_denom",
+      "pass": true,
+      "detail": "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA"
+    },
+    {
+      "check": "ibc_token_denom == TIA",
+      "pass": true,
+      "detail": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877"
+    },
+    {
+      "check": "staker_address matches expected",
+      "pass": true,
+      "detail": "celestia1vxzram63f7mvseufc83fs0gnt5383lvrle3qpt"
+    },
+    {
+      "check": "total_liquid_stake_token > 0",
+      "pass": true,
+      "detail": "1403646401601"
+    },
+    {
+      "check": "contract holds TIA",
+      "pass": true,
+      "detail": "96138795061 utia = 96138.795061 TIA"
+    },
+    {
+      "check": "milkTIA supply > 0",
+      "pass": true,
+      "detail": "1403646.401601 milkTIA"
+    },
+    {
+      "check": "232 received / 1 submitted / 1 pending",
+      "pass": true,
+      "detail": "{\"received\": 232, \"submitted\": 1, \"pending\": 1}"
+    },
+    {
+      "check": "outstanding requests fetched",
+      "pass": true,
+      "detail": "count=5307"
+    },
+    {
+      "check": "contract solvent (claims <= balance)",
+      "pass": true,
+      "detail": "claimable=96053.986289 TIA, held=96138.795061 TIA, surplus=84.808772 TIA"
+    },
+    {
+      "check": "no inflight IBC packets",
+      "pass": true,
+      "detail": "count=0"
+    },
+    {
+      "check": "Celestia staker has no delegations",
+      "pass": true,
+      "detail": "delegations=0, balance=2 utia"
+    },
+    {
+      "check": "CL pool market liquidity captured",
+      "pass": true,
+      "detail": "{\"1335\": 2, \"1475\": 3, \"3365\": 2}"
+    },
+    {
+      "check": "official MilkyWay L1 endpoints dead",
+      "pass": true,
+      "detail": "{\"https://rpc.mainnet.milkyway.zone/status\": null, \"https://lcd.mainnet.milkyway.zone/cosmos/base/tendermint/v1beta1/blocks/latest\": null, \"https://milkyway-api.polkachu.com/cosmos/base/tendermint/v1beta1/blocks/latest\": 200, \"https://milkyway-rpc.polkachu.com/status\": null}"
+    },
+    {
+      "check": "polkachu 'milkyway' subdomain serves another chain",
+      "pass": true,
+      "detail": "allora-mainnet-1 observed"
+    }
+  ],
+  "raw": {
+    "config": {
+      "native_chain_config": {
+        "account_address_prefix": "celestia",
+        "validator_address_prefix": "celestiavaloper",
+        "token_denom": "utia",
+        "validators": [
+          "celestiavaloper1murrqgqahxevedty0nzqrn5hj434fvffxufxcl",
+          "celestiavaloper1rcm7tth05klgkqpucdhm5hexnk49dfda3l3hak",
+          "celestiavaloper15urq2dtp9qce4fyc85m6upwm9xul3049gwdz0x",
+          "celestiavaloper1uqj5ul7jtpskk9ste9mfv6jvh0y3w34vtpz3gw",
+          "celestiavaloper1vje2he3pcq3w5udyvla7zm9qd5yes6hzffsjxj",
+          "celestiavaloper1uwmf03ke52vld2sa9khs0nslpgzwsm5xs5e4pn",
+          "celestiavaloper1e2p4u5vqwgum7pm9vhp0yjvl58gvhfc6yfatw4",
+          "celestiavaloper1ftmw4wh8dq2ljw0xq3xgg00dl7l20se3lrml7q",
+          "celestiavaloper138jl42zlxue4wpvnugcdqhxjmyd2vpt6qhs5ls",
+          "celestiavaloper1xqc7w3pe38kg4tswjt7mnvks7gy4p38vtsuycj",
+          "celestiavaloper1ac4mnwg79gyvd0x5trl2fgjv07lgfas02jf378",
+          "celestiavaloper1fxgucuvhzrd4wlx5aert8n03xcp47l6pj8yf54"
+        ],
+        "unbonding_period": 1213200,
+        "staker_address": "celestia1vxzram63f7mvseufc83fs0gnt5383lvrle3qpt",
+        "reward_collector_address": "celestia1vr00egrck8a0dax68fgglrm3n8v4yz9wjj7cj2"
+      },
+      "protocol_chain_config": {
+        "account_address_prefix": "osmo",
+        "ibc_channel_id": "channel-6994",
+        "ibc_token_denom": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
+        "minimum_liquid_stake_amount": "100000",
+        "oracle_address": "osmo1atjchsl64ewkapy0p4a7h0pvprhpt0jwelem2es0jrd4fqwx7kgslxsvvl"
+      },
+      "protocol_fee_config": {
+        "dao_treasury_fee": "10000",
+        "treasury_address": "osmo1r88fszmnpn8ez5wc42pssd2597mhtrdzex7tzzulj98fmqee2fksg7z5yh"
+      },
+      "monitors": [
+        "osmo1q3592l37ju7ae9g5yqj90wg2txkwhwvkhl9msd"
+      ],
+      "liquid_stake_token_denom": "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA",
+      "batch_period": 270000,
+      "stopped": true
+    },
+    "state": {
+      "total_native_token": "1709977700191",
+      "total_liquid_stake_token": "1403646401601",
+      "rate": "0.820856553535298383",
+      "pending_owner": "",
+      "total_reward_amount": "527344694411",
+      "total_fees": "84316471"
+    },
+    "contract_balances": [
+      {
+        "denom": "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA",
+        "amount": "3838980"
+      },
+      {
+        "denom": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
+        "amount": "96138795061"
+      },
+      {
+        "denom": "uosmo",
+        "amount": "7"
+      }
+    ],
+    "milkTIA_supply": 1403646401601,
+    "batches_count": 234,
+    "batch_statuses": {
+      "received": 232,
+      "submitted": 1,
+      "pending": 1
+    },
+    "sum_received_utia": 6325535399624,
+    "sum_expected_utia": 6333608563206,
+    "outstanding_requests_count": 5307,
+    "claimable_utia": 96053986289,
+    "requests_in_non_received_batches": 1,
+    "ibc_queue": [],
+    "celestia_staker_balances": [
+      {
+        "denom": "utia",
+        "amount": "2"
+      }
+    ],
+    "celestia_staker_delegations": 0,
+    "cl_pools": {
+      "1335": [
+        {
+          "denom": "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA",
+          "amount": "15684480742"
+        },
+        {
+          "denom": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
+          "amount": "54518950263"
+        }
+      ],
+      "1475": [
+        {
+          "denom": "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA",
+          "amount": "3103838001"
+        },
+        {
+          "denom": "ibc/C360EF34A86D334F625E4CBB7DA3223AEA97174B61F35BB3758081A8160F7D9B",
+          "amount": "999900"
+        },
+        {
+          "denom": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
+          "amount": "80276301238"
+        }
+      ],
+      "3365": [
+        {
+          "denom": "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA",
+          "amount": "586140417458"
+        },
+        {
+          "denom": "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877",
+          "amount": "995220975537"
+        }
+      ]
+    },
+    "l1_probes": {
+      "https://rpc.mainnet.milkyway.zone/status": {
+        "http": null,
+        "error": "<urlopen error [Errno 111] Connection refused>"
+      },
+      "https://lcd.mainnet.milkyway.zone/cosmos/base/tendermint/v1beta1/blocks/latest": {
+        "http": null,
+        "error": "<urlopen error [Errno 111] Connection refused>"
+      },
+      "https://milkyway-api.polkachu.com/cosmos/base/tendermint/v1beta1/blocks/latest": {
+        "http": 200,
+        "body": "{\"block_id\":{\"hash\":\"CL7WGi9LLcCRAyO0rLo0/2qJgraFiM9Z7n0xma5YjKE=\",\"part_set_header\":{\"total\":1,\"hash\":\"3ausOrkzXcBddgsQvr3hiZBwufHKdHSQ5pmOyKaJTxI=\"}},\"block\":{\"header\":{\"version\":{\"block\":\"11\",\"app\":\"0\"},\"chain_id\":\"allora-mainnet-1\",\"height\":\"11241179\",\"time\":\"2026-10-04T06:22:00.200426643Z\",\"last_block_id\":{\"hash\":\"tDq2gY/iU+QYZuw5E45e1ZcrpZ3u+Xe3A2Hxpl4YeAE=\",\"part_set_header\":{\"total\":1,\"has"
+      },
+      "https://milkyway-rpc.polkachu.com/status": {
+        "http": null,
+        "error": "HTTP Error 501: Not Implemented"
+      }
+    }
+  },
+  "summary": {
+    "passed": 16,
+    "total": 16
+  }
+}
