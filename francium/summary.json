@@ -1,0 +1,44 @@
+{
+  "finding": "H-29",
+  "title": "Francium (Solana) — wind-down vaults; value-moving withdrawals authorization-gated (E-U $0)",
+  "chains": ["solana"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "medium",
+  "categories": {"E-U": 0, "H-O": 1076818.19, "P": 0, "S": 0},
+  "latest_block": 453190351,
+  "block_numbers": {"solana": 453190351},
+  "targets_checked": 4,
+  "live_targets": 4,
+  "closed_reasons": [
+    "SwapAndWithdraw: attacker signer + victim user_info reverts with NeedUserOrAdminPermission (6027) at programs/lyf-raydium/src/wind_down.rs:110 — caller must be position owner or strategy admin",
+    "SwapAndWithdraw: attacker-owned destination token accounts revert with ConstraintRaw (2003) on user_tkn_account_0 — destinations bound to the position owner",
+    "Permissionless Liquidate* paths repay strategy debt to receive LP collateral of dead Raydium/Orca pools (unpriced), with ~20x compounded debt — no net attacker profit found",
+    "Lending program FC81 has no obligation accounts; borrows are strategy credit accounts; reserves are in retained wind-down (stale/zero oracle), share redemption is user-gated",
+    "Reward program farmer PDA seeds are [user, pool, user_ata] and rewards are paid to the farmer's own stored reward account; unstake requires the user's stake account"
+  ],
+  "poc": {
+    "tests_passed": 3,
+    "tests_total": 3,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Programs: lending FC81tbGt6JWRXidaWYFXxGnTk4VgobhJHATvTRVMqgWj (94 accts, 87 reserves 495B), reward 3Katmm9dhvLQijAvomteYMo6rfVbY5NaCRNq9ZBqBgr6 (36,996 accts, 65 farms 530B), lyfRaydium 2nAAsYdXF3eTQzaeUQS3fr4o782dDg8L28mX39Wr5j8N (27,824 accts, 80 StrategyState 903B, 26,766 UserInfo 285B), lyfOrca DmzAmomATKpNp2rCBfYLS7CSwQqeQTsgRYJA1oSSAJaP (25,505 accts, 55 StrategyState 967B)",
+    "All 4 programs upgradeable; shared live upgrade authority 6M1rN486dffB6d7q35qdxHLuWUFF9QtbTjLnPtEyRyJd (system account, 1 SOL); last deploys: lending slot 445,051,453; reward 431,960,034; lyfRaydium 447,452,146; lyfOrca 447,452,190 (wind-down upgrade ~26 days before audit)",
+    "Measured live custody (2026-10-04, SOL $120.66): reserve liquidity $663,523.03 + strategy pending tokens $411,053.21 + farm rewards $194.31 + other priced $2,047.65 = $1,076,818.19 (H-O)",
+    "SOL-USDC strategy 34eXEXypQiwyQhMRAMbCEJSs16SVaN3C6wzPicEcBTH1: totalLp=0, totalShares=0, pendingTkn0=52,771.34 USDC, pendingTkn1=566.83 SOL held in tknAccount0=88NCYVzm9kXCkNFrQgACyeHRnPYWuUKx7ePC4HeTkCps / tknAccount1=BCMcGhuqdPZo1LxDqJg9MrDKedvoHd92e67uvtoRhrEn",
+    "USDC reserve Hx6LbkMHe69DYawhPyVNs8Apa6tyfogfzQV6a7XkwBUU: available 224,408.86 USDC, borrowed 3,101,050.72 USDC (wads/1e24), cumulative borrow rate ~20x, oracle zeroed, last update slot 445,060,123",
+    "Deployed LYF programs use legacy instruction discriminators (Anchor sha256 rejected: InstructionFallbackNotFound 101); working selector for SwapAndWithdraw is 6f607d39534edca0 + withdrawType u8 (Dappio builder, confirmed on-chain by 'Instruction: SwapAndWithdraw' log)",
+    "CONTROL simulation (victim signer, victim USDC+wSOL ATAs): all constraints pass, handler reached, reverts InvalidData (6004) at wind_down.rs:122 — wind-down self-service currently rejects even the owner",
+    "Historical context: corpus '2023 exploit' = 2022-12-16 Raydium AMM V4 incident ($4.4M, DefiLlama) that hit Francium positions; Francium-DeFi/dec_16_exploit contains the loss accounting; no Francium-program exploit in DefiLlama hacks",
+    "Website states 'Service terminated'; DefiLlama deadFrom 2025-11-30, last-known TVL $6.144M (302d stale) — vs $1.077M priced on-chain today"
+  ],
+  "caveats": [
+    "Headline confidence medium: SwapAndWithdraw gate proven with 3/3 simulations; the permissionless Liquidate*/WindDown*/stable* handlers were assessed by design/account surface and ELF strings, not fully traced end-to-end",
+    "LP/share tokens (farm_staked, strategy_lp) are unpriced and excluded from totals to avoid double counting; 242 long-tail mints unpriced",
+    "H-O amount includes ~$663k reserve liquidity whose backing is impaired (borrowed >> available, stale oracle); real recovery may be much lower",
+    "The owner-side CONTROL path returns InvalidData, so part of H-O may be effectively stuck (S) pending the team's custody-claim flow",
+    "Programs remain upgradeable by a live team key — future upgrade or key compromise could change the verdict (P)",
+    "Public RPC rate limits; all state pinned to slot 453,190,351 (2026-10-04)"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Francium (Solana): the main value path (SwapAndWithdraw) is proven to require the position owner or strategy admin (NeedUserOrAdminPermission 6027) and binds destinations to the owner (ConstraintRaw 2003), while permissionless liquidations repay debt for dead-pool LP collateral; ~$1.077M remains user-recoverable (H-O) under a live, upgradeable team authority (P)."
+}

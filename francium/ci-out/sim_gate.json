@@ -1,0 +1,62 @@
+{
+ "slot": 453214071,
+ "cases": [
+  {
+   "label": "CONTROL: victim signer + victim destinations",
+   "err": {
+    "InstructionError": [
+     0,
+     {
+      "Custom": 6004
+     }
+    ]
+   },
+   "units": 20383,
+   "logs": [
+    "Program 2nAAsYdXF3eTQzaeUQS3fr4o782dDg8L28mX39Wr5j8N invoke [1]",
+    "Program log: Instruction: SwapAndWithdraw",
+    "Program log: AnchorError thrown in programs/lyf-raydium/src/wind_down.rs:122. Error Code: InvalidData. Error Number: 6004. Error Message: Invalid data.",
+    "Program 2nAAsYdXF3eTQzaeUQS3fr4o782dDg8L28mX39Wr5j8N consumed 20383 of 200000 compute units",
+    "Program 2nAAsYdXF3eTQzaeUQS3fr4o782dDg8L28mX39Wr5j8N failed: custom program error: 0x1774"
+   ]
+  },
+  {
+   "label": "ATTACK-A: unrelated signer + victim destinations",
+   "err": {
+    "InstructionError": [
+     0,
+     {
+      "Custom": 6027
+     }
+    ]
+   },
+   "units": 20518,
+   "logs": [
+    "Program 2nAAsYdXF3eTQzaeUQS3fr4o782dDg8L28mX39Wr5j8N invoke [1]",
+    "Program log: Instruction: SwapAndWithdraw",
+    "Program log: AnchorError thrown in programs/lyf-raydium/src/wind_down.rs:110. Error Code: NeedUserOrAdminPermission. Error Number: 6027. Error Message: Need user or strategy admin signature.",
+    "Program 2nAAsYdXF3eTQzaeUQS3fr4o782dDg8L28mX39Wr5j8N consumed 20518 of 200000 compute units",
+    "Program 2nAAsYdXF3eTQzaeUQS3fr4o782dDg8L28mX39Wr5j8N failed: custom program error: 0x178b"
+   ]
+  },
+  {
+   "label": "ATTACK-B: unrelated signer + unrelated destinations",
+   "err": {
+    "InstructionError": [
+     0,
+     {
+      "Custom": 2003
+     }
+    ]
+   },
+   "units": 18840,
+   "logs": [
+    "Program 2nAAsYdXF3eTQzaeUQS3fr4o782dDg8L28mX39Wr5j8N invoke [1]",
+    "Program log: Instruction: SwapAndWithdraw",
+    "Program log: AnchorError caused by account: user_tkn_account_0. Error Code: ConstraintRaw. Error Number: 2003. Error Message: A raw constraint was violated.",
+    "Program 2nAAsYdXF3eTQzaeUQS3fr4o782dDg8L28mX39Wr5j8N consumed 18840 of 200000 compute units",
+    "Program 2nAAsYdXF3eTQzaeUQS3fr4o782dDg8L28mX39Wr5j8N failed: custom program error: 0x7d3"
+   ]
+  }
+ ]
+}
