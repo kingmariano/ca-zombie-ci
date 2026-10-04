@@ -1,0 +1,205 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+pragma solidity =0.8.19;
+
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {Ownable2StepUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
+
+import {IMinter} from "./interfaces/IMinter.sol";
+import {INest} from "./interfaces/INest.sol";
+import {IVoter} from "./interfaces/IVoter.sol";
+import {IVotingEscrow} from "./interfaces/IVotingEscrow.sol";
+
+// codifies the minting rules as per ve(3,3), abstracted from the token to support any token that allows minting
+
+contract MinterUpgradeable is IMinter, Ownable2StepUpgradeable {
+    uint256 public constant PRECISION = 10_000; // 10,000 = 100%
+    uint256 public constant MAX_TEAM_RATE = 500; // 500 bips =  5%
+    uint256 public constant WEEK = 86400 * 7; // allows minting once per week (reset every Thursday 00:00 UTC)
+    uint256 public constant TAIL_EMISSION = 20; // 0.2%
+    uint256 public constant MAX_EMISSION_ADJUSTMENT = 2_500; // +/- 25% bounds expressed in bips
+
+    bool public isFirstMint;
+    bool public isStarted;
+
+    uint256 public decayRate;
+    uint256 public inflationRate;
+    uint256 public inflationPeriodCount;
+
+    uint256 public teamRate;
+    uint256 public weekly;
+    uint256 public active_period;
+    uint256 public lastInflationPeriod;
+
+    INest public nest;
+    IVoter public voter;
+    IVotingEscrow public ve;
+
+    uint256 public startEmissionDistributionTimestamp;
+    int256 public epochEmissionAdjustmentBps;
+
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(
+        address voter_, // the voting & distribution system
+        address ve_
+    ) external initializer {
+        __Ownable2Step_init();
+
+        isFirstMint = true;
+
+        teamRate = MAX_TEAM_RATE;
+        decayRate = 100; // 1%
+        inflationRate = 150; // 1.5%
+        inflationPeriodCount = 12;
+
+        active_period = ((block.timestamp + (2 * WEEK)) / WEEK) * WEEK;
+        weekly = 20_000_000 * 1e18; // represents a starting weekly emission of 20_000_000 Nest (2% from 1_000_000_000) (Nest has 18 decimals)
+
+        nest = INest(IVotingEscrow(ve_).token());
+        voter = IVoter(voter_);
+        ve = IVotingEscrow(ve_);
+    }
+
+    function start() external onlyOwner {
+        require(!isStarted, "Already started");
+        isStarted = true;
+        active_period = ((block.timestamp) / WEEK) * WEEK; // allow minter.update_period() to mint new emissions THIS Thursday
+        lastInflationPeriod = active_period + inflationPeriodCount * WEEK;
+    }
+
+    function setVoter(address __voter) external onlyOwner {
+        require(__voter != address(0));
+        voter = IVoter(__voter);
+    }
+
+    function setVotingEscrow(address votingEscrow_) external onlyOwner {
+        require(votingEscrow_ != address(0));
+        ve = IVotingEscrow(votingEscrow_);
+    }
+
+    function setTeamRate(uint256 _teamRate) external onlyOwner {
+        require(_teamRate <= MAX_TEAM_RATE, "rate too high");
+        teamRate = _teamRate;
+    }
+
+    function setDecayRate(uint256 _decayRate) external onlyOwner {
+        require(_decayRate <= PRECISION, "rate too high");
+        decayRate = _decayRate;
+    }
+
+    function setInflationRate(uint256 _inflationRate) external onlyOwner {
+        require(_inflationRate <= PRECISION, "rate too high");
+        inflationRate = _inflationRate;
+    }
+
+    function setEpochEmissionAdjustmentBps(int256 adjustmentBps) external onlyOwner {
+        require(
+            adjustmentBps >= -int256(MAX_EMISSION_ADJUSTMENT) && adjustmentBps <= int256(MAX_EMISSION_ADJUSTMENT),
+            "adjustment bps out of range"
+        );
+
+        epochEmissionAdjustmentBps = adjustmentBps;
+        emit SetEpochEmissionAdjustmentBps(adjustmentBps);
+    }
+
+    // calculate circulating supply as total token supply - locked supply
+    function circulating_supply() public view returns (uint256) {
+        return nest.totalSupply() - nest.balanceOf(address(ve));
+    }
+
+    function circulating_emission() public view returns (uint) {
+        return (circulating_supply() * TAIL_EMISSION) / PRECISION;
+    }
+
+    function calculate_emission_decay() public view returns (uint256) {
+        return (weekly * decayRate) / PRECISION;
+    }
+
+    function calculate_emission_inflation() public view returns (uint256) {
+        return (weekly * inflationRate) / PRECISION;
+    }
+
+    // weekly emission takes the max of calculated (aka target) emission versus circulating tail end emission
+    function weekly_emission() public view returns (uint256) {
+        uint256 weeklyCache = weekly;
+        if (active_period <= lastInflationPeriod) {
+            return calculate_emission_inflation() + weeklyCache;
+        } else {
+            uint256 decay = calculate_emission_decay();
+            return Math.max(weeklyCache < decay ? 0 : weeklyCache - decay, circulating_emission());
+        }
+    }
+
+    // update period can only be called once per cycle (1 week)
+    function update_period() external returns (uint256) {
+        uint256 _period = active_period;
+        if (block.timestamp >= _period + WEEK && isStarted) {
+            // only trigger if new week
+            _period = (block.timestamp / WEEK) * WEEK;
+            active_period = _period;
+
+            if (block.timestamp >= startEmissionDistributionTimestamp) {
+                if (!isFirstMint) {
+                    weekly = weekly_emission();
+                } else {
+                    isFirstMint = false;
+                }
+
+                uint256 weeklyCache = weekly;
+                int256 epochEmissionAdjustmentBpsCache = epochEmissionAdjustmentBps;
+                uint256 adjustedWeekly = calculateEmissionWithAdjustment(weeklyCache, epochEmissionAdjustmentBpsCache);
+                uint256 teamEmissions = (adjustedWeekly * teamRate) / PRECISION;
+                uint256 gauge = adjustedWeekly - teamEmissions;
+
+                uint256 currentBalance = nest.balanceOf(address(this));
+                if (currentBalance < adjustedWeekly) {
+                    nest.mint(address(this), adjustedWeekly - currentBalance);
+                }
+
+                if(teamEmissions > 0) {
+                    require(nest.transfer(owner(), teamEmissions));
+                }
+
+                nest.approve(address(voter), gauge);
+                voter.notifyRewardAmount(gauge);
+                
+                epochEmissionAdjustmentBps = 0;
+
+                emit Mint(msg.sender, adjustedWeekly, circulating_supply());
+                emit Emission(_period, epochEmissionAdjustmentBpsCache, weeklyCache, adjustedWeekly, teamEmissions, gauge);
+            }
+        }
+        return _period;
+    }
+
+    function check() external view returns (bool) {
+        uint256 _period = active_period;
+        return (block.timestamp >= _period + WEEK && isStarted);
+    }
+
+    function period() external view returns (uint256) {
+        return (block.timestamp / WEEK) * WEEK;
+    }
+
+    function calculateEmissionWithAdjustment(uint256 amount, int256 adjustmentBps) public pure returns (uint256) {
+        if (adjustmentBps == 0) {
+            return amount;
+        }
+
+        int256 precision = int256(PRECISION);
+        int256 adjusted = (int256(amount) * (precision + adjustmentBps)) / precision;
+        if(adjusted < 0) {
+            return 0;
+        }
+        return uint256(adjusted);
+    }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     */
+    uint256[50] private __gap;
+}

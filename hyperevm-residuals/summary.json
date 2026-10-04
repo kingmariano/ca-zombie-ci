@@ -1,0 +1,51 @@
+{
+  "finding": "H-32 / H-33",
+  "title": "HyperEVM residuals — Nest (vaults) & Hybra Finance V4: adapter/version verification and unprivileged-extraction audit",
+  "chains": ["hyperevm"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "medium",
+  "categories": {
+    "E-U": 0,
+    "H-O": 57839667,
+    "P": 0,
+    "S": 0
+  },
+  "latest_block": 47625516,
+  "block_numbers": {"hyperevm": 47625516},
+  "targets_checked": 433,
+  "live_targets": 2,
+  "closed_reasons": [
+    "Nest FeesVault.claimFees is gauge-matching or CLAIM_FEES_CALLER_ROLE-gated; emergencyRecoverERC20 is FEES_VAULT_ADMINISTRATOR_ROLE-gated",
+    "Nest Algebra CL collectProtocolFees/collectAllProtocolFees are owner-gated in deployed source",
+    "Hybra CLFactory collectProtocolFees/collectAllProtocolFees are owner-gated (verified + fork PoC)",
+    "Hybra GaugeCL.claimFees only forwards clPool.collectFees() to the internal bribe (M-06 fix present); getReward/notifyRewardAmount are onlyDistribution",
+    "Hybra gHYBR deployed code contains H-01 fix (shares computed on pre-deposit ratio) and M-03 fix (ZERO_SHARES check)",
+    "Hybra gauge deposit/withdraw require NFT ownership / staked-position ownership"
+  ],
+  "poc": {
+    "tests_passed": 7,
+    "tests_total": 7,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37182609586",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37189620212"
+    ]
+  },
+  "key_facts": [
+    "H-32: DefiLlama 'nest CL' adapter (projects/nest-platform/index.js, removed Feb-2026) = uniV3Export on Algebra factory 0xF77Bd082c627aA54591cF2f2EaA811fd1AB3b1F3; counts V3 pool token balances only",
+    "H-32: measured at block 47,620,218 — pool token balances $27,755,149.24 (V3 $27,386,351.59 + V2 $368,797.63), fee vaults $4,036.88, gauge dust $10,813.80 = $27,769,999.92 protocol-held excl. veNEST",
+    "H-32: veNEST holds 1,626,144,414.87 NEST = $27,847,667.18 (86.12% of 1.888B supply); total live custody $55,617,667.10 — DefiLlama undercounts (it also omits the 3 V2 pools: llama V3-only $27,300,109.94 vs on-chain V3-only $27,386,351.59)",
+    "H-32: 72/72 pools, 55 gauges and 72 fee vaults verified against Voter/FeesVaultFactory; independent on-chain pool enumeration found none beyond the 72-pool list; core owners are Safe-style proxies (171-byte code)",
+    "H-33: DefiLlama 'hybra-v4' adapter = getUniTVL on CLFactory 0x32b9dA73215255d50D84FeB51540B75acC1324c2; measured 194 pools = $833,288.73 (47,616,846) / $828,632.30 (47,627,341) — coverage accurate",
+    "H-33: Code4rena 2025-10-hybra-finance audit exists (1 High + 9 Medium; mitigation reviews Nov-2025); deployed gHYBR/GaugeCL contain H-01/M-03/M-06 fixes; M-09 + S-470 unmitigated (DoS/design, no theft path found)",
+    "H-33: H-01 verified behaviorally on the fork — depositing 1,000 HYBR minted exactly the pre-deposit-ratio shares (106.383 gHYBR); one transient VotingEscrow.deposit_for revert seen under a rate-limited RPC was not reproducible",
+    "H-33: 1,840,252,420.17 HYBR (87.2% of 2.110B supply) locked in veHYBR 0xd7ed7792f71f3920dba01c544639fd546d87f4fd = $1.39M; gHYBR totalAssets 175,602,804.56 HYBR (subset of the ve lock); system live custody ≈ $2.22M",
+    "No permissionless drain found in any reviewed surface; remaining uncovered areas are Voter/GaugeRewarder/VotingEscrow math fuzzing (Nest) and VoterV3 poke/Minter math (Hybra)"
+  ],
+  "caveats": [
+    "Repeated infrastructure restarts interrupted the delegated audit pass; the E-U=$0 verdict is medium confidence, not high — uncovered surfaces are listed in README sections 1.4/2.5",
+    "H-O counts normal user custody (LP pools + ve locks), not a vulnerability: Nest $55,617,667, Hybra $2,222,000; combined $57,839,667",
+    "NEST and HYBR are low-liquidity tokens; locked-value figures scale with the stated DefiLlama prices; NEST price dominates the Nest H-O figure (±$0.005 -> ~±$8.1M)",
+    "Ichi/Steer third-party vaults excluded; no mainnet transactions were sent"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from both HyperEVM protocols (medium confidence): DefiLlama's $22.0M Nest figure is V3-pool-only and undercounts $27.85M of veNEST locks plus the 3 V2 pools, Hybra's $431K sample is accurate at $833K live, and every reviewed extraction path (fee vaults, protocol-fee collection, gHYBR share math, gauge claimFees) is gated or already mitigated in the deployed contracts."
+}
