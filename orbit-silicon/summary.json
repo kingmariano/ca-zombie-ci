@@ -1,0 +1,39 @@
+{
+  "finding": "L-1 / C-ORBIT-SILICON",
+  "title": "Orbit Chain ORC staking on Silicon + Silicon Network forced exit",
+  "chains": ["silicon-2355", "ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 10454397, "P": 0, "S": 0},
+  "latest_block": 21251675,
+  "block_numbers": {"silicon-2355": 21251675, "ethereum": 26121900},
+  "targets_checked": 8,
+  "live_targets": 4,
+  "closed_reasons": [
+    "AgglayerBridge claims require a GlobalExitRoot posted by the permissioned aggregator plus two merkle proofs and a nullifier; forged claims revert GlobalExitRootInvalid (fork-tested D2/D3)",
+    "OrbitVoting.unvoting() checks the caller's own delegated stake and reverts 'amount is too big' for an attacker (fork-tested B1)",
+    "OrbitVoting.claimUnvoting() pays only msg.sender's own pending queue after lockup; attacker reverts 'all claimed' (fork-tested B2)",
+    "OrbitGovernor emergencyTransfer/execute/setters revert 'not owner' (owner = 2-of-4 multisig via proxy admin; fork-tested B3/B4)",
+    "Wrapped ORC mint/burn restricted to the canonical L2 bridge (fork-tested B5)",
+    "distribute() is permissionless but transfers inflation rewards to the Voting contract; caller receives nothing (trace + fork-tested C2)"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 11, "ci_run_urls": []},
+  "key_facts": [
+    "Silicon L2 (chain id 2355, Polygon CDK validium) is still producing blocks (~2s) and the canonical exit pipeline works both ways as of 2026-10-04: withdrawal #2523 claimed on L1 at block 26118655; L2 bridge root == L1 manager lastLocalExitRoot(10)",
+    "Live Silicon wrapped value: USDC 2,653,285.47; USDT 1,821,645.27; WBTC 32.1584; DAI 567,525.06; ORC 327,435,741.47; plus 69 more Ethereum-origin wrapped tokens; priced total $8,102,804 (DefiLlama 2026-10-04)",
+    "Net ETH bridged on Silicon = 864.876 ETH ($2,351,593) measured as the CDK gas-token pre-mint delta (genesis 2^128-1); total live ≈ $10,454,397",
+    "L1 shared Agglayer bridge holds USDC 4,621,571 / USDT 7,058,188 / WBTC 47.04 / ETH 4,477.77 / DAI 1,214,011 / ORC 331,239,726 for all CDK chains; Silicon's claims are covered today",
+    "OrbitVoting (0x33fa9a4f...) totalStaking = 37,985,788.55 ORC, totalPending = 2,246,622.66 ORC -> 40,232,411 ORC locked ≈ $20,220; the article's 94.91M ORC double-counts delegated voting power",
+    "The 'no UNVOTE path' claim is a front-end gap: unvoting()/claimUnvoting() exist and work (fork test C1); a real user unvoted 209,527 ORC on 2026-10-04 (tx 0x20112650b68c55397107f7a00b70d80abe83dcec966b1d87ca5785f4424ae81e)",
+    "Staked ORC lockup = 7 days (604800s); ORC staking is H-O (holder self-service), not S, while the chain and UI remain reachable",
+    "Privileged control: Voting+Governor proxy admins owned by 2-of-4 multisig 0xFCf517857EFE85c780fD5DB9a0F63cbF844d7b33 (required()=2); Agglayer bridge upgradeable by Polygon admin/security council",
+    "Forward risk (not attacker profit): if the aggregator stops posting pessimistic certificates before 2026-12-31 12:00 KST, pending exits freeze and unexited value becomes S"
+  ],
+  "caveats": [
+    "ORC price is thin/volatile; H-O figure uses DefiLlama $0.0005026 and excludes unpriced small wrapped tokens",
+    "The $10.45M is user-owned wrapped value, not protocol-owned funds; it is recoverable by holders via self-service exits, not extractable by attackers",
+    "Orbit Bridge (Ozys) side-check was still running at report time; any live unprivileged path there would be a separate finding",
+    "Exit liveness was verified at 2026-10-04 blocks; it depends on continued aggregator activity"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live: every candidate path is gated by aggregator-posted GlobalExitRoots, self-only staking accounting, or owner checks; ~$10.45M of Silicon wrapped value plus ~$20K staked ORC is holder-recoverable (H-O) before the 2026-12-31 forced-exit deadline."
+}
