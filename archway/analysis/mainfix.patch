@@ -1,0 +1,26 @@
+From c704734dbb0a0993f4d46400d712c049d062593b Mon Sep 17 00:00:00 2001
+From: Christoph Otter <chris@confio.gmbh>
+Date: Thu, 28 Nov 2024 19:00:45 +0700
+Subject: [PATCH] Fix
+
+---
+ libwasmvm/src/memory.rs | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/libwasmvm/src/memory.rs b/libwasmvm/src/memory.rs
+index 9483ec37b..7a57e914d 100644
+--- a/libwasmvm/src/memory.rs
++++ b/libwasmvm/src/memory.rs
+@@ -79,7 +79,11 @@ impl U8SliceView {
+         match source {
+             Some(data) => Self {
+                 is_none: false,
+-                ptr: data.as_ptr(),
++                ptr: if data.is_empty() {
++                    std::ptr::null::<u8>()
++                } else {
++                    data.as_ptr()
++                },
+                 len: data.len(),
+             },
+             None => Self {

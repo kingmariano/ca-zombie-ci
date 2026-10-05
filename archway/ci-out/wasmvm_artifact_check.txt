@@ -1,0 +1,21 @@
+### A. module zip inspection
+
+== wasmvm v1.5.5 module zip sha256=669a4752ff88402db67985ef95f8b2e63185a4d4d673df6d4b514d6eae71909e
+  cosmwasm-vm pin: v1.5.8
+  Cargo.lock cosmwasm-vm: 1.5.8
+  Cargo.lock wasmer: 4.2.2
+  memory.rs CWA-2025-001 empty-slice fix present: False
+  prebuilt libwasmvm.x86_64.so in module: True 11459088 bytes
+
+== wasmvm v1.5.8 module zip sha256=9745c2acdb5c2f42b4cc4277de03aceeb58f6978017887863f52e0b82ad3085a
+  cosmwasm-vm pin: v1.5.10
+  Cargo.lock cosmwasm-vm: 1.5.10
+  Cargo.lock wasmer: 4.2.2
+  memory.rs CWA-2025-001 empty-slice fix present: True
+  prebuilt libwasmvm.x86_64.so in module: True 11467552 bytes
+### B. linked-lib version smoke test
+== go run with wasmvm v1.5.5
+linked libwasmvm version: "1.5.5" (err=<nil>)
+== go run with wasmvm v1.5.8
+linked libwasmvm version: "1.5.8" (err=<nil>)
+done

@@ -1,0 +1,55 @@
+{
+  "finding": "C2-09",
+  "title": "Archway (archway-1): unpatched wasmvm v1.5.5 — permissionless halt vectors, critical Wasmer sandbox-escape (CWA-2026-006) and governance-capture economics",
+  "chains": ["archway-1"],
+  "headline_extractable_usd": 18382.26,
+  "headline_confidence": "medium",
+  "categories": {"E-U": 18382.26, "H-O": 0, "P": 36958.61, "S": 17338.08},
+  "latest_block": 17644367,
+  "block_numbers": {"archway-1": 17644367},
+  "targets_checked": 9644,
+  "live_targets": 9531,
+  "closed_reasons": [
+    "Governance capture: no gov-administered wasm contracts (0/9644); Astrovault/Eris/Liquid/Balanced are dev-administered",
+    "Treasury 45,253,663 ARCH has no spend path in v10.1.0 (x/rewards TreasuryCollector proto: 'no mechanism is available to withdraw ATM')",
+    "Chain halt is purely destructive: IBC transfer escrow $0, no attacker-payable liquidations/forced exits",
+    "Capture EV negative under normal turnout: CP $36,959 vs $42,502 (majority) / $56,613 (veto-proof) nominal cost; on-chain ARCH float only ~9.8M ARCH",
+    "Foundation/vesting/grants contracts (345.2M ARCH) not permissionlessly drainable through any identified path"
+  ],
+  "poc": {
+    "tests_passed": 4,
+    "tests_total": 4,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37338418163",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37343115254"
+    ]
+  },
+  "key_facts": [
+    "Live node build_deps: app archway v10.1.0, wasmvm v1.5.5 sum h1:XlZI3xO5iUhiBqMiyzsrWEfUtk5gcBMNYIdHnsTB+NI=, wasmd v0.51.0, ibc-go v8.7.0 (h 17,644,367)",
+    "sum.golang.org hash for wasmvm v1.5.5 is byte-identical to the live build_deps sum; module zip sha256 669a4752ff88402db67985ef95f8b2e63185a4d4d673df6d4b514d6eae71909e",
+    "Deployed artifact (hash-matched): libwasmvm/src/memory.rs CWA-2025-001 fix ABSENT; cosmwasm-vm v1.5.8 (lacks CWA-2025-002 gas charges, fixed in v1.5.10); Wasmer 4.2.2",
+    "wasmvm v1.5.8 (patched floor) pins cosmwasm-vm v1.5.10 and has the memory.rs fix; Wasmer 7.x only in 2.2.9/2.3.5/3.0.8 (2026-09-28)",
+    "code_upload_access = Everybody and instantiate_default_permission = Everybody; 889 codes by 91 creators, 9,644 contract instances",
+    "CWA-2026-006 (Critical, fund loss, disclosed 2026-09-28): Wasmer Singlepass sandbox escape -> native code in node process -> unauthorized minting of native tokens; unmaintained wasmvm lines (1.5.5) affected, no patch for that line, no config-only mitigation",
+    "CWA-2025-001/002 (crash/slowdown), CWA-2025-007 (reply-recursion stack overflow crash, wasmd <=0.54.2), CWA-2026-003 (block delays, wasmd <=0.54.7), CWA-2026-005 (large-locals stall) all affect the deployed stack; $0 direct extraction",
+    "Governance params (abci decode): quorum 0.334, threshold 0.5, veto 0.334, voting 7d, min deposit 5,000 ARCH, expedited unusable (denom 'stake')",
+    "Bonded 221,867,913.393 ARCH ($85,004); community pool 96,464,698.230 ARCH ($36,959); treasury 45,253,663.343 ARCH ($17,338, not spendable); total supply 1,178,684,426.923 ARCH",
+    "Capture thresholds: quorum-only 74,103,883 ARCH ($28,391); majority 110,933,957 ($42,502); veto-proof 147,764,030 ($56,613)",
+    "Recent turnout ~90-100% of bonded (proposals #59 249.1M yes, #60 201.7M yes); historical CP spends #52/#53 rejected (no 191.0M/180.5M)",
+    "0/9,644 wasm contracts have admin = gov module archway10d07y265gmmuvt4z0w9aw880jnsr700j0f0puy",
+    "Measured swap-extractable hard/major assets: $15,925 in 189 pool-like contracts (Astrovault pools $15,411 priced; Bolt/Balanced/Liquid/PampIt ~$505) + $2,458 Osmosis ARCH-pool other side",
+    "Contract-held value $162,869 ($145,020 ARCH, $15,925 USDC/USDT, $3,949 majors); largest holders are Eco Grants 1-4 (227.6M ARCH), genesis-airdrop (32.7M), vesting (~46M+)",
+    "Archway's latest release v10.1.1 (2026-01-20) still pins wasmvm v1.5.5; last main-branch commit 2025-03-19; no emergency governance action since the 2026-09-28 disclosure (latest proposal #60, 2026-01-17)",
+    "IBC transfer escrow module account balance: 0"
+  ],
+  "caveats": [
+    "CWA-2026-006 exploit trigger is not public; extraction amount is an advisory-based bound, not a demonstrated end-to-end theft",
+    "The $18,374 measured bound assumes minted ARCH can drain all ARCH-connected pools; long-tail assets ($95k of DefiLlama's $110,972 Astrovault TVL) have unverified external exit liquidity",
+    "USD values point-in-time 2026-10-05; ARCH $0.00038313 (DefiLlama) / $0.00036736 (CoinGecko)",
+    "CEX liquidity (capture accumulation and minted-ARCH dumping) is not measurable from on-chain data",
+    "No crash/mint PoC reproduced (triggers private); no source review of the 9,644 contracts beyond on-chain contract_info/admin/label and balances",
+    "Contract counts vary between runs (8,232 in the final run vs 9,644 union) because code 31 (EvolvNFT factory) pagination is unstable; the missing instances hold ~$0, value totals differ only by the ARCH price feed ($0.00038313 vs $0.00036736)",
+    "Read-only research; no transactions signed or sent on any network"
+  ],
+  "one_liner": "External unprivileged attacker can store+instantiate a malicious contract on Archway today (wasmvm v1.5.5, open upload) and, per vendor advisory CWA-2026-006, escape the Wasmer sandbox to mint native ARCH / cause fund loss — measured swap-extractable bound $18.4k, nominal ~$111k, $162.9k contract-held exposure; five unpatched permissionless halt/stall vectors remain ($0 extraction), and governance capture of the $36,959 community pool costs $28.4k-$56.6k nominal against high turnout, with the $17.3k treasury and all major contracts unreachable by gov."
+}

@@ -1,0 +1,110 @@
+# wasmvm v1.5.7 -> v1.5.8 diff (the CWA-2025-001/002 fix release)
+# files changed:
+Files wasmvm-1.5.7/go.mod and wasmvm-1.5.8/go.mod differ
+Files wasmvm-1.5.7/internal/api/lib.go and wasmvm-1.5.8/internal/api/lib.go differ
+Files wasmvm-1.5.7/internal/api/lib_test.go and wasmvm-1.5.8/internal/api/lib_test.go differ
+Files wasmvm-1.5.7/internal/api/libwasmvm.aarch64.so and wasmvm-1.5.8/internal/api/libwasmvm.aarch64.so differ
+Files wasmvm-1.5.7/internal/api/libwasmvm.dylib and wasmvm-1.5.8/internal/api/libwasmvm.dylib differ
+Files wasmvm-1.5.7/internal/api/libwasmvm.x86_64.so and wasmvm-1.5.8/internal/api/libwasmvm.x86_64.so differ
+Files wasmvm-1.5.7/libwasmvm/Cargo.lock and wasmvm-1.5.8/libwasmvm/Cargo.lock differ
+Files wasmvm-1.5.7/libwasmvm/Cargo.toml and wasmvm-1.5.8/libwasmvm/Cargo.toml differ
+Files wasmvm-1.5.7/libwasmvm/src/memory.rs and wasmvm-1.5.8/libwasmvm/src/memory.rs differ
+
+## libwasmvm/src/memory.rs
+--- wasmvm-1.5.7/libwasmvm/src/memory.rs	2025-01-07 17:46:34.000000000 +0100
++++ wasmvm-1.5.8/libwasmvm/src/memory.rs	2025-02-04 10:53:28.000000000 +0100
+@@ -79,7 +79,11 @@
+         match source {
+             Some(data) => Self {
+                 is_none: false,
+-                ptr: data.as_ptr(),
++                ptr: if data.is_empty() {
++                    std::ptr::null::<u8>()
++                } else {
++                    data.as_ptr()
++                },
+                 len: data.len(),
+             },
+             None => Self {
+
+## internal/api/lib_test.go (gas expectations changed => CWA-2025-002 gas fix)
+--- wasmvm-1.5.7/internal/api/lib_test.go	2025-01-07 17:46:34.000000000 +0100
++++ wasmvm-1.5.8/internal/api/lib_test.go	2025-02-04 10:53:28.000000000 +0100
+@@ -1,6 +1,7 @@
+ package api
+ 
+ import (
++	"bytes"
+ 	"crypto/sha256"
+ 	"encoding/hex"
+ 	"encoding/json"
+@@ -142,6 +143,28 @@
+ 	require.Equal(t, wasm, code)
+ }
+ 
++func TestStoreCodeUncheckedWorksWithInvalidWasm(t *testing.T) {
++	cache, cleanup := withCache(t)
++	defer cleanup()
++
++	wasm, err := os.ReadFile("../../testdata/hackatom.wasm")
++	require.NoError(t, err)
++
++	// Look for "interface_version_8" in the wasm file and replace it with "interface_version_9".
++	// This makes the wasm file invalid.
++	wasm = bytes.Replace(wasm, []byte("interface_version_8"), []byte("interface_version_9"), 1)
++
++	// StoreCode should fail
++	_, err = StoreCode(cache, wasm, true)
++	require.ErrorContains(t, err, "Wasm contract has unknown interface_version_* marker export")
++
++	// StoreCodeUnchecked should not fail
++	checksum, err := StoreCodeUnchecked(cache, wasm)
++	require.NoError(t, err)
++	expectedChecksum := sha256.Sum256(wasm)
++	assert.Equal(t, expectedChecksum[:], checksum)
++}
++
+ func TestPin(t *testing.T) {
+ 	cache, cleanup := withCache(t)
+ 	defer cleanup()
+@@ -363,7 +386,7 @@
+ 	res, cost, err := Instantiate(cache, checksum, env, info, msg, &igasMeter, store, api, &querier, TESTING_GAS_LIMIT, TESTING_PRINT_DEBUG)
+ 	require.NoError(t, err)
+ 	requireOkResponse(t, res, 0)
+-	assert.Equal(t, uint64(0x2d4998b04), cost.UsedInternally)
++	assert.Equal(t, uint64(0x2d4ab3b2e), cost.UsedInternally)
+ 
+ 	var result types.ContractResult
+ 	err = json.Unmarshal(res, &result)
+@@ -394,7 +417,7 @@
+ 	diff := time.Since(start)
+ 	require.NoError(t, err)
+ 	requireOkResponse(t, res, 0)
+-	assert.Equal(t, uint64(0x2d4998b04), cost.UsedInternally)
++	assert.Equal(t, uint64(0x2d4ab3b2e), cost.UsedInternally)
+ 	t.Logf("Time (%d gas): %s\n", cost.UsedInternally, diff)
+ 
+ 	// execute with the same store
+@@ -407,7 +430,7 @@
+ 	res, cost, err = Execute(cache, checksum, env, info, []byte(`{"release":{}}`), &igasMeter2, store, api, &querier, TESTING_GAS_LIMIT, TESTING_PRINT_DEBUG)
+ 	diff = time.Since(start)
+ 	require.NoError(t, err)
+-	assert.Equal(t, uint64(0x4f2816338), cost.UsedInternally)
++	assert.Equal(t, uint64(0x4f28bc657), cost.UsedInternally)
+ 	t.Logf("Time (%d gas): %s\n", cost.UsedInternally, diff)
+ 
+ 	// make sure it read the balance properly and we got 250 atoms
+@@ -515,7 +538,7 @@
+ 	diff := time.Since(start)
+ 	require.NoError(t, err)
+ 	requireOkResponse(t, res, 0)
+-	assert.Equal(t, uint64(0x1dc65a058), cost.UsedInternally)
++	assert.Equal(t, uint64(0x1dc68c972), cost.UsedInternally)
+ 	t.Logf("Time (%d gas): %s\n", cost.UsedInternally, diff)
+ 
+ 	// execute a cpu loop
+@@ -666,7 +689,7 @@
+ 	require.NoError(t, err)
+ 	requireOkResponse(t, res, 0)
+ 	// we now count wasm gas charges and db writes
+-	assert.Equal(t, uint64(0x2cfaf612c), cost.UsedInternally)
