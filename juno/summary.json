@@ -1,0 +1,45 @@
+{
+  "finding": "C2-07",
+  "title": "Juno governance capture — economically dead: capture stake (14.85M–29.6M JUNO) exceeds all JUNO market liquidity (4.77M JUNO)",
+  "chains": ["juno-1", "osmosis"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 195056.6, "S": 0, "capture": 0},
+  "latest_block": 42397750,
+  "block_numbers": {"juno-1": 42397750, "juno-1_snapshot_props": 42396945, "juno-1_child_verify": 42397188},
+  "targets_checked": 4,
+  "live_targets": 2,
+  "closed_reasons": [
+    "quorum is 33.4% of total bonded at tally time (SDK v0.53.7 tally.go): solo quorum needs B >= T0*0.334/0.666 = 14,850,270 JUNO, not the naive 9.89M",
+    "all JUNO on every market = 4,773,329 JUNO (~$42.6k): Osmosis GAMM 1,768,867 + CL 546,467 + WYND 2,430,156 + Loop 17,516 + White Whale 10,309; 3.1x short of solo quorum; buying 15M JUNO is impossible at any price",
+    "validators routinely vote 16.5-24.5M JUNO (live props 378/379: 23.1-23.7M yes, 0 no) -> a hostile CP drain needs >23.5M JUNO and faces 33.4% veto",
+    "CP is 96% illiquid JUNO (20,491,874 JUNO paper $183.1k); realizable = $11,990.71 hard (USDC/DAI/ATOM/LUNA) + $29,069-$38,374 from dumping 20.49M JUNO into all DEX liquidity; net negative at any spot-priced acquisition",
+    "no CEX market: CoinGecko shows only 3 Osmosis tickers (~$663-668/24h); Kraken delisting Dec 2026, Crypto.com delisted",
+    "malicious software-upgrade leg requires >50% votes AND 25 validators to adopt a malicious binary (public plan/checksum, Discord coordination) — not E-U"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37342400202"]},
+  "key_facts": [
+    "gov params (gRPC verbatim): quorum 0.334, threshold 0.5 (strict >), veto 0.334, voting_period 432000s (5d), min_deposit 5,000 JUNO, min_initial_deposit_ratio 0.2, expedited 86400s/0.667/10,000 JUNO, burn_vote_veto true",
+    "bonded 29,611,617 JUNO; not bonded 24,986,243; supply 142,468,456 JUNO; unbonding 28 days; max_validators 25",
+    "CP: 20,491,874 JUNO + 11,515.79 USDC (ibc/4A48 ch-224) + 460.9 DAI (ch-71) + 3.28 ATOM + 163 LUNA + 69 HUAHUA + dust; paper $195,056.60, hard $11,990.71; CP grows ~2.6 JUNO/min",
+    "distribution module account holds 29,035,486 JUNO = CP + 8,543,658 JUNO unclaimed staking rewards; NOT gov-spendable (DistributeFromFeePool only subtracts tracked CP)",
+    "wasm: code_upload_access=Everybody, instantiate Everybody; 5,169 codes (finding said 400+)",
+    "gov module account juno10d07y265gmmuvt4z0w9aw880jnsr700jvss730; wasm codes count via LCD pagination",
+    "JUNO price $0.0089336 (DefiLlama 2026-10-05); market cap ~$712k; JUNO only venue = Osmosis + juno-1 DEXes",
+    "buy curves: 1M JUNO $11,213; 2M $30,975; 3M $74,468; 4M $240,710; 4.7M (all) ~$13.1M; 90% of priced pools = $311,832 (child)",
+    "sell 20,490,612 JUNO -> $29,069 (proportional) to $38,374 (equalized marginal); counterpart liquidity $34.5k-$44.4k",
+    "OTC break-even (conservative $41,060 proceeds): $0.00276 (14.85M), $0.00175 (23.46M), $0.00139 (29.61M); at spot the attack loses $91.6k-$223.5k",
+    "only cheap capture path is social engineering: 5,000 JUNO deposit (~$45) + plausible CP-spend proposal; validators pass 56-98% yes (mostly >90%)",
+    "independent child verification reproduced all numbers and added Loop Finance 17,515.73 + White Whale 10,309.13 JUNO",
+    "Juno chain TVL $50,802 (DefiLlama); bridged majors on juno-1 ~$67.1k USDC + ~$35.5k ATOM + ~$14.0k WETH + dust",
+    "wasmvm v3.0.4 live; v31 upgrade (prop 379, ~Oct 7) ships wasmvm v3.0.8 security release"
+  ],
+  "caveats": [
+    "OTC prices are unobservable; a whale dumping 15M+ JUNO below ~$0.0028 would make capture marginally positive but still requires defenders under-performing and full DEX-liquidity capture",
+    "social-engineering success probability is a subjective social judgment, not measurable on-chain",
+    "pool reserves move block-to-block; CL pool 1097 approximated by reserves; prices at 2026-10-05",
+    "USD values at DefiLlama/CoinGecko 2026-10-05; CP grows ~2.6 JUNO/min so paper value drifts upward while JUNO price drifts",
+    "CI contract scan may be partial if the contract count exceeds the job deadline; gov-admin contract list is bounded by scan coverage"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live: passing a hostile proposal needs 14.85M-29.6M JUNO while all JUNO market liquidity is 4.77M JUNO (~$42.6k), and the community pool is 96% illiquid JUNO (realizable <= ~$41-50k vs >= $132.7k cost at spot); only a $45 social-engineering CP-spend remains as a non-technical tail risk."
+}
