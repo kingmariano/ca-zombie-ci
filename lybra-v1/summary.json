@@ -1,0 +1,42 @@
+{
+  "finding": "C2-03",
+  "title": "Lybra V1 permissionless liquidation bonus: gross $6.1k protocol bonus, ~$0 net cash for a fresh unprivileged attacker (eUSD sourcing equilibrium)",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 26127414,
+  "block_numbers": {"ethereum": 26127193, "ethereum_live_ci": 26127414},
+  "targets_checked": 1,
+  "live_targets": 1,
+  "closed_reasons": [
+    "eUSD market ask on the only live venue (Curve eUSD/USDC) is $1.1085/eUSD at 50 USDC size and rises to $2.61 for the pool's entire USDC - at/above the $1.10 liquidation yield for every size",
+    "unwinding the mint path requires buying back 61,218 eUSD while the entire live eUSD market is ~1.66k eUSD (Curve 1,542 + Uniswap V2 118; V4 adds ~$1.7k at ~$1.077)",
+    "mint path locks 1.6x stETH capital and traps the +10% bonus as position equity at 160% CR (liquidation threshold -6.25% ETH); cash after the run is $30.6k less than capital posted",
+    "flash-loan loop cannot close: liquidation burns the minted eUSD; position stays at 160% CR with zero withdrawable collateral; seized 1.1x < 1.6x principal (fork-proven: withdraw(1 wei) reverts)",
+    "transient windows where Curve dips below $1.10 (observed $1.065-$1.081 at block 26,124,098) are captured by same-block MEV bundles (~$1.5 gross per ~$50 trade, gas-level net)"
+  ],
+  "poc": {
+    "tests_passed": 7,
+    "tests_total": 7,
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37342453507"]
+  },
+  "key_facts": [
+    "17 underwater borrowers (<150% CR) at pinned block 26,127,193; largest 0x2cc05782c77930c65d2450d3298f1d784a89bb00 with 21.113 stETH collateral / 55,244.96 eUSD debt @ 103.21% CR",
+    "880 borrowers enumerated from 2,370 DepositEther events; 399 have debt > 0; totalDepositedEther 61.5705 stETH; totalEUSDCirculation 88,794.47 eUSD; global CR 187.25% (superLiquidation blocked, fork-proven revert)",
+    "GROSS protocol bonus available: 2.266920914315087882 stETH ($6,122) multi-round across all 17 (61,218.199291 eUSD deployed, 409 liquidation rounds, CI fork-proven); 1.2664 stETH ($3,420) one-shot; 1.055662654210712944 stETH ($2,851) single-shot on the largest victim (CI exact)",
+    "CI run 37342453507: 7/7 tests PASS; live tip 26,127,414 price $2,684.58, 18 underwater, global CR 186.15%, Curve ask $1.1085 (50 USDC) - fresh-attacker net still ~$0",
+    "Capital requirement (mint path): 36.27 stETH ($97,949) no-recycle; 11.33 stETH ($30,609) absolute minimum with full recycling; NOT flash-loanable (T3)",
+    "Fresh unprivileged attacker net cash ~= $0: the 10% bonus is fully capitalized into eUSD's price; realization requires eUSD at <= $1.10 which does not exist at size",
+    "Incumbent capture: bots buy eUSD on Curve at $1.065-$1.081 (block 26,124,098) and liquidate atomically via USDC flash loans; 7 distinct provider contracts active in 90d; last liquidation 2026-10-05 05:39 UTC",
+    "80.117 stETH excess LSD income in the vault = par ($1.00) redemption sink via excessIncomeDistribution; caps eUSD at ~$1.10 on the liquidation side",
+    "Latent: any large eUSD holder approving Lybra re-opens the full $6.1k gross; global CR <150% (ETH ~-21%) opens superLiquidation"
+  ],
+  "caveats": [
+    "Gross bonus is an oracle-price figure; selling seized stETH costs ~0.03-0.5% and the 409-round route costs ~$100-400+ gas at 1.39 gwei, both excluded from the gross number",
+    "Point-in-time state: victim set and prices move with ETH; CI job ci/fetch_live_state.py refreshes at the tip (18 underwater at $2,684.58, gross 2.268 stETH)",
+    "Incumbent harvesters' eUSD cost basis (LBR staking rewards vs purchases) is inferred from on-chain flows, not their books",
+    "Fork-only verification; no mainnet transactions sent"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 net cash from Lybra V1 liquidations today: the open 10% bonus (gross $6,122 multi-round) is fully priced into eUSD, the mint path locks 1.6x capital with the gain trapped as illiquid equity, and the only live eUSD market is 18x too small and priced above the bonus."
+}
