@@ -1,0 +1,355 @@
+package keeper
+
+import (
+	"bytes"
+	"encoding/binary"
+	"sort"
+
+	"github.com/cometbft/cometbft/libs/log"
+	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/ethereum/go-ethereum/common"
+	corktypes "github.com/peggyjv/sommelier/v10/x/cork/types"
+	types "github.com/peggyjv/sommelier/v10/x/cork/types/v2"
+)
+
+// Keeper of the oracle store
+type Keeper struct {
+	storeKey      storetypes.StoreKey
+	cdc           codec.BinaryCodec
+	paramSpace    paramtypes.Subspace
+	stakingKeeper corktypes.StakingKeeper
+	gravityKeeper corktypes.GravityKeeper
+	poaKeeper     corktypes.PoaKeeper
+}
+
+// NewKeeper creates a new x/cork Keeper instance
+func NewKeeper(
+	cdc codec.BinaryCodec, key storetypes.StoreKey, paramSpace paramtypes.Subspace,
+	stakingKeeper corktypes.StakingKeeper, gravityKeeper corktypes.GravityKeeper,
+) Keeper {
+	// set KeyTable if it has not already been set
+	if !paramSpace.HasKeyTable() {
+		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
+	}
+
+	return Keeper{
+		storeKey:      key,
+		cdc:           cdc,
+		paramSpace:    paramSpace,
+		stakingKeeper: stakingKeeper,
+		gravityKeeper: gravityKeeper,
+	}
+}
+
+// SetPoaKeeper wires the read-only PoA safe-mode dependency post-construction
+// (PoA is constructed before cork in app.go).
+func (k *Keeper) SetPoaKeeper(poaKeeper corktypes.PoaKeeper) {
+	k.poaKeeper = poaKeeper
+}
+
+// inSafeMode reports whether the chain is in authority-empty safe mode, in which
+// case cork operations are frozen. A nil PoA keeper means no freeze.
+func (k Keeper) inSafeMode(ctx sdk.Context) bool {
+	return k.poaKeeper != nil && k.poaKeeper.SafeModeActive(ctx)
+}
+
+// Logger returns a module-specific logger.
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", "x/"+corktypes.ModuleName)
+}
+
+/////////////////////
+// Scheduled Corks //
+/////////////////////
+
+// SetAuthorityCork stores a cork scheduled by the cork authority for execution
+// at blockHeight and returns its ID.
+func (k Keeper) SetAuthorityCork(ctx sdk.Context, blockHeight uint64, cork types.Cork) []byte {
+	id := cork.IDHash(blockHeight)
+	bz := k.cdc.MustMarshal(&cork)
+	ctx.KVStore(k.storeKey).Set(
+		corktypes.GetAuthorityCorkKey(blockHeight, id, common.HexToAddress(cork.TargetContractAddress)),
+		bz,
+	)
+	return id
+}
+
+// DeleteAuthorityCork removes a scheduled authority cork.
+func (k Keeper) DeleteAuthorityCork(ctx sdk.Context, blockHeight uint64, id []byte, contract common.Address) {
+	ctx.KVStore(k.storeKey).Delete(corktypes.GetAuthorityCorkKey(blockHeight, id, contract))
+}
+
+// IterateAuthorityCorksByBlockHeight walks authority corks targeting blockHeight.
+func (k Keeper) IterateAuthorityCorksByBlockHeight(
+	ctx sdk.Context,
+	blockHeight uint64,
+	cb func(blockHeight uint64, id []byte, contract common.Address, cork types.Cork) (stop bool),
+) {
+	prefix := corktypes.GetAuthorityCorkKeyByBlockHeightPrefix(blockHeight)
+	iter := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), prefix)
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		key := iter.Key()
+		// key layout after the 1-byte prefix: height(8) | id(32) | contract(20)
+		idStart := 1 + 8
+		contractStart := idStart + 32
+		// Copy: this sub-slice aliases the iterator's key buffer, and callers
+		// retain the id past iter.Close() (the EndBlocker collects ids, then
+		// deletes after iteration). common.BytesToAddress already copies.
+		id := make([]byte, contractStart-idStart)
+		copy(id, key[idStart:contractStart])
+		contract := common.BytesToAddress(key[contractStart:])
+
+		var cork types.Cork
+		k.cdc.MustUnmarshal(iter.Value(), &cork)
+
+		if cb(blockHeight, id, contract, cork) {
+			break
+		}
+	}
+}
+
+// IterateAllAuthorityCorks walks every queued authority cork, at any height.
+// Used by ExportGenesis; the per-height iterator is the hot path.
+func (k Keeper) IterateAllAuthorityCorks(ctx sdk.Context, cb func(blockHeight uint64, id []byte, contract common.Address, cork types.Cork) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, corktypes.GetAuthorityCorkKeyPrefix())
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var cork types.Cork
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		blockHeight := sdk.BigEndianToUint64(keyPair.Next(8))
+		// Copy: Next returns a slice into the buffer backed by iter.Key().
+		id := make([]byte, 32)
+		copy(id, keyPair.Next(32))
+		contract := common.BytesToAddress(keyPair.Next(20))
+
+		k.cdc.MustUnmarshal(iter.Value(), &cork)
+		if cb(blockHeight, id, contract, cork) {
+			break
+		}
+	}
+}
+
+// GetAuthorityCorksByBlockHeight returns queued authority corks for one height.
+func (k Keeper) GetAuthorityCorksByBlockHeight(ctx sdk.Context, height uint64) []*types.ScheduledCork {
+	var out []*types.ScheduledCork
+	k.IterateAuthorityCorksByBlockHeight(ctx, height, func(blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {
+		c := cork
+		out = append(out, &types.ScheduledCork{Cork: &c, BlockHeight: blockHeight, Id: id})
+		return false
+	})
+	return out
+}
+
+// GetAuthorityCorksByID returns queued authority corks matching a cork ID.
+func (k Keeper) GetAuthorityCorksByID(ctx sdk.Context, queriedID []byte) []*types.ScheduledCork {
+	var out []*types.ScheduledCork
+	k.IterateAllAuthorityCorks(ctx, func(blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {
+		if bytes.Equal(id, queriedID) {
+			c := cork
+			out = append(out, &types.ScheduledCork{Cork: &c, BlockHeight: blockHeight, Id: id})
+		}
+		return false
+	})
+	return out
+}
+
+// GetAuthorityCorks returns every queued authority cork for genesis export.
+// The Validator field is left empty: authority corks have no scheduling
+// validator. The field is retained on the type for wire compatibility.
+func (k Keeper) GetAuthorityCorks(ctx sdk.Context) []*types.ScheduledCork {
+	var out []*types.ScheduledCork
+	k.IterateAllAuthorityCorks(ctx, func(blockHeight uint64, id []byte, _ common.Address, cork types.Cork) (stop bool) {
+		c := cork
+		out = append(out, &types.ScheduledCork{
+			Cork:        &c,
+			BlockHeight: blockHeight,
+			Id:          id,
+		})
+		return false
+	})
+	return out
+}
+
+///////////////////////////
+// ScheduledBlockHeights //
+///////////////////////////
+
+func (k Keeper) GetScheduledBlockHeights(ctx sdk.Context) []uint64 {
+	var heights []uint64
+
+	latestHeight := uint64(0)
+	k.IterateAllAuthorityCorks(ctx, func(blockHeight uint64, _ []byte, _ common.Address, _ types.Cork) (stop bool) {
+		if blockHeight > latestHeight {
+			heights = append(heights, blockHeight)
+		}
+		latestHeight = blockHeight
+		return false
+	})
+
+	return heights
+}
+
+////////////
+// Params //
+////////////
+
+// GetParamSet returns the vote period from the parameters
+func (k Keeper) GetParamSet(ctx sdk.Context) types.Params {
+	var p types.Params
+	k.paramSpace.GetParamSet(ctx, &p)
+	return p
+}
+
+// setParams sets the parameters in the store
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+	k.paramSpace.SetParamSet(ctx, &params)
+}
+
+// SetCorkAuthority writes ONLY the cork authority param.
+//
+// The v10 upgrade must not go through GetParamSet/SetParams to seed this.
+// cork_authority is new in v10, so the key is absent from v9 state, and
+// GetParamSet reads every registered pair -- including this one -- through
+// Subspace.Get, which amino-unmarshals the empty bytes and panics with
+// "UnmarshalJSON cannot decode empty bytes" before it can return. That panic
+// lands in the upgrade handler's BeginBlocker and halts the chain.
+//
+// Writing the single new key leaves the existing params untouched and is the
+// correct shape for adding a param in an upgrade.
+func (k Keeper) SetCorkAuthority(ctx sdk.Context, authority string) {
+	k.paramSpace.Set(ctx, types.KeyCorkAuthority, authority)
+}
+
+/////////////////////////
+// Invalidation Nonces //
+/////////////////////////
+
+func (k Keeper) GetLatestInvalidationNonce(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get([]byte{corktypes.LatestInvalidationNonceKey})
+	return sdk.BigEndianToUint64(bz)
+}
+
+func (k Keeper) SetLatestInvalidationNonce(ctx sdk.Context, invalidationNonce uint64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set([]byte{corktypes.LatestInvalidationNonceKey}, sdk.Uint64ToBigEndian(invalidationNonce))
+}
+
+func (k Keeper) IncrementInvalidationNonce(ctx sdk.Context) uint64 {
+	nextNonce := k.GetLatestInvalidationNonce(ctx) + 1
+	k.SetLatestInvalidationNonce(ctx, nextNonce)
+	return nextNonce
+}
+
+//////////////////
+// Cork Results //
+//////////////////
+
+func (k Keeper) SetCorkResult(ctx sdk.Context, id []byte, corkResult types.CorkResult) {
+	bz := k.cdc.MustMarshal(&corkResult)
+	ctx.KVStore(k.storeKey).Set(corktypes.GetCorkResultKey(id), bz)
+}
+
+func (k Keeper) GetCorkResult(ctx sdk.Context, id []byte) (types.CorkResult, bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(corktypes.GetCorkResultKey(id))
+	if len(bz) == 0 {
+		return types.CorkResult{}, false
+	}
+
+	var corkResult types.CorkResult
+	k.cdc.MustUnmarshal(bz, &corkResult)
+	return corkResult, true
+}
+
+func (k Keeper) DeleteCorkResult(ctx sdk.Context, id []byte) {
+	ctx.KVStore(k.storeKey).Delete(corktypes.GetCorkResultKey(id))
+}
+
+// IterateCorkResults iterates over all cork results in the store
+func (k Keeper) IterateCorkResults(ctx sdk.Context, cb func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.CorkResult) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, corktypes.GetCorkResultPrefix())
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var corkResult types.CorkResult
+		keyPair := bytes.NewBuffer(iter.Key())
+		keyPair.Next(1) // trim prefix byte
+		id := keyPair.Next(32)
+
+		k.cdc.MustUnmarshal(iter.Value(), &corkResult)
+		if cb(id, corkResult.BlockHeight, corkResult.Approved, corkResult.ApprovalPercentage, corkResult) {
+			break
+		}
+	}
+}
+
+// GetCorkResults returns CorkResults
+func (k Keeper) GetCorkResults(ctx sdk.Context) []*types.CorkResult {
+	var corkResults []*types.CorkResult
+	k.IterateCorkResults(ctx, func(id []byte, blockHeight uint64, approved bool, approvalPercentage string, corkResult types.CorkResult) (stop bool) {
+		corkResults = append(corkResults, &corkResult)
+		return false
+	})
+
+	return corkResults
+}
+
+/////////////
+// Cellars //
+/////////////
+
+func (k Keeper) SetCellarIDs(ctx sdk.Context, c types.CellarIDSet) {
+	bz := k.cdc.MustMarshal(&c)
+	// always sort before writing to the store
+	cellarIDs := make([]string, 0, len(c.Ids))
+	cellarIDs = append(cellarIDs, c.Ids...)
+	sort.Strings(cellarIDs)
+	c.Ids = cellarIDs
+	ctx.KVStore(k.storeKey).Set(corktypes.MakeCellarIDsKey(), bz)
+}
+
+func (k Keeper) GetCellarIDs(ctx sdk.Context) (cellars []common.Address) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(corktypes.MakeCellarIDsKey())
+
+	var cids types.CellarIDSet
+	k.cdc.MustUnmarshal(bz, &cids)
+
+	for _, cid := range cids.Ids {
+		cellars = append(cellars, common.HexToAddress(cid))
+	}
+
+	return cellars
+}
+
+func (k Keeper) HasCellarID(ctx sdk.Context, address common.Address) (found bool) {
+	found = false
+	for _, id := range k.GetCellarIDs(ctx) {
+		if id == address {
+			found = true
+			break
+		}
+	}
+
+	return found
+}
+
+///////////////////////////
+// Validator Cork counts //
+///////////////////////////
+
+func (k Keeper) SetValidatorCorkCount(ctx sdk.Context, val sdk.ValAddress, count uint64) {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, count)
+	ctx.KVStore(k.storeKey).Set(corktypes.GetValidatorCorkCountKey(val), bz)
+}
