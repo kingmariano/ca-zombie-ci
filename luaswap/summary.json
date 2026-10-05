@@ -1,0 +1,46 @@
+{
+  "finding": "C2-04",
+  "title": "LuaSwap (Viction) stale-price extraction — live net extractable value, capital requirement, fork proof",
+  "chains": ["viction"],
+  "headline_extractable_usd": 17792.16,
+  "headline_confidence": "high",
+  "categories": {"E-U": 17792.16, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 114804371,
+  "block_numbers": {"viction": 114804371},
+  "targets_checked": 1555,
+  "live_targets": 764,
+  "closed_reasons": [
+    "pair835 USDT/HCC $2,505.13 unreachable: HCC exists only in that pool (circular acquisition)",
+    "pair29 USDT/DTE $1.71 unreachable: DTE/EVND component isolated (circular)",
+    "pair890 USDT/tETH capped at ~$674 because the tETH source pool891 holds only 0.694 tETH",
+    "pair2 USDT/LUA and pair18 ETH/LUA jointly capped by the 7.09M LUA held in pair4 (shared source)",
+    "pair740 USDT/Shit and other long-tail USDT pools are dust (price impact / tiny partner reserves)",
+    "no flash-loan venue on Viction (no live lending protocol); capital requirement is only ~$507 so none is needed"
+  ],
+  "poc": {
+    "tests_passed": 13,
+    "tests_total": 13,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Viction chain 88; factory 0x28c79368257CD71A122409330ad2bEBA7277a396; 1,555 pairs, 764 with non-zero liquidity",
+    "WTOMO 0xb1f66997a5760428d3a87d68b90bfe0ae64121cc: deposit() payable permissionless, totalSupply 42,098.63809 == native VIC backing (fully backed 1:1), verified at blocks 114,799,532 / 114,804,371 / fork head",
+    "Pools are frozen: full re-scan at block 114,804,371 found zero reserve changes across all 1,555 pairs vs block 114,799,532",
+    "pair1 USDT/WTOMO prices WTOMO at $5.569 vs real VIC $0.0044756 = 1,244x stale",
+    "LuaSwap swap fee is 0.4% (factory.swapFee()=4), verified empirically (probe recovers numerator 4); not 0.3%",
+    "TRC21 transfer minFee quirk: factory.getTransferFee = 1000 (USDC), 2e15 (HY), 1050 (USDE), 1e15 (CBC); zero for USDT/WTOMO/LUA/ETH/BTC/TAI/LEC/SRM/FTT",
+    "Fork campaign (block 114,805,650): 113,356.47 VIC spent ($507.33) -> USDT 10,541.29 + ETH 2.618579 + BTC 0.00780748, GROSS $18,299.49, NET $17,792.16",
+    "Independent greedy simulation over all 115 routes: NET $17,813.91 (USDT 10,569.56 + ETH 2.624207 + BTC 0.007824 + USDC 0.725 for 118,696.8 VIC)",
+    "Total canonical value parked in all pools: USDT $24,104.54 (79 pools) + ETH 4.3455 ($11,766.74) + BTC 0.0078692 ($672.92) + USDC $11.23 + DAI $0.02",
+    "Capital requirement 113,356 VIC (~$507); gas at 250 gwei negligible (~0.0006 VIC); no flash loan required",
+    "USDT token has zero Transfer logs in the last 100,000 blocks (dormant); Viction docs list USDT/ETH/USDC bridge support but the legacy 0x381b31 contract mapping was not verified end-to-end",
+    "Excluded latent value: 0.694 tETH in pair891 (~$1.8k if legacy tETH bridge-redeemable) and 0.0104 WBTC across pair780/pair751 if those contracts are canonical (~$0.8k)"
+  ],
+  "caveats": [
+    "On-chain extraction is fork-proven; USD realization depends on exiting legacy TomoBridge-era USDT/ETH/BTC (main discount)",
+    "DefiLlama prices used: VIC/WTOMO $0.004475563, ETH $2,707.786, BTC $85,513.65 (2026-10-05); USD figures move with prices",
+    "Pools could be re-priced by any third party at any time (closes the opportunity); state was frozen at measurement",
+    "The C2-04 corpus claim of $24.1k 'bounded by pool depth' overstates reachable USDT (~$10.5k) but omits $7.8k of ETH/BTC; net corrected figure ~$17.8k"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$17.8k net today (fork-proven, 113,356 VIC ~$507 capital) by minting WTOMO 1:1 with VIC via deposit() and selling into LuaSwap pools still pricing WTOMO at $5.57 vs real $0.00448 (1,244x stale); the only material discount is exiting the legacy bridged USDT/ETH/BTC."
+}
