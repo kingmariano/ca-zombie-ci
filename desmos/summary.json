@@ -1,0 +1,39 @@
+{
+  "finding": "C2-10",
+  "title": "Desmos — unpatched wasmvm + ibc-go halt surface; governance capture economically closed",
+  "chains": ["desmos-mainnet"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 157003.06, "S": 0},
+  "latest_block": 30863345,
+  "block_numbers": {"desmos-mainnet": 30863345},
+  "targets_checked": 151,
+  "live_targets": 57,
+  "closed_reasons": [
+    "Governance capture is economically closed: cheapest passing scenario needs 27,684,848.5 DSM (quorum 33.4% of 82.89M bonded) costing $260.8k at spot, while the whole community pool dumps for only ~$7.18k into all observable DSM liquidity; break-even acquisition price is $0.000263/DSM = 2.79% of market.",
+    "On-market quorum acquisition is physically infeasible: all observable DSM pools (Osmosis 618/619 + negligible 1559) hold 778,466.9 DSM total (35.6x less than quorum).",
+    "Top-4 validators hold 83.0% of bonded and vote every proposal; a 50M-DSM community-pool spend to its proposer (prop 46, Apr 2024) was NoWithVeto'd 42.5M vs 0 Yes; props 38/49 also vetoed.",
+    "No standard gov message can spend the 41.37M DSM IBC escrow or any other module account (all non-distribution/staking module balances are zero).",
+    "Halt vectors (wasmvm CWA-2025-001/002, ibc-go ISA-2025-001/ASA-2025-004) are live and permissionless but move no funds: pure DoS, $0 extractable (no theft primitive, IBC timeouts refund senders, no lending/liquidation market, escrow unaffected)."
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": []},
+  "key_facts": [
+    "Deployed nodes: Desmos v7.1.0 (git 00b333c1, wasmvm v1.5.2) and v7.1.1 (git 0e53a67d, wasmvm v1.5.3), both ibc-go/v7 v7.4.0, wasmd v0.45.0, SDK v0.47.10, CometBFT v0.37.4 (node_info build_deps).",
+    "No upstream release after v7.1.1 (2024-08-08); last software-upgrade proposal #48 (May 2024); chain runs unpatched 2024 binaries.",
+    "wasm: code_upload_access=Everybody, instantiate=Everybody; 34 codes / 53+ contracts (all ACCESS_TYPE_EVERYBODY) -> anyone can upload a malicious contract (CWA-2025-001 crash; patched only >=1.5.8).",
+    "ibc-go 7.4.0 < 7.9.2 and < 7.10.0 -> ASA-2025-004/ISA-2025-001; precondition 'any user that can open an IBC channel'; no channel-opening permissioning on Desmos (app.go v7.1.1); chain halts if exploited before patching.",
+    "Community pool 16,666,867.902454 DSM = $157,003 nominal at $0.00942007 (CoinGecko; pool-implied $0.009514 ATOM / $0.009337 OSMO); bonded 82,888,768.073014 DSM.",
+    "Gov params: quorum 0.334, threshold 0.5, veto 0.334, min deposit 2,000 DSM, voting 7d, unbonding 14d (SDK v0.47.10 tally rules).",
+    "Osmosis DSM pools: 618 = 468,058.6 DSM / 2,481.55 ATOM ($4,453); 619 = 310,407.9 DSM / 80,493.8 OSMO ($2,898); 1559 negligible. Total observable exit liquidity ~$7.35k.",
+    "Desmos channel-2 escrow desmos12k2pyuylm9t7ugdvz67h9pg4gmmvhn5vt7gzxv holds 41,366,045.204562 DSM, backing Osmosis DSM supply 41,313,379.466221 DSM.",
+    "IBC client 07-tendermint-6 (Osmosis) alive but stale (~47h since last update vs 9-day trusting period); relayers sparse (props 50/51 recovered expired client)."
+  ],
+  "caveats": [
+    "No exploit PoC of the wasmvm crash or the ibc-go ack divergence: trigger details are withheld and mainnet transactions are forbidden; evidence is compiled-in version match + advisory/patch diff + live preconditions.",
+    "DSM is extremely illiquid ($17.12 24h volume, $900k mcap); all USD figures are indicative at last/pool-implied prices and not realizable at scale.",
+    "Off-chain validator bribery / social capture is unquantifiable; the on-chain conclusion covers on-chain acquisition and exit only.",
+    "P = $157,003.06 is nominal and economically unreachable for a capturer today; it is listed as the governance-only pot, not as extractable value.",
+    "CoinGecko delisted the coin mid-research (API 404 on /coins/desmos) while simple/price still served data; prices cross-checked against Osmosis pool-implied values."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live: the two permissionless halt vectors (wasmvm 1.5.2/1.5.3 CWA-2025-001, ibc-go 7.4.0 ISA-2025-001) are real but non-monetizable, and capturing the $157k community pool would cost >=$260.8k against <=$7.28k of observable exit liquidity with 83% of stake voting."
+}
