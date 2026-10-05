@@ -1,0 +1,47 @@
+{
+  "finding": "C2-05",
+  "title": "Stride governance capture (stride-1) — capture economics blocked by STRD market liquidity; $5.05M ICA custody only behind validator-adopted upgrade",
+  "chains": ["stride-1"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 5047044.18,
+    "P": 12455.09,
+    "S": 0
+  },
+  "latest_block": 41148157,
+  "block_numbers": {"stride-1": 41148157},
+  "targets_checked": 1,
+  "live_targets": 1,
+  "closed_reasons": [
+    "Required stake for a trustless capture is 2,210,219 STRD (quorum 25% of current bonded with the attacker's own stake in the denominator); the entire Osmosis STRD market (only venue) can deliver at most ~0.75-0.87M STRD (66.0% shortfall at CI snapshot) and buying is 3-5x spot and saturates",
+    "All extraction paths (CP spend, software upgrade, validator-weight redirect) require the incumbent validator set to pass/execute a proposal; historical turnout 45-70% of bonded and scam proposals are rejected (props 267/274/275/281/282)",
+    "Live v34.1.0 stakeibc has no message that moves ICA funds to an arbitrary address; the 'admin drain' messages (MsgUndelegateFromValidators/MsgTransferFromIca/MsgSweepTokensOffStride) exist only on unreleased main",
+    "Expedited proposals are unusable (expeditedMinDeposit denom 'stake' does not exist on Stride)",
+    "Community pool prize is only $12,455.09"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37340699999"]},
+  "key_facts": [
+    "Gov params re-verified via gRPC on 2 independent nodes: quorum 0.25, threshold 0.50, veto 0.334, votingPeriod 432000s (5d), maxDepositPeriod 172800s (2d), minDeposit 20,000 STRD, minInitialDepositRatio 0.50, burnVoteVeto true, unbonding 14d",
+    "Bonded 6,630,658.205459 STRD = $47,505.76 @ STRD $0.00716456; total supply 37,732,746.37 STRD (burning); stATOM supply 1,076,771.45; stTIA supply 633,055.33",
+    "Community pool = $12,455.09 (stATOM $11,701.86 + STRD $498.65 + stBAND $75.13 + TIA $47.91 + stDYDX $40.99 + stOSMO $27.87 + stTIA $26.76 + stLUNA $14.73 + dust) at height 41,148,157",
+    "ICA custody = $5,047,044.18 chain-state (ATOM $3,878,055 verified on-chain: 2,165,802.09 ATOM delegated from cosmos10uxaa5gkxpeungu2c9qswx035v6t3r24w6v2r6dxd858rq2mzknqj8ru28; Celestia 587,357.97 TIA verified vs 744,230.33 chain-state; INJ $156.3k; OSMO $120.4k; ISLM $345.7k; BAND $120.4k; DYDX $58.4k)",
+    "Cosmos Hub ICA host allow_messages = ['*'] (all messages); Celestia allows MsgSend/MsgTransfer - host side does not constrain ICA fund movement; only Stride chain code does",
+    "Osmosis STRD liquidity: gamm pool 806 576,784.72 STRD + CL 1098 88,661.22 + CL 1243 8,342.98 + alloyed 3493 6,787.62 + dust = ~683k STRD total; SQS buy saturation 739,591 STRD for 5M OSMO and 752,102 STRD for 30k USDC (CI snapshot); sell 2.21M STRD -> 95,059 OSMO ($3,407)",
+    "Attack economics: no-opposition quorum stake 2,210,219 STRD ($15,835 spot) unobtainable; robust case >3.3M STRD; even OTC-at-spot + zero opposition nets ~break-even vs the $12,455.09 CP; min deposit 20,000 STRD ($143.29, refundable on pass, burned on veto)",
+    "Latent P (not counted in P total to avoid double-count with H-O): malicious MsgSoftwareUpgrade could move the full ~$5.05M ICA custody (undelegate -> host unbonding 14-21d -> transfer out; Hub allowlist ['*']); requires validators to adopt an attacker binary - probability very low (upgrade plan info field empty; binaries distributed off-chain and verified)",
+    "Latent P: unreleased main-branch messages MsgUndelegateFromValidators ('Admin drain of a host zone's delegations'), MsgTransferFromIca (admin ICA transfer to hard-coded Osmosis vault), MsgSweepTokensOffStride ('batched sweep of holders' balances off Stride') - monitor for v35; if shipped with gov/F5 admin gating, a future capture no longer needs a software upgrade",
+    "Admin gating map (v34.1.0 utils/admins.go): gov module stride10d07y265gmmuvt4z0w9aw880jnsr700jefnezl + F5 2-of-3 multisig stride1k8c2m5cn322akk5wy8lpt87dd2f4yh9azg7jlh; several stakeibc and staketia admin messages accept gov, none transfers ICA funds to arbitrary addresses",
+    "Quorum denominator confirmed as current active validator power at tally (cosmos-sdk v0.54.3 tally.go) => attacker stake inflates the denominator; prop 282 failed quorum at 24.96% with 99.9998% Yes - consistent with quorum=25%"
+  ],
+  "caveats": [
+    "Point-in-time reads (stride-1 height 41,148,157 CI / 41,147,534 local pre-run); prices DefiLlama at query time",
+    "SQS market-max quotes fluctuate between calls (0.75-0.87M STRD across two snapshots); conclusion insensitive to the range",
+    "Celestia chain-state totalDelegations exceeds on-chain delegations by 156,872 TIA (unresolved; no unbonding/redelegation found); other host zones are chain-state values not individually verified on-chain",
+    "H-O value ($5.05M) and latent upgrade exposure are the same assets viewed from different actors - not additive",
+    "Path probabilities for social/upgrade attacks are judgment calls, not measurable facts",
+    "CP valuation is ~14% below the finding's $14.5k (prices/denoms); itemized in ci-out/report.json"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live: the claimed $48.4k-to-$5M Stride capture is not executable because Osmosis STRD liquidity can supply at most ~0.75-0.87M STRD vs the 2.21M needed for even the no-opposition quorum, and the $5.05M ICA custody requires validators to adopt a malicious upgrade; the only conditional prize is the $12,455.09 community pool via a validator-approved proposal."
+}
