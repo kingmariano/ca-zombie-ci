@@ -1,0 +1,68 @@
+### whitelist state
+ whitelist(helper) = OK ret=0x0000000000000000000000000000000000000000000000000000000000000001
+ whitelist(whitelistEOA) = OK ret=0x0000000000000000000000000000000000000000000000000000000000000001
+ whitelist(fresh) = OK ret=0x0000000000000000000000000000000000000000000000000000000000000000
+ whitelist(attackerEOA) = OK ret=0x0000000000000000000000000000000000000000000000000000000000000000
+ whitelist(sibling) = OK ret=0x0000000000000000000000000000000000000000000000000000000000000000
+
+### HELPER impl functions from FRESH
+helper.vault/getter 4cf8513b()                       | from=0x22222222 | OK ret=0x000000000000000000000000d1895f2019c2152fc2b9022d57f19198c4cfcabc
+helper.cb984317(asset,1e18)                          | from=0x22222222 | REVERT:Error("!O2")
+helper.cb984317(weth,1e18)                           | from=0x22222222 | REVERT:Error("!O2")
+helper.debd4ffc(0,0) view                            | from=0x22222222 | REVERT:Error("!O2")
+helper.debd4ffc(1e18,1e18) view                      | from=0x22222222 | REVERT:Error("!O2")
+helper.__withdraw(aweth,1e18)                        | from=0x22222222 | REVERT:Error("!O2")
+helper.owner()                                       | from=0x22222222 | OK ret=0x0000000000000000000000000b5126e1bc27c0de77e02e97945760a674edb034
+helper.initialize()                                  | from=0x22222222 | REVERT:Error("Initializable: contract is already initialized")
+helper.renounceOwnership()                           | from=0x22222222 | REVERT:Error("Ownable: caller is not the owner")
+helper.transferOwnership(fresh)                      | from=0x22222222 | REVERT:Error("Ownable: caller is not the owner")
+
+### HELPER impl functions from ATTACKER (control)
+helper.cb984317(asset,1e18) [attacker]               | from=0x0B5126e1 | REVERT:Panic
+helper.debd4ffc(1e18,1e18) view [attacker]           | from=0x0B5126e1 | OK ret=0x
+helper.__withdraw(aweth,0) [attacker]                | from=0x0B5126e1 | OK ret=0x
+
+### HELPER impl address DIRECT from FRESH (uninitialized state)
+HIMP.vault()                                         | from=0x22222222 | OK ret=0x000000000000000000000000d1895f2019c2152fc2b9022d57f19198c4cfcabc
+HIMP.cb984317(aweth,1)                               | from=0x22222222 | REVERT:Error("!O2")
+HIMP.__redeem(0,0)                                   | from=0x22222222 | REVERT:Error("!O2")
+HIMP.__withdraw(aweth,1)                             | from=0x22222222 | REVERT:Error("!O2")
+HIMP.initialize()                                    | from=0x22222222 | REVERT:Error("Initializable: contract is already initialized")
+HIMP.owner()                                         | from=0x22222222 | OK ret=0x0000000000000000000000006bae7f057a0af0087e98c834ece6b4985cf1d5a1
+
+### VAULT impl functions from FRESH
+vault.pool() view                                    | from=0x22222222 | OK ret=0x000000000000000000000000a238dd80c259a72e81d7e4664a9801593f98d1c5
+vault.minToken(aweth) view                           | from=0x22222222 | OK ret=0x0000000000000000000000000000000000000000000000000000000000000000
+vault.getUserReserveData(aweth,fresh) view           | from=0x22222222 | OK ret=0x000000000000000000000000000000000000000000000000000000000000000000000000
+vault.aToken(aweth) view                             | from=0x22222222 | OK ret=0x0000000000000000000000000000000000000000000000000000000000000000
+vault.__setWhitelist__(fresh,true)                   | from=0x22222222 | REVERT:Error("Ownable: caller is not the owner")
+vault.getReserveConfigurationData(aweth) view        | from=0x22222222 | OK ret=0x000000000000000000000000000000000000000000000000000000000000000000000000
+vault.minHealth() view                               | from=0x22222222 | OK ret=0x0000000000000000000000000000000000000000000000000000000000000000
+vault.debtToken(aweth) view                          | from=0x22222222 | OK ret=0x0000000000000000000000000000000000000000000000000000000000000000
+vault.4abb8b6f(aweth)                                | from=0x22222222 | REVERT:Error("Ownable: caller is not the owner")
+vault.repay(aweth,1,2,fresh)                         | from=0x22222222 | REVERT:Error("!W")
+vault.supply(weth,1,fresh,0)                         | from=0x22222222 | REVERT:Error("SafeERC20: low-level call failed")
+vault.withdraw(aweth,1,fresh)                        | from=0x22222222 | REVERT:Error("!W")
+vault.698442db(aweth,fresh,1,[])                     | from=0x22222222 | REVERT:Error("Ownable: caller is not the owner")
+vault.6b711cc9(aweth,1)                              | from=0x22222222 | REVERT:Error("Ownable: caller is not the owner")
+vault.renounceOwnership()                            | from=0x22222222 | REVERT:Error("Ownable: caller is not the owner")
+vault.76309d0e(aweth,1)                              | from=0x22222222 | REVERT:Error("Ownable: caller is not the owner")
+vault.owner() view                                   | from=0x22222222 | OK ret=0x0000000000000000000000006b27512a5943ed327f6cb6c3ec1f0398229f42c4
+vault.whitelist(fresh) view                          | from=0x22222222 | OK ret=0x0000000000000000000000000000000000000000000000000000000000000000
+vault.supplyAmount(aweth,fresh) view                 | from=0x22222222 | OK ret=0x0000000000000000000000000000000000000000000000000000000000000000
+vault.borrow(aweth,1,2,0,fresh)                      | from=0x22222222 | REVERT:Error("!W")
+vault.initialize(pool?)                              | from=0x22222222 | REVERT:Error("Initializable: contract is already initialized")
+vault.d2b2de5b(aweth,1)                              | from=0x22222222 | REVERT:Error("Ownable: caller is not the owner")
+vault.borrowAmount(aweth,fresh) view                 | from=0x22222222 | OK ret=0x0000000000000000000000000000000000000000000000000000000000000000
+vault.transferOwnership(fresh)                       | from=0x22222222 | REVERT:Error("Ownable: caller is not the owner")
+
+### VAULT proxy special
+vault.admin()                                        | from=0x22222222 | REVERT:execution reverted
+vault.implementation()                               | from=0x22222222 | REVERT:execution reverted
+vault.upgradeTo(fresh)                               | from=0x22222222 | REVERT:execution reverted
+vault.changeAdmin(fresh)                             | from=0x22222222 | REVERT:execution reverted
+vault empty calldata                                 | from=0x22222222 | OK ret=0x
+vault unknown selector                               | from=0x22222222 | REVERT:execution reverted
+vault.admin() FROM ADMIN                             | from=0x490ca969 | OK ret=0x000000000000000000000000490ca969b43b1ab869b5959a7b3919cc2c37c4e6
+
+WROTE matrix_results.json (50 rows)

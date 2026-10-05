@@ -1,0 +1,58 @@
+{
+  "finding": "C2-02",
+  "title": "Unnamed Base credit vault 0xD1895f20 — fresh-unprivileged extraction $0; $22.4–22.5M zero-capital / $23.91M net residual capability to the still-whitelisted Oct-4 attacker helper; owner Safe (3-of-7) is borrow-exempt; ProxyAdmin Safe (3-of-8) can upgrade",
+  "chains": ["base"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 23911186, "S": 0},
+  "latest_block": 52213000,
+  "block_numbers": {"base": 52213000},
+  "targets_checked": 60,
+  "live_targets": 3,
+  "closed_reasons": [
+    "vault.borrow is whitelist-gated on msg.sender (owner exempt): fresh caller reverts Error(\"!W\") even with a whitelisted receiver (eth_call + fork test)",
+    "vault.withdraw reverts Error(\"!WWE\") for every caller incl. the owner Safe and whitelisted addresses (no holder self-service)",
+    "vault.repay reverts Error(\"!W\") for fresh callers",
+    "attacker helper __withdraw/cb984317/__redeem are owner-gated: fresh caller reverts Error(\"!O2\")",
+    "helper.initialize()/vault.initialize()/sibling-proxy initialize() already initialized (sibling impl initialize is isolated, harmless)",
+    "all owner setters / transferOwnership / renounceOwnership revert Ownable: caller is not the owner",
+    "both ProxyAdmins (vault 0x490ca969, helper 0x3065d790, account-family) upgrade/upgradeAndCall/changeProxyAdmin revert Ownable for fresh callers",
+    "all three Safes have no modules and no guard",
+    "borrow path has no receiver callback/reentrancy surface (only aToken.transfer -> Aave finalizeTransfer)",
+    "no storage collision (impl writes 0/0x33/0x65-0x6c vs EIP-1967 slots); no allowances; no Aave borrowAllowance/credit delegation",
+    "real-world copycat EOA 0x0820DC0c deployed helper 0x13Fed10846B5 and called callBorrow(aWETH,MAX) twice (blocks 52,210,655 / 52,210,663) - both reverted !W",
+    "33-address vault whitelist independently enumerated: helper + EOA 0x3E68796A + 31 protocol account contracts (12 impls); every public fn of all account impls probed from fresh -> Ownable/!G, one read-only STATICCALL fn",
+    "sibling vault 0x416Ec2cA: whitelist 92 contracts (0 EOAs), all gated; borrow/withdraw revert !W for fresh callers"
+  ],
+  "poc": {
+    "tests_passed": 15,
+    "tests_total": 15,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37343140462",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37347998019"
+    ]
+  },
+  "key_facts": [
+    "Vault 0xD1895f2019c2152FC2b9022D57f19198c4CFCABC (TransparentUpgradeableProxy; impl 0x209d85f0ed5393f8f772d46bf889c251132a68bb unverified) holds 11,761.29-11,761.34 aWETH (~$31.8M) against $7.76M Aave debt (USDC 7.25M + cbBTC 2.3695 + EURC 275.8k); Aave HF 3.39-3.41, WETH LT 83.00% (blocks 52,213,000-52,218,505)",
+    "Fresh unprivileged extractable = $0 (high confidence, 0.9): every value-moving path is whitelist/owner-gated; proven by live eth_call/debug_traceCall, by the on-chain copycat revert !W, by 15/15 CI fork tests, and by an independent child re-probe of all 24 vault / 8 helper / 27 sibling selectors and 12 whitelisted-account impls",
+    "The vault whitelist holds 33 addresses (not 2): attacker helper 0xcdFE9130, EOA 0x3E68796A3A43a0a6a2B40Bc9ABF8e372e7a7Ff36, and 31 protocol account contracts (12 impls, all owner/!G-gated; no third-party-triggerable borrow/withdraw). Sibling whitelist: 92 contracts, 0 EOAs. Setter history: 14 direct owner#1 calls + 24 owner-Safe exec calls (all payloads decoded)",
+    "Residual: helper 0xcdFE91301356da873562EF513828a60dba1F569d is STILL whitelisted; its __withdraw is owner-gated to attacker EOA 0x0B5126e1bc27C0de77e02e97945760A674EdB034, who also owns the helper's ProxyAdmin (0x3065d790, owner = attacker EOA) so the helper can be upgraded to call any whitelisted vault function",
+    "Zero-capital max borrow (Aave finalizeTransfer HF>=1 bound, revert HealthFactorLowerThanLiquidationThreshold 0x6679996d): 8,300.486481076223 aWETH = $22,424,649.21 at block 52,213,000 (ETH $2,701.61); 8,296.719736902052 aWETH = $22,389,599 at block 52,215,826 (CI #2); 8,308.908767478480 aWETH = $22,503,802.81 at block 52,218,505 (post-wipe re-measure, ETH $2,708.39)",
+    "Full-equity route (fork-proven, CI run #2): borrow ~8,290 aWETH -> transfer debt tokens (USDC+cbBTC+EURC ~$7.76M, obtained by selling borrowed aWETH) into the vault -> whitelisted repay() clears the debt (repay consumes the vault's own balance) -> borrow the remaining ~3,470 aWETH; total taken 11,736.315821863511 of 11,761.315821863511 aWETH, gross $31,671,722.81, repaid $7,760,536.88 (USDC $7,249,425.12 + cbBTC $202,142.49 + EURC $308,969.27), net $23,911,185.93",
+    "Oct-4-2026 incident: owner Safe 0x6b27512a (3-of-7) executed whitelist(helper,0) at block 52,157,298 (tx 0x27cbab36...) then whitelist(helper,1) at block 52,157,342 (tx 0xed265fc8...) with valid signatures; attacker then drained 1,783.067 aBaswstETH (~$6M) in six borrows (blocks 52,157,377-52,158,062); whitelist never revoked afterwards",
+    "Privileged: the owner Safe (3-of-7) is EXEMPT from the borrow whitelist (vault.borrow from the Safe succeeds while fresh callers get !W) and can whitelist any address => same ~$22.4-23.9M at will; it can also transferOwnership and owner-withdraw via 76309d0e (verified live). ProxyAdmin Safe 0x47a60e3D (3-of-8) can upgrade the impl => full control of the $31.85M Aave position. No timelock on either",
+    "H-O = $0: withdraw() reverts !WWE for everyone incl. the owner Safe; no share token/redemption path found; supply() pulls the caller's tokens with no observable claim",
+    "Sibling vault 0x416Ec2cA21a38CbCFeAcD6a14532B3F348356d23 (same owner Safe) holds ≈$7.0M directly (AERO $3.84M, VIRTUAL $1.11M, ZEN $0.58M, cbLTC $0.23M, USDT $0.16M, cbADA $0.15M, cbBTC $0.14M, EURC $0.09M, ...); no fresh path found (borrow/withdraw revert !W; whitelist 92 gated contracts); dormant since block 46,577,448",
+    "Remediation is one Safe call: whitelist(0xcdFE9130...,0) and prune the 33-entry whitelist; CI test test_whitelist_revocation_closes_residual proves the helper then reverts !W"
+  ],
+  "caveats": [
+    "The implementation is unverified; analysis is based on heimdall/evmole decompilation plus behavioural traces, not source review",
+    "USD values move with the ETH price (the extractable bound is aWETH-denominated); measured $22.33M-$22.50M across blocks 52,213,000-52,218,505",
+    "The full-equity fork test models the debt-token injection with deal() (production: swap borrowed aWETH -> USDC/cbBTC/EURC and transfer to the vault; DEX spread ~0.1-0.3% not modelled)",
+    "The residual/privileged amounts are not fresh-unprivileged extraction; they require the already-whitelisted helper/attacker key, one of the 33 whitelisted addresses, or a Safe threshold (3-of-7 / 3-of-8)",
+    "The working folder was externally wiped mid-run (2026-10-05 ~19:12) and restored from the CI snapshot and session records; on-chain state was re-measured after restoration and was unchanged (exposure still live)",
+    "Whether the attacker's key is still active is unknown; the capability is live regardless (helper still whitelisted)",
+    "No protocol has publicly claimed the vault; depositor/ownership structure is not fully determinable on-chain"
+  ],
+  "one_liner": "Fresh external unprivileged attacker can extract $0 from the Base vault (whitelist gate on borrow/withdraw/repay; helper owner-gated; copycat attempt reverted !W; independently re-probed across all selectors); the live exposure is the original attacker's still-whitelisted helper: $22.39-22.50M zero-capital (Aave HF bound) or $23.91M net via borrow->repay->borrow, plus equivalent privileged paths (owner Safe 3-of-7 is borrow-exempt; ProxyAdmin Safe 3-of-8 can upgrade), unrevoked since the Oct-4 $6M incident."
+}
