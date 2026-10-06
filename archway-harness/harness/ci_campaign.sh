@@ -2,38 +2,99 @@
 # Heavy CI campaign: build both engines + contract corpus, run the differential
 # fuzzer against the vulnerable (wasmvm 1.5.5 / Wasmer 4.2.2) and patched
 # (wasmvm 3.0.8 / Wasmer 7.4.2) engines, and record every anomaly.
+#
+# [6/6] runs the CWA-2026-006 P1 trigger contract (harness/contracts/p1drift)
+# through the FULL wasmvm pipeline (Gatekeeper + Metering + CosmWasm ABI).
 set -uo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p ci-out/harness
 
-echo "=== [1/5] toolchains ==="
+echo "=== [1/6] toolchains ==="
 go version || { echo "FATAL: no go"; exit 1; }
 rustup toolchain install 1.81.0 --profile minimal 2>&1 | tail -2 || true
 rustup target add wasm32-unknown-unknown --toolchain 1.81.0 2>&1 | tail -1 || true
 cargo +1.81.0 --version || { echo "FATAL: no cargo 1.81"; exit 1; }
 
-echo "=== [2/5] build vulnerable harness (wasmvm v1.5.5 / Wasmer 4.2.2) ==="
+echo "=== [2/6] build vulnerable harness (wasmvm v1.5.5 / Wasmer 4.2.2) ==="
 (cd harness && go build -o harness .) || { echo "FATAL: harness build failed"; exit 1; }
 ./harness/harness -h >/dev/null 2>&1 || true
 echo "harness built"
 
-echo "=== [3/5] build fixed harness (wasmvm v3.0.8 / Wasmer 7.4.2) ==="
+echo "=== [3/6] build fixed harness (wasmvm v3.0.8 / Wasmer 7.4.2) ==="
 (cd harness-fixed && go build -o harness-fixed .) || { echo "FATAL: harness-fixed build failed"; exit 1; }
 echo "harness-fixed built"
 
-echo "=== [4/5] build contract corpus ==="
+echo "=== [4/6] build contract corpus ==="
 (cd harness/contracts/minimal && cargo +1.81.0 build --release --target wasm32-unknown-unknown) || { echo "FATAL: contract build failed"; exit 1; }
 WASM=harness/contracts/minimal/target/wasm32-unknown-unknown/release/minimal.wasm
 ls -la "$WASM"
 
-echo "=== [5/5] differential fuzz campaign ==="
+echo "=== [5/6] differential fuzz campaign ==="
 CASES="${FUZZ_CASES:-2000}"
 echo "cases=$CASES"
 python3 harness/fuzz_campaign.py --wasm "$WASM" --cases "$CASES" --seed 1 --out ci-out/harness
 RC=$?
 echo "campaign rc=$RC"
 
+echo "=== [6/6] CWA-2026-006 P1 trigger through the full wasmvm stack ==="
+CONTRACT=harness/contracts/p1drift
+P1WASM="$CONTRACT/p1drift.wasm"
+
+# Regenerate the contract from the committed WAT when wasmtime is available;
+# otherwise fall back to the committed .wasm binary.
+PY=""
+if python3 -c "import wasmtime" >/dev/null 2>&1; then
+  PY=python3
+elif python3 -m venv /tmp/watvenv >/dev/null 2>&1 && /tmp/watvenv/bin/pip install --quiet wasmtime >/dev/null 2>&1; then
+  PY=/tmp/watvenv/bin/python3
+fi
+if [ -n "$PY" ]; then
+  "$PY" "$CONTRACT/gen.py" "$CONTRACT/p1drift.wat" 300000 || true
+  "$PY" -c "import wasmtime; open('$P1WASM','wb').write(wasmtime.wat2wasm(open('$CONTRACT/p1drift.wat').read()))" \
+    && echo "regenerated p1drift.wasm from WAT" || echo "wat2wasm failed; using committed wasm"
+else
+  echo "wasmtime unavailable; using committed p1drift.wasm"
+fi
+sha256sum "$P1WASM" | tee ci-out/harness/p1drift.sha256
+ls -la "$P1WASM"
+
+echo "--- gas probe (1000 iterations, vulnerable engine) ---"
+"$PY" "$CONTRACT/gen.py" /tmp/p1probe.wat 1000 2>/dev/null || true
+"$PY" -c "import wasmtime; open('/tmp/p1probe.wasm','wb').write(wasmtime.wat2wasm(open('/tmp/p1probe.wat').read()))" 2>/dev/null || true
+timeout 300 ./harness/harness -wasm /tmp/p1probe.wasm -init '{}' -exec '{}' -gas 500000000000 \
+  -out ci-out/harness/p1drift-probe-vuln.json > /dev/null 2>&1 || true
+
+echo "--- vulnerable: wasmvm 1.5.5 / Wasmer 4.2.2 (expect call stack exhausted near 65k iters) ---"
+timeout 900 ./harness/harness -wasm "$P1WASM" -init '{}' -exec '{}' -gas 10000000000000 \
+  -out ci-out/harness/p1drift-vuln.json > ci-out/harness/p1drift-vuln.stdout 2> ci-out/harness/p1drift-vuln.stderr
+echo "exit=$?" > ci-out/harness/p1drift-vuln.exit
+
+echo "--- fixed: wasmvm 3.0.8 / Wasmer 7.4.2 (expect clean 300k iters + response) ---"
+timeout 900 ./harness-fixed/harness-fixed -wasm "$P1WASM" -init '{}' -exec '{}' -gas 500000000000 \
+  -out ci-out/harness/p1drift-fixed.json > ci-out/harness/p1drift-fixed.stdout 2> ci-out/harness/p1drift-fixed.stderr
+echo "exit=$?" > ci-out/harness/p1drift-fixed.exit
+
+echo "--- p1drift summary ---"
+python3 - <<'PYEOF'
+import json, os
+for label in ("probe-vuln", "vuln", "fixed"):
+    j = f"ci-out/harness/p1drift-{label}.json"
+    x = f"ci-out/harness/p1drift-{label}.exit"
+    exit_s = open(x).read().strip() if os.path.exists(x) else "?"
+    print(f"[{label}] harness exit={exit_s}")
+    if os.path.exists(j):
+        d = json.load(open(j))
+        e = (d.get("executes") or [{}])[0]
+        gas = e.get("gas")
+        err = e.get("error")
+        print(f"  exec_gas={gas} error={err!r} response={bool(e.get('response'))}")
+        if gas and not err:
+            print(f"  gas/iter ~ {gas // 1000} (probe)" if label == "probe-vuln" else "")
+        if err and "call stack exhausted" in str(err):
+            print(f"  iterations_reached ~ {gas // 13825300}")
+PYEOF
+
 echo "=== summary ==="
 cat ci-out/harness/fuzz_summary.json 2>/dev/null | head -120
-ls -la ci-out/harness/ | head -20
+ls -la ci-out/harness/ | head -30
 exit 0
