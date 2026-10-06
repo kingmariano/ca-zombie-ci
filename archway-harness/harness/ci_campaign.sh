@@ -97,40 +97,43 @@ PYEOF
 echo "=== [7/7] E6b nested CosmWasm pair (holder -> query -> trigger drift) ==="
 NESTED=harness/contracts/nested
 if [ -n "$PY" ]; then
-  echo "--- vulnerable sweep (wasmvm 1.5.5): process crash = cross-stack hijack ---"
-  for R in $(seq 234 300); do
+  echo "--- vulnerable sweep (wasmvm 1.5.5, r=0..511 = all phases): crash = cross-stack hijack ---"
+  CRASHES=0
+  for R in $(seq 0 511); do
     OFF=$((512 - R))
     ITERS=$((65536 + R + 1))
     D="$NESTED/build_r$R"
     python3 "$NESTED/gen_nested_contracts.py" "$D" --offset "$OFF" --iters "$ITERS" > /dev/null 2>&1 || continue
     for w in holder trigger benign; do
-      "$PY" -c "import wasmtime; open('$D/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D/$w.wat').read()))" 2>/dev/null || echo "wat2wasm failed $w r$R"
+      "$PY" -c "import wasmtime; open('$D/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D/$w.wat').read()))" 2>/dev/null
     done
-    if timeout 300 ./harness/harness -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-r$R.json" > "ci-out/harness/nested-vuln-r$R.stdout" 2> "ci-out/harness/nested-vuln-r$R.stderr"; then
-      echo "  r$R exit=0"
+    if timeout 120 ./harness/harness -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-r$R.json" > "ci-out/harness/nested-vuln-r$R.stdout" 2> "ci-out/harness/nested-vuln-r$R.stderr"; then
+      :
     else
-      echo "  r$R CRASH/exit=$?"
+      echo "  r$R CRASH/exit=$?" | tee -a "$OUT/sweep.log"
+      CRASHES=$((CRASHES+1))
     fi
   done
+  echo "vulnerable crashes: $CRASHES / 512" | tee -a "$OUT/sweep.log"
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
-  if timeout 300 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
-    echo "  fixed r256 exit=0 (clean)"
+  if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
+    echo "  fixed r256 exit=0 (clean)" | tee -a "$OUT/sweep.log"
   else
-    echo "  fixed r256 CRASH/exit=$?"
+    echo "  fixed r256 CRASH/exit=$?" | tee -a "$OUT/sweep.log"
   fi
   echo "--- nested summary ---"
   python3 - <<'PYEOF'
 import glob, os, json
 crashes, oks = [], []
-for f in sorted(glob.glob("ci-out/harness/nested-vuln-r*.stderr")):
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-r*.stderr"), key=lambda p: int(p.split("-r")[-1].split(".")[0])):
     r = f.split("-r")[-1].split(".")[0]
     j = f.replace(".stderr", ".json")
     if not os.path.exists(j) or os.path.getsize(j) == 0:
-        crashes.append(r)
+        crashes.append(int(r))
     else:
-        oks.append(r)
-print("vuln crashes:", len(crashes), crashes[:24])
+        oks.append(int(r))
+print("vuln crashes:", len(crashes), crashes[:40])
 print("vuln clean  :", len(oks), oks[:12])
 f = "ci-out/harness/nested-fixed-r256.json"
 if os.path.exists(f) and os.path.getsize(f):
