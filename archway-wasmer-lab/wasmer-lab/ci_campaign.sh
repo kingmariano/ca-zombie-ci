@@ -15,7 +15,7 @@ for lab in lab-422-sp lab-742-sp lab-742-cl; do
   echo "--- build $lab"
   mkdir -p "$lab/src"
   cp common/main.rs "$lab/src/main.rs"
-  (cd "$lab" && cargo build --release -j 2 2>&1 | tail -5) || { echo "BUILD FAILED: $lab"; exit 1; }
+  (cd "$lab" && cargo build --release -j 2 2>&1 | tail -30) || { echo "BUILD FAILED: $lab"; exit 1; }
   echo "built $lab"
 done
 

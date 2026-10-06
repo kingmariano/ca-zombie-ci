@@ -533,7 +533,7 @@ fn nested(
             return;
         }
     };
-    let f_b_ptr: *mut Function = Box::leak(Box::new(f_b));
+    let f_b_ptr: *const Function = f_b;
     if let Ok(mut s) = NESTED_B_STORE.lock() {
         *s = &mut store_b as *mut Store as usize;
     }
