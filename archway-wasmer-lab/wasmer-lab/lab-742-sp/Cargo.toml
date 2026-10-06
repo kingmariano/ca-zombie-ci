@@ -1,0 +1,18 @@
+[package]
+name = "lab-742-sp"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["engine-singlepass", "new-wasmer"]
+engine-singlepass = []
+engine-cranelift = []
+old-wasmer = []
+new-wasmer = []
+
+[dependencies]
+wasmer = { version = "=7.4.2", default-features = false, features = ["sys", "singlepass", "wat"] }
+libc = "0.2"
+
+[profile.release]
+opt-level = 2

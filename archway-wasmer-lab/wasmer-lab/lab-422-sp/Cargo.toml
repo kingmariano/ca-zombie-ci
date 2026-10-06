@@ -1,0 +1,19 @@
+[package]
+name = "lab-422-sp"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["engine-singlepass", "old-wasmer", "probestack-stub"]
+engine-singlepass = []
+engine-cranelift = []
+old-wasmer = []
+new-wasmer = []
+probestack-stub = []
+
+[dependencies]
+wasmer = { version = "=4.2.2", default-features = false, features = ["sys", "singlepass", "wat"] }
+libc = "0.2"
+
+[profile.release]
+opt-level = 2
