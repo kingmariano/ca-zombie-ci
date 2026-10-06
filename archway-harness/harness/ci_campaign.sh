@@ -97,6 +97,23 @@ PYEOF
 echo "=== [7/7] E6b nested CosmWasm pair (holder -> query -> trigger drift) ==="
 NESTED=harness/contracts/nested
 if [ -n "$PY" ]; then
+  echo "--- E6b drift probes: trigger alone via -query (dense vs sparse, 300k iters) ---"
+  for MODE in dense sparse; do
+    D="$NESTED/probe_$MODE"
+    if [ "$MODE" = "dense" ]; then
+      python3 "$NESTED/gen_nested_contracts.py" "$D" --iters 300000 --dense > /dev/null 2>&1
+    else
+      python3 "$NESTED/gen_nested_contracts.py" "$D" --offset 256 --iters 300000 > /dev/null 2>&1
+    fi
+    for w in trigger holder benign; do
+      "$PY" -c "import wasmtime; open('$D/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D/$w.wat').read()))" 2>/dev/null
+    done
+    timeout 300 ./harness/harness -wasm "$D/trigger.wasm" -init '{}' -query '{}' -gas 10000000000000 -out "ci-out/harness/probe-$MODE-vuln.json" > "ci-out/harness/probe-$MODE-vuln.stdout" 2> "ci-out/harness/probe-$MODE-vuln.stderr" || true
+    echo "  $MODE vuln: $(grep -m1 'query gas' "ci-out/harness/probe-$MODE-vuln.stderr" | cut -c1-160)" | tee -a "$OUT/sweep.log"
+    timeout 300 ./harness-fixed/harness-fixed -wasm "$D/trigger.wasm" -init '{}' -query '{}' -gas 10000000000000 -out "ci-out/harness/probe-$MODE-fixed.json" > "ci-out/harness/probe-$MODE-fixed.stdout" 2> "ci-out/harness/probe-$MODE-fixed.stderr" || true
+    echo "  $MODE fixed: $(grep -m1 'query gas' "ci-out/harness/probe-$MODE-fixed.stderr" | cut -c1-160)" | tee -a "$OUT/sweep.log"
+  done
+
   echo "--- vulnerable sweep (wasmvm 1.5.5, r=0..511 = all phases): crash = cross-stack hijack ---"
   CRASHES=0
   for R in $(seq 0 511); do

@@ -80,11 +80,11 @@ def gen_holder(outdir):
     print("wrote", p, f"({len(req)}-byte request)")
 
 
-def gen_trigger(outdir, offset, iters):
+def gen_trigger(outdir, offset, iters, dense=False):
     vals = b"".join(struct.pack("<Q", GADGET) for _ in range(LIVE))
     lines = [
         ";; E6b trigger contract (generated).",
-        f";; call when (i + {offset}) & 511 == 0; loop {iters} iterations",
+        f";; call when (i + {offset}) & 511 == 0; loop {iters} iterations" if not dense else f";; dense: call every iteration; loop {iters} iterations",
         "(module",
         '  (import "env" "db_read" (func $db_read (param i32) (result i32)))',
         '  (memory (export "memory") 1)',
@@ -110,8 +110,18 @@ def gen_trigger(outdir, offset, iters):
         "          (then (i64.add (i64.extend_i32_u (local.get $i)) (i64.const 0x12345678)))",
         "          (else (i64.extend_i32_u (local.get $i))))",
         "        drop",
-        f"        (i32.eqz (i32.and (i32.add (local.get $i) (i32.const {offset})) (i32.const 511)))",
-        "        (if (then (call $db_read (i32.const 16)) drop))",
+    ]
+    if dense:
+        lines += [
+            "        (call $db_read (i32.const 16))",
+            "        drop",
+        ]
+    else:
+        lines += [
+            f"        (i32.eqz (i32.and (i32.add (local.get $i) (i32.const {offset})) (i32.const 511)))",
+            "        (if (then (call $db_read (i32.const 16)) drop))",
+        ]
+    lines += [
         "        " + " ".join(["drop"] * LIVE),
         "        (local.set $i (i32.add (local.get $i) (i32.const 1)))",
         f"        (br_if $l (i32.lt_u (local.get $i) (i32.const {iters})))",
@@ -123,7 +133,7 @@ def gen_trigger(outdir, offset, iters):
     ]
     p = os.path.join(outdir, "trigger.wat")
     open(p, "w").write("\n".join(lines))
-    print("wrote", p, f"(offset={offset}, iters={iters})")
+    print("wrote", p, f"(offset={offset}, iters={iters}, dense={dense})")
 
 
 def gen_benign(outdir):
@@ -155,10 +165,11 @@ def main():
     ap.add_argument("outdir")
     ap.add_argument("--offset", type=int, default=256)
     ap.add_argument("--iters", type=int, default=65793)
+    ap.add_argument("--dense", action="store_true", help="call db_read every iteration")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     gen_holder(args.outdir)
-    gen_trigger(args.outdir, args.offset, args.iters)
+    gen_trigger(args.outdir, args.offset, args.iters, args.dense)
     gen_benign(args.outdir)
 
 

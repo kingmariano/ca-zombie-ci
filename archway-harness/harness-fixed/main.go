@@ -162,6 +162,7 @@ func main() {
 	triggerFile := flag.String("trigger", "", "drift trigger .wasm (enables nested holder/trigger mode)")
 	benignFile := flag.String("benign", "", "benign trigger .wasm for nested warm-ups")
 	warmups := flag.Int("warmups", 0, "nested warm-up executions to grow the coroutine stack pool")
+	queryMsg := flag.String("query", "", "run a query on the contract instead of execute")
 	flag.Parse()
 
 	if *wasmFile == "" {
@@ -267,6 +268,25 @@ func main() {
 		writeReport(rep, *outFile)
 		fmt.Fprintln(os.Stderr, "instantiate error:", rep.Instantiate.Error)
 		os.Exit(1)
+	}
+
+	// query-only mode: exercise the contract's query entry point directly
+	if *queryMsg != "" {
+		qres, qgas, qerr := vm.Query(checksum, env, []byte(*queryMsg), store, goapi, querier, &mockGasMeter{}, *gas, deserCost)
+		emsg := ""
+		if qerr != nil {
+			emsg = qerr.Error()
+		} else if qres != nil && qres.Err != "" {
+			emsg = qres.Err
+		}
+		fmt.Fprintf(os.Stderr, "query gas=%d err=%v\n", qgas, emsg)
+		sr := stepResult{Gas: qgas, Error: emsg}
+		if qres != nil && qres.Ok != nil {
+			sr.Response = json.RawMessage(qres.Ok)
+		}
+		rep.Executes = append(rep.Executes, sr)
+		writeReport(rep, *outFile)
+		return
 	}
 
 	// nested mode: instantiate the triggers, warm up the stack pool, then attack
