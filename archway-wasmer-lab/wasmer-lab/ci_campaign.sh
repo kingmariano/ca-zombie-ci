@@ -114,6 +114,30 @@ done
 python3 gen_writestream.py patterns/ws_sparse_1024_512.wat 1024 512
 run_writestream lab-742-sp patterns/ws_sparse_1024_512.wat 400000 1 "sparse1024o512" "patterns/ws_drift.wat" 8
 
+echo "=== [7/7] E4 nested holder/trigger (targeted overwrite) ==="
+run_nested() {
+  local lab="$1" pat="$2" iters="$3" stride="$4" tag="$5"
+  local warm="${6:-}" warmn="${7:-0}" holder_tag="${8:-7}"
+  timeout 900 "./$lab/target/release/$lab" nested "$pat" "$iters" "$stride" "$warm" "$warmn" "$holder_tag" \
+    >"$OUT/nested-$lab-$tag.json" 2>"$OUT/nested-$lab-$tag.scans"
+  local rc=$?
+  echo "--- nested $lab $tag (exit=$rc) ---" | tee -a "$OUT/sweep.log"
+  echo "  key lines:" | tee -a "$OUT/sweep.log"
+  grep -E "^(NESTED|WARM|CRASH)" "$OUT/nested-$lab-$tag.scans" 2>/dev/null | tail -8 | sed 's/^/  /' | tee -a "$OUT/sweep.log"
+  echo "  last scans (crossing/hijack check):" | tee -a "$OUT/sweep.log"
+  grep -E "^SCAN" "$OUT/nested-$lab-$tag.scans" 2>/dev/null | tail -3 | cut -c1-320 | sed 's/^/  /' | tee -a "$OUT/sweep.log"
+  if [ -s "$OUT/nested-$lab-$tag.json" ]; then
+    sed 's/^/  /' "$OUT/nested-$lab-$tag.json" | tee -a "$OUT/sweep.log"
+  fi
+}
+for KO in "1024 512" "2048 1024" "4096 2048"; do
+  set -- $KO; K=$1; OFF=$2
+  PAT="patterns/ws_sparse_${K}_${OFF}.wat"
+  [ -f "$PAT" ] || python3 gen_writestream.py "$PAT" "$K" "$OFF"
+  run_nested lab-422-sp "$PAT" 400000 1 "nested${K}o${OFF}" "patterns/ws_drift.wat" 8 7
+done
+run_nested lab-742-sp patterns/ws_sparse_1024_512.wat 400000 1 "nested1024o512" "patterns/ws_drift.wat" 8 7
+
 echo "=== results ==="
 ls -la "$OUT"
 exit 0

