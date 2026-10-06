@@ -8,6 +8,7 @@ use libc::{c_void, mmap, MAP_ANONYMOUS, MAP_FIXED_NOREPLACE, MAP_PRIVATE, PROT_R
 use std::env;
 use std::fs;
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Mutex;
 use wasmer::{Function, Instance, Imports, Module, Store};
 
 // wasmer-vm 4.2.2 references __rust_probestack, which modern Rust's compiler_builtins
@@ -130,6 +131,176 @@ fn drift(path: &str, iters: i32) {
         max,
         first as i64 - last as i64
     );
+}
+
+// ---------------- E1: write-stream detector ----------------
+//
+// The host callback runs on the host stack (on_host_stack), so it cannot see
+// the guest rsp. Instead it scans the fiber-stack mapping for the distinctive
+// live values (i << 32) | K that `push_used_gpr` writes at the drifted rsp
+// before each host call.
+
+#[derive(Clone)]
+struct WsScan {
+    i: u64,
+    hits: u64,
+    min_addr: u64,
+    max_addr: u64,
+    addr_k0: u64,
+    candidates: u64,
+    maps_note: String,
+}
+
+static WS_SCANS: Mutex<Vec<WsScan>> = Mutex::new(Vec::new());
+static WS_CALLS: AtomicU64 = AtomicU64::new(0);
+static WS_EXCL_LO: AtomicU64 = AtomicU64::new(0);
+static WS_EXCL_HI: AtomicU64 = AtomicU64::new(0);
+
+fn read_rw_maps() -> Vec<(u64, u64, String)> {
+    let mut out = Vec::new();
+    if let Ok(s) = fs::read_to_string("/proc/self/maps") {
+        for line in s.lines() {
+            let fields: Vec<&str> = line.split_whitespace().collect();
+            if fields.len() < 2 || !fields[1].starts_with("rw") {
+                continue;
+            }
+            let mut rp = fields[0].split('-');
+            let (lo, hi) = match (rp.next(), rp.next()) {
+                (Some(a), Some(b)) => (
+                    u64::from_str_radix(a, 16).unwrap_or(0),
+                    u64::from_str_radix(b, 16).unwrap_or(0),
+                ),
+                _ => continue,
+            };
+            let name = fields.get(5).copied().unwrap_or("").to_string();
+            out.push((lo, hi, name));
+        }
+    }
+    out
+}
+
+fn ws_scan(i: i32) {
+    let iu = i as u64;
+    let excl_lo = WS_EXCL_LO.load(Ordering::Relaxed);
+    let excl_hi = WS_EXCL_HI.load(Ordering::Relaxed);
+    let mut rec = WsScan {
+        i: iu,
+        hits: 0,
+        min_addr: u64::MAX,
+        max_addr: 0,
+        addr_k0: 0,
+        candidates: 0,
+        maps_note: String::new(),
+    };
+    for (lo, hi, name) in read_rw_maps() {
+        let size = hi.saturating_sub(lo);
+        if !(256 * 1024..=32 * 1024 * 1024).contains(&size) {
+            continue;
+        }
+        if name.contains("[stack]") || name.contains("[heap]") {
+            continue;
+        }
+        if lo < excl_hi && hi > excl_lo {
+            continue; // overlaps the wasm linear memory
+        }
+        rec.candidates += 1;
+        if rec.maps_note.len() < 200 {
+            rec.maps_note
+                .push_str(&format!("{}@0x{:x}-0x{:x};", name, lo, hi));
+        }
+        let mut addr = lo;
+        while addr + 8 <= hi {
+            let v = unsafe { core::ptr::read_volatile(addr as *const u64) };
+            if (v >> 32) == iu && (v & 0xffff_ffff) < 64 {
+                rec.hits += 1;
+                if addr < rec.min_addr {
+                    rec.min_addr = addr;
+                }
+                if addr > rec.max_addr {
+                    rec.max_addr = addr;
+                }
+                if v & 0xffff_ffff == 0 {
+                    rec.addr_k0 = addr;
+                }
+            }
+            addr += 8;
+        }
+    }
+    if let Ok(mut v) = WS_SCANS.lock() {
+        if v.len() < 256 {
+            v.push(rec);
+        }
+    }
+}
+
+fn writestream(path: &str, iters: i32, stride: u64) {
+    let src = match fs::read(path) {
+        Ok(b) => b,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"read: {}\"}}", path, e);
+            return;
+        }
+    };
+    let mut store = Store::new(engine());
+    let module = match Module::new(&store, &src) {
+        Ok(m) => m,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"compile: {}\"}}", path, norm_err(&e));
+            return;
+        }
+    };
+    let mut imports = Imports::new();
+    imports.define(
+        "env",
+        "probe",
+        Function::new_typed(&mut store, move |i: i32, _: i32, _: i32| -> i32 {
+            let _n = WS_CALLS.fetch_add(1, Ordering::Relaxed);
+            let iu = i as u64;
+            if stride == 0 || iu % stride == 0 || iu + 1 >= iters as u64 {
+                ws_scan(i);
+            }
+            0
+        }),
+    );
+    let instance = match Instance::new(&mut store, &module, &imports) {
+        Ok(i) => i,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"instantiate: {}\"}}", path, norm_err(&e));
+            return;
+        }
+    };
+    if let Ok(mem) = instance.exports.get_memory("memory") {
+        let view = mem.view(&store);
+        let base = view.data_ptr() as u64;
+        WS_EXCL_LO.store(base, Ordering::Relaxed);
+        WS_EXCL_HI.store(base + view.data_size(), Ordering::Relaxed);
+    }
+    let f = match instance.exports.get_function("run") {
+        Ok(f) => f,
+        Err(e) => {
+            println!("{{\"pattern\":\"{}\",\"error\":\"no run export: {}\"}}", path, norm_err(&e));
+            return;
+        }
+    };
+    let res = f.call(&mut store, &[wasmer::Value::I32(iters)]);
+    let result = match &res {
+        Ok(_) => "ok".to_string(),
+        Err(e) => norm_err(e),
+    };
+    let calls = WS_CALLS.load(Ordering::Relaxed);
+    let scans = WS_SCANS.lock().map(|v| v.clone()).unwrap_or_default();
+    println!(
+        "{{\"pattern\":\"{}\",\"iters\":{},\"calls\":{},\"result\":\"{}\",\"scans\":[",
+        path, iters, calls, result
+    );
+    for (n, s) in scans.iter().enumerate() {
+        let comma = if n + 1 < scans.len() { "," } else { "" };
+        println!(
+            "{{\"i\":{},\"hits\":{},\"min\":\"0x{:x}\",\"max\":\"0x{:x}\",\"k0\":\"0x{:x}\",\"candidates\":{},\"maps\":\"{}\"}}{}",
+            s.i, s.hits, s.min_addr, s.max_addr, s.addr_k0, s.candidates, s.maps_note, comma
+        );
+    }
+    println!("]}}");
 }
 
 fn try_sentinel(addr: usize, magic: u64) -> Option<usize> {
@@ -312,8 +483,15 @@ fn main() {
     } else if args.len() >= 4 && args[1] == "drift" {
         let iters: i32 = args[3].parse().unwrap_or(1000);
         drift(&args[2], iters);
+    } else if args.len() >= 4 && args[1] == "writestream" {
+        let iters: i32 = args[3].parse().unwrap_or(1000);
+        let stride: u64 = args.get(4).and_then(|s| s.parse().ok()).unwrap_or(4096);
+        writestream(&args[2], iters, stride);
     } else {
-        eprintln!("usage: {} patterns | run <file.wat> | drift <file.wat> <iters>", args[0]);
+        eprintln!(
+            "usage: {} patterns | run <file.wat> | drift <file.wat> <iters> | writestream <file.wat> <iters> [stride]",
+            args[0]
+        );
         std::process::exit(2);
     }
 }
