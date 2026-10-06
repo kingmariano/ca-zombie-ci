@@ -180,6 +180,17 @@ if [ -n "$UD2_OFF" ]; then
   done
 fi
 
+# E7 leak sweep: no planting (trigger values = 0), holder persists its staged locals after the
+# query — the summary's "leak" array shows what the write stream put into their spill slots
+# (host pointers from the trigger's registers = the ASLR leak).
+for R in $(seq 234 300); do
+  OFF=$((512 - R))
+  PAT="patterns/ws_load_r${R}.wat"
+  [ -f "$PAT" ] || python3 gen_writestream.py "$PAT" 512 "$OFF" load > /dev/null
+  ITERS=$((65536 + R + 1))
+  run_nested lab-422-sp "$PAT" "$ITERS" 1 "leak_r${R}" "patterns/ws_drift.wat" 8 7 "0x0" 0x0
+done
+
 echo "=== results ==="
 ls -la "$OUT"
 exit 0

