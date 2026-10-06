@@ -149,6 +149,7 @@ struct WsScan {
     addr_k0: u64,
     candidates: u64,
     maps_note: String,
+    map_hits: String,
 }
 
 static WS_SCANS: Mutex<Vec<WsScan>> = Mutex::new(Vec::new());
@@ -191,6 +192,7 @@ fn ws_scan(i: i32) {
         addr_k0: 0,
         candidates: 0,
         maps_note: String::new(),
+        map_hits: String::new(),
     };
     for (lo, hi, name) in read_rw_maps() {
         let size = hi.saturating_sub(lo);
@@ -208,11 +210,13 @@ fn ws_scan(i: i32) {
             rec.maps_note
                 .push_str(&format!("{}@0x{:x}-0x{:x};", name, lo, hi));
         }
+        let mut map_hits: u64 = 0;
         let mut addr = lo;
         while addr + 8 <= hi {
             let v = unsafe { core::ptr::read_volatile(addr as *const u64) };
             if (v >> 32) == iu && (v & 0xffff_ffff) < 64 {
                 rec.hits += 1;
+                map_hits += 1;
                 if addr < rec.min_addr {
                     rec.min_addr = addr;
                 }
@@ -224,6 +228,10 @@ fn ws_scan(i: i32) {
                 }
             }
             addr += 8;
+        }
+        if map_hits > 0 {
+            rec.map_hits
+                .push_str(&format!("0x{:x}-0x{:x}:{};", lo, hi, map_hits));
         }
     }
     if let Ok(mut v) = WS_SCANS.lock() {
@@ -296,8 +304,8 @@ fn writestream(path: &str, iters: i32, stride: u64) {
     for (n, s) in scans.iter().enumerate() {
         let comma = if n + 1 < scans.len() { "," } else { "" };
         println!(
-            "{{\"i\":{},\"hits\":{},\"min\":\"0x{:x}\",\"max\":\"0x{:x}\",\"k0\":\"0x{:x}\",\"candidates\":{},\"maps\":\"{}\"}}{}",
-            s.i, s.hits, s.min_addr, s.max_addr, s.addr_k0, s.candidates, s.maps_note, comma
+            "{{\"i\":{},\"hits\":{},\"min\":\"0x{:x}\",\"max\":\"0x{:x}\",\"k0\":\"0x{:x}\",\"candidates\":{},\"maps\":\"{}\",\"map_hits\":\"{}\"}}{}",
+            s.i, s.hits, s.min_addr, s.max_addr, s.addr_k0, s.candidates, s.maps_note, s.map_hits, comma
         );
     }
     println!("]}}");
