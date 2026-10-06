@@ -144,6 +144,27 @@ for R in $(seq 234 300); do
 done
 run_nested lab-742-sp patterns/ws_load_r256.wat 65793 1 "load_r256" "patterns/ws_drift.wat" 8 7 "0x0" 0x4242424242424242
 
+echo "=== [8/8] E6c: archwayd gadget analysis (non-PIE pivot targets) ==="
+if [ ! -f /tmp/archwayd ]; then
+  curl -sL --max-time 900 -o /tmp/archwayd "https://github.com/archway-network/archway/releases/download/v10.1.0/archwayd_linux_amd64" && echo "downloaded archwayd" || echo "download failed"
+fi
+if [ -s /tmp/archwayd ]; then
+  file /tmp/archwayd | tee "$OUT/archwayd_info.txt"
+  readelf -h /tmp/archwayd 2>/dev/null | grep -E "Type:|Entry point" | tee -a "$OUT/archwayd_info.txt"
+  ls -la /tmp/archwayd | tee -a "$OUT/archwayd_info.txt"
+  echo "--- gadget scan ---" | tee "$OUT/archwayd_gadgets.txt"
+  timeout 900 objdump -d /tmp/archwayd > /tmp/archwayd.asm 2>/dev/null
+  echo "asm lines: $(wc -l < /tmp/archwayd.asm 2>/dev/null || echo 0)" | tee -a "$OUT/archwayd_gadgets.txt"
+  echo "ret gadgets (first 5):" | tee -a "$OUT/archwayd_gadgets.txt"
+  grep -m5 -E '^\s*[0-9a-f]+:\s+c3\s+ret' /tmp/archwayd.asm | tee -a "$OUT/archwayd_gadgets.txt"
+  echo "pop rsp gadgets:" | tee -a "$OUT/archwayd_gadgets.txt"
+  grep -m5 -E '^\s*[0-9a-f]+:\s+5c\s+pop\s+rsp' /tmp/archwayd.asm | tee -a "$OUT/archwayd_gadgets.txt"
+  echo "xchg rsp,rax / mov rsp,rax:" | tee -a "$OUT/archwayd_gadgets.txt"
+  grep -m5 -E '^\s*[0-9a-f]+:\s+(48 94|48 89 c4)\s' /tmp/archwayd.asm | tee -a "$OUT/archwayd_gadgets.txt"
+else
+  echo "archwayd unavailable; skipping E6c" | tee "$OUT/archwayd_info.txt"
+fi
+
 echo "=== results ==="
 ls -la "$OUT"
 exit 0
