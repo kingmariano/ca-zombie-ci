@@ -114,29 +114,32 @@ done
 python3 gen_writestream.py patterns/ws_sparse_1024_512.wat 1024 512
 run_writestream lab-742-sp patterns/ws_sparse_1024_512.wat 400000 1 "sparse1024o512" "patterns/ws_drift.wat" 8
 
-echo "=== [7/7] E4 nested holder/trigger (targeted overwrite) ==="
+echo "=== [7/7] E4 nested holder/trigger (calibrated overwrite) ==="
 run_nested() {
   local lab="$1" pat="$2" iters="$3" stride="$4" tag="$5"
   local warm="${6:-}" warmn="${7:-0}" holder_tag="${8:-7}"
   timeout 900 "./$lab/target/release/$lab" nested "$pat" "$iters" "$stride" "$warm" "$warmn" "$holder_tag" \
     >"$OUT/nested-$lab-$tag.json" 2>"$OUT/nested-$lab-$tag.scans"
   local rc=$?
-  echo "--- nested $lab $tag (exit=$rc) ---" | tee -a "$OUT/sweep.log"
-  echo "  key lines:" | tee -a "$OUT/sweep.log"
-  grep -E "^(NESTED|WARM|CRASH)" "$OUT/nested-$lab-$tag.scans" 2>/dev/null | tail -8 | sed 's/^/  /' | tee -a "$OUT/sweep.log"
-  echo "  last scans (crossing/hijack check):" | tee -a "$OUT/sweep.log"
-  grep -E "^SCAN" "$OUT/nested-$lab-$tag.scans" 2>/dev/null | tail -3 | cut -c1-320 | sed 's/^/  /' | tee -a "$OUT/sweep.log"
+  echo "--- nested $lab $tag iters=$iters (exit=$rc) ---" | tee -a "$OUT/sweep.log"
+  grep -E "^(NESTED|CRASH)" "$OUT/nested-$lab-$tag.scans" 2>/dev/null | tail -6 | sed 's/^/  /' | cut -c1-220 | tee -a "$OUT/sweep.log"
+  echo "  last scan:" | tee -a "$OUT/sweep.log"
+  grep -E "^SCAN" "$OUT/nested-$lab-$tag.scans" 2>/dev/null | tail -1 | cut -c1-320 | sed 's/^/  /' | tee -a "$OUT/sweep.log"
   if [ -s "$OUT/nested-$lab-$tag.json" ]; then
     sed 's/^/  /' "$OUT/nested-$lab-$tag.json" | tee -a "$OUT/sweep.log"
   fi
 }
-for KO in "1024 512" "2048 1024" "4096 2048"; do
-  set -- $KO; K=$1; OFF=$2
-  PAT="patterns/ws_sparse_${K}_${OFF}.wat"
-  [ -f "$PAT" ] || python3 gen_writestream.py "$PAT" "$K" "$OFF"
-  run_nested lab-422-sp "$PAT" 400000 1 "nested${K}o${OFF}" "patterns/ws_drift.wat" 8 7
+# Calibrated sweep: K=512, calls at i = 65536 + r, so the first post-guard batch lands at
+# holder depth ~16*(r-233)-64 bytes. iters = i_call + 1 makes the trigger return right after
+# that batch, so the holder resumes through whatever was written to its frame.
+for R in 240 248 256 264 272 280 288 296; do
+  OFF=$((512 - R))
+  PAT="patterns/ws_nested_r${R}.wat"
+  python3 gen_writestream.py "$PAT" 512 "$OFF" > /dev/null
+  ITERS=$((65536 + R + 1))
+  run_nested lab-422-sp "$PAT" "$ITERS" 1 "r${R}" "patterns/ws_drift.wat" 8 7
 done
-run_nested lab-742-sp patterns/ws_sparse_1024_512.wat 400000 1 "nested1024o512" "patterns/ws_drift.wat" 8 7
+run_nested lab-742-sp patterns/ws_nested_r256.wat 65793 1 "r256" "patterns/ws_drift.wat" 8 7
 
 echo "=== results ==="
 ls -la "$OUT"
