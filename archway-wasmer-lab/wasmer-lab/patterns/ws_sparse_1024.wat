@@ -36,7 +36,7 @@
         ;; host call while the live values are still allocated:
         ;; push_used_gpr writes them at the (drifted) rsp
         ;; sparse: only every 1024 iterations -> write batches jump 16384 bytes
-        (i32.and (local.get $i) (i32.const 1023))
+        (i32.eqz (i32.and (local.get $i) (i32.const 1023)))
         (if (then
           (call $host (local.get $i) (i32.const 0) (i32.const 0))
           drop))

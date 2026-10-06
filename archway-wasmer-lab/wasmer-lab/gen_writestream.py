@@ -71,7 +71,7 @@ def main() -> None:
     if call_every > 1:
         lines += [
             f"        ;; sparse: only every {call_every} iterations -> write batches jump {16 * call_every} bytes",
-            f"        (i32.and (local.get $i) (i32.const {call_every - 1}))",
+            f"        (i32.eqz (i32.and (local.get $i) (i32.const {call_every - 1})))",
             "        (if (then",
             "          (call $host (local.get $i) (i32.const 0) (i32.const 0))",
             "          drop))",
