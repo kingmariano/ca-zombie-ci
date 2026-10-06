@@ -27,7 +27,7 @@ done
 
 echo "=== [3/3] P1 rsp-drift probe ==="
 for lab in lab-422-sp lab-742-sp; do
-  for pat in patterns/p1a_else_drift.wat patterns/p1b_else_drift.wat; do
+  for pat in patterns/p0_control.wat patterns/p1a_else_drift.wat patterns/p1b_else_drift.wat; do
     for iters in 1000 10000; do
       echo "--- $lab $pat iters=$iters"
       if timeout 300 "./$lab/target/release/$lab" drift "$pat" "$iters" >>"$OUT/drift-$lab.jsonl" 2>&1; then

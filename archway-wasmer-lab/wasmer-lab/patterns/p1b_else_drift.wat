@@ -18,7 +18,7 @@
         i64.const 0xAAAAAAAAAAAAAAA1
         i64.const 0xBBBBBBBBBBBBBBB2
         i64.const 0xCCCCCCCCCCCCCCC3
-        i64.const 1
+        i32.const 1
         if (result i64)
           i64.const 0xAAAAAAAAAAAAAAAA
         else

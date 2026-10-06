@@ -1,6 +1,5 @@
-;; P1a — CWA-2026-006 / Hexens WASMageddon shape (8 live i64s)
-;; result-bearing if/else inside a loop + host import call -> Singlepass
-;; release_locations_value() uses adjust_stack (sub rsp) instead of restore_stack (add rsp)
+;; P0 — control: same loop + host call but NO result-bearing if/else.
+;; Should show no rsp drift on any engine (baseline for the P1 probe).
 (module
   (import "env" "probe" (func $host (param i32 i32 i32) (result i32)))
   (memory 1)
@@ -16,13 +15,6 @@
         i64.const 0x6666666666666666
         i64.const 0x7777777777777777
         i64.const 0x8888888888888888
-        i32.const 1
-        if (result i64)
-          i64.const 0xAAAAAAAAAAAAAAAA
-        else
-          i64.const 0xBBBBBBBBBBBBBBBB
-        end
-        drop
         drop drop drop drop drop drop drop drop
         i32.const 0
         i32.const 0
