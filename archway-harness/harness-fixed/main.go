@@ -289,7 +289,7 @@ func main() {
 		}
 		nq.checksum = triggerChecksum
 		querier = nq
-		fmt.Fprintf(os.Stderr, "nested mode armed: trigger=%x warmups=%d\n", triggerChecksum, *warmups)
+		fmt.Fprintf(os.Stderr, "nested mode armed: trigger=%v warmups=%d\n", triggerChecksum, *warmups)
 	}
 
 	for i := 0; i < *repeat; i++ {

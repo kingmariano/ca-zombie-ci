@@ -16,7 +16,7 @@ import os
 import struct
 
 RESP = b'{"ok":{"messages":[],"data":null,"attributes":[],"events":[]}}'
-TRIGGER_ADDR = "archway1triggertriggertriggertriggertrggxq5"
+TRIGGER_ADDR = "archway1khgqgnnpw984e70chqjc5yu5r3ed8255qy6mhw"  # valid bech32 (harness routes by checksum)
 LIVE = 16
 GADGET = 0x0042424242424242  # marker: if a planted slot lands on the return slot -> fault here
 
@@ -46,7 +46,7 @@ ALLOCATOR = """  (global $heap (mut i32) (i32.const 8192))
 
 
 def gen_holder(outdir):
-    req = ('{"smart":{"contract_addr":"%s","msg":"e30="}}' % TRIGGER_ADDR).encode()
+    req = ('{"wasm":{"smart":{"contract_addr":"%s","msg":"e30="}}}' % TRIGGER_ADDR).encode()
     lines = [
         ";; E6b holder contract (generated).",
         "(module",
