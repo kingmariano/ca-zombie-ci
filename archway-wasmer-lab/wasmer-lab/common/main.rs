@@ -341,6 +341,25 @@ fn writestream(path: &str, iters: i32, stride: u64, warm_path: Option<&str>, war
                 Err(e) => eprintln!("WARM read {} failed: {}", wpath, e),
             }
         }
+        // Sacrificial run: consume the pool front (the lowest stack, no neighbour below)
+        // so the trigger pops a stack that has a mapped neighbour directly below it.
+        {
+            let mut store = Store::new(engine());
+            if let Ok(module) = Module::new(&store, &src) {
+                let mut imports = Imports::new();
+                imports.define(
+                    "env",
+                    "probe",
+                    Function::new_typed(&mut store, |_: i32, _: i32, _: i32| -> i32 { 0 }),
+                );
+                if let Ok(instance) = Instance::new(&mut store, &module, &imports) {
+                    if let Ok(f) = instance.exports.get_function("run") {
+                        let _ = f.call(&mut store, &[wasmer::Value::I32(1000)]);
+                        eprintln!("WARM sacrificial run done");
+                    }
+                }
+            }
+        }
     }
     // Must be installed before Store::new (wasmer's init_traps runs there and chains
     // to the previously installed handler).
