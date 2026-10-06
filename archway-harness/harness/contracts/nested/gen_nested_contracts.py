@@ -50,7 +50,7 @@ def gen_holder(outdir):
     lines = [
         ";; E6b holder contract (generated).",
         "(module",
-        '  (import "env" "query" (func $query (param i32) (result i32)))',
+        '  (import "env" "query_chain" (func $query (param i32) (result i32)))',
         '  (memory (export "memory") 1)',
         ALLOCATOR,
         "  ;; @16 query-request region -> @64 request JSON; @32 response region -> @512 JSON",
