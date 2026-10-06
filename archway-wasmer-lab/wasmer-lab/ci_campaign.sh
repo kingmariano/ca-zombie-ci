@@ -129,10 +129,10 @@ run_nested() {
     sed 's/^/  /' "$OUT/nested-$lab-$tag.json" | tee -a "$OUT/sweep.log"
   fi
 }
-# Calibrated sweep: K=512, calls at i = 65536 + r, so the first post-guard batch lands at
-# holder depth ~16*(r-233)-64 bytes. iters = i_call + 1 makes the trigger return right after
+# Full calibrated sweep: K=512, calls at i = 65536 + r, so the first post-guard batch lands at
+# holder depth ~16*(r-233)-8 bytes. iters = i_call + 1 makes the trigger return right after
 # that batch, so the holder resumes through whatever was written to its frame.
-for R in 240 248 256 264 272 280 288 296; do
+for R in $(seq 234 300); do
   OFF=$((512 - R))
   PAT="patterns/ws_nested_r${R}.wat"
   python3 gen_writestream.py "$PAT" 512 "$OFF" > /dev/null

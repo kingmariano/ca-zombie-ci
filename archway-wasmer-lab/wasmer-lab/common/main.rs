@@ -513,7 +513,8 @@ fn nested(
         Function::new_typed(&mut store_b, move |i: i32, _: i32, _: i32| -> i32 {
             let _n = WS_CALLS.fetch_add(1, Ordering::Relaxed);
             let iu = i as u64;
-            if stride == 0 || iu % stride == 0 || iu + 1 >= iters as u64 {
+            // only scan near/after the guard crossing (saves scanning the whole pool)
+            if iu >= 60_000 && (stride == 0 || iu % stride == 0 || iu + 1 >= iters as u64) {
                 ws_scan(i);
             }
             0
