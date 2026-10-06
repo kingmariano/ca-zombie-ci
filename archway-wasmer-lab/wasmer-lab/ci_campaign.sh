@@ -105,12 +105,15 @@ python3 gen_writestream.py patterns/ws_drift.wat 1 | tee -a "$OUT/sweep.log"
 run_writestream lab-422-sp patterns/ws_drift.wat 70000 8192 dense
 run_writestream lab-742-sp patterns/ws_drift.wat 70000 8192 dense
 
-# E3: sparse streams - write batches jump 16*K bytes per call; K >= 512 can skip the 4 KiB guard
-for K in 512 1024 2048 4096 8192; do
-  python3 gen_writestream.py "patterns/ws_sparse_$K.wat" "$K" | tee -a "$OUT/sweep.log"
-  run_writestream lab-422-sp "patterns/ws_sparse_$K.wat" 400000 1 "sparse$K"
+# E3: sparse streams - write batches jump 16*K bytes per call. The guard occupies a
+# ~256-iteration window around i~65536; a phase offset makes the schedule skip it.
+for KO in "512 128" "1024 512" "2048 1024" "4096 2048" "8192 4096"; do
+  set -- $KO; K=$1; OFF=$2
+  python3 gen_writestream.py "patterns/ws_sparse_${K}_${OFF}.wat" "$K" "$OFF" | tee -a "$OUT/sweep.log"
+  run_writestream lab-422-sp "patterns/ws_sparse_${K}_${OFF}.wat" 400000 1 "sparse${K}o${OFF}"
 done
-run_writestream lab-742-sp patterns/ws_sparse_1024.wat 400000 1 "sparse1024"
+python3 gen_writestream.py patterns/ws_sparse_1024_512.wat 1024 512
+run_writestream lab-742-sp patterns/ws_sparse_1024_512.wat 400000 1 "sparse1024o512"
 
 echo "=== results ==="
 ls -la "$OUT"
