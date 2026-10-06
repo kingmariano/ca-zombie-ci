@@ -62,7 +62,7 @@ def main() -> None:
         f";; call_every={call_every} (1 = dense stream; >1 = sparse stream that can jump the guard page)",
         "(module",
         '  (import "env" "probe" (func $host (param i32 i32 i32) (result i32)))',
-        "  (memory 1)",
+        '  (memory (export "memory") 1)',
         '  (data (i32.const 0) "\\01\\00\\00\\00")',
         '  (func (export "run") (param $iters i32) (result i32)',
         "    (local $i i32)",

