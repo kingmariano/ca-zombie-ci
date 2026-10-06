@@ -129,17 +129,17 @@ run_nested() {
     sed 's/^/  /' "$OUT/nested-$lab-$tag.json" | tee -a "$OUT/sweep.log"
   fi
 }
-# Full calibrated sweep: K=512, calls at i = 65536 + r, so the first post-guard batch lands at
-# holder depth ~16*(r-233)-8 bytes. iters = i_call + 1 makes the trigger return right after
-# that batch, so the holder resumes through whatever was written to its frame.
+# E5 pivot sweep: live values are computed constants 0x0041414141414100+K (Singlepass does
+# not constant-fold, so the constant stays in a register and is pushed into the batch).
+# If such a slot lands on the holder's return slot, the holder jumps to the marker value.
 for R in $(seq 234 300); do
   OFF=$((512 - R))
-  PAT="patterns/ws_nested_r${R}.wat"
-  python3 gen_writestream.py "$PAT" 512 "$OFF" > /dev/null
+  PAT="patterns/ws_pivot_r${R}.wat"
+  python3 gen_writestream.py "$PAT" 512 "$OFF" pivot > /dev/null
   ITERS=$((65536 + R + 1))
-  run_nested lab-422-sp "$PAT" "$ITERS" 1 "r${R}" "patterns/ws_drift.wat" 8 7
+  run_nested lab-422-sp "$PAT" "$ITERS" 1 "pivot_r${R}" "patterns/ws_drift.wat" 8 7
 done
-run_nested lab-742-sp patterns/ws_nested_r256.wat 65793 1 "r256" "patterns/ws_drift.wat" 8 7
+run_nested lab-742-sp patterns/ws_pivot_r256.wat 65793 1 "pivot_r256" "patterns/ws_drift.wat" 8 7
 
 echo "=== results ==="
 ls -la "$OUT"

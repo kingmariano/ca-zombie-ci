@@ -270,7 +270,9 @@ fn ws_scan(i: i32) {
         let mut addr = lo;
         while addr + 8 <= hi {
             let v = unsafe { core::ptr::read_volatile(addr as *const u64) };
-            if (v >> 32) == iu && (v & 0xffff_ffff) < 64 {
+            let pattern_hit = (v >> 32) == iu && (v & 0xffff_ffff) < 64;
+            let pivot_hit = (v & 0xffff_ffff_ffff_ff00) == 0x0041_4141_4141_4100;
+            if pattern_hit || pivot_hit {
                 rec.hits += 1;
                 map_hits += 1;
                 if addr < rec.min_addr {
@@ -279,7 +281,7 @@ fn ws_scan(i: i32) {
                 if addr > rec.max_addr {
                     rec.max_addr = addr;
                 }
-                if v & 0xffff_ffff == 0 {
+                if (v & 0xffff_ffff) == 0 || (v & 0xff) == 0 {
                     rec.addr_k0 = addr;
                 }
             }
