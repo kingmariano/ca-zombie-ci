@@ -52,6 +52,26 @@ for lab in lab-422-sp lab-742-sp; do
   wc -l < "$OUT/drift-sweep-$lab.jsonl" | tee -a "$OUT/sweep.log"
 done
 
+echo "=== [5/5] high-iteration overflow probes (rsp probe is blind: host calls run on_host_stack) ==="
+SEL="v_l6_extend_add_r1 v_l8_extend_add_r1 v_l12_extend_add_r1 v_l16_extend_add_r1 v_l24_extend_add_r1 v_l6_load_add_r1 v_l12_load_add_r1 v_l6_extend_extend_r1 v_l12_extend_extend_r1 v_l16_extend_extend_r1"
+for lab in lab-422-sp lab-742-sp; do
+  : > "$OUT/overflow-$lab.jsonl"
+  for v in $SEL; do
+    pat="$OUT/p1variants/$v.wat"
+    [ -f "$pat" ] || continue
+    for iters in 300000 2000000; do
+      if timeout 300 "./$lab/target/release/$lab" drift "$pat" "$iters" >>"$OUT/overflow-$lab.jsonl" 2>&1; then
+        tail -1 "$OUT/overflow-$lab.jsonl"
+      else
+        rc=$?
+        echo "{\"pattern\":\"$v\",\"iters\":$iters,\"result\":\"CRASH/exit:$rc\"}" >>"$OUT/overflow-$lab.jsonl"
+      fi
+    done
+  done
+  echo "--- $lab: overflow outcomes (non-ok only) ---" | tee -a "$OUT/sweep.log"
+  grep -v '"result":"ok"' "$OUT/overflow-$lab.jsonl" | head -40 | tee -a "$OUT/sweep.log"
+done
+
 echo "=== results ==="
 ls -la "$OUT"
 exit 0
