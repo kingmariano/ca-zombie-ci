@@ -75,28 +75,23 @@ done
 echo "=== [6/7] E1 write-stream (dense) + E3 guard-jump (sparse) ==="
 run_writestream() {
   local lab="$1" pat="$2" iters="$3" stride="$4" tag="$5"
-  if timeout 900 "./$lab/target/release/$lab" writestream "$pat" "$iters" "$stride" >"$OUT/writestream-$lab-$tag.json" 2>&1; then
-    echo "--- $lab $tag scan summary ---" | tee -a "$OUT/sweep.log"
+  timeout 900 "./$lab/target/release/$lab" writestream "$pat" "$iters" "$stride" \
+    >"$OUT/writestream-$lab-$tag.json" 2>"$OUT/writestream-$lab-$tag.scans"
+  local rc=$?
+  echo "--- $lab $tag (exit=$rc) ---" | tee -a "$OUT/sweep.log"
+  echo "  last scans:" | tee -a "$OUT/sweep.log"
+  grep -E "^(SCAN|CRASH)" "$OUT/writestream-$lab-$tag.scans" 2>/dev/null | tail -7 | sed 's/^/  /' | tee -a "$OUT/sweep.log"
+  if [ "$rc" -eq 0 ]; then
     python3 - "$OUT/writestream-$lab-$tag.json" <<'PYEOF' | tee -a "$OUT/sweep.log"
 import json, sys
 try:
     d = json.load(open(sys.argv[1]))
 except Exception as e:
-    print("parse error:", e)
-    print(open(sys.argv[1]).read()[:2000])
-    sys.exit(0)
-print("result:", d.get("result"), "| calls:", d.get("calls"))
-scans = d.get("scans", [])
-print(f"scans: {len(scans)}")
-idx = sorted(set(list(range(min(3, len(scans)))) + list(range(max(0, len(scans) - 4), len(scans)))))
-for n in idx:
-    s = scans[n]
-    print(f"  i={s.get('i'):<8} hits={s.get('hits'):<6} k0={s.get('k0')} map_hits={s.get('map_hits')}")
+    print("  summary parse error:", e); raise SystemExit
+print("  result:", d.get("result"), "| calls:", d.get("calls"))
 PYEOF
   else
-    rc=$?
-    echo "writestream $lab $tag failed/exit=$rc" | tee -a "$OUT/sweep.log"
-    tail -3 "$OUT/writestream-$lab-$tag.json" 2>/dev/null | tee -a "$OUT/sweep.log"
+    echo "  CRASH/exit=$rc (scan lines above show the crossing point)" | tee -a "$OUT/sweep.log"
   fi
 }
 

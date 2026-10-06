@@ -156,6 +156,34 @@ static WS_SCANS: Mutex<Vec<WsScan>> = Mutex::new(Vec::new());
 static WS_CALLS: AtomicU64 = AtomicU64::new(0);
 static WS_EXCL_LO: AtomicU64 = AtomicU64::new(0);
 static WS_EXCL_HI: AtomicU64 = AtomicU64::new(0);
+static WS_LAST: Mutex<String> = Mutex::new(String::new());
+
+// Fault handler: installed BEFORE Store::new so wasmer's platform_init (called from
+// Store::new) saves it as the previous handler and forwards non-wasm faults to us.
+extern "C" fn ws_segv(sig: libc::c_int, info: *mut libc::siginfo_t, _ctx: *mut libc::c_void) {
+    let addr = if info.is_null() {
+        0usize
+    } else {
+        unsafe { (*info).si_addr() as usize }
+    };
+    let last = WS_LAST.lock().map(|s| s.clone()).unwrap_or_default();
+    eprintln!(
+        "CRASH {{\"sig\":{},\"fault_addr\":\"0x{:x}\",\"last_scan\":{}}}",
+        sig, addr, last
+    );
+    unsafe { libc::_exit(139) };
+}
+
+fn install_ws_handlers() {
+    unsafe {
+        let mut sa: libc::sigaction = core::mem::zeroed();
+        sa.sa_sigaction = ws_segv as usize;
+        sa.sa_flags = libc::SA_SIGINFO;
+        libc::sigemptyset(&mut sa.sa_mask);
+        libc::sigaction(libc::SIGSEGV, &sa, core::ptr::null_mut());
+        libc::sigaction(libc::SIGBUS, &sa, core::ptr::null_mut());
+    }
+}
 
 fn read_rw_maps() -> Vec<(u64, u64, String)> {
     let mut out = Vec::new();
@@ -236,9 +264,19 @@ fn ws_scan(i: i32) {
     }
     if let Ok(mut v) = WS_SCANS.lock() {
         if v.len() < 256 {
-            v.push(rec);
+            v.push(rec.clone());
         }
     }
+    // Unbuffered per-scan line: survives a SIGSEGV (the process may crash when the
+    // stream crosses into another stack's guard/unmapped region).
+    let line = format!(
+        "SCAN {{\"i\":{},\"hits\":{},\"min\":\"0x{:x}\",\"max\":\"0x{:x}\",\"k0\":\"0x{:x}\",\"candidates\":{},\"map_hits\":\"{}\"}}",
+        rec.i, rec.hits, rec.min_addr, rec.max_addr, rec.addr_k0, rec.candidates, rec.map_hits
+    );
+    if let Ok(mut l) = WS_LAST.lock() {
+        *l = line.clone();
+    }
+    eprintln!("{}", line);
 }
 
 fn writestream(path: &str, iters: i32, stride: u64) {
@@ -249,6 +287,9 @@ fn writestream(path: &str, iters: i32, stride: u64) {
             return;
         }
     };
+    // Must be installed before Store::new (wasmer's init_traps runs there and chains
+    // to the previously installed handler).
+    install_ws_handlers();
     let mut store = Store::new(engine());
     let module = match Module::new(&store, &src) {
         Ok(m) => m,
