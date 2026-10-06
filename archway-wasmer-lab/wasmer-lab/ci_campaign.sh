@@ -72,6 +72,42 @@ for lab in lab-422-sp lab-742-sp; do
   grep -v '"result":"ok"' "$OUT/overflow-$lab.jsonl" | head -40 | tee -a "$OUT/sweep.log"
 done
 
+echo "=== [6/6] E1 write-stream detector (push_used_gpr writes at drifted rsp) ==="
+python3 gen_writestream.py patterns/ws_drift.wat | tee -a "$OUT/sweep.log"
+for lab in lab-422-sp lab-742-sp; do
+  # stride 8192: scan at i = 0, 8192, ... ; drift 16 B/iter -> ~128 KiB per scan step
+  if timeout 300 "./$lab/target/release/$lab" writestream patterns/ws_drift.wat 70000 8192 >"$OUT/writestream-$lab.json" 2>&1; then
+    echo "--- $lab writestream scan summary ---" | tee -a "$OUT/sweep.log"
+    python3 - "$OUT/writestream-$lab.json" <<'PYEOF' | tee -a "$OUT/sweep.log"
+import json, sys
+try:
+    d = json.load(open(sys.argv[1]))
+except Exception as e:
+    print("parse error:", e)
+    print(open(sys.argv[1]).read()[:2000])
+    sys.exit(0)
+print("pattern:", d.get("pattern"), "| result:", d.get("result"), "| calls:", d.get("calls"))
+scans = d.get("scans", [])
+print(f"scans: {len(scans)}")
+prev = None
+for s in scans:
+    step = ""
+    if prev is not None and s.get("max") not in ("0x0", None):
+        try:
+            step = f" dMax={int(s['max'],16)-int(prev,16)}"
+        except Exception:
+            pass
+    print(f"  i={s.get('i'):<7} hits={s.get('hits'):<6} min={s.get('min')} max={s.get('max')} k0={s.get('k0')} cand={s.get('candidates')}{step}")
+    if s.get("max") not in ("0x0", None):
+        prev = s["max"]
+PYEOF
+  else
+    rc=$?
+    echo "writestream $lab failed/exit=$rc" | tee -a "$OUT/sweep.log"
+    tail -3 "$OUT/writestream-$lab.json" 2>/dev/null | tee -a "$OUT/sweep.log"
+  fi
+done
+
 echo "=== results ==="
 ls -la "$OUT"
 exit 0
