@@ -201,8 +201,8 @@ fn read_rw_maps() -> Vec<(u64, u64, String)> {
                 ),
                 _ => continue,
             };
-            let name = fields.get(5).copied().unwrap_or("").to_string();
-            out.push((lo, hi, name));
+            let tag = format!("{} {}", fields[1], fields.get(5).copied().unwrap_or(""));
+            out.push((lo, hi, tag));
         }
     }
     out
@@ -222,21 +222,25 @@ fn ws_scan(i: i32) {
         maps_note: String::new(),
         map_hits: String::new(),
     };
-    for (lo, hi, name) in read_rw_maps() {
+    let mut maps_full = String::new();
+    for (lo, hi, tag) in read_rw_maps() {
         let size = hi.saturating_sub(lo);
         if !(256 * 1024..=32 * 1024 * 1024).contains(&size) {
             continue;
         }
-        if name.contains("[stack]") || name.contains("[heap]") {
+        if tag.contains("[stack]") || tag.contains("[heap]") {
             continue;
         }
         if lo < excl_hi && hi > excl_lo {
             continue; // overlaps the wasm linear memory
         }
         rec.candidates += 1;
+        if maps_full.len() < 600 {
+            maps_full.push_str(&format!("0x{:x}-0x{:x} {};", lo, hi, tag));
+        }
         if rec.maps_note.len() < 200 {
             rec.maps_note
-                .push_str(&format!("{}@0x{:x}-0x{:x};", name, lo, hi));
+                .push_str(&format!("{}@0x{:x}-0x{:x};", tag, lo, hi));
         }
         let mut map_hits: u64 = 0;
         let mut addr = lo;
@@ -270,8 +274,8 @@ fn ws_scan(i: i32) {
     // Unbuffered per-scan line: survives a SIGSEGV (the process may crash when the
     // stream crosses into another stack's guard/unmapped region).
     let line = format!(
-        "SCAN {{\"i\":{},\"hits\":{},\"min\":\"0x{:x}\",\"max\":\"0x{:x}\",\"k0\":\"0x{:x}\",\"candidates\":{},\"map_hits\":\"{}\"}}",
-        rec.i, rec.hits, rec.min_addr, rec.max_addr, rec.addr_k0, rec.candidates, rec.map_hits
+        "SCAN {{\"i\":{},\"hits\":{},\"min\":\"0x{:x}\",\"max\":\"0x{:x}\",\"k0\":\"0x{:x}\",\"candidates\":{},\"map_hits\":\"{}\",\"maps\":\"{}\"}}",
+        rec.i, rec.hits, rec.min_addr, rec.max_addr, rec.addr_k0, rec.candidates, rec.map_hits, maps_full
     );
     if let Ok(mut l) = WS_LAST.lock() {
         *l = line.clone();
@@ -279,7 +283,46 @@ fn ws_scan(i: i32) {
     eprintln!("{}", line);
 }
 
-fn writestream(path: &str, iters: i32, stride: u64) {
+// Grow the global wasmer stack pool with N simultaneous executions: each thread holds
+// its coroutine stack inside the host-import barrier until all N are in flight, then all
+// complete and push their stacks to STACK_POOL. Later executions pop from this pool, so
+// the trigger can land on a stack that has a mapped neighbour below it.
+fn grow_pool(wasm: &[u8], n: usize) {
+    use std::sync::{Arc, Barrier};
+    let barrier = Arc::new(Barrier::new(n));
+    let mut handles = Vec::new();
+    for _ in 0..n {
+        let b = barrier.clone();
+        let bytes = wasm.to_vec();
+        handles.push(std::thread::spawn(move || {
+            let mut store = Store::new(engine());
+            let module = match Module::new(&store, &bytes) {
+                Ok(m) => m,
+                Err(_) => return,
+            };
+            let mut imports = Imports::new();
+            let b2 = b.clone();
+            imports.define(
+                "env",
+                "probe",
+                Function::new_typed(&mut store, move |_i: i32, _: i32, _: i32| -> i32 {
+                    b2.wait();
+                    0
+                }),
+            );
+            if let Ok(instance) = Instance::new(&mut store, &module, &imports) {
+                if let Ok(f) = instance.exports.get_function("run") {
+                    let _ = f.call(&mut store, &[wasmer::Value::I32(1)]);
+                }
+            }
+        }));
+    }
+    for h in handles {
+        let _ = h.join();
+    }
+}
+
+fn writestream(path: &str, iters: i32, stride: u64, warm_path: Option<&str>, warm_threads: usize) {
     let src = match fs::read(path) {
         Ok(b) => b,
         Err(e) => {
@@ -287,6 +330,18 @@ fn writestream(path: &str, iters: i32, stride: u64) {
             return;
         }
     };
+    if warm_threads > 0 {
+        if let Some(wpath) = warm_path {
+            match fs::read(wpath) {
+                Ok(wbytes) => {
+                    eprintln!("WARM growing pool with {} threads using {}", warm_threads, wpath);
+                    grow_pool(&wbytes, warm_threads);
+                    eprintln!("WARM pool grown");
+                }
+                Err(e) => eprintln!("WARM read {} failed: {}", wpath, e),
+            }
+        }
+    }
     // Must be installed before Store::new (wasmer's init_traps runs there and chains
     // to the previously installed handler).
     install_ws_handlers();
@@ -535,10 +590,12 @@ fn main() {
     } else if args.len() >= 4 && args[1] == "writestream" {
         let iters: i32 = args[3].parse().unwrap_or(1000);
         let stride: u64 = args.get(4).and_then(|s| s.parse().ok()).unwrap_or(4096);
-        writestream(&args[2], iters, stride);
+        let warm_path = args.get(5).map(|s| s.as_str());
+        let warm_threads: usize = args.get(6).and_then(|s| s.parse().ok()).unwrap_or(0);
+        writestream(&args[2], iters, stride, warm_path, warm_threads);
     } else {
         eprintln!(
-            "usage: {} patterns | run <file.wat> | drift <file.wat> <iters> | writestream <file.wat> <iters> [stride]",
+            "usage: {} patterns | run <file.wat> | drift <file.wat> <iters> | writestream <file.wat> <iters> [stride] [warm.wat] [warm_threads]",
             args[0]
         );
         std::process::exit(2);

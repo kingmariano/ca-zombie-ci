@@ -75,7 +75,8 @@ done
 echo "=== [6/7] E1 write-stream (dense) + E3 guard-jump (sparse) ==="
 run_writestream() {
   local lab="$1" pat="$2" iters="$3" stride="$4" tag="$5"
-  timeout 900 "./$lab/target/release/$lab" writestream "$pat" "$iters" "$stride" \
+  local warm="${6:-}" warmn="${7:-0}"
+  timeout 900 "./$lab/target/release/$lab" writestream "$pat" "$iters" "$stride" "$warm" "$warmn" \
     >"$OUT/writestream-$lab-$tag.json" 2>"$OUT/writestream-$lab-$tag.scans"
   local rc=$?
   echo "--- $lab $tag (exit=$rc) ---" | tee -a "$OUT/sweep.log"
@@ -102,13 +103,16 @@ run_writestream lab-742-sp patterns/ws_drift.wat 70000 8192 dense
 
 # E3: sparse streams - write batches jump 16*K bytes per call. The guard occupies a
 # ~256-iteration window around i~65536; a phase offset makes the schedule skip it.
+# Warm-up (8 concurrent executions) grows the global stack pool so the trigger lands on
+# a stack with a mapped neighbour below (otherwise the stream skips the guard into
+# unmapped memory and the process faults - as seen in v3/v4).
 for KO in "512 128" "1024 512" "2048 1024" "4096 2048" "8192 4096"; do
   set -- $KO; K=$1; OFF=$2
   python3 gen_writestream.py "patterns/ws_sparse_${K}_${OFF}.wat" "$K" "$OFF" | tee -a "$OUT/sweep.log"
-  run_writestream lab-422-sp "patterns/ws_sparse_${K}_${OFF}.wat" 400000 1 "sparse${K}o${OFF}"
+  run_writestream lab-422-sp "patterns/ws_sparse_${K}_${OFF}.wat" 400000 1 "sparse${K}o${OFF}" "patterns/ws_drift.wat" 8
 done
 python3 gen_writestream.py patterns/ws_sparse_1024_512.wat 1024 512
-run_writestream lab-742-sp patterns/ws_sparse_1024_512.wat 400000 1 "sparse1024o512"
+run_writestream lab-742-sp patterns/ws_sparse_1024_512.wat 400000 1 "sparse1024o512" "patterns/ws_drift.wat" 8
 
 echo "=== results ==="
 ls -la "$OUT"
