@@ -99,6 +99,29 @@ func (q *mockQuerier) Query(req types.QueryRequest, gasLimit uint64) ([]byte, er
 }
 func (q *mockQuerier) GasConsumed() uint64 { return q.gas }
 
+// nestedQuerier routes Smart queries to a second contract, producing a nested wasmvm
+// execution (the outer contract stays suspended while the inner one runs on a new stack).
+type nestedQuerier struct {
+	vm        *wasmvm.VM
+	checksum  wasmvm.Checksum
+	env       types.Env
+	store     types.KVStore
+	goapi     types.GoAPI
+	gasLimit  uint64
+	deserCost types.UFraction
+	calls     int
+}
+
+func (q *nestedQuerier) Query(req types.QueryRequest, gasLimit uint64) ([]byte, error) {
+	if req.Wasm == nil || req.Wasm.Smart == nil {
+		return nil, fmt.Errorf("nestedQuerier: only smart queries are supported")
+	}
+	q.calls++
+	resp, _, err := q.vm.Query(q.checksum, q.env, req.Wasm.Smart.Msg, q.store, q.goapi, q, &mockGasMeter{}, q.gasLimit, q.deserCost)
+	return resp, err
+}
+func (q *nestedQuerier) GasConsumed() uint64 { return 0 }
+
 func humanAddress(canonical []byte) (string, uint64, error) {
 	return hex.EncodeToString(canonical), 10, nil
 }
@@ -116,13 +139,13 @@ type stepResult struct {
 }
 
 type report struct {
-	Wasm        string       `json:"wasm"`
-	Checksum    string       `json:"checksum"`
-	Capabilities string      `json:"capabilities"`
-	MemoryLimit uint          `json:"memory_limit_mb"`
-	Instantiate stepResult   `json:"instantiate"`
-	Executes    []stepResult `json:"executes"`
-	TotalGas    uint64       `json:"total_gas"`
+	Wasm         string       `json:"wasm"`
+	Checksum     string       `json:"checksum"`
+	Capabilities string       `json:"capabilities"`
+	MemoryLimit  uint         `json:"memory_limit_mb"`
+	Instantiate  stepResult   `json:"instantiate"`
+	Executes     []stepResult `json:"executes"`
+	TotalGas     uint64       `json:"total_gas"`
 }
 
 func main() {
@@ -135,6 +158,9 @@ func main() {
 	memoryLimit := flag.Uint("memory-mb", 32, "memory limit (MiB)")
 	printDebug := flag.Bool("print-debug", false, "print VM debug output")
 	outFile := flag.String("out", "", "write JSON report to this file")
+	triggerFile := flag.String("trigger", "", "drift trigger .wasm (enables nested holder/trigger mode)")
+	benignFile := flag.String("benign", "", "benign trigger .wasm for nested warm-ups")
+	warmups := flag.Int("warmups", 0, "nested warm-up executions to grow the coroutine stack pool")
 	flag.Parse()
 
 	if *wasmFile == "" {
@@ -167,6 +193,33 @@ func main() {
 		os.Exit(2)
 	}
 
+	// nested mode: store the drift trigger + the benign warm-up trigger
+	var triggerChecksum, benignChecksum wasmvm.Checksum
+	if *triggerFile != "" {
+		tcode, err := os.ReadFile(*triggerFile)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "read trigger:", err)
+			os.Exit(2)
+		}
+		triggerChecksum, err = vm.StoreCode(tcode)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "StoreCode trigger:", err)
+			os.Exit(2)
+		}
+	}
+	if *benignFile != "" {
+		bcode, err := os.ReadFile(*benignFile)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "read benign:", err)
+			os.Exit(2)
+		}
+		benignChecksum, err = vm.StoreCode(bcode)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "StoreCode benign:", err)
+			os.Exit(2)
+		}
+	}
+
 	store := newMemStore()
 	env := types.Env{
 		Block: types.BlockInfo{
@@ -182,7 +235,7 @@ func main() {
 		Funds:  types.Coins{},
 	}
 	goapi := types.GoAPI{HumanAddress: humanAddress, CanonicalAddress: canonicalAddress}
-	querier := &mockQuerier{}
+	var querier types.Querier = &mockQuerier{}
 	deserCost := types.UFraction{Numerator: 1, Denominator: 1}
 
 	rep := report{
@@ -206,6 +259,29 @@ func main() {
 		writeReport(rep, *outFile)
 		fmt.Fprintln(os.Stderr, "instantiate error:", err)
 		os.Exit(1)
+	}
+
+	// nested mode: instantiate the triggers, warm up the coroutine stack pool, then attack
+	if *triggerFile != "" {
+		if _, _, err := vm.Instantiate(triggerChecksum, env, info, []byte("{}"), store, goapi, &mockQuerier{}, &mockGasMeter{}, *gas, deserCost); err != nil {
+			fmt.Fprintln(os.Stderr, "instantiate trigger:", err)
+			os.Exit(2)
+		}
+		nq := &nestedQuerier{vm: vm, checksum: triggerChecksum, env: env, store: store, goapi: goapi, gasLimit: *gas, deserCost: deserCost}
+		if *benignFile != "" && *warmups > 0 {
+			if _, _, err := vm.Instantiate(benignChecksum, env, info, []byte("{}"), store, goapi, &mockQuerier{}, &mockGasMeter{}, *gas, deserCost); err != nil {
+				fmt.Fprintln(os.Stderr, "instantiate benign:", err)
+				os.Exit(2)
+			}
+			nq.checksum = benignChecksum
+			for i := 0; i < *warmups; i++ {
+				_, _, werr := vm.Execute(checksum, env, info, []byte(*execMsg), store, goapi, nq, &mockGasMeter{}, *gas, deserCost)
+				fmt.Fprintf(os.Stderr, "warmup %d err=%v nested_calls=%d\n", i, werr, nq.calls)
+			}
+		}
+		nq.checksum = triggerChecksum
+		querier = nq
+		fmt.Fprintf(os.Stderr, "nested mode armed: trigger=%x warmups=%d\n", triggerChecksum, *warmups)
 	}
 
 	// execute N times
