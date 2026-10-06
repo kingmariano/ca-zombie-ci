@@ -274,7 +274,7 @@ fn run_file(path: &str) {
     // collect zero-param exported functions, sorted by name
     let mut names: Vec<String> = Vec::new();
     for (name, ext) in instance.exports.iter() {
-        if let Some(f) = ext.into_function() {
+        if let wasmer::Extern::Function(f) = ext {
             if f.ty(&store).params().len() == 0 {
                 names.push(name.to_string());
             }
