@@ -84,7 +84,7 @@ def gen_holder(outdir, dummy=0, staged=10, staged_const=None, bare=False):
             f'  (data (i32.const 32) "{esc(region(512, 64, len(RESP)))}")',
             f'  (data (i32.const 512) "{esc(RESP)}")',
             '  (func (export "instantiate") (param i32 i32 i32) (result i32) (i32.const 32))',
-            f'  (func (export "execute") (export "query") (param $env i32) (param $msg i32) (result i32)',
+            f'  (func (export "execute") (param $env i32) (param $info i32) (param $msg i32) (result i32)',
             "    " + " ".join(f"(local $l{k} i64)" for k in range(N)),
         ]
         for k in range(N):
@@ -92,6 +92,9 @@ def gen_holder(outdir, dummy=0, staged=10, staged_const=None, bare=False):
         lines += [
             "    (drop (call $query (i32.const 16)))",
             f"    (drop {fold})",
+            "    (i32.const 32))",
+            '  (func (export "query") (param $env i32) (param $msg i32) (result i32)',
+            "    (drop (call $query (i32.const 16)))",
             "    (i32.const 32))",
             '  (func (export "migrate") (param i32 i32 i32) (result i32) (i32.const 32))',
             '  (func (export "sudo") (param i32 i32 i32 i32) (result i32) (i32.const 32))',
