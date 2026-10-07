@@ -56,21 +56,24 @@ done
 echo "--- mint candidates ---" | tee -a "$OUT/archwayd_info.txt"
 head -60 "$OUT/e8_mint_candidates.txt" | tee -a "$OUT/archwayd_info.txt"
 
-echo "=== [4/6] target disassembly (Go syntax, pclntab-based) ==="
+echo "=== [4/6] target disassembly (GNU dump address ranges + pclntab names) ==="
+# go tool objdump cannot resolve stripped-binary symbols; instead use the pclntab
+# entry table (archwayd_functions.txt) to cut address ranges out of the GNU dump.
+if [ ! -s /tmp/archwayd.asm ]; then
+  echo "building GNU dump (first time, ~15 min)" | tee -a "$OUT/archwayd_info.txt"
+  timeout 1800 objdump -d /tmp/archwayd > /tmp/archwayd.asm 2>/dev/null || true
+fi
 : > "$OUT/e8_target_disasm.txt"
-: > "$OUT/e8_objdump.err"
-for pat in 'MintCoins' 'SendCoins' 'AddCoins' 'InputOutputCoins' 'SetBalance' 'FundCommunityPool' 'BeginBlocker'; do
-  { echo "########## PATTERN: $pat"; timeout 600 go tool objdump -s "$pat" /tmp/archwayd 2>>"$OUT/e8_objdump.err" | head -600; } >> "$OUT/e8_target_disasm.txt"
-done
-wc -l "$OUT/e8_target_disasm.txt" | tee -a "$OUT/archwayd_info.txt"
-if [ "$(wc -l < "$OUT/e8_target_disasm.txt")" -lt 120 ]; then
-  echo "go tool objdump produced little; falling back to full-dump extraction" | tee -a "$OUT/archwayd_info.txt"
-  [ -s /tmp/archwayd_go.asm ] || timeout 3000 go tool objdump /tmp/archwayd > /tmp/archwayd_go.asm 2>/dev/null || true
-  if [ -s /tmp/archwayd_go.asm ]; then
-    for pat in 'MintCoins' 'SendCoins' 'AddCoins' 'InputOutputCoins' 'SetBalance' 'FundCommunityPool' 'BeginBlocker'; do
-      { echo "########## PATTERN: $pat (full-dump extract)"; awk -v p="$pat" '/^TEXT /{f=($0 ~ p)} f' /tmp/archwayd_go.asm | head -600; } >> "$OUT/e8_target_disasm.txt"
-    done
-  fi
+: > "$OUT/e8_disasm.err"
+if [ -s /tmp/archwayd.asm ] && [ -s "$FNS" ]; then
+  timeout 1200 python3 "$HERE/fn_disasm.py" /tmp/archwayd.asm "$FNS" \
+    'MintCoins' 'addCoins' 'setBalance' 'SendCoinsFromModuleToAccount' 'SendCoins$' \
+    'InputOutputCoins' 'FundCommunityPool' 'x/mint\.BeginBlocker' \
+    >> "$OUT/e8_target_disasm.txt" 2>>"$OUT/e8_disasm.err" || true
+  wc -l "$OUT/e8_target_disasm.txt" | tee -a "$OUT/archwayd_info.txt"
+  grep -c ';; callees:' "$OUT/e8_target_disasm.txt" | tee -a "$OUT/archwayd_info.txt" || true
+else
+  echo "asm dump unavailable; target disasm skipped" | tee -a "$OUT/archwayd_info.txt"
 fi
 
 echo "=== [5/6] call-site xrefs for the mint targets (GNU dump addresses) ==="

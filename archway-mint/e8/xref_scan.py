@@ -12,7 +12,9 @@ import re
 import sys
 from collections import defaultdict
 
-RX_LINE = re.compile(r'^\s*([0-9a-f]+):\t[0-9a-f ]+\t(call|jmp)[a-z]*\s+([0-9a-f]+)(?:\s|$|<)')
+# GNU objdump on a fully-stripped static binary prints direct call/jmp targets
+# WITH a 0x prefix and no symbol annotation: `call   0x474340`.
+RX_LINE = re.compile(r'^\s*([0-9a-f]+):\t[0-9a-f ]+\t(call|jmp)[a-z]*\s+(?:0x)?([0-9a-f]+)(?:\s|$|<|>)')
 
 
 def main():
