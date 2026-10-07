@@ -139,25 +139,29 @@ if [ -n "$PY" ]; then
   done
   echo "phase sweep crashes: $CRASHES / 85" | tee -a "$OUT/sweep.log"
 
-  echo "--- alignment sweep (holder --dummy 1..15 x r=218..302, distinct slot markers) ---"
-  for DUMMY in $(seq 1 15); do
-    for R in $(seq 218 302); do
-      OFF=$((512 - R))
-      ITERS=$((65536 + R + 1))
-      D="$NESTED/al_d${DUMMY}_r$R"
-      python3 "$NESTED/gen_nested_contracts.py" "$D" --offset "$OFF" --iters "$ITERS" --dummy "$DUMMY" --plants distinct > /dev/null 2>&1 || continue
-      for w in holder trigger benign; do
-        "$PY" -c "import wasmtime; open('$D/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D/$w.wat').read()))" 2>/dev/null
+  echo "--- parity grid (frame32 0..3 x dummy 0..3 x r=220..280, distinct slot markers) ---"
+  echo "    The batch slides in 16B steps with r, so one qword parity is invariant; a true 8B" >&2
+  echo "    shift (frame32 i32 locals in the trigger loop and/or dummy holder locals) flips it." >&2
+  for F in 0 1 2 3; do
+    for DUMMY in 0 1 2 3; do
+      for R in $(seq 220 280); do
+        OFF=$((512 - R))
+        ITERS=$((65536 + R + 1))
+        D="$NESTED/pg_f${F}_d${DUMMY}_r$R"
+        python3 "$NESTED/gen_nested_contracts.py" "$D" --offset "$OFF" --iters "$ITERS" --dummy "$DUMMY" --plants distinct --frame32 "$F" > /dev/null 2>&1 || continue
+        for w in holder trigger benign; do
+          "$PY" -c "import wasmtime; open('$D/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D/$w.wat').read()))" 2>/dev/null
+        done
+        if timeout 120 ./harness/harness -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-p${F}-d${DUMMY}-r$R.json" > "ci-out/harness/nested-vuln-p${F}-d${DUMMY}-r$R.stdout" 2> "ci-out/harness/nested-vuln-p${F}-d${DUMMY}-r$R.stderr"; then
+          :
+        else
+          CRASHES=$((CRASHES+1))
+        fi
       done
-      if timeout 120 ./harness/harness -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-d${DUMMY}-r$R.json" > "ci-out/harness/nested-vuln-d${DUMMY}-r$R.stdout" 2> "ci-out/harness/nested-vuln-d${DUMMY}-r$R.stderr"; then
-        :
-      else
-        CRASHES=$((CRASHES+1))
-      fi
     done
-    echo "  dummy=$DUMMY done (cumulative crashes: $CRASHES)" | tee -a "$OUT/sweep.log"
+    echo "  frame32=$F done (cumulative crashes: $CRASHES)" | tee -a "$OUT/sweep.log"
   done
-  echo "total nested crashes: $CRASHES / 1360" | tee -a "$OUT/sweep.log"
+  echo "parity-grid crashes: $CRASHES / 976" | tee -a "$OUT/sweep.log"
 
   echo "--- aimed pivot sweep (all planted slots = the harness's own ud2 gadget; warmups=3) ---"
   UD2_OFF=$(objdump -d ./harness/harness 2>/dev/null | grep -m1 -E '^[[:space:]]*[0-9a-f]+:[[:space:]]+0f 0b' | awk '{print $1}' | tr -d ':')
@@ -191,13 +195,15 @@ import glob, os, json, re
 marker, holder, trigger, hit, clean, errd, aimed = [], [], [], [], [], [], []
 
 def classify(f, dummy):
-    m = re.search(r'nested-vuln-(aim-)?(?:d(\d+)-)?r(\d+)\.stderr$', f)
+    m = re.search(r'nested-vuln-(aim-)?(?:p(\d+)-d(\d+)-)?(?:d(\d+)-)?r(\d+)\.stderr$', f)
     if not m:
         return
     is_aim = bool(m.group(1))
-    d = int(m.group(2)) if m.group(2) else 0
-    r = int(m.group(3))
-    tag = f"aim/r{r}" if is_aim else (f"d{d}/r{r}" if d else f"r{r}")
+    if m.group(2) is not None:
+        tag = f"f{m.group(2)}/d{m.group(3)}/r{m.group(5)}"
+    else:
+        d = int(m.group(4)) if m.group(4) else 0
+        tag = f"aim/r{m.group(5)}" if is_aim else (f"d{d}/r{m.group(5)}" if d else f"r{m.group(5)}")
     j = f.replace(".stderr", ".json")
     txt = open(f, errors="replace").read()
     if os.path.exists(j) and os.path.getsize(j) > 0:
@@ -230,6 +236,8 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-r*.stderr"), key=lambda p:
     classify(f, 0)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-d*-r*.stderr"),
                 key=lambda p: (int(p.split("-d")[-1].split("-r")[0]), int(p.split("-r")[-1].split(".")[0]))):
+    classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-p*-d*-r*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-aim-r*.stderr"), key=lambda p: int(p.split("-r")[-1].split(".")[0])):
     classify(f, None)
