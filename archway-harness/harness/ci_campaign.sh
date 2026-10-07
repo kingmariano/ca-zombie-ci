@@ -146,14 +146,26 @@ if [ -n "$PY" ]; then
   echo "--- nested summary (classified) ---"
   python3 - <<'PYEOF'
 import glob, os, json, re
-marker, holder, trigger, hit, clean = [], [], [], [], []
+marker, holder, trigger, hit, clean, errd = [], [], [], [], [], []
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-r*.stderr"), key=lambda p: int(p.split("-r")[-1].split(".")[0])):
     r = int(f.split("-r")[-1].split(".")[0])
     j = f.replace(".stderr", ".json")
     txt = open(f, errors="replace").read()
     if os.path.exists(j) and os.path.getsize(j) > 0:
         jt = open(j, errors="replace").read()
-        (hit if '"hit"' in jt else clean).append(r)
+        if '"hit"' in jt:
+            hit.append(r)
+        else:
+            err = ""
+            try:
+                ej = json.load(open(j))
+                err = ((ej.get("executes") or [{}])[0].get("error") or "")
+            except Exception:
+                pass
+            if err:
+                errd.append((r, err[:60]))    # wasm caught the corruption (e.g. OOB access)
+            else:
+                clean.append(r)
         continue
     mp = re.search(r'PC=0x([0-9a-f]+)', txt)
     pc = mp.group(1) if mp else "?"
@@ -168,6 +180,7 @@ print("MARKER-HIJACKS (PC=0x4242..):", len(marker), marker[:80])
 print("holder-side crashes        :", len(holder), [f"r{r}@0x{pc}" for r, pc in holder[:60]])
 print("trigger-side crashes       :", len(trigger), [f"r{r}" for r, pc in trigger[:40]])
 print("holder-touched (hit attr)  :", len(hit), hit[:80])
+print("holder-error (wasm-caught) :", len(errd), [f"r{r}:{e}" for r, e in errd[:40]])
 print("clean completed            :", len(clean))
 f = "ci-out/harness/nested-fixed-r256.json"
 if os.path.exists(f) and os.path.getsize(f):

