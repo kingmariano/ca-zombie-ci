@@ -97,11 +97,13 @@ PYEOF
 echo "=== [7/7] E6b nested CosmWasm pair (holder -> query -> trigger drift) ==="
 NESTED=harness/contracts/nested
 if [ -n "$PY" ]; then
-  echo "--- E6b drift probes: trigger alone via -query (dense vs sparse, 300k iters) ---"
-  for MODE in dense sparse; do
+  echo "--- E6b drift probes: trigger alone via -query (dense / dense-computed / sparse; 300k iters) ---"
+  for MODE in dense dense_computed sparse; do
     D="$NESTED/probe_$MODE"
     if [ "$MODE" = "dense" ]; then
       python3 "$NESTED/gen_nested_contracts.py" "$D" --iters 300000 --dense > /dev/null 2>&1
+    elif [ "$MODE" = "dense_computed" ]; then
+      python3 "$NESTED/gen_nested_contracts.py" "$D" --iters 300000 --dense --live computed > /dev/null 2>&1
     else
       python3 "$NESTED/gen_nested_contracts.py" "$D" --offset 256 --iters 300000 > /dev/null 2>&1
     fi
@@ -139,19 +141,29 @@ if [ -n "$PY" ]; then
   else
     echo "  fixed r256 CRASH/exit=$?" | tee -a "$OUT/sweep.log"
   fi
-  echo "--- nested summary ---"
+  echo "--- nested summary (classified crashes) ---"
   python3 - <<'PYEOF'
-import glob, os, json
-crashes, oks = [], []
+import glob, os, json, re
+crashes, oks, marker = [], [], []
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-r*.stderr"), key=lambda p: int(p.split("-r")[-1].split(".")[0])):
-    r = f.split("-r")[-1].split(".")[0]
+    r = int(f.split("-r")[-1].split(".")[0])
     j = f.replace(".stderr", ".json")
+    txt = open(f, errors="replace").read()
     if not os.path.exists(j) or os.path.getsize(j) == 0:
-        crashes.append(int(r))
+        mp = re.search(r'PC=0x([0-9a-f]+)', txt)
+        ma = re.search(r'addr=0x([0-9a-f]+)', txt)
+        pc = mp.group(1) if mp else "?"
+        ad = ma.group(1) if ma else "?"
+        # marker hijack: execution reached the planted pivot value 0x0042424242424242
+        if pc.startswith("4242") or ad.startswith("4242") or "0x4242424242" in txt:
+            marker.append(r)
+        else:
+            crashes.append((r, pc, ad))
     else:
-        oks.append(int(r))
-print("vuln crashes:", len(crashes), crashes[:40])
-print("vuln clean  :", len(oks), oks[:12])
+        oks.append(r)
+print("vuln crashes (memfault):", len(crashes), [f"r{r}@PC=0x{pc}" for r, pc, ad in crashes[:40]])
+print("vuln marker-hijacks   :", len(marker), marker[:40])
+print("vuln clean            :", len(oks), oks[:16])
 f = "ci-out/harness/nested-fixed-r256.json"
 if os.path.exists(f) and os.path.getsize(f):
     d = json.load(open(f))
