@@ -124,7 +124,7 @@ def gen_holder(outdir, dummy=0, staged=10, staged_const=None):
 
 
 def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform", plant_addr=None, dense_tail=0, frame32=0,
-                call_kind="db_read", plant_values=None, then_val=None):
+                call_kind="db_read", plant_values=None, then_val=None, spacing=512):
     if call_kind == "query":
         # host call = contract-to-contract Smart query; the Go querier callback runs
         # while this (trigger) execution is suspended -> observability hook.
@@ -223,8 +223,14 @@ def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform
             f"        (if (then (call $host {call_arg}) drop))",
         ]
     else:
+        if spacing == 512:
+            cond = f"(i32.eqz (i32.and (i32.add (local.get $i) (i32.const {offset})) (i32.const 511)))"
+        else:
+            n_off = spacing - (offset % spacing) if offset % spacing else 0
+            cond = (f"(i32.eqz (i32.rem_u (i32.add (local.get $i) (i32.const {n_off})) "
+                    f"(i32.const {spacing})))")
         lines += [
-            f"        (i32.eqz (i32.and (i32.add (local.get $i) (i32.const {offset})) (i32.const 511)))",
+            f"        {cond}",
             f"        (if (then (call $host {call_arg}) drop))",
         ]
     # keep any frame32 locals live (zero effect) so they stay in the native frame
@@ -294,6 +300,8 @@ def main():
                     help="number of holder staged locals (more => forced native frame growth)")
     ap.add_argument("--plant-values", default=None,
                     help="comma-separated per-slot canary values (hex), overrides --plants")
+    ap.add_argument("--spacing", type=int, default=512,
+                    help="host-call spacing in iterations (drift stride = 16*spacing bytes; default 512 = 8 KiB)")
     ap.add_argument("--staged-const", default=None,
                     help="computed-to-constant staged local value (hex) for the holder")
     ap.add_argument("--then-val", default=None,
@@ -306,7 +314,7 @@ def main():
     sc = int(args.staged_const, 16) if args.staged_const else None
     gen_holder(args.outdir, args.dummy, args.staged, sc)
     gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants,
-                args.plant_addr, args.dense_tail, args.frame32, call_kind, pv, tv)
+                args.plant_addr, args.dense_tail, args.frame32, call_kind, pv, tv, args.spacing)
     gen_benign(args.outdir)
 
 
