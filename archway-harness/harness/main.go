@@ -137,6 +137,8 @@ func (q *nestedQuerier) Query(req types.QueryRequest, gasLimit uint64) ([]byte, 
 }
 func (q *nestedQuerier) GasConsumed() uint64 { return 0 }
 
+var dumpAll bool
+
 // scanPlants: while a wasm execution is suspended in this callback, find every
 // occurrence of the distinct plant values 0x0041414100000000+k in mapped ~1 MiB
 // fiber-stack regions; report a per-region summary with the newest (highest) hit.
@@ -191,7 +193,7 @@ func scanPlants(depth int, n int) {
 		var topv []string
 		for a := r.hi - 0x1000; a+8 <= r.hi; a += 8 {
 			v := *(*uint64)(unsafe.Pointer(uintptr(a)))
-			if (v>>32) == 0x00414141 || (v >= 0x7f0000000000 && v < 0x800000000000) {
+			if dumpAll || (v>>32) == 0x00414141 || (v >= 0x7f0000000000 && v < 0x800000000000) || (v>>32) == 0xcafebabe {
 				topv = append(topv, fmt.Sprintf("+%x=0x%x", a-r.lo, v))
 			}
 		}
@@ -243,7 +245,9 @@ func main() {
 	warmups := flag.Int("warmups", 0, "nested warm-up executions to grow the coroutine stack pool")
 	queryMsg := flag.String("query", "", "run a query on the contract instead of execute")
 	scanFlag := flag.Bool("scan", false, "scan fiber-stack mappings for distinct plant values during nested queries")
+	dumpAllFlag := flag.Bool("dumpall", false, "dump ALL qwords in the scanned top windows (writer forensics)")
 	flag.Parse()
+	dumpAll = *dumpAllFlag
 
 	if *wasmFile == "" {
 		fmt.Fprintln(os.Stderr, "usage: harness -wasm contract.wasm [-init json] [-exec json] [-repeat N] [-gas N]")
@@ -254,6 +258,10 @@ func main() {
 		fmt.Fprintln(os.Stderr, "read wasm:", err)
 		os.Exit(2)
 	}
+
+	// Re-install the C crash reporter after Go runtime init so the wasmvm/JIT
+	// crashes produce RIP/stack dumps instead of only the Go trace.
+	crashdiagInstall()
 
 	dataDir, err := os.MkdirTemp("", "wasmvm-harness-")
 	if err != nil {

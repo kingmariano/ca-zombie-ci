@@ -351,7 +351,7 @@ def classify(f, dummy):
             else:
                 clean.append(tag)
         return
-    mp = re.search(r'PC=0x([0-9a-f]+)', txt)
+    mp = re.search(r'PC=0x([0-9a-f]+)', txt) or re.search(r'RIP=0x([0-9a-f]+)', txt)
     ma = re.search(r'addr=0x([0-9a-f]+)', txt)
     pc = mp.group(1) if mp else "?"
     ad = ma.group(1) if ma else "?"
