@@ -206,6 +206,27 @@ if [ -n "$PY" ]; then
     echo "  no ud2 gadget found; scan/aim sweep skipped" | tee -a "$OUT/sweep.log"
   fi
 
+  echo "--- FULL-PHASE sweep (r=0..511 x2 attempts; plants=ud2 gadget; query trigger) ---"
+  echo "    The crossing batch lands 16 B/phase; a fixed resume slot is covered by ONE batch" >&2
+  echo "    index per phase. The earlier sweeps only covered r=218..302, missing most phases." >&2
+  if [ -n "$UD2B_OFF" ]; then
+    for R in $(seq 0 511); do
+      OFF=$((512 - R)); ITERS=$((65536 + R + 1))
+      for A in 1 2; do
+        D4="$NESTED/fp_r${R}_a${A}"
+        python3 "$NESTED/gen_nested_contracts.py" "$D4" --offset "$OFF" --iters "$ITERS" --plants gadget --plant-addr "0x$UD2B_OFF" --call-query --staged 10 > /dev/null 2>&1 || continue
+        for w in holder trigger benign; do
+          "$PY" -c "import wasmtime; open('$D4/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D4/$w.wat').read()))" 2>/dev/null
+        done
+        timeout 120 ./harness/harness -wasm "$D4/holder.wasm" -trigger "$D4/trigger.wasm" -benign "$D4/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-fp-r${R}-a${A}.json" > "ci-out/harness/nested-vuln-fp-r${R}-a${A}.stdout" 2> "ci-out/harness/nested-vuln-fp-r${R}-a${A}.stderr" || true
+      done
+      if [ $((R % 64)) -eq 63 ]; then echo "  full-phase r=$R done" | tee -a "$OUT/sweep.log"; fi
+    done
+    echo "  full-phase sweep done" | tee -a "$OUT/sweep.log"
+  else
+    echo "  no ud2 gadget found; full-phase sweep skipped" | tee -a "$OUT/sweep.log"
+  fi
+
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
   if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
@@ -221,7 +242,14 @@ marker, holder, trigger, hit, clean, errd, aimed = [], [], [], [], [], [], []
 gadget_consumed = []
 
 def classify(f, dummy):
-    if f.split("/")[-1].startswith("nested-vuln-sa-"):
+    base = f.split("/")[-1]
+    if base.startswith("nested-vuln-fp-"):
+        mm = re.search(r'fp-r(\d+)-a(\d+)', f)
+        if mm:
+            tag = f"fp/r{mm.group(1)}/a{mm.group(2)}"
+        else:
+            tag = f"fp/{base}"
+    elif base.startswith("nested-vuln-sa-"):
         mm = re.search(r'sa-s(\d+)-r(\d+)-a(\d+)', f)
         if mm:
             tag = f"sa/s{mm.group(1)}/r{mm.group(2)}/a{mm.group(3)}"
@@ -282,6 +310,8 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-p*-d*-r*.stderr")):
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-aim-r*.stderr"), key=lambda p: int(p.split("-r")[-1].split(".")[0])):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-sa-*.stderr")):
+    classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-fp-*.stderr")):
     classify(f, None)
 
 print("AIMED-PIVOT HITS (SIGILL):", len(aimed), aimed[:40])
