@@ -259,9 +259,6 @@ func main() {
 		os.Exit(2)
 	}
 
-	// Re-install the C crash reporter after Go runtime init so the wasmvm/JIT
-	// crashes produce RIP/stack dumps instead of only the Go trace.
-	crashdiagInstall()
 
 	dataDir, err := os.MkdirTemp("", "wasmvm-harness-")
 	if err != nil {
