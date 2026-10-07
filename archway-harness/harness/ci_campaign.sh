@@ -381,6 +381,27 @@ PYEOF
     done
   fi
 
+
+  echo "--- BARE-HOLDER sweep (minimal post-query path; the corrupted outermost ret is the hijack point) ---"
+  echo "    Same staged-local frame shape, post-query = register-only folds -> the epilogue ret pops" >&2
+  echo "    the corrupted top-frame slot. All 16 plant slots = the harness ud2: SIGILL PC=0x<ud2>." >&2
+  UD3_OFF=$(objdump -d ./harness/harness 2>/dev/null | grep -m1 -E '^[[:space:]]*[0-9a-f]+:[[:space:]]+0f 0b' | awk '{print $1}' | tr -d ':')
+  if [ -n "$UD3_OFF" ]; then
+    PPV=""
+    for k in $(seq 1 16); do PPV="${PPV}${PPV:+,}0x$UD3_OFF"; done
+    for ST in 10 24; do
+      for R in $(seq 264 290); do
+        DB="$NESTED/bare_s${ST}_r${R}"
+        python3 "$NESTED/gen_nested_contracts.py" "$DB" --offset $((512-R)) --iters $((65536+R+1)) --dummy 0 --frame32 0 --staged "$ST" --bare-holder --plant-values "$PPV" > /dev/null 2>&1 || continue
+        for w in holder trigger benign; do
+          "$PY" -c "import wasmtime; open('$DB/$w.wasm','wb').write(wasmtime.wat2wasm(open('$DB/$w.wat').read()))" 2>/dev/null
+        done
+        timeout 120 ./harness/harness -wasm "$DB/holder.wasm" -trigger "$DB/trigger.wasm" -benign "$DB/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-bare-s${ST}-r${R}.json" > "ci-out/harness/nested-vuln-bare-s${ST}-r${R}.stdout" 2> "ci-out/harness/nested-vuln-bare-s${ST}-r${R}.stderr" || true
+      done
+      echo "  bare staged=$ST done (ud2=0x$UD3_OFF)" | tee -a "$OUT/sweep.log"
+    done
+  fi
+
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
   if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
@@ -398,7 +419,10 @@ gadget_consumed = []
 
 def classify(f, dummy):
     base = f.split("/")[-1]
-    if base.startswith("nested-vuln-pat24-"):
+    if base.startswith("nested-vuln-bare-"):
+        mm = re.search(r'bare-s(\d+)-r(\d+)', f)
+        tag = f"bare/s{mm.group(1)}/r{mm.group(2)}" if mm else f"bare/{base}"
+    elif base.startswith("nested-vuln-pat24-"):
         mm = re.search(r'pat24-r(\d+)-s(\d+)', f)
         tag = f"pat24/r{mm.group(1)}/s{mm.group(2)}" if mm else f"pat24/{base}"
     elif base.startswith("nested-vuln-pat-"):
@@ -496,6 +520,8 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-can-*.stderr")):
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-mk-*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-dfp-*.stderr")):
+    classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-bare-*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-pat24-*.stderr")):
     classify(f, None)

