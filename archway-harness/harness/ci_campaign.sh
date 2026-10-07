@@ -390,7 +390,7 @@ PYEOF
     PPV=""
     for k in $(seq 1 16); do PPV="${PPV}${PPV:+,}0x$UD3_OFF"; done
     for ST in 10 24; do
-      for R in $(seq 264 290); do
+      for R in $(seq 0 511); do
         DB="$NESTED/bare_s${ST}_r${R}"
         python3 "$NESTED/gen_nested_contracts.py" "$DB" --offset $((512-R)) --iters $((65536+R+1)) --dummy 0 --frame32 0 --staged "$ST" --bare-holder --plant-values "$PPV" > /dev/null 2>&1 || continue
         for w in holder trigger benign; do
