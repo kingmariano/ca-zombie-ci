@@ -18,6 +18,7 @@ import os
 import struct
 
 RESP = b'{"ok":{"messages":[],"data":null,"attributes":[],"events":[]}}'
+RESP_HIT = b'{"ok":{"messages":[],"data":null,"attributes":[["hit","1"]],"events":[]}}'
 TRIGGER_ADDR = "archway1khgqgnnpw984e70chqjc5yu5r3ed8255qy6mhw"  # valid bech32 (harness routes by checksum)
 LIVE = 16
 GADGET = 0x0042424242424242  # marker: if a planted slot lands on the return slot -> fault here
@@ -49,37 +50,56 @@ ALLOCATOR = """  (global $heap (mut i32) (i32.const 8192))
 
 def gen_holder(outdir):
     req = ('{"wasm":{"smart":{"contract_addr":"%s","msg":"e30="}}}' % TRIGGER_ADDR).encode()
+    N = 10  # staged locals; more locals => more spill pressure (mirrors the Rust HOLDER_WAT)
+    # staged local values, derived from $env (distinct per slot: 0x1000..0x1009)
+    staged = [
+        "(i64.or (i64.shl (i64.extend_i32_u (local.get $env)) (i64.const 32)) (i64.const 0x%04x))"
+        % (0x1000 + i)
+        for i in range(N)
+    ]
+    # $hit = OR over (l_k != staged_k); fold right for a compact expression
+    conds = [f"(i64.ne (local.get $l{k}) {staged[k]})" for k in range(N)]
+    hit_expr = conds[-1]
+    for c in reversed(conds[:-1]):
+        hit_expr = f"(i32.or {c} {hit_expr})"
     lines = [
         ";; E6b holder contract (generated).",
+        ";; After the query returns, $hit reports whether the write stream corrupted the",
+        ';; staged locals: corrupted -> response with attributes [["hit","1"]] (visible in',
+        ";; the harness JSON), untouched -> the plain ok response.",
         "(module",
         '  (import "env" "query_chain" (func $query (param i32) (result i32)))',
         '  (memory (export "memory") 1)',
         ALLOCATOR,
         "  ;; @16 query-request region -> @64 request JSON; @32 response region -> @512 JSON",
+        "  ;; @1008 hit-response region -> @1024 JSON",
         f'  (data (i32.const 16) "{esc(region(64, 256, len(req)))}")',
         f'  (data (i32.const 32) "{esc(region(512, 64, len(RESP)))}")',
         f'  (data (i32.const 64) "{esc(req)}")',
         f'  (data (i32.const 512) "{esc(RESP)}")',
+        f'  (data (i32.const 1008) "{esc(region(1024, 96, len(RESP_HIT)))}")',
+        f'  (data (i32.const 1024) "{esc(RESP_HIT)}")',
         '  (func (export "instantiate") (param i32 i32 i32) (result i32) (i32.const 32))',
         '  (func (export "execute") (param $env i32) (param $info i32) (param $msg i32) (result i32)',
-        "    (local $a i64) (local $b i64) (local $c i64) (local $d i64)",
+        "    (local $l0 i64) (local $l1 i64) (local $l2 i64) (local $l3 i64) (local $l4 i64)",
+        "    (local $l5 i64) (local $l6 i64) (local $l7 i64) (local $l8 i64) (local $l9 i64)",
+        "    (local $hit i32)",
         "    ;; stage distinctive values in locals (live across the query call)",
-        "    (local.set $a (i64.or (i64.shl (i64.extend_i32_u (local.get $env)) (i64.const 32)) (i64.const 0x1111)))",
-        "    (local.set $b (i64.or (i64.shl (i64.extend_i32_u (local.get $env)) (i64.const 32)) (i64.const 0x2222)))",
-        "    (local.set $c (i64.or (i64.shl (i64.extend_i32_u (local.get $env)) (i64.const 32)) (i64.const 0x3333)))",
-        "    (local.set $d (i64.or (i64.shl (i64.extend_i32_u (local.get $env)) (i64.const 32)) (i64.const 0x4444)))",
+    ]
+    for k in range(N):
+        lines.append(f"    (local.set $l{k} {staged[k]})")
+    lines += [
         "    ;; suspend inside the querier while the trigger runs on the stack above",
         "    (call $query (i32.const 16))",
         "    drop",
-        "    (i64.add (i64.add (local.get $a) (local.get $b)) (i64.add (local.get $c) (local.get $d)))",
-        "    drop",
-        "    (i32.const 32))",
+        f"    (local.set $hit {hit_expr})",
+        "    (if (result i32) (local.get $hit) (then (i32.const 1008)) (else (i32.const 32))))",
         ")",
         "",
     ]
     p = os.path.join(outdir, "holder.wat")
     open(p, "w").write("\n".join(lines))
-    print("wrote", p, f"({len(req)}-byte request)")
+    print("wrote", p, f"({len(req)}-byte request, {N}-local hit-reporting holder)")
 
 
 def gen_trigger(outdir, offset, iters, dense=False, live="load"):
