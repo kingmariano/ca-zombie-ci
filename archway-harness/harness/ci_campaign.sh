@@ -182,23 +182,24 @@ if [ -n "$PY" ]; then
     echo "  no ud2 gadget found; aimed sweep skipped" | tee -a "$OUT/sweep.log"
   fi
 
-  echo "--- scan/aim boundary sweep (query-call trigger + stack scanner + ud2 plants) ---"
+  echo "--- scan/aim boundary sweep (query-call trigger + stack scanner + ud2 plants; holder --staged) ---"
+  echo "    The crossing batch cannot settle in the guard-protected top ~56 B of the holder, so the" >&2
+  echo "    resume slot must be pushed deeper by REAL native frame growth => staged locals 10 vs 24." >&2
   UD2B_OFF=$(objdump -d ./harness/harness 2>/dev/null | grep -m1 -E '^[[:space:]]*[0-9a-f]+:[[:space:]]+0f 0b' | awk '{print $1}' | tr -d ':')
   if [ -n "$UD2B_OFF" ]; then
-    echo "  ud2 gadget @0x$UD2B_OFF (query-call boundary sweep)" | tee -a "$OUT/sweep.log"
-    for R in $(seq 222 234); do
-      for D in 0 1 2; do
-        for F in 0 1; do
-          for A in 1 2; do
-            OFF=$((512 - R)); ITERS=$((65536 + R + 1)); D2="$NESTED/sa_r${R}_d${D}_f${F}_a${A}"
-            python3 "$NESTED/gen_nested_contracts.py" "$D2" --offset "$OFF" --iters "$ITERS" --plants gadget --plant-addr "0x$UD2B_OFF" --call-query --dummy "$D" --frame32 "$F" > /dev/null 2>&1 || continue
-            for w in holder trigger benign; do
-              "$PY" -c "import wasmtime; open('$D2/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D2/$w.wat').read()))" 2>/dev/null
-            done
-            timeout 120 ./harness/harness -wasm "$D2/holder.wasm" -trigger "$D2/trigger.wasm" -benign "$D2/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -scan -out "ci-out/harness/nested-vuln-sa-r${R}-d${D}-f${F}-a${A}.json" > "ci-out/harness/nested-vuln-sa-r${R}-d${D}-f${F}-a${A}.stdout" 2> "ci-out/harness/nested-vuln-sa-r${R}-d${D}-f${F}-a${A}.stderr" || true
+    echo "  ud2 gadget @0x$UD2B_OFF (staged boundary sweep)" | tee -a "$OUT/sweep.log"
+    for ST in 10 24; do
+      for R in $(seq 220 248); do
+        for A in 1 2; do
+          OFF=$((512 - R)); ITERS=$((65536 + R + 1)); D2="$NESTED/sa_s${ST}_r${R}_a${A}"
+          python3 "$NESTED/gen_nested_contracts.py" "$D2" --offset "$OFF" --iters "$ITERS" --plants gadget --plant-addr "0x$UD2B_OFF" --call-query --staged "$ST" > /dev/null 2>&1 || continue
+          for w in holder trigger benign; do
+            "$PY" -c "import wasmtime; open('$D2/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D2/$w.wat').read()))" 2>/dev/null
           done
+          timeout 120 ./harness/harness -wasm "$D2/holder.wasm" -trigger "$D2/trigger.wasm" -benign "$D2/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -scan -out "ci-out/harness/nested-vuln-sa-s${ST}-r${R}-a${A}.json" > "ci-out/harness/nested-vuln-sa-s${ST}-r${R}-a${A}.stdout" 2> "ci-out/harness/nested-vuln-sa-s${ST}-r${R}-a${A}.stderr" || true
         done
       done
+      echo "  staged=$ST done" | tee -a "$OUT/sweep.log"
     done
     echo "  scan/aim sweep done (ud2=0x$UD2B_OFF)" | tee -a "$OUT/sweep.log"
   else
@@ -220,18 +221,25 @@ marker, holder, trigger, hit, clean, errd, aimed = [], [], [], [], [], [], []
 gadget_consumed = []
 
 def classify(f, dummy):
-    m = re.search(r'nested-vuln-(aim-|sa-)?(?:p(\d+)-d(\d+)-)?(?:d(\d+)-)?r(\d+)(?:-d\d+-f\d+-a\d+)?\.stderr$', f)
-    if not m:
-        return
-    is_aim = bool(m.group(1))
     if f.split("/")[-1].startswith("nested-vuln-sa-"):
-        mm = re.search(r'sa-r(\d+)-d(\d+)-f(\d+)-a(\d+)', f)
-        tag = f"sa/f{mm.group(3)}/d{mm.group(2)}/r{mm.group(1)}/a{mm.group(4)}" if mm else f
-    elif m.group(2) is not None:
-        tag = f"f{m.group(2)}/d{m.group(3)}/r{m.group(5)}"
+        mm = re.search(r'sa-s(\d+)-r(\d+)-a(\d+)', f)
+        if mm:
+            tag = f"sa/s{mm.group(1)}/r{mm.group(2)}/a{mm.group(3)}"
+        else:
+            mm = re.search(r'sa-r(\d+)-d(\d+)-f(\d+)-a(\d+)', f)
+            if not mm:
+                return
+            tag = f"sa/f{mm.group(3)}/d{mm.group(2)}/r{mm.group(1)}/a{mm.group(4)}"
     else:
-        d = int(m.group(4)) if m.group(4) else 0
-        tag = f"aim/r{m.group(5)}" if is_aim else (f"d{d}/r{m.group(5)}" if d else f"r{m.group(5)}")
+        m = re.search(r'nested-vuln-(aim-)?(?:p(\d+)-d(\d+)-)?(?:d(\d+)-)?r(\d+)\.stderr$', f)
+        if not m:
+            return
+        is_aim = bool(m.group(1))
+        if m.group(2) is not None:
+            tag = f"f{m.group(2)}/d{m.group(3)}/r{m.group(5)}"
+        else:
+            d = int(m.group(4)) if m.group(4) else 0
+            tag = f"aim/r{m.group(5)}" if is_aim else (f"d{d}/r{m.group(5)}" if d else f"r{m.group(5)}")
     j = f.replace(".stderr", ".json")
     txt = open(f, errors="replace").read()
     if os.path.exists(j) and os.path.getsize(j) > 0:

