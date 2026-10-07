@@ -227,6 +227,21 @@ if [ -n "$PY" ]; then
     echo "  no ud2 gadget found; full-phase sweep skipped" | tee -a "$OUT/sweep.log"
   fi
 
+  echo "--- FULL-PHASE CANARY sweep (r=0..511 x1; UNMAPPED distinct canaries 0x1000000+0x1000k on all 16 live slots) ---"
+  echo "    readable plant values are INVISIBLE to load-deref consumption; unmapped canaries label EVERY" >&2
+  echo "    consumed slot (deref => addr=canary, exec => PC=canary) across the whole phase space." >&2
+  CAN16="0x1000000,0x1001000,0x1002000,0x1003000,0x1004000,0x1005000,0x1006000,0x1007000,0x1008000,0x1009000,0x100a000,0x100b000,0x100c000,0x100d000,0x100e000,0x100f000"
+  for R in $(seq 0 511); do
+    OFF=$((512 - R)); ITERS=$((65536 + R + 1)); D5="$NESTED/can_r$R"
+    python3 "$NESTED/gen_nested_contracts.py" "$D5" --offset "$OFF" --iters "$ITERS" --call-query --staged 10 --plant-values "$CAN16" > /dev/null 2>&1 || continue
+    for w in holder trigger benign; do
+      "$PY" -c "import wasmtime; open('$D5/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D5/$w.wat').read()))" 2>/dev/null
+    done
+    timeout 120 ./harness/harness -wasm "$D5/holder.wasm" -trigger "$D5/trigger.wasm" -benign "$D5/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-can-r$R.json" > "ci-out/harness/nested-vuln-can-r$R.stdout" 2> "ci-out/harness/nested-vuln-can-r$R.stderr" || true
+    if [ $((R % 64)) -eq 63 ]; then echo "  canary-phase r=$R done" | tee -a "$OUT/sweep.log"; fi
+  done
+  echo "  full-phase canary sweep done" | tee -a "$OUT/sweep.log"
+
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
   if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
@@ -238,12 +253,16 @@ if [ -n "$PY" ]; then
   python3 - <<'PYEOF'
 import glob, os, json, re
 marker, holder, trigger, hit, clean, errd, aimed = [], [], [], [], [], [], []
+canary = []
 
 gadget_consumed = []
 
 def classify(f, dummy):
     base = f.split("/")[-1]
-    if base.startswith("nested-vuln-fp-"):
+    if base.startswith("nested-vuln-can-"):
+        mm = re.search(r'can-r(\d+)', f)
+        tag = f"can/r{mm.group(1)}" if mm else f"can/{base}"
+    elif base.startswith("nested-vuln-fp-"):
         mm = re.search(r'fp-r(\d+)-a(\d+)', f)
         if mm:
             tag = f"fp/r{mm.group(1)}/a{mm.group(2)}"
@@ -295,6 +314,8 @@ def classify(f, dummy):
         marker.append((tag, pc))                   # jumped to a planted pivot/marker value
     elif pc.startswith("4") or ad.startswith("4"):
         gadget_consumed.append((tag, pc, ad))      # planted gadget value consumed as code/data
+    elif re.fullmatch(r'100[0-9a-f]{4}', pc) or re.fullmatch(r'100[0-9a-f]{4}', ad):
+        canary.append((tag, pc, ad))               # UNMAPPED canary consumed -> slot LABELED
     elif "nestedQuerier" in txt:
         trigger.append(tag)                        # crash inside the nested trigger (stream off stack)
     else:
@@ -313,9 +334,12 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-sa-*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-fp-*.stderr")):
     classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-can-*.stderr")):
+    classify(f, None)
 
 print("AIMED-PIVOT HITS (SIGILL):", len(aimed), aimed[:40])
 print("GADGET-CONSUMED (PC/addr=0x4..):", len(gadget_consumed), gadget_consumed[:40])
+print("CANARY-CONSUMED (labeled slot):", len(canary), canary[:120])
 print("MARKER-HIJACKS (PC=0x41../0x42..):", len(marker), marker[:80])
 print("holder-side crashes              :", len(holder), [f"{t}@0x{pc}" for t, pc in holder[:80]])
 print("trigger-side crashes             :", len(trigger), trigger[:40])
