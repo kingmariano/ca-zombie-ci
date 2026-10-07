@@ -232,12 +232,15 @@ if [ -n "$PY" ]; then
   echo "    consumed slot (deref => addr=canary, exec => PC=canary) across the whole phase space." >&2
   CAN16="0x1000000,0x1001000,0x1002000,0x1003000,0x1004000,0x1005000,0x1006000,0x1007000,0x1008000,0x1009000,0x100a000,0x100b000,0x100c000,0x100d000,0x100e000,0x100f000"
   for R in $(seq 0 511); do
-    OFF=$((512 - R)); ITERS=$((65536 + R + 1)); D5="$NESTED/can_r$R"
-    python3 "$NESTED/gen_nested_contracts.py" "$D5" --offset "$OFF" --iters "$ITERS" --call-query --staged 10 --plant-values "$CAN16" > /dev/null 2>&1 || continue
-    for w in holder trigger benign; do
-      "$PY" -c "import wasmtime; open('$D5/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D5/$w.wat').read()))" 2>/dev/null
+    OFF=$((512 - R)); ITERS=$((65536 + R + 1))
+    for A in 1 2; do
+      D5="$NESTED/can_r${R}_a${A}"
+      python3 "$NESTED/gen_nested_contracts.py" "$D5" --offset "$OFF" --iters "$ITERS" --call-query --staged 10 --plant-values "$CAN16" > /dev/null 2>&1 || continue
+      for w in holder trigger benign; do
+        "$PY" -c "import wasmtime; open('$D5/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D5/$w.wat').read()))" 2>/dev/null
+      done
+      timeout 120 ./harness/harness -wasm "$D5/holder.wasm" -trigger "$D5/trigger.wasm" -benign "$D5/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-can-r${R}-a${A}.json" > "ci-out/harness/nested-vuln-can-r${R}-a${A}.stdout" 2> "ci-out/harness/nested-vuln-can-r${R}-a${A}.stderr" || true
     done
-    timeout 120 ./harness/harness -wasm "$D5/holder.wasm" -trigger "$D5/trigger.wasm" -benign "$D5/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-can-r$R.json" > "ci-out/harness/nested-vuln-can-r$R.stdout" 2> "ci-out/harness/nested-vuln-can-r$R.stderr" || true
     if [ $((R % 64)) -eq 63 ]; then echo "  canary-phase r=$R done" | tee -a "$OUT/sweep.log"; fi
   done
   echo "  full-phase canary sweep done" | tee -a "$OUT/sweep.log"
@@ -260,8 +263,8 @@ gadget_consumed = []
 def classify(f, dummy):
     base = f.split("/")[-1]
     if base.startswith("nested-vuln-can-"):
-        mm = re.search(r'can-r(\d+)', f)
-        tag = f"can/r{mm.group(1)}" if mm else f"can/{base}"
+        mm = re.search(r'can-r(\d+)-a(\d+)', f)
+        tag = f"can/r{mm.group(1)}/a{mm.group(2)}" if mm else f"can/{base}"
     elif base.startswith("nested-vuln-fp-"):
         mm = re.search(r'fp-r(\d+)-a(\d+)', f)
         if mm:
