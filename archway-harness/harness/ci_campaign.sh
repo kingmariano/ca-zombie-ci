@@ -283,6 +283,33 @@ if [ -n "$PY" ]; then
   done
   echo "  canonical-marker full-phase sweep done" | tee -a "$OUT/sweep.log"
 
+  echo "--- CANONICAL-MARKER staged=24 twins (mk configs x20 + full-phase) ---"
+  echo "    staged=24 deepens the holder frame -> the consumed slots move; mirror the proven configs" >&2
+  echo "    and the full phase sweep with the deeper geometry, canonical labels on." >&2
+  for CFG in "0 0 273" "0 0 274" "0 1 274" "2 1 273" "1 0 272" "2 0 272" "2 2 275" "0 2 274" "3 3 273" "1 1 273"; do
+    set -- $CFG; F=$1; DUM2=$2; R=$3
+    for A in $(seq 1 20); do
+      D9="$NESTED/mk24_f${F}_d${DUM2}_r${R}_a${A}"
+      python3 "$NESTED/gen_nested_contracts.py" "$D9" --offset $((512-R)) --iters $((65536+R+1)) --dummy "$DUM2" --frame32 "$F" --staged 24 --plants distinct > /dev/null 2>&1 || continue
+      for w in holder trigger benign; do
+        "$PY" -c "import wasmtime; open('$D9/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D9/$w.wat').read()))" 2>/dev/null
+      done
+      timeout 120 ./harness/harness -wasm "$D9/holder.wasm" -trigger "$D9/trigger.wasm" -benign "$D9/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-mk24-f${F}-d${DUM2}-r${R}-a${A}.json" > "ci-out/harness/nested-vuln-mk24-f${F}-d${DUM2}-r${R}-a${A}.stdout" 2> "ci-out/harness/nested-vuln-mk24-f${F}-d${DUM2}-r${R}-a${A}.stderr" || true
+    done
+    echo "  mk24 f$F/d$DUM2/r$R done" | tee -a "$OUT/sweep.log"
+  done
+  for R in $(seq 0 511); do
+    OFF=$((512 - R)); ITERS=$((65536 + R + 1))
+    D10="$NESTED/dfp24_r$R"
+    python3 "$NESTED/gen_nested_contracts.py" "$D10" --offset "$OFF" --iters "$ITERS" --dummy 0 --frame32 0 --staged 24 --plants distinct > /dev/null 2>&1 || continue
+    for w in holder trigger benign; do
+      "$PY" -c "import wasmtime; open('$D10/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D10/$w.wat').read()))" 2>/dev/null
+    done
+    timeout 120 ./harness/harness -wasm "$D10/holder.wasm" -trigger "$D10/trigger.wasm" -benign "$D10/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-dfp24-r${R}.json" > "ci-out/harness/nested-vuln-dfp24-r${R}.stdout" 2> "ci-out/harness/nested-vuln-dfp24-r${R}.stderr" || true
+    if [ $((R % 64)) -eq 63 ]; then echo "  dfp24-phase r=$R done" | tee -a "$OUT/sweep.log"; fi
+  done
+  echo "  staged=24 twins done" | tee -a "$OUT/sweep.log"
+
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
   if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
@@ -300,7 +327,13 @@ gadget_consumed = []
 
 def classify(f, dummy):
     base = f.split("/")[-1]
-    if base.startswith("nested-vuln-dfp-"):
+    if base.startswith("nested-vuln-mk24-"):
+        mm = re.search(r'mk24-f(\d+)-d(\d+)-r(\d+)-a(\d+)', f)
+        tag = f"mk24/f{mm.group(1)}/d{mm.group(2)}/r{mm.group(3)}/a{mm.group(4)}" if mm else f"mk24/{base}"
+    elif base.startswith("nested-vuln-dfp24-"):
+        mm = re.search(r'dfp24-r(\d+)', f)
+        tag = f"dfp24/r{mm.group(1)}" if mm else f"dfp24/{base}"
+    elif base.startswith("nested-vuln-dfp-"):
         mm = re.search(r'dfp-r(\d+)-a(\d+)', f)
         tag = f"dfp/r{mm.group(1)}/a{mm.group(2)}" if mm else f"dfp/{base}"
     elif base.startswith("nested-vuln-mk-"):
@@ -351,7 +384,7 @@ def classify(f, dummy):
             else:
                 clean.append(tag)
         return
-    mp = re.search(r'PC=0x([0-9a-f]+)', txt) or re.search(r'RIP=0x([0-9a-f]+)', txt)
+    mp = re.search(r'PC=0x([0-9a-f]+)', txt)
     ma = re.search(r'addr=0x([0-9a-f]+)', txt)
     pc = mp.group(1) if mp else "?"
     ad = ma.group(1) if ma else "?"
@@ -386,6 +419,10 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-can-*.stderr")):
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-mk-*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-dfp-*.stderr")):
+    classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-mk24-*.stderr")):
+    classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-dfp24-*.stderr")):
     classify(f, None)
 
 print("AIMED-PIVOT HITS (SIGILL):", len(aimed), aimed[:40])
