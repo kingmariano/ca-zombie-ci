@@ -98,6 +98,13 @@ else
   echo "GNU dump unavailable; gadgets skipped" | tee -a "$OUT/archwayd_info.txt"
 fi
 
+echo "=== [7/7] itab hunt (go:itab.Context,context.Context) ==="
+if [ -s /tmp/archwayd ]; then
+  python3 "$HERE/itab_hunt.py" /tmp/archwayd "$OUT/e8_itab.txt" 2>&1 | tee -a "$OUT/archwayd_info.txt" || true
+else
+  echo "archwayd unavailable; itab hunt skipped" | tee -a "$OUT/archwayd_info.txt"
+fi
+
 echo "=== E8 results ==="
 ls -la "$OUT"
 exit 0
