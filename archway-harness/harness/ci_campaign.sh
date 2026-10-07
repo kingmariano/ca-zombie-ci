@@ -266,6 +266,23 @@ if [ -n "$PY" ]; then
   done
   echo "  marker retry burst done" | tee -a "$OUT/sweep.log"
 
+  echo "--- CANONICAL-MARKER full-phase sweep (db_read trigger, r=0..511 x2; --plants distinct) ---"
+  echo "    The db_read trigger (not query) is the one whose consumers take stream values; canonical" >&2
+  echo "    markers make ret/jmp/call to our value fault AT the target (PC=0x4141..., visible)." >&2
+  for R in $(seq 0 511); do
+    OFF=$((512 - R)); ITERS=$((65536 + R + 1))
+    for A in 1 2; do
+      D7="$NESTED/dfp_r${R}_a${A}"
+      python3 "$NESTED/gen_nested_contracts.py" "$D7" --offset "$OFF" --iters "$ITERS" --dummy 0 --plants distinct --frame32 0 > /dev/null 2>&1 || continue
+      for w in holder trigger benign; do
+        "$PY" -c "import wasmtime; open('$D7/$w.wasm','wb').write(wasmtime.wat2wasm(open('$D7/$w.wat').read()))" 2>/dev/null
+      done
+      timeout 120 ./harness/harness -wasm "$D7/holder.wasm" -trigger "$D7/trigger.wasm" -benign "$D7/benign.wasm" -warmups 3 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-vuln-dfp-r${R}-a${A}.json" > "ci-out/harness/nested-vuln-dfp-r${R}-a${A}.stdout" 2> "ci-out/harness/nested-vuln-dfp-r${R}-a${A}.stderr" || true
+    done
+    if [ $((R % 64)) -eq 63 ]; then echo "  dfp-phase r=$R done" | tee -a "$OUT/sweep.log"; fi
+  done
+  echo "  canonical-marker full-phase sweep done" | tee -a "$OUT/sweep.log"
+
   echo "--- fixed control (wasmvm 3.0.8, r=256) ---"
   D="$NESTED/build_r256"
   if timeout 120 ./harness-fixed/harness-fixed -wasm "$D/holder.wasm" -trigger "$D/trigger.wasm" -benign "$D/benign.wasm" -warmups 4 -exec '{}' -gas 10000000000000 -out "ci-out/harness/nested-fixed-r256.json" > "ci-out/harness/nested-fixed-r256.stdout" 2> "ci-out/harness/nested-fixed-r256.stderr"; then
@@ -283,7 +300,10 @@ gadget_consumed = []
 
 def classify(f, dummy):
     base = f.split("/")[-1]
-    if base.startswith("nested-vuln-mk-"):
+    if base.startswith("nested-vuln-dfp-"):
+        mm = re.search(r'dfp-r(\d+)-a(\d+)', f)
+        tag = f"dfp/r{mm.group(1)}/a{mm.group(2)}" if mm else f"dfp/{base}"
+    elif base.startswith("nested-vuln-mk-"):
         mm = re.search(r'mk-f(\d+)-d(\d+)-r(\d+)-a(\d+)', f)
         tag = f"mk/f{mm.group(1)}/d{mm.group(2)}/r{mm.group(3)}/a{mm.group(4)}" if mm else f"mk/{base}"
     elif base.startswith("nested-vuln-can-"):
@@ -364,6 +384,8 @@ for f in sorted(glob.glob("ci-out/harness/nested-vuln-fp-*.stderr")):
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-can-*.stderr")):
     classify(f, None)
 for f in sorted(glob.glob("ci-out/harness/nested-vuln-mk-*.stderr")):
+    classify(f, None)
+for f in sorted(glob.glob("ci-out/harness/nested-vuln-dfp-*.stderr")):
     classify(f, None)
 
 print("AIMED-PIVOT HITS (SIGILL):", len(aimed), aimed[:40])
