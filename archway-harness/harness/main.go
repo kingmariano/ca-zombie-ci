@@ -189,7 +189,7 @@ func scanPlants(depth int, n int) {
 		}
 		// top-of-region dump (last 0x1c0 bytes): JIT-ish pointers and plants only
 		var topv []string
-		for a := r.hi - 0x1c0; a+8 <= r.hi; a += 8 {
+		for a := r.hi - 0x1000; a+8 <= r.hi; a += 8 {
 			v := *(*uint64)(unsafe.Pointer(uintptr(a)))
 			if (v>>32) == 0x00414141 || (v >= 0x7f0000000000 && v < 0x800000000000) {
 				topv = append(topv, fmt.Sprintf("+%x=0x%x", a-r.lo, v))
