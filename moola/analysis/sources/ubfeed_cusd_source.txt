@@ -1,0 +1,39 @@
+{{
+  "language": "Solidity",
+  "sources": {
+    "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol": {
+      "content": "pragma solidity >=0.5.0;\n\ninterface IUniswapV2Pair {\n    event Approval(address indexed owner, address indexed spender, uint value);\n    event Transfer(address indexed from, address indexed to, uint value);\n\n    function name() external pure returns (string memory);\n    function symbol() external pure returns (string memory);\n    function decimals() external pure returns (uint8);\n    function totalSupply() external view returns (uint);\n    function balanceOf(address owner) external view returns (uint);\n    function allowance(address owner, address spender) external view returns (uint);\n\n    function approve(address spender, uint value) external returns (bool);\n    function transfer(address to, uint value) external returns (bool);\n    function transferFrom(address from, address to, uint value) external returns (bool);\n\n    function DOMAIN_SEPARATOR() external view returns (bytes32);\n    function PERMIT_TYPEHASH() external pure returns (bytes32);\n    function nonces(address owner) external view returns (uint);\n\n    function permit(address owner, address spender, uint value, uint deadline, uint8 v, bytes32 r, bytes32 s) external;\n\n    event Mint(address indexed sender, uint amount0, uint amount1);\n    event Burn(address indexed sender, uint amount0, uint amount1, address indexed to);\n    event Swap(\n        address indexed sender,\n        uint amount0In,\n        uint amount1In,\n        uint amount0Out,\n        uint amount1Out,\n        address indexed to\n    );\n    event Sync(uint112 reserve0, uint112 reserve1);\n\n    function MINIMUM_LIQUIDITY() external pure returns (uint);\n    function factory() external view returns (address);\n    function token0() external view returns (address);\n    function token1() external view returns (address);\n    function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);\n    function price0CumulativeLast() external view returns (uint);\n    function price1CumulativeLast() external view returns (uint);\n    function kLast() external view returns (uint);\n\n    function mint(address to) external returns (uint liquidity);\n    function burn(address to) external returns (uint amount0, uint amount1);\n    function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external;\n    function skim(address to) external;\n    function sync() external;\n\n    function initialize(address, address) external;\n}\n"
+    },
+    "contracts/ISlidingWindowOracle.sol": {
+      "content": "// SPDX-License-Identifier: MIT\r\npragma solidity 0.8.9;\r\n\r\n\r\ninterface ISlidingWindowOracle {\r\n    function consult(address tokenIn, uint amountIn, address tokenOut) external view returns (uint amountOut);\r\n    function update(address tokenA, address tokenB) external;\r\n    function periodSize() external view returns (uint);\r\n}\r\n"
+    },
+    "contracts/PriceFeed.sol": {
+      "content": "// SPDX-License-Identifier: MIT\r\npragma solidity 0.8.9;\r\n\r\nimport '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';\r\nimport './ISlidingWindowOracle.sol';\r\n\r\n\r\ninterface IERC20 {\r\n    function decimals() external view returns(uint8);\r\n}\r\n\r\n\r\ncontract PriceFeed {\r\n    address public immutable tokenIn;\r\n    address public immutable tokenOut;\r\n    uint public immutable oneToken;\r\n    ISlidingWindowOracle public immutable slidingWindowOracle;\r\n\r\n    constructor(address _tokenIn, address _tokenOut, ISlidingWindowOracle _slidingWindowOracle) {\r\n        tokenIn = _tokenIn;\r\n        tokenOut = _tokenOut;\r\n        slidingWindowOracle = _slidingWindowOracle;\r\n        oneToken = uint(10)**(IERC20(tokenIn).decimals());\r\n    }\r\n\r\n    function consult() external view returns (uint) {\r\n        return slidingWindowOracle.consult(tokenIn, oneToken, tokenOut);\r\n    }\r\n}\r\n"
+    }
+  },
+  "settings": {
+    "evmVersion": "london",
+    "libraries": {},
+    "metadata": {
+      "bytecodeHash": "ipfs",
+      "useLiteralContent": true
+    },
+    "optimizer": {
+      "enabled": true,
+      "runs": 999999
+    },
+    "remappings": [],
+    "outputSelection": {
+      "*": {
+        "*": [
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "devdoc",
+          "userdoc",
+          "metadata",
+          "abi"
+        ]
+      }
+    }
+  }
+}}

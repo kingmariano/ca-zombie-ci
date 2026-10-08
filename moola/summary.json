@@ -1,0 +1,44 @@
+{
+  "finding": "C2-17",
+  "title": "Moola Market (Celo) Aave-v2 fork LendingPool — live unprivileged extraction",
+  "chains": ["celo"],
+  "headline_extractable_usd": 0.03,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0.03, "H-O": 997356, "P": 997356, "S": 0},
+  "latest_block": 79584282,
+  "block_numbers": {"celo": 79583113, "celo_head_at_analysis": 79584282},
+  "targets_checked": 3676,
+  "live_targets": 530,
+  "closed_reasons": [
+    "Oracle not manipulable: stables priced by Mento SortedOracles medians (reporter-pushed); MOO frozen + immutable FixedPriceOracle 0.005 CELO; Ubeswap fallback oracle is dead (SlidingWindowOracle reverts MISSING_HISTORICAL_OBSERVATION on all feeds), so even a Mento expiry cannot open a price path",
+    "No borrow path against over-valued collateral: cEUR/cREAL oracle prices are ~6% BELOW market; cUSD flat; all collaterals are Mento stables or CELO",
+    "Index-based aToken accounting: donations are inert; deposit/withdraw round-trips exact; CELO liquidityIndex<1 (historical write-down) creates no path",
+    "Liquidations are open but all 530 HF<1 positions are dust/bad-debt: 7.65 CELO gross across 525 positions, 0.28 CELO net of gas at 202.5 gwei",
+    "Periphery adapters hold no funds and pull from msg.sender; AutoRepay is whitelist-gated; V1 pool empty",
+    "All privileged paths revert for arbitrary callers (configurator '33', pool pause '27', provider/oracle Ownable)"
+  ],
+  "poc": {"tests_passed": 11, "tests_total": 11, "ci_run_urls": []},
+  "key_facts": [
+    "Pool 0x970b12522CA9b4054807a2c5B736149a5BE6f670 (proxy, impl 0xBecd348aa5cC976BE8E82ca6f13BC3B53197711F since 2023-12-07); paused()=false; flashloan premium 1bp",
+    "Reserves (block 79583113): CELO 65/70/105 (cash 4,841,063.59), cUSD 75/80/105 (cash 400,820.05), cEUR 45/50/110 (cash 142,034.50), cREAL 1bp (cash 16,259.48), MOO FROZEN 1bp fixed 0.005 (cash 135,344.17)",
+    "Cash USD at 2026-10-08 prices = $997,356; total supplier claims $1,227,352 (backed by cash + $230,088 performing debt); H-O withdrawable",
+    "CELO liquidityIndex = 0.919744945 (<1, post-hack write-down); variableBorrowIndex = 1.036164996; no current code path can decrease the index; per-reserve cash+debt >= claims within 0.5%",
+    "Oracle: CELO hardcoded 1e18; cUSD/cEUR/cREAL via CeloProxyPriceProvider -> Mento SortedOracles 0xefB84935... (cUSD expiry 360s live; cEUR/cREAL expiry 86,700s, single reporter, ~5h margin at analysis); MOO via immutable FixedPriceOracle 0x321429d1...",
+    "Fallback 0xb13F9Fb45B2E4446EF0047CBB2b9Dee269162309 reverts MISSING_HISTORICAL_OBSERVATION (Ubeswap sliding-window oracle window 300s dead)",
+    "Pinned census: 3,676 holder addresses checked, 530 HF<1, 525 with positive gross liquidation profit = 7.65 CELO ($0.68); real-collateral-only gross 7.29 CELO; net of gas 0.28 CELO ($0.03) at 202.5 gwei, 3.07 CELO at 50 gwei",
+    "Fork-verified best liquidation: 0x7c980b8C8311dCf2Ca3515A7099e3687f56D46d4 HF 0.8468, repay 5.251372412218306448 CELO -> receive 0.496103941806792409 cUSD, net +0.262568620610915328 CELO",
+    "Admin: proxy admin = LendingPoolAddressesProvider 0xD1088091A174d33412a968Fa34Cb67131188B332, poolAdmin/owner = OwnedWallet 0x313bc86D3D6e86ba164B2B451cB0D9CfA7943e5c (owner 0xd7f77169d5E6a32C5044052F9a49eb94697b25ED, also owns MoolaOracle); emergencyAdmin EOA 0x643C574128c7C56A1835e021Ad0EcC2592E72624",
+    "History: 2022-10-18 MOO/Ubeswap TWAP exploit ~$9M, 93.1% returned; five impl upgrades (2022-10-20, 10-31 x2, 11-03, 2023-12-07)",
+    "Periphery (LeverageBorrowAdapter, AutoRepay x3, RepayDelegationHelper x3, Uniswap adapters): zero balances (one 7 wei cUSD); no unprivileged drain",
+    "V1 pool empty (0x97256c89A0f1bC88cbf66Fd780EcA5F396ae92fC and related old impls hold nothing); registry lists only this provider"
+  ],
+  "caveats": [
+    "E-U is gas-price-sensitive: 0.28 CELO net at 202.5 gwei (analysis-time), 3.07 CELO at 50 gwei, 5.88 CELO at 10 gwei; gross ceiling 7.65 CELO ($0.68)",
+    "Real USD value of MOO-collateral positions is ~0 (MOO oracle price 0.005 CELO is fixed, market ~$0); excluding those, gross is 7.29 CELO",
+    "Mento cEUR/cREAL have a single reporter each with 24h expiry; if reports lapse the dead fallback makes oracle-dependent calls revert (withdrawal DoS risk, not theft)",
+    "The exact historical write-down transaction that produced CELO liquidityIndex 0.9197 is in unverified 2022 implementations; it is not reproducible today",
+    "User ERC20 allowances to periphery adapters were not exhaustively enumerated; all adapter flows pull from msg.sender and hold no funds",
+    "P number assumes the admin/governance contracts are the only holders of privileged keys; no key-compromise assessment was performed"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0.03 live (0.28 CELO net of gas from 530 dust liquidations; $0.68 gross ceiling) — Moola's ~$1.0M cash is supplier-owned (H-O) and only admin-upgradeable (P); the oracle is unmanipulable (Mento medians + frozen fixed-price MOO + dead Ubeswap fallback)"
+}
