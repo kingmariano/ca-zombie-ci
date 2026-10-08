@@ -1,0 +1,1010 @@
+{
+ "chain": "World Chain",
+ "chain_id": 480,
+ "rpcs": [
+  "https://worldchain-mainnet.g.alchemy.com/public",
+  "https://480.rpc.thirdweb.com",
+  "https://worldchain.drpc.org"
+ ],
+ "pinned_block": 36074434,
+ "head_at_scan": 36075903,
+ "verification": {
+  "unitroller": {
+   "address": "0x589d63300976759a0fc74ea6fA7D951f581252D7",
+   "code_present": true,
+   "etherscan_name": "Unitroller",
+   "proxy": true,
+   "implementation": "0xD103A8B88eC16B8279B9dCf83F11BA2b209a3ce6",
+   "pending_implementation": "0x0000000000000000000000000000000000000000",
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pending_admin": "0x0000000000000000000000000000000000000000"
+  },
+  "oracle": {
+   "address": "0x9E60d50407520eD4b6d47906B6c74Bc5D99aD282",
+   "code_present": true,
+   "etherscan_name": "ChainlinkPriceOracle",
+   "proxy": false,
+   "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pending_owner": "0x0000000000000000000000000000000000000000"
+  },
+  "compound_lens": {
+   "address": "0xA386F452af98062811c1794E0c91c9Fc480C5658",
+   "code_present": true
+  },
+  "maximillion": {
+   "address": "0x511E89CADa24C562277b880153fBB6E43dCb11a7",
+   "code_present": true
+  },
+  "docs_listed_markets": 6,
+  "onchain_markets": 7,
+  "docs_discrepancy": "caWBRL 0x90208d4Be7F539bd46E0e0847085E672E23b3d9A is listed on-chain but absent from docs. caLAC 0x03c1cF154d621E0Fd7e2b88be3aE60CCf07Aca31 IS a real World Chain cToken (underlying LAC 0x0Fe75...); its address coincidentally matches CapyFi's Ethereum ETH interest-rate-model address (cross-chain CREATE address reuse, different deployer 0x6a138b... on World Chain)."
+ },
+ "comptroller": {
+  "closeFactorMantissa": 500000000000000000,
+  "liquidationIncentiveMantissa": 1080000000000000000,
+  "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+  "pendingAdmin": "0x0000000000000000000000000000000000000000",
+  "pauseGuardian": "0x0000000000000000000000000000000000000000",
+  "borrowCapGuardian": "0x0000000000000000000000000000000000000000",
+  "transferGuardianPaused": false,
+  "seizeGuardianPaused": false,
+  "mintGuardianPaused_global": false,
+  "borrowGuardianPaused_global": false,
+  "maxAssets": 0,
+  "compRate": 0,
+  "getCompAddress": "0x0000000000000000000000000000000000000000"
+ },
+ "oracle_feeds": {
+  "type": "CapyfiAggregatorV3 (custom, Etherscan-verified, compiler v0.8.10)",
+  "note": "owner/authorizedAddresses can set updateAnswer; oracle (ChainlinkPriceOracle) does NOT check updatedAt staleness; returns 0 on answer<=0",
+  "feeds": {
+   "caETH": {
+    "address": "0x9d5d754a6397c01795Aaa8BBA565FEB99a4cEA6d",
+    "description": "ETH/USD Price Feed",
+    "decimals": 8,
+    "answer": "243620500000",
+    "updatedAt": 1791483939,
+    "roundId": "18446744073709601902",
+    "feed_code_len": 8124,
+    "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "caUSDC": {
+    "address": "0x66B91Ca4deD5265cCdf726801930E72f4522648A",
+    "description": "USDC/USD Price Feed",
+    "decimals": 8,
+    "answer": "99986000",
+    "updatedAt": 1791483729,
+    "roundId": "18446744073709596375",
+    "feed_code_len": 8124,
+    "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "caWBTC": {
+    "address": "0x8De1EcB6256eeF6F71F05a91FAbBAC3DB8870bDf",
+    "description": "BTC/USD Price Feed",
+    "decimals": 8,
+    "answer": "8130184500000",
+    "updatedAt": 1791483939,
+    "roundId": "18446744073709602167",
+    "feed_code_len": 8124,
+    "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "caWARS": {
+    "address": "0x69B7A672428c2DF42a415Af8E280F58ccf450402",
+    "description": "wARS/USD Price Feed",
+    "decimals": 8,
+    "answer": "65898",
+    "updatedAt": 1791483729,
+    "roundId": "18446744073709592347",
+    "feed_code_len": 8124,
+    "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "caWLD": {
+    "address": "0x3A89677aDfF69c8E042AED0b47e8F9bFf977D807",
+    "description": "WLD/USD Price Feed",
+    "decimals": 8,
+    "answer": "47165000",
+    "updatedAt": 1791483939,
+    "roundId": "18446744073709599837",
+    "feed_code_len": 8124,
+    "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "caWBRL": {
+    "address": "0x537EDaa93C13A36f77c0Af382f84745DFc291185",
+    "description": "wBRL/USD Price Feed",
+    "decimals": 8,
+    "answer": "19962669",
+    "updatedAt": 1791483729,
+    "roundId": "18446744073709557960",
+    "feed_code_len": 8124,
+    "owner": "0x3ee4af9184f968558046cdCCa74F89B064eCD6Ce",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "caLAC": {
+    "type": "fixed price",
+    "fixedPrice": "8000000000000000",
+    "price_usd": 0.008
+   }
+  }
+ },
+ "markets": [
+  {
+   "market": "0xaAd91abe333c4536FFbF02b83daBaB49C9Aa23ed",
+   "symbol": "caETH",
+   "name": "Capyfi Ether",
+   "decimals": 8,
+   "underlying": null,
+   "underlying_symbol": "ETH",
+   "underlying_decimals": 18,
+   "cash": 29000000000000000,
+   "totalSupply": 145000000,
+   "totalBorrows": 0,
+   "totalBorrowsCurrent": 0,
+   "totalReserves": 0,
+   "exchangeRateStored": 200000000000000000000000000,
+   "exchangeRateCurrent": 200000000000000000000000000,
+   "reserveFactorMantissa": 100000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0x86dda9cEd2865DE6756D6DFf60dcC69d27cD651f",
+   "accrualBlockNumber": 21774982,
+   "borrowIndex": 1000000000000000000,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "implementation": null,
+   "isListed": true,
+   "collateralFactorMantissa": 800000000000000000,
+   "isComped": false,
+   "borrowCap": 300000000000000000,
+   "oracle_price": 2436205000000000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 18,
+    "priceFeed": "0x9d5d754a6397c01795Aaa8BBA565FEB99a4cEA6d",
+    "fixedPrice": "0"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "feed": {
+    "address": "0x9d5d754a6397c01795Aaa8BBA565FEB99a4cEA6d",
+    "description": "ETH/USD Price Feed",
+    "decimals": 8,
+    "answer": "243620500000",
+    "updatedAt": 1791483939,
+    "roundId": "18446744073709601902",
+    "feed_code_len": 8124,
+    "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "deploy_block": 16932007,
+   "isCEther": true,
+   "deprecated": false,
+   "borrowRatePerBlock": 0,
+   "supplyRatePerBlock": 0,
+   "usd_oracle": {
+    "cash_usd": 70.64994499999999,
+    "borrows_usd": 0.0,
+    "reserves_usd": 0.0,
+    "supply_usd": 70.64994499999999
+   },
+   "usd_reference_cash": 70.84852247682913,
+   "ref_price": 2443.0524992010046,
+   "oracle_vs_ref_pct": -0.28
+  },
+  {
+   "market": "0x05350F1FC5d396917A73FCE318524551e287D1Df",
+   "symbol": "caUSDC",
+   "name": "Capyfi USDC",
+   "decimals": 8,
+   "underlying": "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
+   "underlying_symbol": "USDC",
+   "underlying_decimals": 6,
+   "cash": 14694024925,
+   "totalSupply": 2477149983384,
+   "totalBorrows": 10813874877,
+   "totalBorrowsCurrent": 10814037470,
+   "totalReserves": 37928108,
+   "exchangeRateStored": 10281965914395634,
+   "exchangeRateCurrent": 10282021706334324,
+   "reserveFactorMantissa": 150000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0xef6ca1572B66BE610bc6182b937e884688833c8b",
+   "accrualBlockNumber": 36068850,
+   "borrowIndex": 1024327635461320297,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "implementation": "0x0C1f5c1Cb9d9414d1726B09B9Dd5df5329E82c40",
+   "isListed": true,
+   "collateralFactorMantissa": 850000000000000000,
+   "isComped": false,
+   "borrowCap": 20000000000,
+   "oracle_price": 999860000000000000000000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 6,
+    "priceFeed": "0x66B91Ca4deD5265cCdf726801930E72f4522648A",
+    "fixedPrice": "0"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "feed": {
+    "address": "0x66B91Ca4deD5265cCdf726801930E72f4522648A",
+    "description": "USDC/USD Price Feed",
+    "decimals": 8,
+    "answer": "99986000",
+    "updatedAt": 1791483729,
+    "roundId": "18446744073709596375",
+    "feed_code_len": 8124,
+    "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "deploy_block": 16933729,
+   "isCEther": false,
+   "deprecated": false,
+   "borrowRatePerBlock": 2692627435,
+   "supplyRatePerBlock": 971735502,
+   "usd_oracle": {
+    "cash_usd": 14691.9677615105,
+    "borrows_usd": 10812.5235047542,
+    "reserves_usd": 37.92279806488,
+    "supply_usd": 25466.56846819982
+   },
+   "usd_reference_cash": 14688.616915477784,
+   "ref_price": 0.9996319585988306,
+   "oracle_vs_ref_pct": 0.023
+  },
+  {
+   "market": "0xCdA6e3bF6e6529cdEF7D6BE0B133bEd79390796D",
+   "symbol": "caWBTC",
+   "name": "Capyfi Wrapped Bitcoin",
+   "decimals": 8,
+   "underlying": "0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3",
+   "underlying_symbol": "WBTC",
+   "underlying_decimals": 8,
+   "cash": 494161,
+   "totalSupply": 24709400,
+   "totalBorrows": 27,
+   "totalBorrowsCurrent": 27,
+   "totalReserves": 0,
+   "exchangeRateStored": 20000000000000000,
+   "exchangeRateCurrent": 20000000000000000,
+   "reserveFactorMantissa": 100000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0x9e55c03fBe4Da4E677c77f30466b000700B37B69",
+   "accrualBlockNumber": 36050834,
+   "borrowIndex": 1000000050305433556,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "implementation": "0xAcAa9b2c98826D4054B8486C525De9c507648d65",
+   "isListed": true,
+   "collateralFactorMantissa": 800000000000000000,
+   "isComped": false,
+   "borrowCap": 32000000,
+   "oracle_price": 813018450000000000000000000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 8,
+    "priceFeed": "0x8De1EcB6256eeF6F71F05a91FAbBAC3DB8870bDf",
+    "fixedPrice": "0"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "feed": {
+    "address": "0x8De1EcB6256eeF6F71F05a91FAbBAC3DB8870bDf",
+    "description": "BTC/USD Price Feed",
+    "decimals": 8,
+    "answer": "8130184500000",
+    "updatedAt": 1791483939,
+    "roundId": "18446744073709602167",
+    "feed_code_len": 8124,
+    "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "deploy_block": 16934238,
+   "isCEther": false,
+   "deprecated": false,
+   "borrowRatePerBlock": 43311,
+   "supplyRatePerBlock": 2,
+   "usd_oracle": {
+    "cash_usd": 401.76201027045,
+    "borrows_usd": 0.02195149815,
+    "reserves_usd": 0.0,
+    "supply_usd": 401.7839617686
+   },
+   "usd_reference_cash": 399.31295668013524,
+   "ref_price": 80806.24668481229,
+   "oracle_vs_ref_pct": 0.613
+  },
+  {
+   "market": "0x03c1cF154d621E0Fd7e2b88be3aE60CCf07Aca31",
+   "symbol": "caLAC",
+   "name": "Capyfi La Coin",
+   "decimals": 8,
+   "underlying": "0x0Fe75CAe44E409AF8c9E631985D6b3De8E1138dE",
+   "underlying_symbol": "LAC",
+   "underlying_decimals": 18,
+   "cash": 100000000000000000000,
+   "totalSupply": 500000000000,
+   "totalBorrows": 0,
+   "totalBorrowsCurrent": 0,
+   "totalReserves": 0,
+   "exchangeRateStored": 200000000000000000000000000,
+   "exchangeRateCurrent": 200000000000000000000000000,
+   "reserveFactorMantissa": 500000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0xA70390d440ADf1B2f18BE99bB6721bE4DC0DF30F",
+   "accrualBlockNumber": 17228909,
+   "borrowIndex": 1000001303906797968,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "implementation": "0xf5FA0EA9C6b7bE2da713F8BDec9D35AAE289E5c0",
+   "isListed": true,
+   "collateralFactorMantissa": 500000000000000000,
+   "isComped": false,
+   "borrowCap": 1000000000000000000000,
+   "oracle_price": 8000000000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 18,
+    "priceFeed": "0x0000000000000000000000000000000000000000",
+    "fixedPrice": "8000000000000000"
+   },
+   "whitelist": "0xafBBC7FcD7Eb3516742D663BF548E9e1A85e3707",
+   "deploy_block": 17227881,
+   "isCEther": false,
+   "deprecated": false,
+   "borrowRatePerBlock": 1268391679,
+   "supplyRatePerBlock": 0,
+   "usd_oracle": {
+    "cash_usd": 0.7999999999999999,
+    "borrows_usd": 0.0,
+    "reserves_usd": 0.0,
+    "supply_usd": 0.7999999999999999
+   },
+   "usd_reference_cash": 1.0015,
+   "ref_price": 0.010015,
+   "oracle_vs_ref_pct": -20.12
+  },
+  {
+   "market": "0xF36749472Ad6dA1CcF9eDe8ff321654990635FfA",
+   "symbol": "caWARS",
+   "name": "Capyfi wARS",
+   "decimals": 8,
+   "underlying": "0x0DC4F92879B7670e5f4e4e6e3c801D229129D90D",
+   "underlying_symbol": "wARS",
+   "underlying_decimals": 18,
+   "cash": 8283174518165854785758055,
+   "totalSupply": 39954356689727911,
+   "totalBorrows": 49385798416379195940849,
+   "totalBorrowsCurrent": 49388435679568513156890,
+   "totalReserves": 30923205574038718186261,
+   "exchangeRateStored": 207778019690716471328380443,
+   "exchangeRateCurrent": 207778079096925631885839866,
+   "reserveFactorMantissa": 100000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0x55D53d21c9159e17f931d0D5Dd7Fa2E74D7F8E09",
+   "accrualBlockNumber": 36058759,
+   "borrowIndex": 1189323479875068378,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "implementation": "0x629A7AF6Cd430d92E342b73762EC39561b03950C",
+   "isListed": true,
+   "collateralFactorMantissa": 0,
+   "isComped": false,
+   "borrowCap": 500000000000000000000000,
+   "oracle_price": 658980000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 18,
+    "priceFeed": "0x69B7A672428c2DF42a415Af8E280F58ccf450402",
+    "fixedPrice": "0"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "feed": {
+    "address": "0x69B7A672428c2DF42a415Af8E280F58ccf450402",
+    "description": "wARS/USD Price Feed",
+    "decimals": 8,
+    "answer": "65898",
+    "updatedAt": 1791483729,
+    "roundId": "18446744073709592347",
+    "feed_code_len": 8124,
+    "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "deploy_block": 17233605,
+   "isCEther": false,
+   "deprecated": false,
+   "borrowRatePerBlock": 3406778079,
+   "supplyRatePerBlock": 18239993,
+   "usd_oracle": {
+    "cash_usd": 5458.446343980934,
+    "borrows_usd": 32.54599134412206,
+    "reserves_usd": 20.377774009180033,
+    "supply_usd": 5470.614561315877
+   },
+   "usd_reference_cash": 5161.671217511274,
+   "ref_price": 0.0006231513299872165,
+   "oracle_vs_ref_pct": 5.75
+  },
+  {
+   "market": "0x57Dd2468FA18023978804240b503D3Ea315eFc95",
+   "symbol": "caWLD",
+   "name": "Capyfi WLD",
+   "decimals": 8,
+   "underlying": "0x2cFc85d8E48F8EAB294be644d9E25C3030863003",
+   "underlying_symbol": "WLD",
+   "underlying_decimals": 18,
+   "cash": 22305986683097998901,
+   "totalSupply": 113927455028,
+   "totalBorrows": 481639298964176384,
+   "totalBorrowsCurrent": 481657034947599509,
+   "totalReserves": 292206185911568,
+   "exchangeRateStored": 200016174944624285854103560,
+   "exchangeRateCurrent": 200016307270812964007817404,
+   "reserveFactorMantissa": 150000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0xF9c4588e73a6e3038ece2D0FFDf1Cd218E358F1e",
+   "accrualBlockNumber": 36050979,
+   "borrowIndex": 1024016922718722343,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "implementation": "0x1483AC096804782c1A70cCf0Ee76bfABA4F44a09",
+   "isListed": true,
+   "collateralFactorMantissa": 0,
+   "isComped": false,
+   "borrowCap": 5000000000000000000,
+   "oracle_price": 471650000000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 18,
+    "priceFeed": "0x3A89677aDfF69c8E042AED0b47e8F9bFf977D807",
+    "fixedPrice": "0"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "feed": {
+    "address": "0x3A89677aDfF69c8E042AED0b47e8F9bFf977D807",
+    "description": "WLD/USD Price Feed",
+    "decimals": 8,
+    "answer": "47165000",
+    "updatedAt": 1791483939,
+    "roundId": "18446744073709599837",
+    "feed_code_len": 8124,
+    "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "deploy_block": 17840612,
+   "isCEther": false,
+   "deprecated": false,
+   "borrowRatePerBlock": 1569993742,
+   "supplyRatePerBlock": 28206243,
+   "usd_oracle": {
+    "cash_usd": 10.520618619083171,
+    "borrows_usd": 0.2271735405330353,
+    "reserves_usd": 0.00013781904758519104,
+    "supply_usd": 10.747654340568621
+   },
+   "usd_reference_cash": 10.533976706499468,
+   "ref_price": 0.4722488566032104,
+   "oracle_vs_ref_pct": -0.127
+  },
+  {
+   "market": "0x90208d4Be7F539bd46E0e0847085E672E23b3d9A",
+   "symbol": "caWBRL",
+   "name": "Capyfi wBRL",
+   "decimals": 8,
+   "underlying": "0xD76f5Faf6888e24D9F04Bf92a0c8B921FE4390e0",
+   "underlying_symbol": "wBRL",
+   "underlying_decimals": 18,
+   "cash": 121237057477867538612616,
+   "totalSupply": 631183811335352,
+   "totalBorrows": 5045357885801080990855,
+   "totalBorrowsCurrent": 5045648477577947698740,
+   "totalReserves": 4535788580108099064,
+   "exchangeRateStored": 200065143160010904676721854,
+   "exchangeRateCurrent": 200065557512525153625278365,
+   "reserveFactorMantissa": 100000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0xD55bA9E684147CCfeA62DFB5b769F7973e0c5fA4",
+   "accrualBlockNumber": 36058758,
+   "borrowIndex": 1009071577160216177,
+   "admin": "0x3ee4af9184f968558046cdCCa74F89B064eCD6Ce",
+   "pendingAdmin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "implementation": "0x592a734BfeFBdf7C0EB5b3fC38874A13b0aC4859",
+   "isListed": true,
+   "collateralFactorMantissa": 0,
+   "isComped": false,
+   "borrowCap": 20000000000000000000000,
+   "oracle_price": 199626690000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 18,
+    "priceFeed": "0x537EDaa93C13A36f77c0Af382f84745DFc291185",
+    "fixedPrice": "0"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "feed": {
+    "address": "0x537EDaa93C13A36f77c0Af382f84745DFc291185",
+    "description": "wBRL/USD Price Feed",
+    "decimals": 8,
+    "answer": "19962669",
+    "updatedAt": 1791483729,
+    "roundId": "18446744073709557960",
+    "feed_code_len": 8124,
+    "owner": "0x3ee4af9184f968558046cdCCa74F89B064eCD6Ce",
+    "authorized_updater": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1"
+   },
+   "deploy_block": 33220818,
+   "isCEther": false,
+   "deprecated": false,
+   "borrowRatePerBlock": 3674143276,
+   "supplyRatePerBlock": 132118396,
+   "usd_oracle": {
+    "cash_usd": 24202.152489646447,
+    "borrows_usd": 1007.2461044824248,
+    "reserves_usd": 0.9054644607867797,
+    "supply_usd": 25208.493129668084
+   },
+   "usd_reference_cash": 23835.404074069877,
+   "ref_price": 0.196601637897894,
+   "oracle_vs_ref_pct": 1.539
+  }
+ ],
+ "totals_usd": {
+  "oracle_prices": {
+   "cash": 44836.299169027414,
+   "borrows": 11852.564725619432,
+   "reserves": 59.2061743538944,
+   "supplier_claims": 56629.65772029295
+  },
+  "reference_prices": {
+   "cash": 44167.389162922394
+  }
+ },
+ "borrowers": {
+  "historical_unique": {
+   "caETH": 1,
+   "caUSDC": 457,
+   "caWBTC": 40,
+   "caLAC": 0,
+   "caWARS": 354,
+   "caWLD": 61,
+   "caWBRL": 1
+  },
+  "borrow_event_logs": {
+   "caETH": 1,
+   "caUSDC": 2562,
+   "caWBTC": 97,
+   "caLAC": 0,
+   "caWARS": 1622,
+   "caWLD": 133,
+   "caWBRL": 1
+  },
+  "current_debtors": {
+   "caETH": 0,
+   "caUSDC": 307,
+   "caWBTC": 9,
+   "caLAC": 0,
+   "caWARS": 313,
+   "caWLD": 52,
+   "caWBRL": 1
+  },
+  "liquidate_borrow_events": {
+   "caETH": 0,
+   "caUSDC": 32,
+   "caWBTC": 0,
+   "caLAC": 0,
+   "caWARS": 1,
+   "caWLD": 24,
+   "caWBRL": 0
+  },
+  "shortfall_accounts_count": 19,
+  "shortfall_accounts": [
+   {
+    "account": "0x16f1923b795ff72820ba33645d9434c19b2d081e",
+    "shortfall_usd": 0.00176342,
+    "max_single_tx_profit_usd": 0.013246,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.16557
+    },
+    "debts_usd": {
+     "caWARS": 0.33114,
+     "caWLD": 0.009442
+    },
+    "collateral_usd": {
+     "caUSDC": 0.398602,
+     "caWBTC": 0.0,
+     "caWARS": 0.0,
+     "caWLD": 0.0
+    }
+   },
+   {
+    "account": "0x31bd749387ccc14de297a14e621e37cc7472ac49",
+    "shortfall_usd": 0.01072118,
+    "max_single_tx_profit_usd": 0.000916,
+    "best_pair": {
+     "borrow_market": "caWLD",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.011447
+    },
+    "debts_usd": {
+     "caWLD": 0.022894
+    },
+    "collateral_usd": {
+     "caUSDC": 0.014355,
+     "caWARS": 0.0,
+     "caWLD": 0.0
+    }
+   },
+   {
+    "account": "0x65f6e3d4e74fbe310ecdcdde081976b7ce55fdf7",
+    "shortfall_usd": 0.00022135,
+    "max_single_tx_profit_usd": 0.000837,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.010461
+    },
+    "debts_usd": {
+     "caWARS": 0.020922
+    },
+    "collateral_usd": {
+     "caUSDC": 0.024353,
+     "caWARS": 0.0
+    }
+   },
+   {
+    "account": "0x1c40772b296dcafacee96463b583c82d3a28989e",
+    "shortfall_usd": 0.00013601,
+    "max_single_tx_profit_usd": 0.000734,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.009178
+    },
+    "debts_usd": {
+     "caUSDC": 0.009837,
+     "caWARS": 0.018356
+    },
+    "collateral_usd": {
+     "caUSDC": 0.033007,
+     "caWARS": 0.0
+    }
+   },
+   {
+    "account": "0x16eb05935a6cd94cc882a42975f48bbc239a7b96",
+    "shortfall_usd": 0.00076545,
+    "max_single_tx_profit_usd": 0.000658,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.008229
+    },
+    "debts_usd": {
+     "caWARS": 0.016458
+    },
+    "collateral_usd": {
+     "caUSDC": 0.01846,
+     "caWARS": 0.0
+    }
+   },
+   {
+    "account": "0xd3b723a9dc3b01028121fc8dc8127fe9fb1a6f4f",
+    "shortfall_usd": 0.00015859,
+    "max_single_tx_profit_usd": 0.00056,
+    "best_pair": {
+     "borrow_market": "caUSDC",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.006995
+    },
+    "debts_usd": {
+     "caUSDC": 0.01399
+    },
+    "collateral_usd": {
+     "caUSDC": 0.016272
+    }
+   },
+   {
+    "account": "0x803fb18aece028ed7910f3ff7d836207cc9dff73",
+    "shortfall_usd": 0.00046363,
+    "max_single_tx_profit_usd": 0.000423,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.00529
+    },
+    "debts_usd": {
+     "caUSDC": 0.000498,
+     "caWARS": 0.010581
+    },
+    "collateral_usd": {
+     "caUSDC": 0.012487,
+     "caWARS": 0.0
+    }
+   },
+   {
+    "account": "0xd8a9259acd4ff2426659f4b1b4cb4b9a11996a24",
+    "shortfall_usd": 0.00014581,
+    "max_single_tx_profit_usd": 0.000388,
+    "best_pair": {
+     "borrow_market": "caUSDC",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.004849
+    },
+    "debts_usd": {
+     "caUSDC": 0.009698
+    },
+    "collateral_usd": {
+     "caUSDC": 0.011237
+    }
+   },
+   {
+    "account": "0xf034b95e29fd87e92ce4765f93f3b7668ed4d46e",
+    "shortfall_usd": 0.00021817,
+    "max_single_tx_profit_usd": 0.000263,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.003288
+    },
+    "debts_usd": {
+     "caWARS": 0.006576
+    },
+    "collateral_usd": {
+     "caUSDC": 0.007479,
+     "caWBTC": 0.0,
+     "caWARS": 0.0
+    }
+   },
+   {
+    "account": "0x37eef1a89aa531b099db3bd1819eb5b4a8aff5bc",
+    "shortfall_usd": 0.00244927,
+    "max_single_tx_profit_usd": 0.000235,
+    "best_pair": {
+     "borrow_market": "caWLD",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.002933
+    },
+    "debts_usd": {
+     "caWBTC": 0.004065,
+     "caWLD": 0.005867
+    },
+    "collateral_usd": {
+     "caUSDC": 0.00882,
+     "caWBTC": 0.0,
+     "caWLD": 0.0
+    }
+   },
+   {
+    "account": "0xa908cea41a8bcf6beeeae666b31c45257699e0ff",
+    "shortfall_usd": 0.00082324,
+    "max_single_tx_profit_usd": 0.000231,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.002886
+    },
+    "debts_usd": {
+     "caWARS": 0.005771,
+     "caWLD": 0.003766
+    },
+    "collateral_usd": {
+     "caUSDC": 0.010257,
+     "caWBTC": 0.0,
+     "caWARS": 0.0,
+     "caWLD": 0.0
+    }
+   },
+   {
+    "account": "0x92135ac4f55bbed50e828cb2938f8d6f1e84d8ac",
+    "shortfall_usd": 3.191e-05,
+    "max_single_tx_profit_usd": 5.6e-05,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.000703
+    },
+    "debts_usd": {
+     "caWARS": 0.001407
+    },
+    "collateral_usd": {
+     "caUSDC": 0.001617,
+     "caWARS": 0.0
+    }
+   },
+   {
+    "account": "0xed1bf39616cd0a1628b6278bd3a560bb7f7753e2",
+    "shortfall_usd": 1.74e-06,
+    "max_single_tx_profit_usd": 1e-05,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.000124
+    },
+    "debts_usd": {
+     "caWARS": 0.000247
+    },
+    "collateral_usd": {
+     "caUSDC": 0.000289,
+     "caWBTC": 0.0,
+     "caWARS": 0.0
+    }
+   },
+   {
+    "account": "0xadfc73736b51089c4701d6a918e47e4120d5d00d",
+    "shortfall_usd": 5.331e-05,
+    "max_single_tx_profit_usd": 4e-06,
+    "best_pair": {
+     "borrow_market": "caWLD",
+     "collateral_market": "caUSDC",
+     "repay_usd": 4.5e-05
+    },
+    "debts_usd": {
+     "caWARS": 6.3e-05,
+     "caWLD": 9e-05
+    },
+    "collateral_usd": {
+     "caUSDC": 0.000117,
+     "caWBTC": 0.0,
+     "caWARS": 0.0,
+     "caWLD": 0.0
+    }
+   },
+   {
+    "account": "0x6a57fe5b4831d37cd74b4d5f38a072925a2bad60",
+    "shortfall_usd": 1.02e-05,
+    "max_single_tx_profit_usd": 1e-06,
+    "best_pair": {
+     "borrow_market": "caWLD",
+     "collateral_market": "caUSDC",
+     "repay_usd": 9e-06
+    },
+    "debts_usd": {
+     "caWLD": 1.9e-05
+    },
+    "collateral_usd": {
+     "caUSDC": 1e-05,
+     "caWBTC": 0.0,
+     "caWLD": 0.0
+    }
+   },
+   {
+    "account": "0x470547d8504bfc74f670076e2618be4bf539dfb6",
+    "shortfall_usd": 0.00056526,
+    "max_single_tx_profit_usd": 0.0,
+    "best_pair": {
+     "borrow_market": "caWLD",
+     "collateral_market": "caUSDC",
+     "repay_usd": 1e-06
+    },
+    "debts_usd": {
+     "caWLD": 0.000565
+    },
+    "collateral_usd": {
+     "caUSDC": 1e-06,
+     "caWBTC": 0.0,
+     "caWLD": 0.0
+    }
+   },
+   {
+    "account": "0x91fb859a60800a24e3a377273d0b177e58e81ec3",
+    "shortfall_usd": 1e-08,
+    "max_single_tx_profit_usd": 0.0,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.0
+    },
+    "debts_usd": {
+     "caWARS": 1e-06
+    },
+    "collateral_usd": {
+     "caUSDC": 1e-06,
+     "caWARS": 0.0
+    }
+   },
+   {
+    "account": "0xaeb01e62e28763d23b1139c67d3b4a80168705ee",
+    "shortfall_usd": 0.00426873,
+    "max_single_tx_profit_usd": 0.0,
+    "best_pair": {
+     "borrow_market": "caUSDC",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.0
+    },
+    "debts_usd": {
+     "caUSDC": 0.001927,
+     "caWLD": 0.002339
+    },
+    "collateral_usd": {
+     "caUSDC": 1e-06,
+     "caWBTC": 0.0,
+     "caWLD": 0.0
+    }
+   },
+   {
+    "account": "0xd8f51d064450471dee8bb0ea8c25658cd3863edd",
+    "shortfall_usd": 1e-08,
+    "max_single_tx_profit_usd": 0.0,
+    "best_pair": {
+     "borrow_market": "caWARS",
+     "collateral_market": "caUSDC",
+     "repay_usd": 0.0
+    },
+    "debts_usd": {
+     "caWARS": 1e-06
+    },
+    "collateral_usd": {
+     "caUSDC": 1e-06,
+     "caWBTC": 0.0,
+     "caWARS": 0.0
+    }
+   }
+  ],
+  "max_total_extractable_usd_one_tx_each": 0.018561,
+  "note": "19 dust accounts; total gross liquidation profit ~$0.0186 vs gas ~$0.001/tx. No material unprivileged extraction."
+ },
+ "whitelist": {
+  "address": "0xafBBC7FcD7Eb3516742D663BF548E9e1A85e3707",
+  "proxy": true,
+  "implementation": "0x1897cae31886833527466df2f7109ad0cb4abeb7",
+  "name": "Whitelist (UUPS)",
+  "isActive": true,
+  "whitelisted_role_member_count": 0,
+  "note": "only market caLAC has a whitelist; it gates mint only (mintInternal _checkWhitelist). Active with 0 members => caLAC minting is effectively frozen for everyone."
+ },
+ "admin_identities": {
+  "capyfi_admin_safe": {
+   "address": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "type": "Gnosis Safe v1.4.1",
+   "threshold": 4,
+   "owners": [
+    "0xf7104Ad39080C53E2C8C74a34C34E622D8aBE2c5",
+    "0xa40D7d22873001f0140D76Afc0FF0779e4210eD0",
+    "0x5CA3F8EEBa12D83408fc097c2dAd79212456F20F",
+    "0x23ceC92F92bde95e401f0a2b50b072A6069dFBd5",
+    "0x5b72e13f78FEB8f5b44392f2e32940D4f37FA313",
+    "0x9850b4F631F1cae37bb1C42C8004ffc2Cd31DcBe",
+    "0x00A74411DDBC50C04353543d5D3f4296936DA645"
+   ]
+  },
+  "deployer_eoa": {
+   "address": "0x3ee4af9184f968558046cdCCa74F89B064eCD6Ce",
+   "type": "EOA",
+   "nonce": 122,
+   "roles": "deployed 6/7 markets; caWBRL admin; wBRL feed owner (pending handover to CapyFi admin)"
+  },
+  "calac_deployer": {
+   "address": "0x6a138bd6d69feb3c2f5426549e60e644778ad04c",
+   "type": "EOA",
+   "nonce": 22
+  },
+  "price_updater_safe": {
+   "address": "0x5c2c3e2ad9f9b19bb24f2b5183b9cf4eedd094a1",
+   "type": "Gnosis Safe v1.4.1",
+   "threshold": 1,
+   "owners": [
+    "0xaCDC3EBA833Ec6Edb048C109956440Fcf0985314"
+   ],
+   "authorized_on": "all 6 feeds",
+   "note": "1-of-1 Safe => single EOA effectively controls feed updates (bounded only for wARS/wBRL)"
+  }
+ },
+ "notes": [
+  "All 7 markets mintable & borrowable (mint/borrow pauses false, no global pauses); caLAC mint whitelist-gated with 0 members.",
+  "Borrow caps: caUSDC 20,000e6; caWBTC 0.32e8; caETH 0.3e18; caLAC 1,000e18; caWARS 500,000e18; caWLD 5e18; caWBRL 20,000e18.",
+  "Interest: borrowRatePerBlock (1e18): caUSDC 2.69e9, caWARS 3.41e9, caWLD 1.57e9, caWBRL 3.67e9, caWBTC 4.3e4, caETH 0.",
+  "Historical donation: at block 19790112 a user (0x63789f76...) sent 10 USDC directly to caUSDC while totalSupply was only 50 cTokens, raising exchangeRate ~11x. Donations are not extractable by the donor.",
+  "Oracle vs reference (DefiLlama) deviations: wARS +5.8%, wBRL +1.5%, LAC -20.1%, WBTC +0.6%, ETH -0.3%, WLD -0.1%, USDC +0.02%.",
+  "No COMP distribution (compRate=0, getCompAddress=0x0).",
+  "All markets use CErc20Delegate/Delegator (upgradeable) except caETH (CEther, non-delegator); caWBRL impl 0x592a... differs from the other CErc20Delegate impls."
+ ]
+}
