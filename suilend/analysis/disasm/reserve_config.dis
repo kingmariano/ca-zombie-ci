@@ -1,0 +1,1079 @@
+// Move bytecode v6
+module f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf.reserve_config {
+use 0000000000000000000000000000000000000000000000000000000000000002::bag;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::decimal;
+
+struct ReserveConfig has store {
+	open_ltv_pct: u8,
+	close_ltv_pct: u8,
+	max_close_ltv_pct: u8,
+	borrow_weight_bps: u64,
+	deposit_limit: u64,
+	borrow_limit: u64,
+	liquidation_bonus_bps: u64,
+	max_liquidation_bonus_bps: u64,
+	deposit_limit_usd: u64,
+	borrow_limit_usd: u64,
+	interest_rate_utils: vector<u8>,
+	interest_rate_aprs: vector<u64>,
+	borrow_fee_bps: u64,
+	spread_fee_bps: u64,
+	protocol_liquidation_fee_bps: u64,
+	isolated: bool,
+	open_attributed_borrow_limit_usd: u64,
+	close_attributed_borrow_limit_usd: u64,
+	additional_fields: Bag
+}
+
+struct ReserveConfigBuilder has store {
+	fields: Bag
+}
+
+public create_reserve_config(Arg0: u8, Arg1: u8, Arg2: u8, Arg3: u64, Arg4: u64, Arg5: u64, Arg6: u64, Arg7: u64, Arg8: u64, Arg9: u64, Arg10: u64, Arg11: u64, Arg12: u64, Arg13: vector<u8>, Arg14: vector<u64>, Arg15: bool, Arg16: u64, Arg17: u64, Arg18: &mut TxContext): ReserveConfig {
+L19:	loc0: ReserveConfig
+B0:
+	0: MoveLoc[0](Arg0: u8)
+	1: MoveLoc[1](Arg1: u8)
+	2: MoveLoc[2](Arg2: u8)
+	3: MoveLoc[3](Arg3: u64)
+	4: MoveLoc[4](Arg4: u64)
+	5: MoveLoc[5](Arg5: u64)
+	6: MoveLoc[6](Arg6: u64)
+	7: MoveLoc[7](Arg7: u64)
+	8: MoveLoc[8](Arg8: u64)
+	9: MoveLoc[9](Arg9: u64)
+	10: MoveLoc[13](Arg13: vector<u8>)
+	11: MoveLoc[14](Arg14: vector<u64>)
+	12: MoveLoc[10](Arg10: u64)
+	13: MoveLoc[11](Arg11: u64)
+	14: MoveLoc[12](Arg12: u64)
+	15: MoveLoc[15](Arg15: bool)
+	16: MoveLoc[16](Arg16: u64)
+	17: MoveLoc[17](Arg17: u64)
+	18: MoveLoc[18](Arg18: &mut TxContext)
+	19: Call bag::new(&mut TxContext): Bag
+	20: Pack[0](ReserveConfig)
+	21: StLoc[19](loc0: ReserveConfig)
+	22: ImmBorrowLoc[19](loc0: ReserveConfig)
+	23: Call validate_reserve_config(&ReserveConfig)
+	24: MoveLoc[19](loc0: ReserveConfig)
+	25: Ret
+}
+
+validate_reserve_config(Arg0: &ReserveConfig) {
+L1:	loc0: bool
+B0:
+	0: CopyLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[0](ReserveConfig.open_ltv_pct: u8)
+	2: ReadRef
+	3: LdU8(100)
+	4: Le
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[0](Arg0: &ReserveConfig)
+	8: Pop
+	9: LdConst[0](u64: 0)
+	10: Abort
+B3:
+	11: CopyLoc[0](Arg0: &ReserveConfig)
+	12: ImmBorrowField[1](ReserveConfig.close_ltv_pct: u8)
+	13: ReadRef
+	14: LdU8(100)
+	15: Le
+	16: BrFalse(18)
+B4:
+	17: Branch(22)
+B5:
+	18: MoveLoc[0](Arg0: &ReserveConfig)
+	19: Pop
+	20: LdConst[0](u64: 0)
+	21: Abort
+B6:
+	22: CopyLoc[0](Arg0: &ReserveConfig)
+	23: ImmBorrowField[2](ReserveConfig.max_close_ltv_pct: u8)
+	24: ReadRef
+	25: LdU8(100)
+	26: Le
+	27: BrFalse(29)
+B7:
+	28: Branch(33)
+B8:
+	29: MoveLoc[0](Arg0: &ReserveConfig)
+	30: Pop
+	31: LdConst[0](u64: 0)
+	32: Abort
+B9:
+	33: CopyLoc[0](Arg0: &ReserveConfig)
+	34: ImmBorrowField[0](ReserveConfig.open_ltv_pct: u8)
+	35: ReadRef
+	36: CopyLoc[0](Arg0: &ReserveConfig)
+	37: ImmBorrowField[1](ReserveConfig.close_ltv_pct: u8)
+	38: ReadRef
+	39: Le
+	40: BrFalse(42)
+B10:
+	41: Branch(46)
+B11:
+	42: MoveLoc[0](Arg0: &ReserveConfig)
+	43: Pop
+	44: LdConst[0](u64: 0)
+	45: Abort
+B12:
+	46: CopyLoc[0](Arg0: &ReserveConfig)
+	47: ImmBorrowField[1](ReserveConfig.close_ltv_pct: u8)
+	48: ReadRef
+	49: CopyLoc[0](Arg0: &ReserveConfig)
+	50: ImmBorrowField[2](ReserveConfig.max_close_ltv_pct: u8)
+	51: ReadRef
+	52: Le
+	53: BrFalse(55)
+B13:
+	54: Branch(59)
+B14:
+	55: MoveLoc[0](Arg0: &ReserveConfig)
+	56: Pop
+	57: LdConst[0](u64: 0)
+	58: Abort
+B15:
+	59: CopyLoc[0](Arg0: &ReserveConfig)
+	60: ImmBorrowField[3](ReserveConfig.borrow_weight_bps: u64)
+	61: ReadRef
+	62: LdU64(10000)
+	63: Ge
+	64: BrFalse(66)
+B16:
+	65: Branch(70)
+B17:
+	66: MoveLoc[0](Arg0: &ReserveConfig)
+	67: Pop
+	68: LdConst[0](u64: 0)
+	69: Abort
+B18:
+	70: CopyLoc[0](Arg0: &ReserveConfig)
+	71: ImmBorrowField[4](ReserveConfig.liquidation_bonus_bps: u64)
+	72: ReadRef
+	73: CopyLoc[0](Arg0: &ReserveConfig)
+	74: ImmBorrowField[5](ReserveConfig.max_liquidation_bonus_bps: u64)
+	75: ReadRef
+	76: Le
+	77: BrFalse(79)
+B19:
+	78: Branch(83)
+B20:
+	79: MoveLoc[0](Arg0: &ReserveConfig)
+	80: Pop
+	81: LdConst[0](u64: 0)
+	82: Abort
+B21:
+	83: CopyLoc[0](Arg0: &ReserveConfig)
+	84: ImmBorrowField[5](ReserveConfig.max_liquidation_bonus_bps: u64)
+	85: ReadRef
+	86: CopyLoc[0](Arg0: &ReserveConfig)
+	87: ImmBorrowField[6](ReserveConfig.protocol_liquidation_fee_bps: u64)
+	88: ReadRef
+	89: Add
+	90: LdU64(2000)
+	91: Le
+	92: BrFalse(94)
+B22:
+	93: Branch(98)
+B23:
+	94: MoveLoc[0](Arg0: &ReserveConfig)
+	95: Pop
+	96: LdConst[0](u64: 0)
+	97: Abort
+B24:
+	98: CopyLoc[0](Arg0: &ReserveConfig)
+	99: ImmBorrowField[7](ReserveConfig.isolated: bool)
+	100: ReadRef
+	101: BrFalse(124)
+B25:
+	102: CopyLoc[0](Arg0: &ReserveConfig)
+	103: ImmBorrowField[0](ReserveConfig.open_ltv_pct: u8)
+	104: ReadRef
+	105: LdU8(0)
+	106: Eq
+	107: BrFalse(115)
+B26:
+	108: CopyLoc[0](Arg0: &ReserveConfig)
+	109: ImmBorrowField[1](ReserveConfig.close_ltv_pct: u8)
+	110: ReadRef
+	111: LdU8(0)
+	112: Eq
+	113: StLoc[1](loc0: bool)
+	114: Branch(117)
+B27:
+	115: LdFalse
+	116: StLoc[1](loc0: bool)
+B28:
+	117: MoveLoc[1](loc0: bool)
+	118: BrFalse(120)
+B29:
+	119: Branch(124)
+B30:
+	120: MoveLoc[0](Arg0: &ReserveConfig)
+	121: Pop
+	122: LdConst[0](u64: 0)
+	123: Abort
+B31:
+	124: CopyLoc[0](Arg0: &ReserveConfig)
+	125: ImmBorrowField[8](ReserveConfig.borrow_fee_bps: u64)
+	126: ReadRef
+	127: LdU64(10000)
+	128: Le
+	129: BrFalse(131)
+B32:
+	130: Branch(135)
+B33:
+	131: MoveLoc[0](Arg0: &ReserveConfig)
+	132: Pop
+	133: LdConst[0](u64: 0)
+	134: Abort
+B34:
+	135: CopyLoc[0](Arg0: &ReserveConfig)
+	136: ImmBorrowField[9](ReserveConfig.spread_fee_bps: u64)
+	137: ReadRef
+	138: LdU64(10000)
+	139: Le
+	140: BrFalse(142)
+B35:
+	141: Branch(146)
+B36:
+	142: MoveLoc[0](Arg0: &ReserveConfig)
+	143: Pop
+	144: LdConst[0](u64: 0)
+	145: Abort
+B37:
+	146: CopyLoc[0](Arg0: &ReserveConfig)
+	147: ImmBorrowField[10](ReserveConfig.open_attributed_borrow_limit_usd: u64)
+	148: ReadRef
+	149: CopyLoc[0](Arg0: &ReserveConfig)
+	150: ImmBorrowField[11](ReserveConfig.close_attributed_borrow_limit_usd: u64)
+	151: ReadRef
+	152: Le
+	153: BrFalse(155)
+B38:
+	154: Branch(159)
+B39:
+	155: MoveLoc[0](Arg0: &ReserveConfig)
+	156: Pop
+	157: LdConst[0](u64: 0)
+	158: Abort
+B40:
+	159: CopyLoc[0](Arg0: &ReserveConfig)
+	160: ImmBorrowField[12](ReserveConfig.interest_rate_utils: vector<u8>)
+	161: MoveLoc[0](Arg0: &ReserveConfig)
+	162: ImmBorrowField[13](ReserveConfig.interest_rate_aprs: vector<u64>)
+	163: Call validate_utils_and_aprs(&vector<u8>, &vector<u64>)
+	164: Ret
+}
+
+validate_utils_and_aprs(Arg0: &vector<u8>, Arg1: &vector<u64>) {
+L2:	loc0: u64
+L3:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &vector<u8>)
+	1: VecLen(22)
+	2: LdU64(2)
+	3: Ge
+	4: BrFalse(6)
+B1:
+	5: Branch(12)
+B2:
+	6: MoveLoc[0](Arg0: &vector<u8>)
+	7: Pop
+	8: MoveLoc[1](Arg1: &vector<u64>)
+	9: Pop
+	10: LdConst[0](u64: 0)
+	11: Abort
+B3:
+	12: CopyLoc[0](Arg0: &vector<u8>)
+	13: VecLen(22)
+	14: CopyLoc[1](Arg1: &vector<u64>)
+	15: VecLen(6)
+	16: Eq
+	17: BrFalse(19)
+B4:
+	18: Branch(25)
+B5:
+	19: MoveLoc[0](Arg0: &vector<u8>)
+	20: Pop
+	21: MoveLoc[1](Arg1: &vector<u64>)
+	22: Pop
+	23: LdConst[0](u64: 0)
+	24: Abort
+B6:
+	25: CopyLoc[0](Arg0: &vector<u8>)
+	26: VecLen(22)
+	27: StLoc[3](loc1: u64)
+	28: CopyLoc[0](Arg0: &vector<u8>)
+	29: LdU64(0)
+	30: VecImmBorrow(22)
+	31: ReadRef
+	32: LdU8(0)
+	33: Eq
+	34: BrFalse(36)
+B7:
+	35: Branch(42)
+B8:
+	36: MoveLoc[0](Arg0: &vector<u8>)
+	37: Pop
+	38: MoveLoc[1](Arg1: &vector<u64>)
+	39: Pop
+	40: LdConst[0](u64: 0)
+	41: Abort
+B9:
+	42: CopyLoc[0](Arg0: &vector<u8>)
+	43: CopyLoc[3](loc1: u64)
+	44: LdU64(1)
+	45: Sub
+	46: VecImmBorrow(22)
+	47: ReadRef
+	48: LdU8(100)
+	49: Eq
+	50: BrFalse(52)
+B10:
+	51: Branch(58)
+B11:
+	52: MoveLoc[0](Arg0: &vector<u8>)
+	53: Pop
+	54: MoveLoc[1](Arg1: &vector<u64>)
+	55: Pop
+	56: LdConst[0](u64: 0)
+	57: Abort
+B12:
+	58: LdU64(1)
+	59: StLoc[2](loc0: u64)
+B13:
+	60: CopyLoc[2](loc0: u64)
+	61: CopyLoc[3](loc1: u64)
+	62: Lt
+	63: BrFalse(107)
+B14:
+	64: CopyLoc[0](Arg0: &vector<u8>)
+	65: CopyLoc[2](loc0: u64)
+	66: LdU64(1)
+	67: Sub
+	68: VecImmBorrow(22)
+	69: ReadRef
+	70: CopyLoc[0](Arg0: &vector<u8>)
+	71: CopyLoc[2](loc0: u64)
+	72: VecImmBorrow(22)
+	73: ReadRef
+	74: Lt
+	75: BrFalse(77)
+B15:
+	76: Branch(83)
+B16:
+	77: MoveLoc[0](Arg0: &vector<u8>)
+	78: Pop
+	79: MoveLoc[1](Arg1: &vector<u64>)
+	80: Pop
+	81: LdConst[0](u64: 0)
+	82: Abort
+B17:
+	83: CopyLoc[1](Arg1: &vector<u64>)
+	84: CopyLoc[2](loc0: u64)
+	85: LdU64(1)
+	86: Sub
+	87: VecImmBorrow(6)
+	88: ReadRef
+	89: CopyLoc[1](Arg1: &vector<u64>)
+	90: CopyLoc[2](loc0: u64)
+	91: VecImmBorrow(6)
+	92: ReadRef
+	93: Le
+	94: BrFalse(96)
+B18:
+	95: Branch(102)
+B19:
+	96: MoveLoc[0](Arg0: &vector<u8>)
+	97: Pop
+	98: MoveLoc[1](Arg1: &vector<u64>)
+	99: Pop
+	100: LdConst[0](u64: 0)
+	101: Abort
+B20:
+	102: MoveLoc[2](loc0: u64)
+	103: LdU64(1)
+	104: Add
+	105: StLoc[2](loc0: u64)
+	106: Branch(60)
+B21:
+	107: MoveLoc[0](Arg0: &vector<u8>)
+	108: Pop
+	109: MoveLoc[1](Arg1: &vector<u64>)
+	110: Pop
+	111: Ret
+}
+
+public open_ltv(Arg0: &ReserveConfig): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[0](ReserveConfig.open_ltv_pct: u8)
+	2: ReadRef
+	3: Call decimal::from_percent(u8): Decimal
+	4: Ret
+}
+
+public close_ltv(Arg0: &ReserveConfig): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[1](ReserveConfig.close_ltv_pct: u8)
+	2: ReadRef
+	3: Call decimal::from_percent(u8): Decimal
+	4: Ret
+}
+
+public borrow_weight(Arg0: &ReserveConfig): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[3](ReserveConfig.borrow_weight_bps: u64)
+	2: ReadRef
+	3: Call decimal::from_bps(u64): Decimal
+	4: Ret
+}
+
+public deposit_limit(Arg0: &ReserveConfig): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[14](ReserveConfig.deposit_limit: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public borrow_limit(Arg0: &ReserveConfig): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[15](ReserveConfig.borrow_limit: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public liquidation_bonus(Arg0: &ReserveConfig): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[4](ReserveConfig.liquidation_bonus_bps: u64)
+	2: ReadRef
+	3: Call decimal::from_bps(u64): Decimal
+	4: Ret
+}
+
+public deposit_limit_usd(Arg0: &ReserveConfig): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[16](ReserveConfig.deposit_limit_usd: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public borrow_limit_usd(Arg0: &ReserveConfig): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[17](ReserveConfig.borrow_limit_usd: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public borrow_fee(Arg0: &ReserveConfig): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[8](ReserveConfig.borrow_fee_bps: u64)
+	2: ReadRef
+	3: Call decimal::from_bps(u64): Decimal
+	4: Ret
+}
+
+public protocol_liquidation_fee(Arg0: &ReserveConfig): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[6](ReserveConfig.protocol_liquidation_fee_bps: u64)
+	2: ReadRef
+	3: Call decimal::from_bps(u64): Decimal
+	4: Ret
+}
+
+public isolated(Arg0: &ReserveConfig): bool {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[7](ReserveConfig.isolated: bool)
+	2: ReadRef
+	3: Ret
+}
+
+public spread_fee(Arg0: &ReserveConfig): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: ImmBorrowField[9](ReserveConfig.spread_fee_bps: u64)
+	2: ReadRef
+	3: Call decimal::from_bps(u64): Decimal
+	4: Ret
+}
+
+public calculate_apr(Arg0: &ReserveConfig, Arg1: Decimal): Decimal {
+L2:	loc0: bool
+L3:	loc1: Decimal
+L4:	loc2: u64
+L5:	loc3: Decimal
+L6:	loc4: Decimal
+L7:	loc5: u64
+L8:	loc6: Decimal
+L9:	loc7: Decimal
+L10:	loc8: Decimal
+B0:
+	0: CopyLoc[1](Arg1: Decimal)
+	1: LdU64(1)
+	2: Call decimal::from(u64): Decimal
+	3: Call decimal::le(Decimal, Decimal): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &ReserveConfig)
+	7: Pop
+	8: LdConst[1](u64: 1)
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &ReserveConfig)
+	11: ImmBorrowField[12](ReserveConfig.interest_rate_utils: vector<u8>)
+	12: VecLen(22)
+	13: StLoc[7](loc5: u64)
+	14: LdU64(1)
+	15: StLoc[4](loc2: u64)
+B4:
+	16: CopyLoc[4](loc2: u64)
+	17: CopyLoc[7](loc5: u64)
+	18: Lt
+	19: BrFalse(89)
+B5:
+	20: CopyLoc[0](Arg0: &ReserveConfig)
+	21: ImmBorrowField[12](ReserveConfig.interest_rate_utils: vector<u8>)
+	22: CopyLoc[4](loc2: u64)
+	23: LdU64(1)
+	24: Sub
+	25: VecImmBorrow(22)
+	26: ReadRef
+	27: Call decimal::from_percent(u8): Decimal
+	28: StLoc[6](loc4: Decimal)
+	29: CopyLoc[0](Arg0: &ReserveConfig)
+	30: ImmBorrowField[12](ReserveConfig.interest_rate_utils: vector<u8>)
+	31: CopyLoc[4](loc2: u64)
+	32: VecImmBorrow(22)
+	33: ReadRef
+	34: Call decimal::from_percent(u8): Decimal
+	35: StLoc[9](loc7: Decimal)
+	36: CopyLoc[1](Arg1: Decimal)
+	37: CopyLoc[6](loc4: Decimal)
+	38: Call decimal::ge(Decimal, Decimal): bool
+	39: BrFalse(46)
+B6:
+	40: Branch(41)
+B7:
+	41: CopyLoc[1](Arg1: Decimal)
+	42: CopyLoc[9](loc7: Decimal)
+	43: Call decimal::le(Decimal, Decimal): bool
+	44: StLoc[2](loc0: bool)
+	45: Branch(48)
+B8:
+	46: LdFalse
+	47: StLoc[2](loc0: bool)
+B9:
+	48: MoveLoc[2](loc0: bool)
+	49: BrFalse(84)
+B10:
+	50: CopyLoc[0](Arg0: &ReserveConfig)
+	51: ImmBorrowField[13](ReserveConfig.interest_rate_aprs: vector<u64>)
+	52: CopyLoc[4](loc2: u64)
+	53: LdU64(1)
+	54: Sub
+	55: VecImmBorrow(6)
+	56: ReadRef
+	57: Call decimal::from_bps(u64): Decimal
+	58: StLoc[5](loc3: Decimal)
+	59: MoveLoc[0](Arg0: &ReserveConfig)
+	60: ImmBorrowField[13](ReserveConfig.interest_rate_aprs: vector<u64>)
+	61: MoveLoc[4](loc2: u64)
+	62: VecImmBorrow(6)
+	63: ReadRef
+	64: Call decimal::from_bps(u64): Decimal
+	65: StLoc[8](loc6: Decimal)
+	66: MoveLoc[1](Arg1: Decimal)
+	67: CopyLoc[6](loc4: Decimal)
+	68: Call decimal::sub(Decimal, Decimal): Decimal
+	69: MoveLoc[9](loc7: Decimal)
+	70: MoveLoc[6](loc4: Decimal)
+	71: Call decimal::sub(Decimal, Decimal): Decimal
+	72: Call decimal::div(Decimal, Decimal): Decimal
+	73: StLoc[10](loc8: Decimal)
+	74: MoveLoc[8](loc6: Decimal)
+	75: CopyLoc[5](loc3: Decimal)
+	76: Call decimal::sub(Decimal, Decimal): Decimal
+	77: StLoc[3](loc1: Decimal)
+	78: MoveLoc[5](loc3: Decimal)
+	79: MoveLoc[10](loc8: Decimal)
+	80: MoveLoc[3](loc1: Decimal)
+	81: Call decimal::mul(Decimal, Decimal): Decimal
+	82: Call decimal::add(Decimal, Decimal): Decimal
+	83: Ret
+B11:
+	84: MoveLoc[4](loc2: u64)
+	85: LdU64(1)
+	86: Add
+	87: StLoc[4](loc2: u64)
+	88: Branch(16)
+B12:
+	89: MoveLoc[0](Arg0: &ReserveConfig)
+	90: Pop
+	91: LdConst[0](u64: 0)
+	92: Abort
+}
+
+public calculate_supply_apr(Arg0: &ReserveConfig, Arg1: Decimal, Arg2: Decimal): Decimal {
+L3:	loc0: Decimal
+B0:
+	0: MoveLoc[0](Arg0: &ReserveConfig)
+	1: Call spread_fee(&ReserveConfig): Decimal
+	2: StLoc[3](loc0: Decimal)
+	3: LdU64(1)
+	4: Call decimal::from(u64): Decimal
+	5: MoveLoc[3](loc0: Decimal)
+	6: Call decimal::sub(Decimal, Decimal): Decimal
+	7: MoveLoc[2](Arg2: Decimal)
+	8: Call decimal::mul(Decimal, Decimal): Decimal
+	9: MoveLoc[1](Arg1: Decimal)
+	10: Call decimal::mul(Decimal, Decimal): Decimal
+	11: Ret
+}
+
+public destroy(Arg0: ReserveConfig) {
+L1:	loc0: Bag
+B0:
+	0: MoveLoc[0](Arg0: ReserveConfig)
+	1: Unpack[0](ReserveConfig)
+	2: StLoc[1](loc0: Bag)
+	3: Pop
+	4: Pop
+	5: Pop
+	6: Pop
+	7: Pop
+	8: Pop
+	9: Pop
+	10: Pop
+	11: Pop
+	12: Pop
+	13: Pop
+	14: Pop
+	15: Pop
+	16: Pop
+	17: Pop
+	18: Pop
+	19: Pop
+	20: Pop
+	21: MoveLoc[1](loc0: Bag)
+	22: Call bag::destroy_empty(Bag)
+	23: Ret
+}
+
+public from(Arg0: &ReserveConfig, Arg1: &mut TxContext): ReserveConfigBuilder {
+L2:	loc0: ReserveConfigBuilder
+B0:
+	0: MoveLoc[1](Arg1: &mut TxContext)
+	1: Call bag::new(&mut TxContext): Bag
+	2: Pack[1](ReserveConfigBuilder)
+	3: StLoc[2](loc0: ReserveConfigBuilder)
+	4: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	5: CopyLoc[0](Arg0: &ReserveConfig)
+	6: ImmBorrowField[0](ReserveConfig.open_ltv_pct: u8)
+	7: ReadRef
+	8: Call set_open_ltv_pct(&mut ReserveConfigBuilder, u8)
+	9: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	10: CopyLoc[0](Arg0: &ReserveConfig)
+	11: ImmBorrowField[1](ReserveConfig.close_ltv_pct: u8)
+	12: ReadRef
+	13: Call set_close_ltv_pct(&mut ReserveConfigBuilder, u8)
+	14: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	15: CopyLoc[0](Arg0: &ReserveConfig)
+	16: ImmBorrowField[2](ReserveConfig.max_close_ltv_pct: u8)
+	17: ReadRef
+	18: Call set_max_close_ltv_pct(&mut ReserveConfigBuilder, u8)
+	19: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	20: CopyLoc[0](Arg0: &ReserveConfig)
+	21: ImmBorrowField[3](ReserveConfig.borrow_weight_bps: u64)
+	22: ReadRef
+	23: Call set_borrow_weight_bps(&mut ReserveConfigBuilder, u64)
+	24: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	25: CopyLoc[0](Arg0: &ReserveConfig)
+	26: ImmBorrowField[14](ReserveConfig.deposit_limit: u64)
+	27: ReadRef
+	28: Call set_deposit_limit(&mut ReserveConfigBuilder, u64)
+	29: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	30: CopyLoc[0](Arg0: &ReserveConfig)
+	31: ImmBorrowField[15](ReserveConfig.borrow_limit: u64)
+	32: ReadRef
+	33: Call set_borrow_limit(&mut ReserveConfigBuilder, u64)
+	34: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	35: CopyLoc[0](Arg0: &ReserveConfig)
+	36: ImmBorrowField[4](ReserveConfig.liquidation_bonus_bps: u64)
+	37: ReadRef
+	38: Call set_liquidation_bonus_bps(&mut ReserveConfigBuilder, u64)
+	39: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	40: CopyLoc[0](Arg0: &ReserveConfig)
+	41: ImmBorrowField[5](ReserveConfig.max_liquidation_bonus_bps: u64)
+	42: ReadRef
+	43: Call set_max_liquidation_bonus_bps(&mut ReserveConfigBuilder, u64)
+	44: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	45: CopyLoc[0](Arg0: &ReserveConfig)
+	46: ImmBorrowField[16](ReserveConfig.deposit_limit_usd: u64)
+	47: ReadRef
+	48: Call set_deposit_limit_usd(&mut ReserveConfigBuilder, u64)
+	49: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	50: CopyLoc[0](Arg0: &ReserveConfig)
+	51: ImmBorrowField[17](ReserveConfig.borrow_limit_usd: u64)
+	52: ReadRef
+	53: Call set_borrow_limit_usd(&mut ReserveConfigBuilder, u64)
+	54: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	55: CopyLoc[0](Arg0: &ReserveConfig)
+	56: ImmBorrowField[12](ReserveConfig.interest_rate_utils: vector<u8>)
+	57: ReadRef
+	58: Call set_interest_rate_utils(&mut ReserveConfigBuilder, vector<u8>)
+	59: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	60: CopyLoc[0](Arg0: &ReserveConfig)
+	61: ImmBorrowField[13](ReserveConfig.interest_rate_aprs: vector<u64>)
+	62: ReadRef
+	63: Call set_interest_rate_aprs(&mut ReserveConfigBuilder, vector<u64>)
+	64: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	65: CopyLoc[0](Arg0: &ReserveConfig)
+	66: ImmBorrowField[8](ReserveConfig.borrow_fee_bps: u64)
+	67: ReadRef
+	68: Call set_borrow_fee_bps(&mut ReserveConfigBuilder, u64)
+	69: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	70: CopyLoc[0](Arg0: &ReserveConfig)
+	71: ImmBorrowField[9](ReserveConfig.spread_fee_bps: u64)
+	72: ReadRef
+	73: Call set_spread_fee_bps(&mut ReserveConfigBuilder, u64)
+	74: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	75: CopyLoc[0](Arg0: &ReserveConfig)
+	76: ImmBorrowField[6](ReserveConfig.protocol_liquidation_fee_bps: u64)
+	77: ReadRef
+	78: Call set_protocol_liquidation_fee_bps(&mut ReserveConfigBuilder, u64)
+	79: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	80: CopyLoc[0](Arg0: &ReserveConfig)
+	81: ImmBorrowField[7](ReserveConfig.isolated: bool)
+	82: ReadRef
+	83: Call set_isolated(&mut ReserveConfigBuilder, bool)
+	84: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	85: CopyLoc[0](Arg0: &ReserveConfig)
+	86: ImmBorrowField[10](ReserveConfig.open_attributed_borrow_limit_usd: u64)
+	87: ReadRef
+	88: Call set_open_attributed_borrow_limit_usd(&mut ReserveConfigBuilder, u64)
+	89: MutBorrowLoc[2](loc0: ReserveConfigBuilder)
+	90: MoveLoc[0](Arg0: &ReserveConfig)
+	91: ImmBorrowField[11](ReserveConfig.close_attributed_borrow_limit_usd: u64)
+	92: ReadRef
+	93: Call set_close_attributed_borrow_limit_usd(&mut ReserveConfigBuilder, u64)
+	94: MoveLoc[2](loc0: ReserveConfigBuilder)
+	95: Ret
+}
+
+set<Ty0: copy + drop + store, Ty1: drop + store>(Arg0: &mut ReserveConfigBuilder, Arg1: Ty0, Arg2: Ty1) {
+L3:	loc0: &mut Ty1
+B0:
+	0: CopyLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: ImmBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	2: CopyLoc[1](Arg1: Ty0)
+	3: Call bag::contains<Ty0>(&Bag, Ty0): bool
+	4: BrFalse(14)
+B1:
+	5: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	6: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	7: MoveLoc[1](Arg1: Ty0)
+	8: Call bag::borrow_mut<Ty0, Ty1>(&mut Bag, Ty0): &mut Ty1
+	9: StLoc[3](loc0: &mut Ty1)
+	10: MoveLoc[2](Arg2: Ty1)
+	11: MoveLoc[3](loc0: &mut Ty1)
+	12: WriteRef
+	13: Branch(19)
+B2:
+	14: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	15: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	16: MoveLoc[1](Arg1: Ty0)
+	17: MoveLoc[2](Arg2: Ty1)
+	18: Call bag::add<Ty0, Ty1>(&mut Bag, Ty0, Ty1)
+B3:
+	19: Ret
+}
+
+public set_open_ltv_pct(Arg0: &mut ReserveConfigBuilder, Arg1: u8) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[2](vector<u8>: "ope..)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call set<vector<u8>, u8>(&mut ReserveConfigBuilder, vector<u8>, u8)
+	4: Ret
+}
+
+public set_close_ltv_pct(Arg0: &mut ReserveConfigBuilder, Arg1: u8) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[3](vector<u8>: "clo..)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call set<vector<u8>, u8>(&mut ReserveConfigBuilder, vector<u8>, u8)
+	4: Ret
+}
+
+public set_max_close_ltv_pct(Arg0: &mut ReserveConfigBuilder, Arg1: u8) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[4](vector<u8>: "max..)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call set<vector<u8>, u8>(&mut ReserveConfigBuilder, vector<u8>, u8)
+	4: Ret
+}
+
+public set_borrow_weight_bps(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[5](vector<u8>: "bor..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_deposit_limit(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[6](vector<u8>: "dep..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_borrow_limit(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[7](vector<u8>: "bor..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_liquidation_bonus_bps(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[8](vector<u8>: "liq..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_max_liquidation_bonus_bps(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[9](vector<u8>: "max..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_deposit_limit_usd(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[10](vector<u8>: "dep..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_borrow_limit_usd(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[11](vector<u8>: "bor..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_interest_rate_utils(Arg0: &mut ReserveConfigBuilder, Arg1: vector<u8>) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[12](vector<u8>: "int..)
+	2: MoveLoc[1](Arg1: vector<u8>)
+	3: Call set<vector<u8>, vector<u8>>(&mut ReserveConfigBuilder, vector<u8>, vector<u8>)
+	4: Ret
+}
+
+public set_interest_rate_aprs(Arg0: &mut ReserveConfigBuilder, Arg1: vector<u64>) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[13](vector<u8>: "int..)
+	2: MoveLoc[1](Arg1: vector<u64>)
+	3: Call set<vector<u8>, vector<u64>>(&mut ReserveConfigBuilder, vector<u8>, vector<u64>)
+	4: Ret
+}
+
+public set_borrow_fee_bps(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[14](vector<u8>: "bor..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_spread_fee_bps(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[15](vector<u8>: "spr..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_protocol_liquidation_fee_bps(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[16](vector<u8>: "pro..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_isolated(Arg0: &mut ReserveConfigBuilder, Arg1: bool) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[17](vector<u8>: "iso..)
+	2: MoveLoc[1](Arg1: bool)
+	3: Call set<vector<u8>, bool>(&mut ReserveConfigBuilder, vector<u8>, bool)
+	4: Ret
+}
+
+public set_open_attributed_borrow_limit_usd(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[18](vector<u8>: "ope..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public set_close_attributed_borrow_limit_usd(Arg0: &mut ReserveConfigBuilder, Arg1: u64) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ReserveConfigBuilder)
+	1: LdConst[19](vector<u8>: "clo..)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call set<vector<u8>, u64>(&mut ReserveConfigBuilder, vector<u8>, u64)
+	4: Ret
+}
+
+public build(Arg0: ReserveConfigBuilder, Arg1: &mut TxContext): ReserveConfig {
+L2:	loc0: ReserveConfig
+B0:
+	0: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	1: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	2: LdConst[2](vector<u8>: "ope..)
+	3: Call bag::remove<vector<u8>, u8>(&mut Bag, vector<u8>): u8
+	4: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	5: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	6: LdConst[3](vector<u8>: "clo..)
+	7: Call bag::remove<vector<u8>, u8>(&mut Bag, vector<u8>): u8
+	8: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	9: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	10: LdConst[4](vector<u8>: "max..)
+	11: Call bag::remove<vector<u8>, u8>(&mut Bag, vector<u8>): u8
+	12: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	13: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	14: LdConst[5](vector<u8>: "bor..)
+	15: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	16: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	17: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	18: LdConst[6](vector<u8>: "dep..)
+	19: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	20: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	21: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	22: LdConst[7](vector<u8>: "bor..)
+	23: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	24: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	25: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	26: LdConst[8](vector<u8>: "liq..)
+	27: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	28: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	29: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	30: LdConst[9](vector<u8>: "max..)
+	31: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	32: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	33: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	34: LdConst[10](vector<u8>: "dep..)
+	35: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	36: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	37: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	38: LdConst[11](vector<u8>: "bor..)
+	39: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	40: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	41: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	42: LdConst[14](vector<u8>: "bor..)
+	43: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	44: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	45: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	46: LdConst[15](vector<u8>: "spr..)
+	47: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	48: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	49: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	50: LdConst[16](vector<u8>: "pro..)
+	51: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	52: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	53: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	54: LdConst[12](vector<u8>: "int..)
+	55: Call bag::remove<vector<u8>, vector<u8>>(&mut Bag, vector<u8>): vector<u8>
+	56: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	57: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	58: LdConst[13](vector<u8>: "int..)
+	59: Call bag::remove<vector<u8>, vector<u64>>(&mut Bag, vector<u8>): vector<u64>
+	60: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	61: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	62: LdConst[17](vector<u8>: "iso..)
+	63: Call bag::remove<vector<u8>, bool>(&mut Bag, vector<u8>): bool
+	64: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	65: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	66: LdConst[18](vector<u8>: "ope..)
+	67: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	68: MutBorrowLoc[0](Arg0: ReserveConfigBuilder)
+	69: MutBorrowField[18](ReserveConfigBuilder.fields: Bag)
+	70: LdConst[19](vector<u8>: "clo..)
+	71: Call bag::remove<vector<u8>, u64>(&mut Bag, vector<u8>): u64
+	72: MoveLoc[1](Arg1: &mut TxContext)
+	73: Call create_reserve_config(u8, u8, u8, u64, u64, u64, u64, u64, u64, u64, u64, u64, u64, vector<u8>, vector<u64>, bool, u64, u64, &mut TxContext): ReserveConfig
+	74: StLoc[2](loc0: ReserveConfig)
+	75: MoveLoc[0](Arg0: ReserveConfigBuilder)
+	76: Unpack[1](ReserveConfigBuilder)
+	77: Call bag::destroy_empty(Bag)
+	78: MoveLoc[2](loc0: ReserveConfig)
+	79: Ret
+}
+
+Constants [
+	0 => u64: 0
+	1 => u64: 1
+	2 => vector<u8>: "open_ltv_pct" // interpreted as UTF8 string
+	3 => vector<u8>: "close_ltv_pct" // interpreted as UTF8 string
+	4 => vector<u8>: "max_close_ltv_pct" // interpreted as UTF8 string
+	5 => vector<u8>: "borrow_weight_bps" // interpreted as UTF8 string
+	6 => vector<u8>: "deposit_limit" // interpreted as UTF8 string
+	7 => vector<u8>: "borrow_limit" // interpreted as UTF8 string
+	8 => vector<u8>: "liquidation_bonus_bps" // interpreted as UTF8 string
+	9 => vector<u8>: "max_liquidation_bonus_bps" // interpreted as UTF8 string
+	10 => vector<u8>: "deposit_limit_usd" // interpreted as UTF8 string
+	11 => vector<u8>: "borrow_limit_usd" // interpreted as UTF8 string
+	12 => vector<u8>: "interest_rate_utils" // interpreted as UTF8 string
+	13 => vector<u8>: "interest_rate_aprs" // interpreted as UTF8 string
+	14 => vector<u8>: "borrow_fee_bps" // interpreted as UTF8 string
+	15 => vector<u8>: "spread_fee_bps" // interpreted as UTF8 string
+	16 => vector<u8>: "protocol_liquidation_fee_bps" // interpreted as UTF8 string
+	17 => vector<u8>: "isolated" // interpreted as UTF8 string
+	18 => vector<u8>: "open_attributed_borrow_limit_usd" // interpreted as UTF8 string
+	19 => vector<u8>: "close_attributed_borrow_limit_usd" // interpreted as UTF8 string
+]
+}
+

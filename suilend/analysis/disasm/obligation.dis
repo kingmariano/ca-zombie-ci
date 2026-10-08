@@ -1,0 +1,2605 @@
+// Move bytecode v6
+module f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf.obligation {
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000001::vector;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::decimal;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::liquidity_mining;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::reserve;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::reserve_config;
+
+struct Obligation<phantom Ty0> has store, key {
+	id: UID,
+	lending_market_id: ID,
+	deposits: vector<Deposit>,
+	borrows: vector<Borrow>,
+	deposited_value_usd: Decimal,
+	allowed_borrow_value_usd: Decimal,
+	unhealthy_borrow_value_usd: Decimal,
+	super_unhealthy_borrow_value_usd: Decimal,
+	unweighted_borrowed_value_usd: Decimal,
+	weighted_borrowed_value_usd: Decimal,
+	weighted_borrowed_value_upper_bound_usd: Decimal,
+	borrowing_isolated_asset: bool,
+	user_reward_managers: vector<UserRewardManager>,
+	bad_debt_usd: Decimal,
+	closable: bool
+}
+
+struct Deposit has store {
+	coin_type: TypeName,
+	reserve_array_index: u64,
+	deposited_ctoken_amount: u64,
+	market_value: Decimal,
+	user_reward_manager_index: u64,
+	attributed_borrow_value: Decimal
+}
+
+struct Borrow has store {
+	coin_type: TypeName,
+	reserve_array_index: u64,
+	borrowed_amount: Decimal,
+	cumulative_borrow_rate: Decimal,
+	market_value: Decimal,
+	user_reward_manager_index: u64
+}
+
+struct ObligationDataEvent has copy, drop {
+	lending_market_id: address,
+	obligation_id: address,
+	deposits: vector<DepositRecord>,
+	borrows: vector<BorrowRecord>,
+	deposited_value_usd: Decimal,
+	allowed_borrow_value_usd: Decimal,
+	unhealthy_borrow_value_usd: Decimal,
+	super_unhealthy_borrow_value_usd: Decimal,
+	unweighted_borrowed_value_usd: Decimal,
+	weighted_borrowed_value_usd: Decimal,
+	weighted_borrowed_value_upper_bound_usd: Decimal,
+	borrowing_isolated_asset: bool,
+	bad_debt_usd: Decimal,
+	closable: bool
+}
+
+struct DepositRecord has copy, drop, store {
+	coin_type: TypeName,
+	reserve_array_index: u64,
+	deposited_ctoken_amount: u64,
+	market_value: Decimal,
+	user_reward_manager_index: u64,
+	attributed_borrow_value: Decimal
+}
+
+struct BorrowRecord has copy, drop, store {
+	coin_type: TypeName,
+	reserve_array_index: u64,
+	borrowed_amount: Decimal,
+	cumulative_borrow_rate: Decimal,
+	market_value: Decimal,
+	user_reward_manager_index: u64
+}
+
+public(friend) create_obligation<Ty0>(Arg0: ID, Arg1: &mut TxContext): Obligation<Ty0> {
+L2:	loc0: UID
+L3:	loc1: Decimal
+L4:	loc2: Decimal
+L5:	loc3: vector<UserRewardManager>
+L6:	loc4: Decimal
+L7:	loc5: ID
+L8:	loc6: vector<Deposit>
+L9:	loc7: vector<Borrow>
+L10:	loc8: Decimal
+L11:	loc9: Decimal
+L12:	loc10: Decimal
+L13:	loc11: Decimal
+L14:	loc12: Decimal
+B0:
+	0: MoveLoc[1](Arg1: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: StLoc[2](loc0: UID)
+	3: MoveLoc[0](Arg0: ID)
+	4: StLoc[7](loc5: ID)
+	5: VecPack(30, 0)
+	6: StLoc[8](loc6: vector<Deposit>)
+	7: VecPack(31, 0)
+	8: StLoc[9](loc7: vector<Borrow>)
+	9: LdU64(0)
+	10: Call decimal::from(u64): Decimal
+	11: StLoc[10](loc8: Decimal)
+	12: LdU64(0)
+	13: Call decimal::from(u64): Decimal
+	14: StLoc[11](loc9: Decimal)
+	15: LdU64(0)
+	16: Call decimal::from(u64): Decimal
+	17: StLoc[12](loc10: Decimal)
+	18: LdU64(0)
+	19: Call decimal::from(u64): Decimal
+	20: StLoc[13](loc11: Decimal)
+	21: LdU64(0)
+	22: Call decimal::from(u64): Decimal
+	23: StLoc[14](loc12: Decimal)
+	24: LdU64(0)
+	25: Call decimal::from(u64): Decimal
+	26: StLoc[3](loc1: Decimal)
+	27: LdU64(0)
+	28: Call decimal::from(u64): Decimal
+	29: StLoc[4](loc2: Decimal)
+	30: VecPack(32, 0)
+	31: StLoc[5](loc3: vector<UserRewardManager>)
+	32: LdU64(0)
+	33: Call decimal::from(u64): Decimal
+	34: StLoc[6](loc4: Decimal)
+	35: MoveLoc[2](loc0: UID)
+	36: MoveLoc[7](loc5: ID)
+	37: MoveLoc[8](loc6: vector<Deposit>)
+	38: MoveLoc[9](loc7: vector<Borrow>)
+	39: MoveLoc[10](loc8: Decimal)
+	40: MoveLoc[14](loc12: Decimal)
+	41: MoveLoc[3](loc1: Decimal)
+	42: MoveLoc[4](loc2: Decimal)
+	43: MoveLoc[11](loc9: Decimal)
+	44: MoveLoc[12](loc10: Decimal)
+	45: MoveLoc[13](loc11: Decimal)
+	46: LdFalse
+	47: MoveLoc[5](loc3: vector<UserRewardManager>)
+	48: MoveLoc[6](loc4: Decimal)
+	49: LdFalse
+	50: PackGeneric[0](Obligation<Ty0>)
+	51: Ret
+}
+
+public(friend) refresh<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut vector<Reserve<Ty0>>, Arg2: &Clock) {
+L3:	loc0: Decimal
+L4:	loc1: &mut Borrow
+L5:	loc2: &mut Reserve<Ty0>
+L6:	loc3: bool
+L7:	loc4: &mut Deposit
+L8:	loc5: &mut Reserve<Ty0>
+L9:	loc6: Decimal
+L10:	loc7: u64
+L11:	loc8: u64
+L12:	loc9: Decimal
+L13:	loc10: Decimal
+L14:	loc11: Decimal
+L15:	loc12: Decimal
+L16:	loc13: Decimal
+L17:	loc14: Decimal
+L18:	loc15: Decimal
+L19:	loc16: Decimal
+B0:
+	0: LdU64(0)
+	1: StLoc[10](loc7: u64)
+	2: LdU64(0)
+	3: Call decimal::from(u64): Decimal
+	4: StLoc[9](loc6: Decimal)
+	5: LdU64(0)
+	6: Call decimal::from(u64): Decimal
+	7: StLoc[3](loc0: Decimal)
+	8: LdU64(0)
+	9: Call decimal::from(u64): Decimal
+	10: StLoc[16](loc13: Decimal)
+B1:
+	11: CopyLoc[10](loc7: u64)
+	12: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	13: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	14: VecLen(30)
+	15: Lt
+	16: BrFalse(81)
+B2:
+	17: Branch(18)
+B3:
+	18: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	19: MutBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	20: CopyLoc[10](loc7: u64)
+	21: VecMutBorrow(30)
+	22: StLoc[7](loc4: &mut Deposit)
+	23: CopyLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	24: CopyLoc[7](loc4: &mut Deposit)
+	25: ImmBorrowField[1](Deposit.reserve_array_index: u64)
+	26: ReadRef
+	27: VecMutBorrow(35)
+	28: StLoc[8](loc5: &mut Reserve<Ty0>)
+	29: CopyLoc[8](loc5: &mut Reserve<Ty0>)
+	30: CopyLoc[2](Arg2: &Clock)
+	31: Call reserve::compound_interest<Ty0>(&mut Reserve<Ty0>, &Clock)
+	32: CopyLoc[8](loc5: &mut Reserve<Ty0>)
+	33: FreezeRef
+	34: CopyLoc[2](Arg2: &Clock)
+	35: Call reserve::assert_price_is_fresh<Ty0>(&Reserve<Ty0>, &Clock)
+	36: CopyLoc[8](loc5: &mut Reserve<Ty0>)
+	37: FreezeRef
+	38: CopyLoc[7](loc4: &mut Deposit)
+	39: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	40: ReadRef
+	41: Call reserve::ctoken_market_value<Ty0>(&Reserve<Ty0>, u64): Decimal
+	42: StLoc[12](loc9: Decimal)
+	43: CopyLoc[8](loc5: &mut Reserve<Ty0>)
+	44: FreezeRef
+	45: CopyLoc[7](loc4: &mut Deposit)
+	46: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	47: ReadRef
+	48: Call reserve::ctoken_market_value_lower_bound<Ty0>(&Reserve<Ty0>, u64): Decimal
+	49: StLoc[14](loc11: Decimal)
+	50: CopyLoc[12](loc9: Decimal)
+	51: MoveLoc[7](loc4: &mut Deposit)
+	52: MutBorrowField[3](Deposit.market_value: Decimal)
+	53: WriteRef
+	54: MoveLoc[9](loc6: Decimal)
+	55: CopyLoc[12](loc9: Decimal)
+	56: Call decimal::add(Decimal, Decimal): Decimal
+	57: StLoc[9](loc6: Decimal)
+	58: MoveLoc[3](loc0: Decimal)
+	59: MoveLoc[14](loc11: Decimal)
+	60: CopyLoc[8](loc5: &mut Reserve<Ty0>)
+	61: FreezeRef
+	62: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	63: Call reserve_config::open_ltv(&ReserveConfig): Decimal
+	64: Call decimal::mul(Decimal, Decimal): Decimal
+	65: Call decimal::add(Decimal, Decimal): Decimal
+	66: StLoc[3](loc0: Decimal)
+	67: MoveLoc[16](loc13: Decimal)
+	68: MoveLoc[12](loc9: Decimal)
+	69: MoveLoc[8](loc5: &mut Reserve<Ty0>)
+	70: FreezeRef
+	71: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	72: Call reserve_config::close_ltv(&ReserveConfig): Decimal
+	73: Call decimal::mul(Decimal, Decimal): Decimal
+	74: Call decimal::add(Decimal, Decimal): Decimal
+	75: StLoc[16](loc13: Decimal)
+	76: MoveLoc[10](loc7: u64)
+	77: LdU64(1)
+	78: Add
+	79: StLoc[10](loc7: u64)
+	80: Branch(11)
+B4:
+	81: MoveLoc[9](loc6: Decimal)
+	82: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	83: MutBorrowFieldGeneric[1](Obligation.deposited_value_usd: Decimal)
+	84: WriteRef
+	85: MoveLoc[3](loc0: Decimal)
+	86: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	87: MutBorrowFieldGeneric[2](Obligation.allowed_borrow_value_usd: Decimal)
+	88: WriteRef
+	89: MoveLoc[16](loc13: Decimal)
+	90: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	91: MutBorrowFieldGeneric[3](Obligation.unhealthy_borrow_value_usd: Decimal)
+	92: WriteRef
+	93: LdU64(0)
+	94: StLoc[11](loc8: u64)
+	95: LdU64(0)
+	96: Call decimal::from(u64): Decimal
+	97: StLoc[17](loc14: Decimal)
+	98: LdU64(0)
+	99: Call decimal::from(u64): Decimal
+	100: StLoc[19](loc16: Decimal)
+	101: LdU64(0)
+	102: Call decimal::from(u64): Decimal
+	103: StLoc[18](loc15: Decimal)
+	104: LdFalse
+	105: StLoc[6](loc3: bool)
+B5:
+	106: CopyLoc[11](loc8: u64)
+	107: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	108: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	109: VecLen(31)
+	110: Lt
+	111: BrFalse(187)
+B6:
+	112: Branch(113)
+B7:
+	113: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	114: MutBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	115: CopyLoc[11](loc8: u64)
+	116: VecMutBorrow(31)
+	117: StLoc[4](loc1: &mut Borrow)
+	118: CopyLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	119: CopyLoc[4](loc1: &mut Borrow)
+	120: ImmBorrowField[8](Borrow.reserve_array_index: u64)
+	121: ReadRef
+	122: VecMutBorrow(35)
+	123: StLoc[5](loc2: &mut Reserve<Ty0>)
+	124: CopyLoc[5](loc2: &mut Reserve<Ty0>)
+	125: CopyLoc[2](Arg2: &Clock)
+	126: Call reserve::compound_interest<Ty0>(&mut Reserve<Ty0>, &Clock)
+	127: CopyLoc[5](loc2: &mut Reserve<Ty0>)
+	128: FreezeRef
+	129: CopyLoc[2](Arg2: &Clock)
+	130: Call reserve::assert_price_is_fresh<Ty0>(&Reserve<Ty0>, &Clock)
+	131: CopyLoc[4](loc1: &mut Borrow)
+	132: CopyLoc[5](loc2: &mut Reserve<Ty0>)
+	133: FreezeRef
+	134: Call compound_debt<Ty0>(&mut Borrow, &Reserve<Ty0>)
+	135: CopyLoc[5](loc2: &mut Reserve<Ty0>)
+	136: FreezeRef
+	137: CopyLoc[4](loc1: &mut Borrow)
+	138: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	139: ReadRef
+	140: Call reserve::market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	141: StLoc[13](loc10: Decimal)
+	142: CopyLoc[5](loc2: &mut Reserve<Ty0>)
+	143: FreezeRef
+	144: CopyLoc[4](loc1: &mut Borrow)
+	145: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	146: ReadRef
+	147: Call reserve::market_value_upper_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	148: StLoc[15](loc12: Decimal)
+	149: CopyLoc[13](loc10: Decimal)
+	150: MoveLoc[4](loc1: &mut Borrow)
+	151: MutBorrowField[10](Borrow.market_value: Decimal)
+	152: WriteRef
+	153: MoveLoc[17](loc14: Decimal)
+	154: CopyLoc[13](loc10: Decimal)
+	155: Call decimal::add(Decimal, Decimal): Decimal
+	156: StLoc[17](loc14: Decimal)
+	157: MoveLoc[19](loc16: Decimal)
+	158: MoveLoc[13](loc10: Decimal)
+	159: CopyLoc[5](loc2: &mut Reserve<Ty0>)
+	160: FreezeRef
+	161: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	162: Call reserve_config::borrow_weight(&ReserveConfig): Decimal
+	163: Call decimal::mul(Decimal, Decimal): Decimal
+	164: Call decimal::add(Decimal, Decimal): Decimal
+	165: StLoc[19](loc16: Decimal)
+	166: MoveLoc[18](loc15: Decimal)
+	167: MoveLoc[15](loc12: Decimal)
+	168: CopyLoc[5](loc2: &mut Reserve<Ty0>)
+	169: FreezeRef
+	170: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	171: Call reserve_config::borrow_weight(&ReserveConfig): Decimal
+	172: Call decimal::mul(Decimal, Decimal): Decimal
+	173: Call decimal::add(Decimal, Decimal): Decimal
+	174: StLoc[18](loc15: Decimal)
+	175: MoveLoc[5](loc2: &mut Reserve<Ty0>)
+	176: FreezeRef
+	177: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	178: Call reserve_config::isolated(&ReserveConfig): bool
+	179: BrFalse(182)
+B8:
+	180: LdTrue
+	181: StLoc[6](loc3: bool)
+B9:
+	182: MoveLoc[11](loc8: u64)
+	183: LdU64(1)
+	184: Add
+	185: StLoc[11](loc8: u64)
+	186: Branch(106)
+B10:
+	187: MoveLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	188: Pop
+	189: MoveLoc[2](Arg2: &Clock)
+	190: Pop
+	191: MoveLoc[17](loc14: Decimal)
+	192: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	193: MutBorrowFieldGeneric[5](Obligation.unweighted_borrowed_value_usd: Decimal)
+	194: WriteRef
+	195: MoveLoc[19](loc16: Decimal)
+	196: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	197: MutBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	198: WriteRef
+	199: MoveLoc[18](loc15: Decimal)
+	200: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	201: MutBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	202: WriteRef
+	203: MoveLoc[6](loc3: bool)
+	204: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	205: MutBorrowFieldGeneric[8](Obligation.borrowing_isolated_asset: bool)
+	206: WriteRef
+	207: Ret
+}
+
+public(friend) deposit<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut Reserve<Ty0>, Arg2: &Clock, Arg3: u64) {
+L4:	loc0: &mut Deposit
+L5:	loc1: u64
+L6:	loc2: Decimal
+L7:	loc3: &mut UserRewardManager
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	2: CopyLoc[2](Arg2: &Clock)
+	3: Call find_or_add_deposit<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock): u64
+	4: StLoc[5](loc1: u64)
+	5: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	6: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	7: VecLen(30)
+	8: LdConst[5](u64: 5)
+	9: Le
+	10: BrFalse(12)
+B1:
+	11: Branch(20)
+B2:
+	12: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	13: Pop
+	14: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	15: Pop
+	16: MoveLoc[2](Arg2: &Clock)
+	17: Pop
+	18: LdConst[5](u64: 5)
+	19: Abort
+B3:
+	20: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	21: FreezeRef
+	22: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	23: FreezeRef
+	24: Call find_borrow_index<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	25: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	26: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	27: VecLen(31)
+	28: Eq
+	29: BrFalse(31)
+B4:
+	30: Branch(39)
+B5:
+	31: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	32: Pop
+	33: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	34: Pop
+	35: MoveLoc[2](Arg2: &Clock)
+	36: Pop
+	37: LdConst[8](u64: 8)
+	38: Abort
+B6:
+	39: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	40: MutBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	41: MoveLoc[5](loc1: u64)
+	42: VecMutBorrow(30)
+	43: StLoc[4](loc0: &mut Deposit)
+	44: CopyLoc[4](loc0: &mut Deposit)
+	45: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	46: ReadRef
+	47: CopyLoc[3](Arg3: u64)
+	48: Add
+	49: CopyLoc[4](loc0: &mut Deposit)
+	50: MutBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	51: WriteRef
+	52: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	53: FreezeRef
+	54: CopyLoc[3](Arg3: u64)
+	55: Call reserve::ctoken_market_value<Ty0>(&Reserve<Ty0>, u64): Decimal
+	56: StLoc[6](loc2: Decimal)
+	57: CopyLoc[4](loc0: &mut Deposit)
+	58: ImmBorrowField[3](Deposit.market_value: Decimal)
+	59: ReadRef
+	60: CopyLoc[6](loc2: Decimal)
+	61: Call decimal::add(Decimal, Decimal): Decimal
+	62: CopyLoc[4](loc0: &mut Deposit)
+	63: MutBorrowField[3](Deposit.market_value: Decimal)
+	64: WriteRef
+	65: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	66: ImmBorrowFieldGeneric[1](Obligation.deposited_value_usd: Decimal)
+	67: ReadRef
+	68: CopyLoc[6](loc2: Decimal)
+	69: Call decimal::add(Decimal, Decimal): Decimal
+	70: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	71: MutBorrowFieldGeneric[1](Obligation.deposited_value_usd: Decimal)
+	72: WriteRef
+	73: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	74: ImmBorrowFieldGeneric[2](Obligation.allowed_borrow_value_usd: Decimal)
+	75: ReadRef
+	76: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	77: FreezeRef
+	78: MoveLoc[3](Arg3: u64)
+	79: Call reserve::ctoken_market_value_lower_bound<Ty0>(&Reserve<Ty0>, u64): Decimal
+	80: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	81: FreezeRef
+	82: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	83: Call reserve_config::open_ltv(&ReserveConfig): Decimal
+	84: Call decimal::mul(Decimal, Decimal): Decimal
+	85: Call decimal::add(Decimal, Decimal): Decimal
+	86: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	87: MutBorrowFieldGeneric[2](Obligation.allowed_borrow_value_usd: Decimal)
+	88: WriteRef
+	89: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	90: ImmBorrowFieldGeneric[3](Obligation.unhealthy_borrow_value_usd: Decimal)
+	91: ReadRef
+	92: MoveLoc[6](loc2: Decimal)
+	93: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	94: FreezeRef
+	95: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	96: Call reserve_config::close_ltv(&ReserveConfig): Decimal
+	97: Call decimal::mul(Decimal, Decimal): Decimal
+	98: Call decimal::add(Decimal, Decimal): Decimal
+	99: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	100: MutBorrowFieldGeneric[3](Obligation.unhealthy_borrow_value_usd: Decimal)
+	101: WriteRef
+	102: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	103: MutBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	104: CopyLoc[4](loc0: &mut Deposit)
+	105: ImmBorrowField[16](Deposit.user_reward_manager_index: u64)
+	106: ReadRef
+	107: VecMutBorrow(32)
+	108: StLoc[7](loc3: &mut UserRewardManager)
+	109: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	110: Call reserve::deposits_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	111: MoveLoc[7](loc3: &mut UserRewardManager)
+	112: MoveLoc[4](loc0: &mut Deposit)
+	113: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	114: ReadRef
+	115: MoveLoc[2](Arg2: &Clock)
+	116: Call liquidity_mining::change_user_reward_manager_share(&mut PoolRewardManager, &mut UserRewardManager, u64, &Clock)
+	117: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	118: FreezeRef
+	119: Call log_obligation_data<Ty0>(&Obligation<Ty0>)
+	120: Ret
+}
+
+public(friend) borrow<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut Reserve<Ty0>, Arg2: &Clock, Arg3: u64) {
+L4:	loc0: bool
+L5:	loc1: &mut Borrow
+L6:	loc2: u64
+L7:	loc3: Decimal
+L8:	loc4: Decimal
+L9:	loc5: &mut UserRewardManager
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	2: CopyLoc[2](Arg2: &Clock)
+	3: Call find_or_add_borrow<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock): u64
+	4: StLoc[6](loc2: u64)
+	5: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	6: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	7: VecLen(31)
+	8: LdConst[5](u64: 5)
+	9: Le
+	10: BrFalse(12)
+B1:
+	11: Branch(20)
+B2:
+	12: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	13: Pop
+	14: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	15: Pop
+	16: MoveLoc[2](Arg2: &Clock)
+	17: Pop
+	18: LdConst[6](u64: 6)
+	19: Abort
+B3:
+	20: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	21: FreezeRef
+	22: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	23: FreezeRef
+	24: Call find_deposit_index<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	25: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	26: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	27: VecLen(30)
+	28: Eq
+	29: BrFalse(31)
+B4:
+	30: Branch(39)
+B5:
+	31: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	32: Pop
+	33: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	34: Pop
+	35: MoveLoc[2](Arg2: &Clock)
+	36: Pop
+	37: LdConst[8](u64: 8)
+	38: Abort
+B6:
+	39: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	40: MutBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	41: MoveLoc[6](loc2: u64)
+	42: VecMutBorrow(31)
+	43: StLoc[5](loc1: &mut Borrow)
+	44: CopyLoc[5](loc1: &mut Borrow)
+	45: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	46: ReadRef
+	47: CopyLoc[3](Arg3: u64)
+	48: Call decimal::from(u64): Decimal
+	49: Call decimal::add(Decimal, Decimal): Decimal
+	50: CopyLoc[5](loc1: &mut Borrow)
+	51: MutBorrowField[9](Borrow.borrowed_amount: Decimal)
+	52: WriteRef
+	53: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	54: FreezeRef
+	55: CopyLoc[3](Arg3: u64)
+	56: Call decimal::from(u64): Decimal
+	57: Call reserve::market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	58: StLoc[7](loc3: Decimal)
+	59: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	60: FreezeRef
+	61: MoveLoc[3](Arg3: u64)
+	62: Call decimal::from(u64): Decimal
+	63: Call reserve::market_value_upper_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	64: StLoc[8](loc4: Decimal)
+	65: CopyLoc[5](loc1: &mut Borrow)
+	66: ImmBorrowField[10](Borrow.market_value: Decimal)
+	67: ReadRef
+	68: CopyLoc[7](loc3: Decimal)
+	69: Call decimal::add(Decimal, Decimal): Decimal
+	70: CopyLoc[5](loc1: &mut Borrow)
+	71: MutBorrowField[10](Borrow.market_value: Decimal)
+	72: WriteRef
+	73: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	74: ImmBorrowFieldGeneric[5](Obligation.unweighted_borrowed_value_usd: Decimal)
+	75: ReadRef
+	76: CopyLoc[7](loc3: Decimal)
+	77: Call decimal::add(Decimal, Decimal): Decimal
+	78: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	79: MutBorrowFieldGeneric[5](Obligation.unweighted_borrowed_value_usd: Decimal)
+	80: WriteRef
+	81: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	82: ImmBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	83: ReadRef
+	84: MoveLoc[7](loc3: Decimal)
+	85: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	86: FreezeRef
+	87: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	88: Call reserve_config::borrow_weight(&ReserveConfig): Decimal
+	89: Call decimal::mul(Decimal, Decimal): Decimal
+	90: Call decimal::add(Decimal, Decimal): Decimal
+	91: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	92: MutBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	93: WriteRef
+	94: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	95: ImmBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	96: ReadRef
+	97: MoveLoc[8](loc4: Decimal)
+	98: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	99: FreezeRef
+	100: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	101: Call reserve_config::borrow_weight(&ReserveConfig): Decimal
+	102: Call decimal::mul(Decimal, Decimal): Decimal
+	103: Call decimal::add(Decimal, Decimal): Decimal
+	104: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	105: MutBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	106: WriteRef
+	107: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	108: MutBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	109: CopyLoc[5](loc1: &mut Borrow)
+	110: ImmBorrowField[17](Borrow.user_reward_manager_index: u64)
+	111: ReadRef
+	112: VecMutBorrow(32)
+	113: StLoc[9](loc5: &mut UserRewardManager)
+	114: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	115: Call reserve::borrows_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	116: MoveLoc[9](loc5: &mut UserRewardManager)
+	117: MoveLoc[5](loc1: &mut Borrow)
+	118: FreezeRef
+	119: Call liability_shares(&Borrow): u64
+	120: MoveLoc[2](Arg2: &Clock)
+	121: Call liquidity_mining::change_user_reward_manager_share(&mut PoolRewardManager, &mut UserRewardManager, u64, &Clock)
+	122: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	123: FreezeRef
+	124: Call is_healthy<Ty0>(&Obligation<Ty0>): bool
+	125: BrFalse(127)
+B7:
+	126: Branch(133)
+B8:
+	127: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	128: Pop
+	129: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	130: Pop
+	131: LdConst[1](u64: 1)
+	132: Abort
+B9:
+	133: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	134: FreezeRef
+	135: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	136: Call reserve_config::isolated(&ReserveConfig): bool
+	137: BrFalse(141)
+B10:
+	138: LdTrue
+	139: StLoc[4](loc0: bool)
+	140: Branch(145)
+B11:
+	141: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	142: ImmBorrowFieldGeneric[8](Obligation.borrowing_isolated_asset: bool)
+	143: ReadRef
+	144: StLoc[4](loc0: bool)
+B12:
+	145: MoveLoc[4](loc0: bool)
+	146: BrFalse(158)
+B13:
+	147: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	148: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	149: VecLen(31)
+	150: LdU64(1)
+	151: Eq
+	152: BrFalse(154)
+B14:
+	153: Branch(158)
+B15:
+	154: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	155: Pop
+	156: LdConst[4](u64: 4)
+	157: Abort
+B16:
+	158: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	159: FreezeRef
+	160: Call log_obligation_data<Ty0>(&Obligation<Ty0>)
+	161: Ret
+}
+
+public(friend) repay<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut Reserve<Ty0>, Arg2: &Clock, Arg3: Decimal): Decimal {
+L4:	loc0: Decimal
+L5:	loc1: Decimal
+L6:	loc2: Decimal
+L7:	loc3: &mut Borrow
+L8:	loc4: u64
+L9:	loc5: Decimal
+L10:	loc6: Decimal
+L11:	loc7: Decimal
+L12:	loc8: Decimal
+L13:	loc9: Decimal
+L14:	loc10: Decimal
+L15:	loc11: &mut UserRewardManager
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: FreezeRef
+	2: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	3: FreezeRef
+	4: Call find_borrow_index<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	5: StLoc[8](loc4: u64)
+	6: CopyLoc[8](loc4: u64)
+	7: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	8: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	9: VecLen(31)
+	10: Lt
+	11: BrFalse(13)
+B1:
+	12: Branch(21)
+B2:
+	13: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	14: Pop
+	15: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	16: Pop
+	17: MoveLoc[2](Arg2: &Clock)
+	18: Pop
+	19: LdConst[2](u64: 2)
+	20: Abort
+B3:
+	21: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	22: MutBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	23: CopyLoc[8](loc4: u64)
+	24: VecMutBorrow(31)
+	25: StLoc[7](loc3: &mut Borrow)
+	26: CopyLoc[7](loc3: &mut Borrow)
+	27: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	28: ReadRef
+	29: StLoc[11](loc7: Decimal)
+	30: CopyLoc[7](loc3: &mut Borrow)
+	31: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	32: FreezeRef
+	33: Call compound_debt<Ty0>(&mut Borrow, &Reserve<Ty0>)
+	34: MoveLoc[3](Arg3: Decimal)
+	35: CopyLoc[7](loc3: &mut Borrow)
+	36: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	37: ReadRef
+	38: Call decimal::min(Decimal, Decimal): Decimal
+	39: StLoc[12](loc8: Decimal)
+	40: CopyLoc[7](loc3: &mut Borrow)
+	41: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	42: ReadRef
+	43: MoveLoc[11](loc7: Decimal)
+	44: Call decimal::sub(Decimal, Decimal): Decimal
+	45: StLoc[10](loc6: Decimal)
+	46: CopyLoc[7](loc3: &mut Borrow)
+	47: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	48: ReadRef
+	49: CopyLoc[12](loc8: Decimal)
+	50: Call decimal::sub(Decimal, Decimal): Decimal
+	51: CopyLoc[7](loc3: &mut Borrow)
+	52: MutBorrowField[9](Borrow.borrowed_amount: Decimal)
+	53: WriteRef
+	54: CopyLoc[10](loc6: Decimal)
+	55: CopyLoc[12](loc8: Decimal)
+	56: Call decimal::le(Decimal, Decimal): bool
+	57: BrFalse(115)
+B4:
+	58: CopyLoc[12](loc8: Decimal)
+	59: MoveLoc[10](loc6: Decimal)
+	60: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	61: StLoc[9](loc5: Decimal)
+	62: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	63: FreezeRef
+	64: CopyLoc[9](loc5: Decimal)
+	65: Call reserve::market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	66: StLoc[13](loc9: Decimal)
+	67: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	68: FreezeRef
+	69: MoveLoc[9](loc5: Decimal)
+	70: Call reserve::market_value_upper_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	71: StLoc[14](loc10: Decimal)
+	72: CopyLoc[7](loc3: &mut Borrow)
+	73: ImmBorrowField[10](Borrow.market_value: Decimal)
+	74: ReadRef
+	75: CopyLoc[13](loc9: Decimal)
+	76: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	77: CopyLoc[7](loc3: &mut Borrow)
+	78: MutBorrowField[10](Borrow.market_value: Decimal)
+	79: WriteRef
+	80: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	81: ImmBorrowFieldGeneric[5](Obligation.unweighted_borrowed_value_usd: Decimal)
+	82: ReadRef
+	83: CopyLoc[13](loc9: Decimal)
+	84: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	85: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	86: MutBorrowFieldGeneric[5](Obligation.unweighted_borrowed_value_usd: Decimal)
+	87: WriteRef
+	88: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	89: ImmBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	90: ReadRef
+	91: MoveLoc[13](loc9: Decimal)
+	92: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	93: FreezeRef
+	94: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	95: Call reserve_config::borrow_weight(&ReserveConfig): Decimal
+	96: Call decimal::mul(Decimal, Decimal): Decimal
+	97: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	98: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	99: MutBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	100: WriteRef
+	101: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	102: ImmBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	103: ReadRef
+	104: MoveLoc[14](loc10: Decimal)
+	105: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	106: FreezeRef
+	107: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	108: Call reserve_config::borrow_weight(&ReserveConfig): Decimal
+	109: Call decimal::mul(Decimal, Decimal): Decimal
+	110: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	111: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	112: MutBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	113: WriteRef
+	114: Branch(171)
+B5:
+	115: MoveLoc[10](loc6: Decimal)
+	116: CopyLoc[12](loc8: Decimal)
+	117: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	118: StLoc[4](loc0: Decimal)
+	119: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	120: FreezeRef
+	121: CopyLoc[4](loc0: Decimal)
+	122: Call reserve::market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	123: StLoc[5](loc1: Decimal)
+	124: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	125: FreezeRef
+	126: MoveLoc[4](loc0: Decimal)
+	127: Call reserve::market_value_upper_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	128: StLoc[6](loc2: Decimal)
+	129: CopyLoc[7](loc3: &mut Borrow)
+	130: ImmBorrowField[10](Borrow.market_value: Decimal)
+	131: ReadRef
+	132: CopyLoc[5](loc1: Decimal)
+	133: Call decimal::add(Decimal, Decimal): Decimal
+	134: CopyLoc[7](loc3: &mut Borrow)
+	135: MutBorrowField[10](Borrow.market_value: Decimal)
+	136: WriteRef
+	137: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	138: ImmBorrowFieldGeneric[5](Obligation.unweighted_borrowed_value_usd: Decimal)
+	139: ReadRef
+	140: CopyLoc[5](loc1: Decimal)
+	141: Call decimal::add(Decimal, Decimal): Decimal
+	142: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	143: MutBorrowFieldGeneric[5](Obligation.unweighted_borrowed_value_usd: Decimal)
+	144: WriteRef
+	145: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	146: ImmBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	147: ReadRef
+	148: MoveLoc[5](loc1: Decimal)
+	149: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	150: FreezeRef
+	151: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	152: Call reserve_config::borrow_weight(&ReserveConfig): Decimal
+	153: Call decimal::mul(Decimal, Decimal): Decimal
+	154: Call decimal::add(Decimal, Decimal): Decimal
+	155: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	156: MutBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	157: WriteRef
+	158: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	159: ImmBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	160: ReadRef
+	161: MoveLoc[6](loc2: Decimal)
+	162: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	163: FreezeRef
+	164: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	165: Call reserve_config::borrow_weight(&ReserveConfig): Decimal
+	166: Call decimal::mul(Decimal, Decimal): Decimal
+	167: Call decimal::add(Decimal, Decimal): Decimal
+	168: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	169: MutBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	170: WriteRef
+B6:
+	171: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	172: MutBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	173: CopyLoc[7](loc3: &mut Borrow)
+	174: ImmBorrowField[17](Borrow.user_reward_manager_index: u64)
+	175: ReadRef
+	176: VecMutBorrow(32)
+	177: StLoc[15](loc11: &mut UserRewardManager)
+	178: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	179: Call reserve::borrows_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	180: MoveLoc[15](loc11: &mut UserRewardManager)
+	181: CopyLoc[7](loc3: &mut Borrow)
+	182: FreezeRef
+	183: Call liability_shares(&Borrow): u64
+	184: MoveLoc[2](Arg2: &Clock)
+	185: Call liquidity_mining::change_user_reward_manager_share(&mut PoolRewardManager, &mut UserRewardManager, u64, &Clock)
+	186: MoveLoc[7](loc3: &mut Borrow)
+	187: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	188: ReadRef
+	189: LdU64(0)
+	190: Call decimal::from(u64): Decimal
+	191: Call decimal::eq(Decimal, Decimal): bool
+	192: BrFalse(204)
+B7:
+	193: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	194: MutBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	195: MoveLoc[8](loc4: u64)
+	196: Call vector::remove<Borrow>(&mut vector<Borrow>, u64): Borrow
+	197: Unpack[2](Borrow)
+	198: Pop
+	199: Pop
+	200: Pop
+	201: Pop
+	202: Pop
+	203: Pop
+B8:
+	204: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	205: FreezeRef
+	206: Call log_obligation_data<Ty0>(&Obligation<Ty0>)
+	207: MoveLoc[12](loc8: Decimal)
+	208: Ret
+}
+
+public(friend) withdraw<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut Reserve<Ty0>, Arg2: &Clock, Arg3: u64) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	2: MoveLoc[2](Arg2: &Clock)
+	3: MoveLoc[3](Arg3: u64)
+	4: Call withdraw_unchecked<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock, u64)
+	5: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	6: FreezeRef
+	7: Call is_healthy<Ty0>(&Obligation<Ty0>): bool
+	8: BrFalse(10)
+B1:
+	9: Branch(14)
+B2:
+	10: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	11: Pop
+	12: LdConst[1](u64: 1)
+	13: Abort
+B3:
+	14: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	15: FreezeRef
+	16: Call log_obligation_data<Ty0>(&Obligation<Ty0>)
+	17: Ret
+}
+
+public(friend) liquidate<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut vector<Reserve<Ty0>>, Arg2: u64, Arg3: u64, Arg4: &Clock, Arg5: u64): u64 * Decimal {
+L6:	loc0: Decimal
+L7:	loc1: Decimal
+L8:	loc2: &Borrow
+L9:	loc3: &Deposit
+L10:	loc4: Decimal
+L11:	loc5: u64
+L12:	loc6: Decimal
+L13:	loc7: Decimal
+L14:	loc8: &Reserve<Ty0>
+L15:	loc9: Decimal
+L16:	loc10: Decimal
+L17:	loc11: &Reserve<Ty0>
+L18:	loc12: Decimal
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: FreezeRef
+	2: Call is_liquidatable<Ty0>(&Obligation<Ty0>): bool
+	3: BrFalse(5)
+B1:
+	4: Branch(13)
+B2:
+	5: MoveLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	6: Pop
+	7: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	8: Pop
+	9: MoveLoc[4](Arg4: &Clock)
+	10: Pop
+	11: LdConst[0](u64: 0)
+	12: Abort
+B3:
+	13: CopyLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	14: FreezeRef
+	15: CopyLoc[2](Arg2: u64)
+	16: VecImmBorrow(35)
+	17: StLoc[14](loc8: &Reserve<Ty0>)
+	18: CopyLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	19: FreezeRef
+	20: CopyLoc[3](Arg3: u64)
+	21: VecImmBorrow(35)
+	22: StLoc[17](loc11: &Reserve<Ty0>)
+	23: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	24: FreezeRef
+	25: CopyLoc[14](loc8: &Reserve<Ty0>)
+	26: Call find_borrow<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): &Borrow
+	27: StLoc[8](loc2: &Borrow)
+	28: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	29: FreezeRef
+	30: CopyLoc[17](loc11: &Reserve<Ty0>)
+	31: Call find_deposit<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): &Deposit
+	32: StLoc[9](loc3: &Deposit)
+	33: CopyLoc[8](loc2: &Borrow)
+	34: ImmBorrowField[10](Borrow.market_value: Decimal)
+	35: ReadRef
+	36: LdU64(1)
+	37: Call decimal::from(u64): Decimal
+	38: Call decimal::le(Decimal, Decimal): bool
+	39: BrFalse(48)
+B4:
+	40: MoveLoc[8](loc2: &Borrow)
+	41: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	42: ReadRef
+	43: MoveLoc[5](Arg5: u64)
+	44: Call decimal::from(u64): Decimal
+	45: Call decimal::min(Decimal, Decimal): Decimal
+	46: StLoc[6](loc0: Decimal)
+	47: Branch(70)
+B5:
+	48: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	49: ImmBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	50: ReadRef
+	51: LdConst[9](u8: 20)
+	52: Call decimal::from_percent(u8): Decimal
+	53: Call decimal::mul(Decimal, Decimal): Decimal
+	54: CopyLoc[8](loc2: &Borrow)
+	55: ImmBorrowField[10](Borrow.market_value: Decimal)
+	56: ReadRef
+	57: Call decimal::min(Decimal, Decimal): Decimal
+	58: CopyLoc[8](loc2: &Borrow)
+	59: ImmBorrowField[10](Borrow.market_value: Decimal)
+	60: ReadRef
+	61: Call decimal::div(Decimal, Decimal): Decimal
+	62: MoveLoc[8](loc2: &Borrow)
+	63: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	64: ReadRef
+	65: Call decimal::mul(Decimal, Decimal): Decimal
+	66: MoveLoc[5](Arg5: u64)
+	67: Call decimal::from(u64): Decimal
+	68: Call decimal::min(Decimal, Decimal): Decimal
+	69: StLoc[6](loc0: Decimal)
+B6:
+	70: MoveLoc[6](loc0: Decimal)
+	71: StLoc[12](loc6: Decimal)
+	72: MoveLoc[14](loc8: &Reserve<Ty0>)
+	73: CopyLoc[12](loc6: Decimal)
+	74: Call reserve::market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	75: StLoc[15](loc9: Decimal)
+	76: CopyLoc[17](loc11: &Reserve<Ty0>)
+	77: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	78: Call reserve_config::liquidation_bonus(&ReserveConfig): Decimal
+	79: MoveLoc[17](loc11: &Reserve<Ty0>)
+	80: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	81: Call reserve_config::protocol_liquidation_fee(&ReserveConfig): Decimal
+	82: Call decimal::add(Decimal, Decimal): Decimal
+	83: StLoc[7](loc1: Decimal)
+	84: MoveLoc[15](loc9: Decimal)
+	85: LdU64(1)
+	86: Call decimal::from(u64): Decimal
+	87: MoveLoc[7](loc1: Decimal)
+	88: Call decimal::add(Decimal, Decimal): Decimal
+	89: Call decimal::mul(Decimal, Decimal): Decimal
+	90: StLoc[18](loc12: Decimal)
+	91: CopyLoc[9](loc3: &Deposit)
+	92: ImmBorrowField[3](Deposit.market_value: Decimal)
+	93: ReadRef
+	94: CopyLoc[18](loc12: Decimal)
+	95: Call decimal::lt(Decimal, Decimal): bool
+	96: BrFalse(112)
+B7:
+	97: CopyLoc[9](loc3: &Deposit)
+	98: ImmBorrowField[3](Deposit.market_value: Decimal)
+	99: ReadRef
+	100: MoveLoc[18](loc12: Decimal)
+	101: Call decimal::div(Decimal, Decimal): Decimal
+	102: StLoc[13](loc7: Decimal)
+	103: MoveLoc[12](loc6: Decimal)
+	104: MoveLoc[13](loc7: Decimal)
+	105: Call decimal::mul(Decimal, Decimal): Decimal
+	106: StLoc[10](loc4: Decimal)
+	107: MoveLoc[9](loc3: &Deposit)
+	108: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	109: ReadRef
+	110: StLoc[11](loc5: u64)
+	111: Branch(128)
+B8:
+	112: MoveLoc[18](loc12: Decimal)
+	113: CopyLoc[9](loc3: &Deposit)
+	114: ImmBorrowField[3](Deposit.market_value: Decimal)
+	115: ReadRef
+	116: Call decimal::div(Decimal, Decimal): Decimal
+	117: StLoc[16](loc10: Decimal)
+	118: MoveLoc[12](loc6: Decimal)
+	119: StLoc[10](loc4: Decimal)
+	120: MoveLoc[9](loc3: &Deposit)
+	121: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	122: ReadRef
+	123: Call decimal::from(u64): Decimal
+	124: MoveLoc[16](loc10: Decimal)
+	125: Call decimal::mul(Decimal, Decimal): Decimal
+	126: Call decimal::floor(Decimal): u64
+	127: StLoc[11](loc5: u64)
+B9:
+	128: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	129: CopyLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	130: MoveLoc[2](Arg2: u64)
+	131: VecMutBorrow(35)
+	132: CopyLoc[4](Arg4: &Clock)
+	133: CopyLoc[10](loc4: Decimal)
+	134: Call repay<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock, Decimal): Decimal
+	135: Pop
+	136: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	137: MoveLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	138: MoveLoc[3](Arg3: u64)
+	139: VecMutBorrow(35)
+	140: MoveLoc[4](Arg4: &Clock)
+	141: CopyLoc[11](loc5: u64)
+	142: Call withdraw_unchecked<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock, u64)
+	143: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	144: FreezeRef
+	145: Call log_obligation_data<Ty0>(&Obligation<Ty0>)
+	146: MoveLoc[11](loc5: u64)
+	147: MoveLoc[10](loc4: Decimal)
+	148: Ret
+}
+
+public(friend) forgive<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut Reserve<Ty0>, Arg2: &Clock, Arg3: Decimal): Decimal {
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: FreezeRef
+	2: Call is_forgivable<Ty0>(&Obligation<Ty0>): bool
+	3: BrFalse(5)
+B1:
+	4: Branch(13)
+B2:
+	5: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	6: Pop
+	7: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	8: Pop
+	9: MoveLoc[2](Arg2: &Clock)
+	10: Pop
+	11: LdConst[7](u64: 7)
+	12: Abort
+B3:
+	13: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	14: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	15: MoveLoc[2](Arg2: &Clock)
+	16: MoveLoc[3](Arg3: Decimal)
+	17: Call repay<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock, Decimal): Decimal
+	18: Ret
+}
+
+public(friend) claim_rewards<Ty0, Ty1>(Arg0: &mut Obligation<Ty0>, Arg1: &mut PoolRewardManager, Arg2: &Clock, Arg3: u64): Balance<Ty1> {
+L4:	loc0: &mut UserRewardManager
+L5:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: FreezeRef
+	2: CopyLoc[1](Arg1: &mut PoolRewardManager)
+	3: FreezeRef
+	4: Call find_user_reward_manager_index<Ty0>(&Obligation<Ty0>, &PoolRewardManager): u64
+	5: StLoc[5](loc1: u64)
+	6: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	7: MutBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	8: MoveLoc[5](loc1: u64)
+	9: VecMutBorrow(32)
+	10: StLoc[4](loc0: &mut UserRewardManager)
+	11: MoveLoc[1](Arg1: &mut PoolRewardManager)
+	12: MoveLoc[4](loc0: &mut UserRewardManager)
+	13: MoveLoc[2](Arg2: &Clock)
+	14: MoveLoc[3](Arg3: u64)
+	15: Call liquidity_mining::claim_rewards<Ty1>(&mut PoolRewardManager, &mut UserRewardManager, &Clock, u64): Balance<Ty1>
+	16: Ret
+}
+
+public deposits<Ty0>(Arg0: &Obligation<Ty0>): &vector<Deposit> {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	2: Ret
+}
+
+public borrows<Ty0>(Arg0: &Obligation<Ty0>): &vector<Borrow> {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	2: Ret
+}
+
+public deposited_value_usd<Ty0>(Arg0: &Obligation<Ty0>): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[1](Obligation.deposited_value_usd: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public allowed_borrow_value_usd<Ty0>(Arg0: &Obligation<Ty0>): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[2](Obligation.allowed_borrow_value_usd: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public unhealthy_borrow_value_usd<Ty0>(Arg0: &Obligation<Ty0>): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[3](Obligation.unhealthy_borrow_value_usd: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public unweighted_borrowed_value_usd<Ty0>(Arg0: &Obligation<Ty0>): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[5](Obligation.unweighted_borrowed_value_usd: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public weighted_borrowed_value_usd<Ty0>(Arg0: &Obligation<Ty0>): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public weighted_borrowed_value_upper_bound_usd<Ty0>(Arg0: &Obligation<Ty0>): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public borrowing_isolated_asset<Ty0>(Arg0: &Obligation<Ty0>): bool {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[8](Obligation.borrowing_isolated_asset: bool)
+	2: ReadRef
+	3: Ret
+}
+
+public user_reward_managers<Ty0>(Arg0: &Obligation<Ty0>): &vector<UserRewardManager> {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	2: Ret
+}
+
+public deposit_coin_type(Arg0: &Deposit): TypeName {
+B0:
+	0: MoveLoc[0](Arg0: &Deposit)
+	1: ImmBorrowField[18](Deposit.coin_type: TypeName)
+	2: ReadRef
+	3: Ret
+}
+
+public deposit_reserve_array_index(Arg0: &Deposit): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Deposit)
+	1: ImmBorrowField[1](Deposit.reserve_array_index: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public deposit_deposited_ctoken_amount(Arg0: &Deposit): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Deposit)
+	1: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public deposit_market_value(Arg0: &Deposit): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Deposit)
+	1: ImmBorrowField[3](Deposit.market_value: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public deposit_user_reward_manager_index(Arg0: &Deposit): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Deposit)
+	1: ImmBorrowField[16](Deposit.user_reward_manager_index: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public borrow_coin_type(Arg0: &Borrow): TypeName {
+B0:
+	0: MoveLoc[0](Arg0: &Borrow)
+	1: ImmBorrowField[19](Borrow.coin_type: TypeName)
+	2: ReadRef
+	3: Ret
+}
+
+public borrow_reserve_array_index(Arg0: &Borrow): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Borrow)
+	1: ImmBorrowField[8](Borrow.reserve_array_index: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public borrow_borrowed_amount(Arg0: &Borrow): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Borrow)
+	1: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public borrow_cumulative_borrow_rate(Arg0: &Borrow): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Borrow)
+	1: ImmBorrowField[20](Borrow.cumulative_borrow_rate: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public borrow_market_value(Arg0: &Borrow): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Borrow)
+	1: ImmBorrowField[10](Borrow.market_value: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public borrow_user_reward_manager_index(Arg0: &Borrow): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Borrow)
+	1: ImmBorrowField[17](Borrow.user_reward_manager_index: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public deposited_ctoken_amount<Ty0, Ty1>(Arg0: &Obligation<Ty0>): u64 {
+L1:	loc0: &Deposit
+L2:	loc1: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[2](loc1: u64)
+B1:
+	2: CopyLoc[2](loc1: u64)
+	3: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	4: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	5: VecLen(30)
+	6: Lt
+	7: BrFalse(33)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	10: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	11: CopyLoc[2](loc1: u64)
+	12: VecImmBorrow(30)
+	13: StLoc[1](loc0: &Deposit)
+	14: CopyLoc[1](loc0: &Deposit)
+	15: ImmBorrowField[18](Deposit.coin_type: TypeName)
+	16: ReadRef
+	17: Call type_name::get<Ty1>(): TypeName
+	18: Eq
+	19: BrFalse(26)
+B4:
+	20: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	21: Pop
+	22: MoveLoc[1](loc0: &Deposit)
+	23: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	24: ReadRef
+	25: Ret
+B5:
+	26: MoveLoc[1](loc0: &Deposit)
+	27: Pop
+	28: MoveLoc[2](loc1: u64)
+	29: LdU64(1)
+	30: Add
+	31: StLoc[2](loc1: u64)
+	32: Branch(2)
+B6:
+	33: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	34: Pop
+	35: LdU64(0)
+	36: Ret
+}
+
+public borrowed_amount<Ty0, Ty1>(Arg0: &Obligation<Ty0>): Decimal {
+L1:	loc0: &Borrow
+L2:	loc1: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[2](loc1: u64)
+B1:
+	2: CopyLoc[2](loc1: u64)
+	3: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	4: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	5: VecLen(31)
+	6: Lt
+	7: BrFalse(33)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	10: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	11: CopyLoc[2](loc1: u64)
+	12: VecImmBorrow(31)
+	13: StLoc[1](loc0: &Borrow)
+	14: CopyLoc[1](loc0: &Borrow)
+	15: ImmBorrowField[19](Borrow.coin_type: TypeName)
+	16: ReadRef
+	17: Call type_name::get<Ty1>(): TypeName
+	18: Eq
+	19: BrFalse(26)
+B4:
+	20: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	21: Pop
+	22: MoveLoc[1](loc0: &Borrow)
+	23: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	24: ReadRef
+	25: Ret
+B5:
+	26: MoveLoc[1](loc0: &Borrow)
+	27: Pop
+	28: MoveLoc[2](loc1: u64)
+	29: LdU64(1)
+	30: Add
+	31: StLoc[2](loc1: u64)
+	32: Branch(2)
+B6:
+	33: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	34: Pop
+	35: LdU64(0)
+	36: Call decimal::from(u64): Decimal
+	37: Ret
+}
+
+public is_healthy<Ty0>(Arg0: &Obligation<Ty0>): bool {
+B0:
+	0: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	4: ImmBorrowFieldGeneric[2](Obligation.allowed_borrow_value_usd: Decimal)
+	5: ReadRef
+	6: Call decimal::le(Decimal, Decimal): bool
+	7: Ret
+}
+
+public is_liquidatable<Ty0>(Arg0: &Obligation<Ty0>): bool {
+B0:
+	0: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	4: ImmBorrowFieldGeneric[3](Obligation.unhealthy_borrow_value_usd: Decimal)
+	5: ReadRef
+	6: Call decimal::gt(Decimal, Decimal): bool
+	7: Ret
+}
+
+public is_forgivable<Ty0>(Arg0: &Obligation<Ty0>): bool {
+B0:
+	0: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	2: VecLen(30)
+	3: LdU64(0)
+	4: Eq
+	5: Ret
+}
+
+public(friend) max_borrow_amount<Ty0>(Arg0: &Obligation<Ty0>, Arg1: &Reserve<Ty0>): u64 {
+B0:
+	0: CopyLoc[1](Arg1: &Reserve<Ty0>)
+	1: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	2: ImmBorrowFieldGeneric[2](Obligation.allowed_borrow_value_usd: Decimal)
+	3: ReadRef
+	4: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	5: ImmBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	6: ReadRef
+	7: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	8: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	9: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	10: Call reserve_config::borrow_weight(&ReserveConfig): Decimal
+	11: Call decimal::div(Decimal, Decimal): Decimal
+	12: Call reserve::usd_to_token_amount_lower_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	13: Call decimal::floor(Decimal): u64
+	14: Ret
+}
+
+public(friend) max_withdraw_amount<Ty0>(Arg0: &Obligation<Ty0>, Arg1: &Reserve<Ty0>): u64 {
+L2:	loc0: bool
+L3:	loc1: &Deposit
+L4:	loc2: u64
+L5:	loc3: Decimal
+L6:	loc4: Decimal
+B0:
+	0: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	1: CopyLoc[1](Arg1: &Reserve<Ty0>)
+	2: Call find_deposit_index<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	3: StLoc[4](loc2: u64)
+	4: CopyLoc[4](loc2: u64)
+	5: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	6: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	7: VecLen(30)
+	8: Lt
+	9: BrFalse(11)
+B1:
+	10: Branch(17)
+B2:
+	11: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	12: Pop
+	13: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	14: Pop
+	15: LdConst[3](u64: 3)
+	16: Abort
+B3:
+	17: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	18: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	19: MoveLoc[4](loc2: u64)
+	20: VecImmBorrow(30)
+	21: StLoc[3](loc1: &Deposit)
+	22: CopyLoc[1](Arg1: &Reserve<Ty0>)
+	23: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	24: Call reserve_config::open_ltv(&ReserveConfig): Decimal
+	25: LdU64(0)
+	26: Call decimal::from(u64): Decimal
+	27: Eq
+	28: BrFalse(32)
+B4:
+	29: LdTrue
+	30: StLoc[2](loc0: bool)
+	31: Branch(38)
+B5:
+	32: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	33: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	34: VecLen(31)
+	35: LdU64(0)
+	36: Eq
+	37: StLoc[2](loc0: bool)
+B6:
+	38: MoveLoc[2](loc0: bool)
+	39: BrFalse(48)
+B7:
+	40: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	41: Pop
+	42: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	43: Pop
+	44: MoveLoc[3](loc1: &Deposit)
+	45: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	46: ReadRef
+	47: Ret
+B8:
+	48: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	49: ImmBorrowFieldGeneric[2](Obligation.allowed_borrow_value_usd: Decimal)
+	50: ReadRef
+	51: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	52: ImmBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	53: ReadRef
+	54: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	55: CopyLoc[1](Arg1: &Reserve<Ty0>)
+	56: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	57: Call reserve_config::open_ltv(&ReserveConfig): Decimal
+	58: Call decimal::div(Decimal, Decimal): Decimal
+	59: StLoc[6](loc4: Decimal)
+	60: CopyLoc[1](Arg1: &Reserve<Ty0>)
+	61: MoveLoc[6](loc4: Decimal)
+	62: Call reserve::usd_to_token_amount_upper_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	63: StLoc[5](loc3: Decimal)
+	64: MoveLoc[3](loc1: &Deposit)
+	65: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	66: ReadRef
+	67: Call decimal::from(u64): Decimal
+	68: MoveLoc[5](loc3: Decimal)
+	69: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	70: Call reserve::ctoken_ratio<Ty0>(&Reserve<Ty0>): Decimal
+	71: Call decimal::div(Decimal, Decimal): Decimal
+	72: Call decimal::min(Decimal, Decimal): Decimal
+	73: Call decimal::floor(Decimal): u64
+	74: Ret
+}
+
+public(friend) zero_out_rewards_if_looped<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut vector<Reserve<Ty0>>, Arg2: &Clock) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: FreezeRef
+	2: Call is_looped<Ty0>(&Obligation<Ty0>): bool
+	3: BrFalse(9)
+B1:
+	4: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	5: MoveLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	6: MoveLoc[2](Arg2: &Clock)
+	7: Call zero_out_rewards<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, &Clock)
+	8: Branch(15)
+B2:
+	9: MoveLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	10: Pop
+	11: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	12: Pop
+	13: MoveLoc[2](Arg2: &Clock)
+	14: Pop
+B3:
+	15: Ret
+}
+
+public(friend) is_looped<Ty0>(Arg0: &Obligation<Ty0>): bool {
+L1:	loc0: &Borrow
+L2:	loc1: vector<vector<u64>>
+L3:	loc2: &vector<u64>
+L4:	loc3: u64
+L5:	loc4: u64
+L6:	loc5: u64
+L7:	loc6: u64
+L8:	loc7: u64
+L9:	loc8: vector<u64>
+B0:
+	0: LdConst[10](vector<u64>: 0801..)
+	1: StLoc[9](loc8: vector<u64>)
+	2: LdConst[11](vector<vector<u64>>: 0805..)
+	3: StLoc[2](loc1: vector<vector<u64>>)
+	4: LdU64(0)
+	5: StLoc[5](loc4: u64)
+B1:
+	6: CopyLoc[5](loc4: u64)
+	7: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	8: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	9: VecLen(31)
+	10: Lt
+	11: BrFalse(85)
+B2:
+	12: Branch(13)
+B3:
+	13: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	14: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	15: CopyLoc[5](loc4: u64)
+	16: VecImmBorrow(31)
+	17: StLoc[1](loc0: &Borrow)
+	18: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	19: CopyLoc[1](loc0: &Borrow)
+	20: ImmBorrowField[8](Borrow.reserve_array_index: u64)
+	21: ReadRef
+	22: Call find_deposit_index_by_reserve_array_index<Ty0>(&Obligation<Ty0>, u64): u64
+	23: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	24: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	25: VecLen(30)
+	26: Lt
+	27: BrFalse(34)
+B4:
+	28: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	29: Pop
+	30: MoveLoc[1](loc0: &Borrow)
+	31: Pop
+	32: LdTrue
+	33: Ret
+B5:
+	34: ImmBorrowLoc[9](loc8: vector<u64>)
+	35: MoveLoc[1](loc0: &Borrow)
+	36: ImmBorrowField[8](Borrow.reserve_array_index: u64)
+	37: Call vector::index_of<u64>(&vector<u64>, &u64): bool * u64
+	38: StLoc[8](loc7: u64)
+	39: BrFalse(80)
+B6:
+	40: ImmBorrowLoc[2](loc1: vector<vector<u64>>)
+	41: MoveLoc[8](loc7: u64)
+	42: VecImmBorrow(62)
+	43: StLoc[3](loc2: &vector<u64>)
+	44: CopyLoc[3](loc2: &vector<u64>)
+	45: VecLen(18)
+	46: StLoc[7](loc6: u64)
+	47: LdU64(0)
+	48: StLoc[6](loc5: u64)
+B7:
+	49: CopyLoc[6](loc5: u64)
+	50: CopyLoc[7](loc6: u64)
+	51: Lt
+	52: BrFalse(78)
+B8:
+	53: CopyLoc[3](loc2: &vector<u64>)
+	54: CopyLoc[6](loc5: u64)
+	55: VecImmBorrow(18)
+	56: ReadRef
+	57: StLoc[4](loc3: u64)
+	58: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	59: MoveLoc[4](loc3: u64)
+	60: Call find_deposit_index_by_reserve_array_index<Ty0>(&Obligation<Ty0>, u64): u64
+	61: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	62: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	63: VecLen(30)
+	64: Lt
+	65: BrFalse(73)
+B9:
+	66: Branch(67)
+B10:
+	67: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	68: Pop
+	69: MoveLoc[3](loc2: &vector<u64>)
+	70: Pop
+	71: LdTrue
+	72: Ret
+B11:
+	73: MoveLoc[6](loc5: u64)
+	74: LdU64(1)
+	75: Add
+	76: StLoc[6](loc5: u64)
+	77: Branch(49)
+B12:
+	78: MoveLoc[3](loc2: &vector<u64>)
+	79: Pop
+B13:
+	80: MoveLoc[5](loc4: u64)
+	81: LdU64(1)
+	82: Add
+	83: StLoc[5](loc4: u64)
+	84: Branch(6)
+B14:
+	85: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	86: Pop
+	87: LdFalse
+	88: Ret
+}
+
+zero_out_rewards<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut vector<Reserve<Ty0>>, Arg2: &Clock) {
+L3:	loc0: &Borrow
+L4:	loc1: &Deposit
+L5:	loc2: u64
+L6:	loc3: u64
+L7:	loc4: &mut Reserve<Ty0>
+L8:	loc5: &mut Reserve<Ty0>
+L9:	loc6: &mut UserRewardManager
+L10:	loc7: &mut UserRewardManager
+B0:
+	0: LdU64(0)
+	1: StLoc[5](loc2: u64)
+B1:
+	2: CopyLoc[5](loc2: u64)
+	3: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	4: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	5: VecLen(30)
+	6: Lt
+	7: BrFalse(38)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	10: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	11: CopyLoc[5](loc2: u64)
+	12: VecImmBorrow(30)
+	13: StLoc[4](loc1: &Deposit)
+	14: CopyLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	15: CopyLoc[4](loc1: &Deposit)
+	16: ImmBorrowField[1](Deposit.reserve_array_index: u64)
+	17: ReadRef
+	18: VecMutBorrow(35)
+	19: StLoc[7](loc4: &mut Reserve<Ty0>)
+	20: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	21: MutBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	22: MoveLoc[4](loc1: &Deposit)
+	23: ImmBorrowField[16](Deposit.user_reward_manager_index: u64)
+	24: ReadRef
+	25: VecMutBorrow(32)
+	26: StLoc[9](loc6: &mut UserRewardManager)
+	27: MoveLoc[7](loc4: &mut Reserve<Ty0>)
+	28: Call reserve::deposits_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	29: MoveLoc[9](loc6: &mut UserRewardManager)
+	30: LdU64(0)
+	31: CopyLoc[2](Arg2: &Clock)
+	32: Call liquidity_mining::change_user_reward_manager_share(&mut PoolRewardManager, &mut UserRewardManager, u64, &Clock)
+	33: MoveLoc[5](loc2: u64)
+	34: LdU64(1)
+	35: Add
+	36: StLoc[5](loc2: u64)
+	37: Branch(2)
+B4:
+	38: LdU64(0)
+	39: StLoc[6](loc3: u64)
+B5:
+	40: CopyLoc[6](loc3: u64)
+	41: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	42: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	43: VecLen(31)
+	44: Lt
+	45: BrFalse(76)
+B6:
+	46: Branch(47)
+B7:
+	47: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	48: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	49: CopyLoc[6](loc3: u64)
+	50: VecImmBorrow(31)
+	51: StLoc[3](loc0: &Borrow)
+	52: CopyLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	53: CopyLoc[3](loc0: &Borrow)
+	54: ImmBorrowField[8](Borrow.reserve_array_index: u64)
+	55: ReadRef
+	56: VecMutBorrow(35)
+	57: StLoc[8](loc5: &mut Reserve<Ty0>)
+	58: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	59: MutBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	60: MoveLoc[3](loc0: &Borrow)
+	61: ImmBorrowField[17](Borrow.user_reward_manager_index: u64)
+	62: ReadRef
+	63: VecMutBorrow(32)
+	64: StLoc[10](loc7: &mut UserRewardManager)
+	65: MoveLoc[8](loc5: &mut Reserve<Ty0>)
+	66: Call reserve::borrows_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	67: MoveLoc[10](loc7: &mut UserRewardManager)
+	68: LdU64(0)
+	69: CopyLoc[2](Arg2: &Clock)
+	70: Call liquidity_mining::change_user_reward_manager_share(&mut PoolRewardManager, &mut UserRewardManager, u64, &Clock)
+	71: MoveLoc[6](loc3: u64)
+	72: LdU64(1)
+	73: Add
+	74: StLoc[6](loc3: u64)
+	75: Branch(40)
+B8:
+	76: MoveLoc[1](Arg1: &mut vector<Reserve<Ty0>>)
+	77: Pop
+	78: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	79: Pop
+	80: MoveLoc[2](Arg2: &Clock)
+	81: Pop
+	82: Ret
+}
+
+log_obligation_data<Ty0>(Arg0: &Obligation<Ty0>) {
+L1:	loc0: vector<DepositRecord>
+L2:	loc1: address
+L3:	loc2: address
+L4:	loc3: &Borrow
+L5:	loc4: vector<BorrowRecord>
+L6:	loc5: &Deposit
+L7:	loc6: vector<DepositRecord>
+L8:	loc7: u64
+L9:	loc8: u64
+B0:
+	0: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	1: ImmBorrowFieldGeneric[10](Obligation.lending_market_id: ID)
+	2: Call object::id_to_address(&ID): address
+	3: StLoc[3](loc2: address)
+	4: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	5: ImmBorrowFieldGeneric[11](Obligation.id: UID)
+	6: Call object::uid_to_address(&UID): address
+	7: StLoc[2](loc1: address)
+	8: LdU64(0)
+	9: StLoc[9](loc8: u64)
+	10: VecPack(68, 0)
+	11: StLoc[7](loc6: vector<DepositRecord>)
+B1:
+	12: CopyLoc[9](loc8: u64)
+	13: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	14: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	15: VecLen(30)
+	16: Lt
+	17: BrFalse(50)
+B2:
+	18: Branch(19)
+B3:
+	19: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	20: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	21: CopyLoc[9](loc8: u64)
+	22: VecImmBorrow(30)
+	23: StLoc[6](loc5: &Deposit)
+	24: MutBorrowLoc[7](loc6: vector<DepositRecord>)
+	25: CopyLoc[6](loc5: &Deposit)
+	26: ImmBorrowField[18](Deposit.coin_type: TypeName)
+	27: ReadRef
+	28: CopyLoc[6](loc5: &Deposit)
+	29: ImmBorrowField[1](Deposit.reserve_array_index: u64)
+	30: ReadRef
+	31: CopyLoc[6](loc5: &Deposit)
+	32: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	33: ReadRef
+	34: CopyLoc[6](loc5: &Deposit)
+	35: ImmBorrowField[3](Deposit.market_value: Decimal)
+	36: ReadRef
+	37: CopyLoc[6](loc5: &Deposit)
+	38: ImmBorrowField[16](Deposit.user_reward_manager_index: u64)
+	39: ReadRef
+	40: MoveLoc[6](loc5: &Deposit)
+	41: ImmBorrowField[23](Deposit.attributed_borrow_value: Decimal)
+	42: ReadRef
+	43: Pack[4](DepositRecord)
+	44: VecPushBack(68)
+	45: MoveLoc[9](loc8: u64)
+	46: LdU64(1)
+	47: Add
+	48: StLoc[9](loc8: u64)
+	49: Branch(12)
+B4:
+	50: MoveLoc[7](loc6: vector<DepositRecord>)
+	51: StLoc[1](loc0: vector<DepositRecord>)
+	52: LdU64(0)
+	53: StLoc[8](loc7: u64)
+	54: VecPack(69, 0)
+	55: StLoc[5](loc4: vector<BorrowRecord>)
+B5:
+	56: CopyLoc[8](loc7: u64)
+	57: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	58: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	59: VecLen(31)
+	60: Lt
+	61: BrFalse(94)
+B6:
+	62: Branch(63)
+B7:
+	63: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	64: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	65: CopyLoc[8](loc7: u64)
+	66: VecImmBorrow(31)
+	67: StLoc[4](loc3: &Borrow)
+	68: MutBorrowLoc[5](loc4: vector<BorrowRecord>)
+	69: CopyLoc[4](loc3: &Borrow)
+	70: ImmBorrowField[19](Borrow.coin_type: TypeName)
+	71: ReadRef
+	72: CopyLoc[4](loc3: &Borrow)
+	73: ImmBorrowField[8](Borrow.reserve_array_index: u64)
+	74: ReadRef
+	75: CopyLoc[4](loc3: &Borrow)
+	76: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	77: ReadRef
+	78: CopyLoc[4](loc3: &Borrow)
+	79: ImmBorrowField[20](Borrow.cumulative_borrow_rate: Decimal)
+	80: ReadRef
+	81: CopyLoc[4](loc3: &Borrow)
+	82: ImmBorrowField[10](Borrow.market_value: Decimal)
+	83: ReadRef
+	84: MoveLoc[4](loc3: &Borrow)
+	85: ImmBorrowField[17](Borrow.user_reward_manager_index: u64)
+	86: ReadRef
+	87: Pack[5](BorrowRecord)
+	88: VecPushBack(69)
+	89: MoveLoc[8](loc7: u64)
+	90: LdU64(1)
+	91: Add
+	92: StLoc[8](loc7: u64)
+	93: Branch(56)
+B8:
+	94: MoveLoc[3](loc2: address)
+	95: MoveLoc[2](loc1: address)
+	96: MoveLoc[1](loc0: vector<DepositRecord>)
+	97: MoveLoc[5](loc4: vector<BorrowRecord>)
+	98: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	99: ImmBorrowFieldGeneric[1](Obligation.deposited_value_usd: Decimal)
+	100: ReadRef
+	101: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	102: ImmBorrowFieldGeneric[2](Obligation.allowed_borrow_value_usd: Decimal)
+	103: ReadRef
+	104: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	105: ImmBorrowFieldGeneric[3](Obligation.unhealthy_borrow_value_usd: Decimal)
+	106: ReadRef
+	107: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	108: ImmBorrowFieldGeneric[12](Obligation.super_unhealthy_borrow_value_usd: Decimal)
+	109: ReadRef
+	110: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	111: ImmBorrowFieldGeneric[5](Obligation.unweighted_borrowed_value_usd: Decimal)
+	112: ReadRef
+	113: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	114: ImmBorrowFieldGeneric[6](Obligation.weighted_borrowed_value_usd: Decimal)
+	115: ReadRef
+	116: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	117: ImmBorrowFieldGeneric[7](Obligation.weighted_borrowed_value_upper_bound_usd: Decimal)
+	118: ReadRef
+	119: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	120: ImmBorrowFieldGeneric[8](Obligation.borrowing_isolated_asset: bool)
+	121: ReadRef
+	122: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	123: ImmBorrowFieldGeneric[13](Obligation.bad_debt_usd: Decimal)
+	124: ReadRef
+	125: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	126: ImmBorrowFieldGeneric[14](Obligation.closable: bool)
+	127: ReadRef
+	128: Pack[3](ObligationDataEvent)
+	129: Call event::emit<ObligationDataEvent>(ObligationDataEvent)
+	130: Ret
+}
+
+liability_shares(Arg0: &Borrow): u64 {
+B0:
+	0: CopyLoc[0](Arg0: &Borrow)
+	1: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &Borrow)
+	4: ImmBorrowField[20](Borrow.cumulative_borrow_rate: Decimal)
+	5: ReadRef
+	6: Call decimal::div(Decimal, Decimal): Decimal
+	7: Call decimal::floor(Decimal): u64
+	8: Ret
+}
+
+withdraw_unchecked<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut Reserve<Ty0>, Arg2: &Clock, Arg3: u64) {
+L4:	loc0: &mut Deposit
+L5:	loc1: u64
+L6:	loc2: &mut UserRewardManager
+L7:	loc3: Decimal
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: FreezeRef
+	2: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	3: FreezeRef
+	4: Call find_deposit_index<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	5: StLoc[5](loc1: u64)
+	6: CopyLoc[5](loc1: u64)
+	7: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	8: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	9: VecLen(30)
+	10: Lt
+	11: BrFalse(13)
+B1:
+	12: Branch(21)
+B2:
+	13: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	14: Pop
+	15: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	16: Pop
+	17: MoveLoc[2](Arg2: &Clock)
+	18: Pop
+	19: LdConst[3](u64: 3)
+	20: Abort
+B3:
+	21: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	22: MutBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	23: CopyLoc[5](loc1: u64)
+	24: VecMutBorrow(30)
+	25: StLoc[4](loc0: &mut Deposit)
+	26: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	27: FreezeRef
+	28: CopyLoc[3](Arg3: u64)
+	29: Call reserve::ctoken_market_value<Ty0>(&Reserve<Ty0>, u64): Decimal
+	30: StLoc[7](loc3: Decimal)
+	31: CopyLoc[4](loc0: &mut Deposit)
+	32: ImmBorrowField[3](Deposit.market_value: Decimal)
+	33: ReadRef
+	34: CopyLoc[7](loc3: Decimal)
+	35: Call decimal::sub(Decimal, Decimal): Decimal
+	36: CopyLoc[4](loc0: &mut Deposit)
+	37: MutBorrowField[3](Deposit.market_value: Decimal)
+	38: WriteRef
+	39: CopyLoc[4](loc0: &mut Deposit)
+	40: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	41: ReadRef
+	42: CopyLoc[3](Arg3: u64)
+	43: Sub
+	44: CopyLoc[4](loc0: &mut Deposit)
+	45: MutBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	46: WriteRef
+	47: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	48: ImmBorrowFieldGeneric[1](Obligation.deposited_value_usd: Decimal)
+	49: ReadRef
+	50: CopyLoc[7](loc3: Decimal)
+	51: Call decimal::sub(Decimal, Decimal): Decimal
+	52: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	53: MutBorrowFieldGeneric[1](Obligation.deposited_value_usd: Decimal)
+	54: WriteRef
+	55: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	56: ImmBorrowFieldGeneric[2](Obligation.allowed_borrow_value_usd: Decimal)
+	57: ReadRef
+	58: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	59: FreezeRef
+	60: MoveLoc[3](Arg3: u64)
+	61: Call reserve::ctoken_market_value_lower_bound<Ty0>(&Reserve<Ty0>, u64): Decimal
+	62: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	63: FreezeRef
+	64: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	65: Call reserve_config::open_ltv(&ReserveConfig): Decimal
+	66: Call decimal::mul(Decimal, Decimal): Decimal
+	67: Call decimal::sub(Decimal, Decimal): Decimal
+	68: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	69: MutBorrowFieldGeneric[2](Obligation.allowed_borrow_value_usd: Decimal)
+	70: WriteRef
+	71: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	72: ImmBorrowFieldGeneric[3](Obligation.unhealthy_borrow_value_usd: Decimal)
+	73: ReadRef
+	74: MoveLoc[7](loc3: Decimal)
+	75: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	76: FreezeRef
+	77: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	78: Call reserve_config::close_ltv(&ReserveConfig): Decimal
+	79: Call decimal::mul(Decimal, Decimal): Decimal
+	80: Call decimal::sub(Decimal, Decimal): Decimal
+	81: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	82: MutBorrowFieldGeneric[3](Obligation.unhealthy_borrow_value_usd: Decimal)
+	83: WriteRef
+	84: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	85: MutBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	86: CopyLoc[4](loc0: &mut Deposit)
+	87: ImmBorrowField[16](Deposit.user_reward_manager_index: u64)
+	88: ReadRef
+	89: VecMutBorrow(32)
+	90: StLoc[6](loc2: &mut UserRewardManager)
+	91: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	92: Call reserve::deposits_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	93: MoveLoc[6](loc2: &mut UserRewardManager)
+	94: CopyLoc[4](loc0: &mut Deposit)
+	95: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	96: ReadRef
+	97: MoveLoc[2](Arg2: &Clock)
+	98: Call liquidity_mining::change_user_reward_manager_share(&mut PoolRewardManager, &mut UserRewardManager, u64, &Clock)
+	99: MoveLoc[4](loc0: &mut Deposit)
+	100: ImmBorrowField[2](Deposit.deposited_ctoken_amount: u64)
+	101: ReadRef
+	102: LdU64(0)
+	103: Eq
+	104: BrFalse(117)
+B4:
+	105: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	106: MutBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	107: MoveLoc[5](loc1: u64)
+	108: Call vector::remove<Deposit>(&mut vector<Deposit>, u64): Deposit
+	109: Unpack[1](Deposit)
+	110: Pop
+	111: Pop
+	112: Pop
+	113: Pop
+	114: Pop
+	115: Pop
+	116: Branch(119)
+B5:
+	117: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	118: Pop
+B6:
+	119: Ret
+}
+
+compound_debt<Ty0>(Arg0: &mut Borrow, Arg1: &Reserve<Ty0>) {
+L2:	loc0: Decimal
+L3:	loc1: Decimal
+B0:
+	0: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	1: Call reserve::cumulative_borrow_rate<Ty0>(&Reserve<Ty0>): Decimal
+	2: StLoc[3](loc1: Decimal)
+	3: CopyLoc[3](loc1: Decimal)
+	4: CopyLoc[0](Arg0: &mut Borrow)
+	5: ImmBorrowField[20](Borrow.cumulative_borrow_rate: Decimal)
+	6: ReadRef
+	7: Call decimal::div(Decimal, Decimal): Decimal
+	8: StLoc[2](loc0: Decimal)
+	9: CopyLoc[0](Arg0: &mut Borrow)
+	10: ImmBorrowField[9](Borrow.borrowed_amount: Decimal)
+	11: ReadRef
+	12: MoveLoc[2](loc0: Decimal)
+	13: Call decimal::mul(Decimal, Decimal): Decimal
+	14: CopyLoc[0](Arg0: &mut Borrow)
+	15: MutBorrowField[9](Borrow.borrowed_amount: Decimal)
+	16: WriteRef
+	17: MoveLoc[3](loc1: Decimal)
+	18: MoveLoc[0](Arg0: &mut Borrow)
+	19: MutBorrowField[20](Borrow.cumulative_borrow_rate: Decimal)
+	20: WriteRef
+	21: Ret
+}
+
+find_deposit_index<Ty0>(Arg0: &Obligation<Ty0>, Arg1: &Reserve<Ty0>): u64 {
+L2:	loc0: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[2](loc0: u64)
+B1:
+	2: CopyLoc[2](loc0: u64)
+	3: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	4: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	5: VecLen(30)
+	6: Lt
+	7: BrFalse(30)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	10: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	11: CopyLoc[2](loc0: u64)
+	12: VecImmBorrow(30)
+	13: ImmBorrowField[1](Deposit.reserve_array_index: u64)
+	14: ReadRef
+	15: CopyLoc[1](Arg1: &Reserve<Ty0>)
+	16: Call reserve::array_index<Ty0>(&Reserve<Ty0>): u64
+	17: Eq
+	18: BrFalse(25)
+B4:
+	19: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	20: Pop
+	21: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	22: Pop
+	23: MoveLoc[2](loc0: u64)
+	24: Ret
+B5:
+	25: MoveLoc[2](loc0: u64)
+	26: LdU64(1)
+	27: Add
+	28: StLoc[2](loc0: u64)
+	29: Branch(2)
+B6:
+	30: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	31: Pop
+	32: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	33: Pop
+	34: MoveLoc[2](loc0: u64)
+	35: Ret
+}
+
+find_deposit_index_by_reserve_array_index<Ty0>(Arg0: &Obligation<Ty0>, Arg1: u64): u64 {
+L2:	loc0: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[2](loc0: u64)
+B1:
+	2: CopyLoc[2](loc0: u64)
+	3: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	4: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	5: VecLen(30)
+	6: Lt
+	7: BrFalse(27)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	10: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	11: CopyLoc[2](loc0: u64)
+	12: VecImmBorrow(30)
+	13: ImmBorrowField[1](Deposit.reserve_array_index: u64)
+	14: ReadRef
+	15: CopyLoc[1](Arg1: u64)
+	16: Eq
+	17: BrFalse(22)
+B4:
+	18: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	19: Pop
+	20: MoveLoc[2](loc0: u64)
+	21: Ret
+B5:
+	22: MoveLoc[2](loc0: u64)
+	23: LdU64(1)
+	24: Add
+	25: StLoc[2](loc0: u64)
+	26: Branch(2)
+B6:
+	27: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	28: Pop
+	29: MoveLoc[2](loc0: u64)
+	30: Ret
+}
+
+find_borrow_index<Ty0>(Arg0: &Obligation<Ty0>, Arg1: &Reserve<Ty0>): u64 {
+L2:	loc0: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[2](loc0: u64)
+B1:
+	2: CopyLoc[2](loc0: u64)
+	3: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	4: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	5: VecLen(31)
+	6: Lt
+	7: BrFalse(30)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	10: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	11: CopyLoc[2](loc0: u64)
+	12: VecImmBorrow(31)
+	13: ImmBorrowField[8](Borrow.reserve_array_index: u64)
+	14: ReadRef
+	15: CopyLoc[1](Arg1: &Reserve<Ty0>)
+	16: Call reserve::array_index<Ty0>(&Reserve<Ty0>): u64
+	17: Eq
+	18: BrFalse(25)
+B4:
+	19: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	20: Pop
+	21: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	22: Pop
+	23: MoveLoc[2](loc0: u64)
+	24: Ret
+B5:
+	25: MoveLoc[2](loc0: u64)
+	26: LdU64(1)
+	27: Add
+	28: StLoc[2](loc0: u64)
+	29: Branch(2)
+B6:
+	30: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	31: Pop
+	32: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	33: Pop
+	34: MoveLoc[2](loc0: u64)
+	35: Ret
+}
+
+public(friend) find_borrow<Ty0>(Arg0: &Obligation<Ty0>, Arg1: &Reserve<Ty0>): &Borrow {
+L2:	loc0: u64
+B0:
+	0: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	1: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	2: Call find_borrow_index<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	3: StLoc[2](loc0: u64)
+	4: CopyLoc[2](loc0: u64)
+	5: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	6: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	7: VecLen(31)
+	8: Lt
+	9: BrFalse(11)
+B1:
+	10: Branch(15)
+B2:
+	11: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	12: Pop
+	13: LdConst[2](u64: 2)
+	14: Abort
+B3:
+	15: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	16: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	17: MoveLoc[2](loc0: u64)
+	18: VecImmBorrow(31)
+	19: Ret
+}
+
+public(friend) find_deposit<Ty0>(Arg0: &Obligation<Ty0>, Arg1: &Reserve<Ty0>): &Deposit {
+L2:	loc0: u64
+B0:
+	0: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	1: MoveLoc[1](Arg1: &Reserve<Ty0>)
+	2: Call find_deposit_index<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	3: StLoc[2](loc0: u64)
+	4: CopyLoc[2](loc0: u64)
+	5: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	6: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	7: VecLen(30)
+	8: Lt
+	9: BrFalse(11)
+B1:
+	10: Branch(15)
+B2:
+	11: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	12: Pop
+	13: LdConst[3](u64: 3)
+	14: Abort
+B3:
+	15: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	16: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	17: MoveLoc[2](loc0: u64)
+	18: VecImmBorrow(30)
+	19: Ret
+}
+
+find_or_add_borrow<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut Reserve<Ty0>, Arg2: &Clock): u64 {
+L3:	loc0: Borrow
+L4:	loc1: u64
+L5:	loc2: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: FreezeRef
+	2: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	3: FreezeRef
+	4: Call find_borrow_index<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	5: StLoc[4](loc1: u64)
+	6: CopyLoc[4](loc1: u64)
+	7: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	8: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	9: VecLen(31)
+	10: Lt
+	11: BrFalse(20)
+B1:
+	12: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	13: Pop
+	14: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	15: Pop
+	16: MoveLoc[2](Arg2: &Clock)
+	17: Pop
+	18: MoveLoc[4](loc1: u64)
+	19: Ret
+B2:
+	20: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	21: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	22: Call reserve::borrows_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	23: MoveLoc[2](Arg2: &Clock)
+	24: Call find_or_add_user_reward_manager<Ty0>(&mut Obligation<Ty0>, &mut PoolRewardManager, &Clock): u64 * &mut UserRewardManager
+	25: Pop
+	26: StLoc[5](loc2: u64)
+	27: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	28: FreezeRef
+	29: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	30: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	31: FreezeRef
+	32: Call reserve::array_index<Ty0>(&Reserve<Ty0>): u64
+	33: LdU64(0)
+	34: Call decimal::from(u64): Decimal
+	35: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	36: FreezeRef
+	37: Call reserve::cumulative_borrow_rate<Ty0>(&Reserve<Ty0>): Decimal
+	38: LdU64(0)
+	39: Call decimal::from(u64): Decimal
+	40: MoveLoc[5](loc2: u64)
+	41: Pack[2](Borrow)
+	42: StLoc[3](loc0: Borrow)
+	43: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	44: MutBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	45: MoveLoc[3](loc0: Borrow)
+	46: VecPushBack(31)
+	47: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	48: ImmBorrowFieldGeneric[4](Obligation.borrows: vector<Borrow>)
+	49: VecLen(31)
+	50: LdU64(1)
+	51: Sub
+	52: Ret
+}
+
+find_or_add_deposit<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut Reserve<Ty0>, Arg2: &Clock): u64 {
+L3:	loc0: Deposit
+L4:	loc1: u64
+L5:	loc2: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: FreezeRef
+	2: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	3: FreezeRef
+	4: Call find_deposit_index<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	5: StLoc[4](loc1: u64)
+	6: CopyLoc[4](loc1: u64)
+	7: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	8: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	9: VecLen(30)
+	10: Lt
+	11: BrFalse(20)
+B1:
+	12: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	13: Pop
+	14: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	15: Pop
+	16: MoveLoc[2](Arg2: &Clock)
+	17: Pop
+	18: MoveLoc[4](loc1: u64)
+	19: Ret
+B2:
+	20: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	21: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	22: Call reserve::deposits_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	23: MoveLoc[2](Arg2: &Clock)
+	24: Call find_or_add_user_reward_manager<Ty0>(&mut Obligation<Ty0>, &mut PoolRewardManager, &Clock): u64 * &mut UserRewardManager
+	25: Pop
+	26: StLoc[5](loc2: u64)
+	27: CopyLoc[1](Arg1: &mut Reserve<Ty0>)
+	28: FreezeRef
+	29: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	30: MoveLoc[1](Arg1: &mut Reserve<Ty0>)
+	31: FreezeRef
+	32: Call reserve::array_index<Ty0>(&Reserve<Ty0>): u64
+	33: LdU64(0)
+	34: LdU64(0)
+	35: Call decimal::from(u64): Decimal
+	36: MoveLoc[5](loc2: u64)
+	37: LdU64(0)
+	38: Call decimal::from(u64): Decimal
+	39: Pack[1](Deposit)
+	40: StLoc[3](loc0: Deposit)
+	41: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	42: MutBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	43: MoveLoc[3](loc0: Deposit)
+	44: VecPushBack(30)
+	45: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	46: ImmBorrowFieldGeneric[0](Obligation.deposits: vector<Deposit>)
+	47: VecLen(30)
+	48: LdU64(1)
+	49: Sub
+	50: Ret
+}
+
+public(friend) find_user_reward_manager_index<Ty0>(Arg0: &Obligation<Ty0>, Arg1: &PoolRewardManager): u64 {
+L2:	loc0: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[2](loc0: u64)
+B1:
+	2: CopyLoc[2](loc0: u64)
+	3: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	4: ImmBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	5: VecLen(32)
+	6: Lt
+	7: BrFalse(29)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &Obligation<Ty0>)
+	10: ImmBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	11: CopyLoc[2](loc0: u64)
+	12: VecImmBorrow(32)
+	13: Call liquidity_mining::pool_reward_manager_id(&UserRewardManager): ID
+	14: CopyLoc[1](Arg1: &PoolRewardManager)
+	15: Call object::id<PoolRewardManager>(&PoolRewardManager): ID
+	16: Eq
+	17: BrFalse(24)
+B4:
+	18: MoveLoc[1](Arg1: &PoolRewardManager)
+	19: Pop
+	20: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	21: Pop
+	22: MoveLoc[2](loc0: u64)
+	23: Ret
+B5:
+	24: MoveLoc[2](loc0: u64)
+	25: LdU64(1)
+	26: Add
+	27: StLoc[2](loc0: u64)
+	28: Branch(2)
+B6:
+	29: MoveLoc[1](Arg1: &PoolRewardManager)
+	30: Pop
+	31: MoveLoc[0](Arg0: &Obligation<Ty0>)
+	32: Pop
+	33: MoveLoc[2](loc0: u64)
+	34: Ret
+}
+
+find_or_add_user_reward_manager<Ty0>(Arg0: &mut Obligation<Ty0>, Arg1: &mut PoolRewardManager, Arg2: &Clock): u64 * &mut UserRewardManager {
+L3:	loc0: u64
+L4:	loc1: u64
+L5:	loc2: UserRewardManager
+B0:
+	0: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	1: FreezeRef
+	2: CopyLoc[1](Arg1: &mut PoolRewardManager)
+	3: FreezeRef
+	4: Call find_user_reward_manager_index<Ty0>(&Obligation<Ty0>, &PoolRewardManager): u64
+	5: StLoc[3](loc0: u64)
+	6: CopyLoc[3](loc0: u64)
+	7: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	8: ImmBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	9: VecLen(32)
+	10: Lt
+	11: BrFalse(22)
+B1:
+	12: MoveLoc[1](Arg1: &mut PoolRewardManager)
+	13: Pop
+	14: MoveLoc[2](Arg2: &Clock)
+	15: Pop
+	16: CopyLoc[3](loc0: u64)
+	17: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	18: MutBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	19: MoveLoc[3](loc0: u64)
+	20: VecMutBorrow(32)
+	21: Ret
+B2:
+	22: MoveLoc[1](Arg1: &mut PoolRewardManager)
+	23: MoveLoc[2](Arg2: &Clock)
+	24: Call liquidity_mining::new_user_reward_manager(&mut PoolRewardManager, &Clock): UserRewardManager
+	25: StLoc[5](loc2: UserRewardManager)
+	26: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	27: MutBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	28: MoveLoc[5](loc2: UserRewardManager)
+	29: VecPushBack(32)
+	30: CopyLoc[0](Arg0: &mut Obligation<Ty0>)
+	31: ImmBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	32: VecLen(32)
+	33: StLoc[4](loc1: u64)
+	34: CopyLoc[4](loc1: u64)
+	35: LdU64(1)
+	36: Sub
+	37: MoveLoc[0](Arg0: &mut Obligation<Ty0>)
+	38: MutBorrowFieldGeneric[9](Obligation.user_reward_managers: vector<UserRewardManager>)
+	39: MoveLoc[4](loc1: u64)
+	40: LdU64(1)
+	41: Sub
+	42: VecMutBorrow(32)
+	43: Ret
+}
+
+Constants [
+	0 => u64: 0
+	1 => u64: 1
+	2 => u64: 2
+	3 => u64: 3
+	4 => u64: 4
+	5 => u64: 5
+	6 => u64: 6
+	7 => u64: 7
+	8 => u64: 8
+	9 => u8: 20
+	10 => vector<u64>: 0801000000000000000200000000000000050000000000000007000000000000001300000000000000140000000000000003000000000000000900000000000000
+	11 => vector<vector<u64>>: 08050200000000000000050000000000000007000000000000001300000000000000140000000000000005010000000000000005000000000000000700000000000000130000000000000014000000000000000501000000000000000200000000000000070000000000000013000000000000001400000000000000050100000000000000020000000000000005000000000000001300000000000000140000000000000005010000000000000002000000000000000500000000000000070000000000000014000000000000000501000000000000000200000000000000050000000000000007000000000000001300000000000000010900000000000000010300000000000000
+]
+}
+

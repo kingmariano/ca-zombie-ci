@@ -1,0 +1,2883 @@
+// Move bytecode v6
+module f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf.lending_market {
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::price_info;
+use 0000000000000000000000000000000000000000000000000000000000000001::ascii;
+use 0000000000000000000000000000000000000000000000000000000000000001::option;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000001::vector;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::dynamic_field;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::math;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::object_table;
+use 0000000000000000000000000000000000000000000000000000000000000002::package;
+use 0000000000000000000000000000000000000000000000000000000000000002::sui;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 0000000000000000000000000000000000000000000000000000000000000003::sui_system;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::decimal;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::liquidity_mining;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::obligation;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::rate_limiter;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::reserve;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::reserve_config;
+
+struct LENDING_MARKET has drop {
+	dummy_field: bool
+}
+
+struct LendingMarket<phantom Ty0> has store, key {
+	id: UID,
+	version: u64,
+	reserves: vector<Reserve<Ty0>>,
+	obligations: ObjectTable<ID, Obligation<Ty0>>,
+	rate_limiter: RateLimiter,
+	fee_receiver: address,
+	bad_debt_usd: Decimal,
+	bad_debt_limit_usd: Decimal
+}
+
+struct LendingMarketOwnerCap<phantom Ty0> has store, key {
+	id: UID,
+	lending_market_id: ID
+}
+
+struct ObligationOwnerCap<phantom Ty0> has store, key {
+	id: UID,
+	obligation_id: ID
+}
+
+struct FeeReceiversKey has copy, drop, store {
+	dummy_field: bool
+}
+
+struct FeeReceivers has store {
+	receivers: vector<address>,
+	weights: vector<u64>,
+	total_weight: u64
+}
+
+struct RateLimiterExemption<phantom Ty0, phantom Ty1> has drop {
+	amount: u64
+}
+
+struct MintEvent has copy, drop {
+	lending_market_id: address,
+	coin_type: TypeName,
+	reserve_id: address,
+	liquidity_amount: u64,
+	ctoken_amount: u64
+}
+
+struct RedeemEvent has copy, drop {
+	lending_market_id: address,
+	coin_type: TypeName,
+	reserve_id: address,
+	ctoken_amount: u64,
+	liquidity_amount: u64
+}
+
+struct DepositEvent has copy, drop {
+	lending_market_id: address,
+	coin_type: TypeName,
+	reserve_id: address,
+	obligation_id: address,
+	ctoken_amount: u64
+}
+
+struct WithdrawEvent has copy, drop {
+	lending_market_id: address,
+	coin_type: TypeName,
+	reserve_id: address,
+	obligation_id: address,
+	ctoken_amount: u64
+}
+
+struct BorrowEvent has copy, drop {
+	lending_market_id: address,
+	coin_type: TypeName,
+	reserve_id: address,
+	obligation_id: address,
+	liquidity_amount: u64,
+	origination_fee_amount: u64
+}
+
+struct RepayEvent has copy, drop {
+	lending_market_id: address,
+	coin_type: TypeName,
+	reserve_id: address,
+	obligation_id: address,
+	liquidity_amount: u64
+}
+
+struct ForgiveEvent has copy, drop {
+	lending_market_id: address,
+	coin_type: TypeName,
+	reserve_id: address,
+	obligation_id: address,
+	liquidity_amount: u64
+}
+
+struct LiquidateEvent has copy, drop {
+	lending_market_id: address,
+	repay_reserve_id: address,
+	withdraw_reserve_id: address,
+	obligation_id: address,
+	repay_coin_type: TypeName,
+	withdraw_coin_type: TypeName,
+	repay_amount: u64,
+	withdraw_amount: u64,
+	protocol_fee_amount: u64,
+	liquidator_bonus_amount: u64
+}
+
+struct ClaimRewardEvent has copy, drop {
+	lending_market_id: address,
+	reserve_id: address,
+	obligation_id: address,
+	is_deposit_reward: bool,
+	pool_reward_id: address,
+	coin_type: TypeName,
+	liquidity_amount: u64
+}
+
+init(Arg0: LENDING_MARKET, Arg1: &mut TxContext) {
+B0:
+	0: MoveLoc[0](Arg0: LENDING_MARKET)
+	1: MoveLoc[1](Arg1: &mut TxContext)
+	2: Call package::claim_and_keep<LENDING_MARKET>(LENDING_MARKET, &mut TxContext)
+	3: Ret
+}
+
+public(friend) create_lending_market<Ty0>(Arg0: &mut TxContext): LendingMarketOwnerCap<Ty0> * LendingMarket<Ty0> {
+L1:	loc0: LendingMarket<Ty0>
+L2:	loc1: LendingMarketOwnerCap<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: LdConst[6](u64: 7)
+	3: VecPack(51, 0)
+	4: CopyLoc[0](Arg0: &mut TxContext)
+	5: Call object_table::new<ID, Obligation<Ty0>>(&mut TxContext): ObjectTable<ID, Obligation<Ty0>>
+	6: LdU64(1)
+	7: LdU64(18446744073709551615)
+	8: Call rate_limiter::new_config(u64, u64): RateLimiterConfig
+	9: LdU64(0)
+	10: Call rate_limiter::new(RateLimiterConfig, u64): RateLimiter
+	11: CopyLoc[0](Arg0: &mut TxContext)
+	12: FreezeRef
+	13: Call tx_context::sender(&TxContext): address
+	14: LdU64(0)
+	15: Call decimal::from(u64): Decimal
+	16: LdU64(0)
+	17: Call decimal::from(u64): Decimal
+	18: PackGeneric[0](LendingMarket<Ty0>)
+	19: StLoc[1](loc0: LendingMarket<Ty0>)
+	20: CopyLoc[0](Arg0: &mut TxContext)
+	21: Call object::new(&mut TxContext): UID
+	22: ImmBorrowLoc[1](loc0: LendingMarket<Ty0>)
+	23: Call object::id<LendingMarket<Ty0>>(&LendingMarket<Ty0>): ID
+	24: PackGeneric[1](LendingMarketOwnerCap<Ty0>)
+	25: StLoc[2](loc1: LendingMarketOwnerCap<Ty0>)
+	26: ImmBorrowLoc[2](loc1: LendingMarketOwnerCap<Ty0>)
+	27: MutBorrowLoc[1](loc0: LendingMarket<Ty0>)
+	28: MoveLoc[0](Arg0: &mut TxContext)
+	29: FreezeRef
+	30: Call tx_context::sender(&TxContext): address
+	31: VecPack(33, 1)
+	32: LdConst[9](vector<u64>: 0164..)
+	33: Call set_fee_receivers<Ty0>(&LendingMarketOwnerCap<Ty0>, &mut LendingMarket<Ty0>, vector<address>, vector<u64>)
+	34: MoveLoc[2](loc1: LendingMarketOwnerCap<Ty0>)
+	35: MoveLoc[1](loc0: LendingMarket<Ty0>)
+	36: Ret
+}
+
+public refresh_reserve_price<Ty0>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &Clock, Arg3: &PriceInfoObject) {
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(15)
+B2:
+	7: MoveLoc[3](Arg3: &PriceInfoObject)
+	8: Pop
+	9: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	10: Pop
+	11: MoveLoc[2](Arg2: &Clock)
+	12: Pop
+	13: LdConst[0](u64: 1)
+	14: Abort
+B3:
+	15: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	16: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	17: MoveLoc[1](Arg1: u64)
+	18: VecMutBorrow(51)
+	19: MoveLoc[2](Arg2: &Clock)
+	20: MoveLoc[3](Arg3: &PriceInfoObject)
+	21: Call reserve::update_price<Ty0>(&mut Reserve<Ty0>, &Clock, &PriceInfoObject)
+	22: Ret
+}
+
+public create_obligation<Ty0>(Arg0: &mut LendingMarket<Ty0>, Arg1: &mut TxContext): ObligationOwnerCap<Ty0> {
+L2:	loc0: ObligationOwnerCap<Ty0>
+L3:	loc1: Obligation<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(13)
+B2:
+	7: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[1](Arg1: &mut TxContext)
+	10: Pop
+	11: LdConst[0](u64: 1)
+	12: Abort
+B3:
+	13: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	14: FreezeRef
+	15: Call object::id<LendingMarket<Ty0>>(&LendingMarket<Ty0>): ID
+	16: CopyLoc[1](Arg1: &mut TxContext)
+	17: Call obligation::create_obligation<Ty0>(ID, &mut TxContext): Obligation<Ty0>
+	18: StLoc[3](loc1: Obligation<Ty0>)
+	19: MoveLoc[1](Arg1: &mut TxContext)
+	20: Call object::new(&mut TxContext): UID
+	21: ImmBorrowLoc[3](loc1: Obligation<Ty0>)
+	22: Call object::id<Obligation<Ty0>>(&Obligation<Ty0>): ID
+	23: PackGeneric[2](ObligationOwnerCap<Ty0>)
+	24: StLoc[2](loc0: ObligationOwnerCap<Ty0>)
+	25: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	26: MutBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	27: ImmBorrowLoc[3](loc1: Obligation<Ty0>)
+	28: Call object::id<Obligation<Ty0>>(&Obligation<Ty0>): ID
+	29: MoveLoc[3](loc1: Obligation<Ty0>)
+	30: Call object_table::add<ID, Obligation<Ty0>>(&mut ObjectTable<ID, Obligation<Ty0>>, ID, Obligation<Ty0>)
+	31: MoveLoc[2](loc0: ObligationOwnerCap<Ty0>)
+	32: Ret
+}
+
+public deposit_liquidity_and_mint_ctokens<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &Clock, Arg3: Coin<Ty1>, Arg4: &mut TxContext): Coin<CToken<Ty0, Ty1>> {
+L5:	loc0: Balance<CToken<Ty0, Ty1>>
+L6:	loc1: u64
+L7:	loc2: address
+L8:	loc3: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: FreezeRef
+	2: Call object::id_address<LendingMarket<Ty0>>(&LendingMarket<Ty0>): address
+	3: StLoc[7](loc2: address)
+	4: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	5: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	6: ReadRef
+	7: LdConst[6](u64: 7)
+	8: Eq
+	9: BrFalse(11)
+B1:
+	10: Branch(19)
+B2:
+	11: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	12: Pop
+	13: MoveLoc[4](Arg4: &mut TxContext)
+	14: Pop
+	15: MoveLoc[2](Arg2: &Clock)
+	16: Pop
+	17: LdConst[0](u64: 1)
+	18: Abort
+B3:
+	19: ImmBorrowLoc[3](Arg3: Coin<Ty1>)
+	20: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	21: LdU64(0)
+	22: Gt
+	23: BrFalse(25)
+B4:
+	24: Branch(33)
+B5:
+	25: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	26: Pop
+	27: MoveLoc[4](Arg4: &mut TxContext)
+	28: Pop
+	29: MoveLoc[2](Arg2: &Clock)
+	30: Pop
+	31: LdConst[1](u64: 2)
+	32: Abort
+B6:
+	33: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	34: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	35: MoveLoc[1](Arg1: u64)
+	36: VecMutBorrow(51)
+	37: StLoc[8](loc3: &mut Reserve<Ty0>)
+	38: CopyLoc[8](loc3: &mut Reserve<Ty0>)
+	39: FreezeRef
+	40: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	41: Call type_name::get<Ty1>(): TypeName
+	42: Eq
+	43: BrFalse(45)
+B7:
+	44: Branch(53)
+B8:
+	45: MoveLoc[8](loc3: &mut Reserve<Ty0>)
+	46: Pop
+	47: MoveLoc[4](Arg4: &mut TxContext)
+	48: Pop
+	49: MoveLoc[2](Arg2: &Clock)
+	50: Pop
+	51: LdConst[2](u64: 3)
+	52: Abort
+B9:
+	53: CopyLoc[8](loc3: &mut Reserve<Ty0>)
+	54: MoveLoc[2](Arg2: &Clock)
+	55: Call reserve::compound_interest<Ty0>(&mut Reserve<Ty0>, &Clock)
+	56: ImmBorrowLoc[3](Arg3: Coin<Ty1>)
+	57: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	58: StLoc[6](loc1: u64)
+	59: CopyLoc[8](loc3: &mut Reserve<Ty0>)
+	60: MoveLoc[3](Arg3: Coin<Ty1>)
+	61: Call coin::into_balance<Ty1>(Coin<Ty1>): Balance<Ty1>
+	62: Call reserve::deposit_liquidity_and_mint_ctokens<Ty0, Ty1>(&mut Reserve<Ty0>, Balance<Ty1>): Balance<CToken<Ty0, Ty1>>
+	63: StLoc[5](loc0: Balance<CToken<Ty0, Ty1>>)
+	64: ImmBorrowLoc[5](loc0: Balance<CToken<Ty0, Ty1>>)
+	65: Call balance::value<CToken<Ty0, Ty1>>(&Balance<CToken<Ty0, Ty1>>): u64
+	66: LdU64(0)
+	67: Gt
+	68: BrFalse(70)
+B10:
+	69: Branch(76)
+B11:
+	70: MoveLoc[8](loc3: &mut Reserve<Ty0>)
+	71: Pop
+	72: MoveLoc[4](Arg4: &mut TxContext)
+	73: Pop
+	74: LdConst[1](u64: 2)
+	75: Abort
+B12:
+	76: MoveLoc[7](loc2: address)
+	77: Call type_name::get<Ty1>(): TypeName
+	78: MoveLoc[8](loc3: &mut Reserve<Ty0>)
+	79: FreezeRef
+	80: Call object::id_address<Reserve<Ty0>>(&Reserve<Ty0>): address
+	81: MoveLoc[6](loc1: u64)
+	82: ImmBorrowLoc[5](loc0: Balance<CToken<Ty0, Ty1>>)
+	83: Call balance::value<CToken<Ty0, Ty1>>(&Balance<CToken<Ty0, Ty1>>): u64
+	84: Pack[7](MintEvent)
+	85: Call event::emit<MintEvent>(MintEvent)
+	86: MoveLoc[5](loc0: Balance<CToken<Ty0, Ty1>>)
+	87: MoveLoc[4](Arg4: &mut TxContext)
+	88: Call coin::from_balance<CToken<Ty0, Ty1>>(Balance<CToken<Ty0, Ty1>>, &mut TxContext): Coin<CToken<Ty0, Ty1>>
+	89: Ret
+}
+
+public redeem_ctokens_and_withdraw_liquidity<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &Clock, Arg3: Coin<CToken<Ty0, Ty1>>, Arg4: Option<RateLimiterExemption<Ty0, Ty1>>, Arg5: &mut TxContext): Coin<Ty1> {
+L6:	loc0: LiquidityRequest<Ty0, Ty1>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: CopyLoc[1](Arg1: u64)
+	2: MoveLoc[2](Arg2: &Clock)
+	3: MoveLoc[3](Arg3: Coin<CToken<Ty0, Ty1>>)
+	4: MoveLoc[4](Arg4: Option<RateLimiterExemption<Ty0, Ty1>>)
+	5: CopyLoc[5](Arg5: &mut TxContext)
+	6: Call redeem_ctokens_and_withdraw_liquidity_request<Ty0, Ty1>(&mut LendingMarket<Ty0>, u64, &Clock, Coin<CToken<Ty0, Ty1>>, Option<RateLimiterExemption<Ty0, Ty1>>, &mut TxContext): LiquidityRequest<Ty0, Ty1>
+	7: StLoc[6](loc0: LiquidityRequest<Ty0, Ty1>)
+	8: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	9: MoveLoc[1](Arg1: u64)
+	10: MoveLoc[6](loc0: LiquidityRequest<Ty0, Ty1>)
+	11: MoveLoc[5](Arg5: &mut TxContext)
+	12: Call fulfill_liquidity_request<Ty0, Ty1>(&mut LendingMarket<Ty0>, u64, LiquidityRequest<Ty0, Ty1>, &mut TxContext): Coin<Ty1>
+	13: Ret
+}
+
+public redeem_ctokens_and_withdraw_liquidity_request<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &Clock, Arg3: Coin<CToken<Ty0, Ty1>>, Arg4: Option<RateLimiterExemption<Ty0, Ty1>>, Arg5: &mut TxContext): LiquidityRequest<Ty0, Ty1> {
+L6:	loc0: u64
+L7:	loc1: bool
+L8:	loc2: address
+L9:	loc3: LiquidityRequest<Ty0, Ty1>
+L10:	loc4: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: FreezeRef
+	2: Call object::id_address<LendingMarket<Ty0>>(&LendingMarket<Ty0>): address
+	3: StLoc[8](loc2: address)
+	4: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	5: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	6: ReadRef
+	7: LdConst[6](u64: 7)
+	8: Eq
+	9: BrFalse(11)
+B1:
+	10: Branch(17)
+B2:
+	11: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	12: Pop
+	13: MoveLoc[2](Arg2: &Clock)
+	14: Pop
+	15: LdConst[0](u64: 1)
+	16: Abort
+B3:
+	17: ImmBorrowLoc[3](Arg3: Coin<CToken<Ty0, Ty1>>)
+	18: Call coin::value<CToken<Ty0, Ty1>>(&Coin<CToken<Ty0, Ty1>>): u64
+	19: LdU64(0)
+	20: Gt
+	21: BrFalse(23)
+B4:
+	22: Branch(29)
+B5:
+	23: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	24: Pop
+	25: MoveLoc[2](Arg2: &Clock)
+	26: Pop
+	27: LdConst[1](u64: 2)
+	28: Abort
+B6:
+	29: ImmBorrowLoc[3](Arg3: Coin<CToken<Ty0, Ty1>>)
+	30: Call coin::value<CToken<Ty0, Ty1>>(&Coin<CToken<Ty0, Ty1>>): u64
+	31: StLoc[6](loc0: u64)
+	32: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	33: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	34: MoveLoc[1](Arg1: u64)
+	35: VecMutBorrow(51)
+	36: StLoc[10](loc4: &mut Reserve<Ty0>)
+	37: CopyLoc[10](loc4: &mut Reserve<Ty0>)
+	38: FreezeRef
+	39: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	40: Call type_name::get<Ty1>(): TypeName
+	41: Eq
+	42: BrFalse(44)
+B7:
+	43: Branch(52)
+B8:
+	44: MoveLoc[10](loc4: &mut Reserve<Ty0>)
+	45: Pop
+	46: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	47: Pop
+	48: MoveLoc[2](Arg2: &Clock)
+	49: Pop
+	50: LdConst[2](u64: 3)
+	51: Abort
+B9:
+	52: CopyLoc[10](loc4: &mut Reserve<Ty0>)
+	53: CopyLoc[2](Arg2: &Clock)
+	54: Call reserve::compound_interest<Ty0>(&mut Reserve<Ty0>, &Clock)
+	55: LdFalse
+	56: StLoc[7](loc1: bool)
+	57: ImmBorrowLoc[4](Arg4: Option<RateLimiterExemption<Ty0, Ty1>>)
+	58: Call option::is_some<RateLimiterExemption<Ty0, Ty1>>(&Option<RateLimiterExemption<Ty0, Ty1>>): bool
+	59: BrFalse(69)
+B10:
+	60: MutBorrowLoc[4](Arg4: Option<RateLimiterExemption<Ty0, Ty1>>)
+	61: Call option::borrow_mut<RateLimiterExemption<Ty0, Ty1>>(&mut Option<RateLimiterExemption<Ty0, Ty1>>): &mut RateLimiterExemption<Ty0, Ty1>
+	62: ImmBorrowFieldGeneric[3](RateLimiterExemption.amount: u64)
+	63: ReadRef
+	64: CopyLoc[6](loc0: u64)
+	65: Ge
+	66: BrFalse(69)
+B11:
+	67: LdTrue
+	68: StLoc[7](loc1: bool)
+B12:
+	69: MoveLoc[7](loc1: bool)
+	70: Not
+	71: BrFalse(84)
+B13:
+	72: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	73: MutBorrowFieldGeneric[4](LendingMarket.rate_limiter: RateLimiter)
+	74: MoveLoc[2](Arg2: &Clock)
+	75: Call clock::timestamp_ms(&Clock): u64
+	76: LdU64(1000)
+	77: Div
+	78: CopyLoc[10](loc4: &mut Reserve<Ty0>)
+	79: FreezeRef
+	80: CopyLoc[6](loc0: u64)
+	81: Call reserve::ctoken_market_value_upper_bound<Ty0>(&Reserve<Ty0>, u64): Decimal
+	82: Call rate_limiter::process_qty(&mut RateLimiter, u64, Decimal)
+	83: Branch(88)
+B14:
+	84: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	85: Pop
+	86: MoveLoc[2](Arg2: &Clock)
+	87: Pop
+B15:
+	88: CopyLoc[10](loc4: &mut Reserve<Ty0>)
+	89: MoveLoc[3](Arg3: Coin<CToken<Ty0, Ty1>>)
+	90: Call coin::into_balance<CToken<Ty0, Ty1>>(Coin<CToken<Ty0, Ty1>>): Balance<CToken<Ty0, Ty1>>
+	91: Call reserve::redeem_ctokens<Ty0, Ty1>(&mut Reserve<Ty0>, Balance<CToken<Ty0, Ty1>>): LiquidityRequest<Ty0, Ty1>
+	92: StLoc[9](loc3: LiquidityRequest<Ty0, Ty1>)
+	93: ImmBorrowLoc[9](loc3: LiquidityRequest<Ty0, Ty1>)
+	94: Call reserve::liquidity_request_amount<Ty0, Ty1>(&LiquidityRequest<Ty0, Ty1>): u64
+	95: LdU64(0)
+	96: Gt
+	97: BrFalse(99)
+B16:
+	98: Branch(103)
+B17:
+	99: MoveLoc[10](loc4: &mut Reserve<Ty0>)
+	100: Pop
+	101: LdConst[1](u64: 2)
+	102: Abort
+B18:
+	103: MoveLoc[8](loc2: address)
+	104: Call type_name::get<Ty1>(): TypeName
+	105: MoveLoc[10](loc4: &mut Reserve<Ty0>)
+	106: FreezeRef
+	107: Call object::id_address<Reserve<Ty0>>(&Reserve<Ty0>): address
+	108: MoveLoc[6](loc0: u64)
+	109: ImmBorrowLoc[9](loc3: LiquidityRequest<Ty0, Ty1>)
+	110: Call reserve::liquidity_request_amount<Ty0, Ty1>(&LiquidityRequest<Ty0, Ty1>): u64
+	111: Pack[8](RedeemEvent)
+	112: Call event::emit<RedeemEvent>(RedeemEvent)
+	113: MoveLoc[9](loc3: LiquidityRequest<Ty0, Ty1>)
+	114: Ret
+}
+
+public deposit_ctokens_into_obligation<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &ObligationOwnerCap<Ty0>, Arg3: &Clock, Arg4: Coin<CToken<Ty0, Ty1>>, Arg5: &mut TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(17)
+B2:
+	7: MoveLoc[2](Arg2: &ObligationOwnerCap<Ty0>)
+	8: Pop
+	9: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	10: Pop
+	11: MoveLoc[5](Arg5: &mut TxContext)
+	12: Pop
+	13: MoveLoc[3](Arg3: &Clock)
+	14: Pop
+	15: LdConst[0](u64: 1)
+	16: Abort
+B3:
+	17: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	18: MoveLoc[1](Arg1: u64)
+	19: MoveLoc[2](Arg2: &ObligationOwnerCap<Ty0>)
+	20: ImmBorrowFieldGeneric[5](ObligationOwnerCap.obligation_id: ID)
+	21: ReadRef
+	22: MoveLoc[3](Arg3: &Clock)
+	23: MoveLoc[4](Arg4: Coin<CToken<Ty0, Ty1>>)
+	24: MoveLoc[5](Arg5: &mut TxContext)
+	25: Call deposit_ctokens_into_obligation_by_id<Ty0, Ty1>(&mut LendingMarket<Ty0>, u64, ID, &Clock, Coin<CToken<Ty0, Ty1>>, &mut TxContext)
+	26: Ret
+}
+
+public borrow<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &ObligationOwnerCap<Ty0>, Arg3: &Clock, Arg4: u64, Arg5: &mut TxContext): Coin<Ty1> {
+L6:	loc0: LiquidityRequest<Ty0, Ty1>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: CopyLoc[1](Arg1: u64)
+	2: MoveLoc[2](Arg2: &ObligationOwnerCap<Ty0>)
+	3: MoveLoc[3](Arg3: &Clock)
+	4: MoveLoc[4](Arg4: u64)
+	5: Call borrow_request<Ty0, Ty1>(&mut LendingMarket<Ty0>, u64, &ObligationOwnerCap<Ty0>, &Clock, u64): LiquidityRequest<Ty0, Ty1>
+	6: StLoc[6](loc0: LiquidityRequest<Ty0, Ty1>)
+	7: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	8: MoveLoc[1](Arg1: u64)
+	9: MoveLoc[6](loc0: LiquidityRequest<Ty0, Ty1>)
+	10: MoveLoc[5](Arg5: &mut TxContext)
+	11: Call fulfill_liquidity_request<Ty0, Ty1>(&mut LendingMarket<Ty0>, u64, LiquidityRequest<Ty0, Ty1>, &mut TxContext): Coin<Ty1>
+	12: Ret
+}
+
+public borrow_request<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &ObligationOwnerCap<Ty0>, Arg3: &Clock, Arg4: u64): LiquidityRequest<Ty0, Ty1> {
+L5:	loc0: Decimal
+L6:	loc1: address
+L7:	loc2: LiquidityRequest<Ty0, Ty1>
+L8:	loc3: &mut Obligation<Ty0>
+L9:	loc4: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: FreezeRef
+	2: Call object::id_address<LendingMarket<Ty0>>(&LendingMarket<Ty0>): address
+	3: StLoc[6](loc1: address)
+	4: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	5: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	6: ReadRef
+	7: LdConst[6](u64: 7)
+	8: Eq
+	9: BrFalse(11)
+B1:
+	10: Branch(19)
+B2:
+	11: MoveLoc[2](Arg2: &ObligationOwnerCap<Ty0>)
+	12: Pop
+	13: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	14: Pop
+	15: MoveLoc[3](Arg3: &Clock)
+	16: Pop
+	17: LdConst[0](u64: 1)
+	18: Abort
+B3:
+	19: CopyLoc[4](Arg4: u64)
+	20: LdU64(0)
+	21: Gt
+	22: BrFalse(24)
+B4:
+	23: Branch(32)
+B5:
+	24: MoveLoc[2](Arg2: &ObligationOwnerCap<Ty0>)
+	25: Pop
+	26: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	27: Pop
+	28: MoveLoc[3](Arg3: &Clock)
+	29: Pop
+	30: LdConst[1](u64: 2)
+	31: Abort
+B6:
+	32: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	33: MutBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	34: MoveLoc[2](Arg2: &ObligationOwnerCap<Ty0>)
+	35: ImmBorrowFieldGeneric[5](ObligationOwnerCap.obligation_id: ID)
+	36: ReadRef
+	37: Call object_table::borrow_mut<ID, Obligation<Ty0>>(&mut ObjectTable<ID, Obligation<Ty0>>, ID): &mut Obligation<Ty0>
+	38: StLoc[8](loc3: &mut Obligation<Ty0>)
+	39: CopyLoc[8](loc3: &mut Obligation<Ty0>)
+	40: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	41: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	42: CopyLoc[3](Arg3: &Clock)
+	43: Call obligation::refresh<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, &Clock)
+	44: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	45: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	46: MoveLoc[1](Arg1: u64)
+	47: VecMutBorrow(51)
+	48: StLoc[9](loc4: &mut Reserve<Ty0>)
+	49: CopyLoc[9](loc4: &mut Reserve<Ty0>)
+	50: FreezeRef
+	51: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	52: Call type_name::get<Ty1>(): TypeName
+	53: Eq
+	54: BrFalse(56)
+B7:
+	55: Branch(66)
+B8:
+	56: MoveLoc[9](loc4: &mut Reserve<Ty0>)
+	57: Pop
+	58: MoveLoc[8](loc3: &mut Obligation<Ty0>)
+	59: Pop
+	60: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	61: Pop
+	62: MoveLoc[3](Arg3: &Clock)
+	63: Pop
+	64: LdConst[2](u64: 3)
+	65: Abort
+B9:
+	66: CopyLoc[9](loc4: &mut Reserve<Ty0>)
+	67: CopyLoc[3](Arg3: &Clock)
+	68: Call reserve::compound_interest<Ty0>(&mut Reserve<Ty0>, &Clock)
+	69: CopyLoc[9](loc4: &mut Reserve<Ty0>)
+	70: FreezeRef
+	71: CopyLoc[3](Arg3: &Clock)
+	72: Call reserve::assert_price_is_fresh<Ty0>(&Reserve<Ty0>, &Clock)
+	73: CopyLoc[4](Arg4: u64)
+	74: LdConst[8](u64: 1844..)
+	75: Eq
+	76: BrFalse(102)
+B10:
+	77: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	78: ImmBorrowFieldGeneric[4](LendingMarket.rate_limiter: RateLimiter)
+	79: ReadRef
+	80: CopyLoc[8](loc3: &mut Obligation<Ty0>)
+	81: FreezeRef
+	82: CopyLoc[9](loc4: &mut Reserve<Ty0>)
+	83: FreezeRef
+	84: CopyLoc[3](Arg3: &Clock)
+	85: Call max_borrow_amount<Ty0>(RateLimiter, &Obligation<Ty0>, &Reserve<Ty0>, &Clock): u64
+	86: StLoc[4](Arg4: u64)
+	87: CopyLoc[4](Arg4: u64)
+	88: LdU64(0)
+	89: Gt
+	90: BrFalse(92)
+B11:
+	91: Branch(102)
+B12:
+	92: MoveLoc[9](loc4: &mut Reserve<Ty0>)
+	93: Pop
+	94: MoveLoc[8](loc3: &mut Obligation<Ty0>)
+	95: Pop
+	96: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	97: Pop
+	98: MoveLoc[3](Arg3: &Clock)
+	99: Pop
+	100: LdConst[1](u64: 2)
+	101: Abort
+B13:
+	102: CopyLoc[9](loc4: &mut Reserve<Ty0>)
+	103: MoveLoc[4](Arg4: u64)
+	104: Call reserve::borrow_liquidity<Ty0, Ty1>(&mut Reserve<Ty0>, u64): LiquidityRequest<Ty0, Ty1>
+	105: StLoc[7](loc2: LiquidityRequest<Ty0, Ty1>)
+	106: CopyLoc[8](loc3: &mut Obligation<Ty0>)
+	107: CopyLoc[9](loc4: &mut Reserve<Ty0>)
+	108: CopyLoc[3](Arg3: &Clock)
+	109: ImmBorrowLoc[7](loc2: LiquidityRequest<Ty0, Ty1>)
+	110: Call reserve::liquidity_request_amount<Ty0, Ty1>(&LiquidityRequest<Ty0, Ty1>): u64
+	111: Call obligation::borrow<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock, u64)
+	112: CopyLoc[9](loc4: &mut Reserve<Ty0>)
+	113: FreezeRef
+	114: ImmBorrowLoc[7](loc2: LiquidityRequest<Ty0, Ty1>)
+	115: Call reserve::liquidity_request_amount<Ty0, Ty1>(&LiquidityRequest<Ty0, Ty1>): u64
+	116: Call decimal::from(u64): Decimal
+	117: Call reserve::market_value_upper_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	118: StLoc[5](loc0: Decimal)
+	119: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	120: MutBorrowFieldGeneric[4](LendingMarket.rate_limiter: RateLimiter)
+	121: CopyLoc[3](Arg3: &Clock)
+	122: Call clock::timestamp_ms(&Clock): u64
+	123: LdU64(1000)
+	124: Div
+	125: MoveLoc[5](loc0: Decimal)
+	126: Call rate_limiter::process_qty(&mut RateLimiter, u64, Decimal)
+	127: MoveLoc[6](loc1: address)
+	128: Call type_name::get<Ty1>(): TypeName
+	129: MoveLoc[9](loc4: &mut Reserve<Ty0>)
+	130: FreezeRef
+	131: Call object::id_address<Reserve<Ty0>>(&Reserve<Ty0>): address
+	132: CopyLoc[8](loc3: &mut Obligation<Ty0>)
+	133: FreezeRef
+	134: Call object::id_address<Obligation<Ty0>>(&Obligation<Ty0>): address
+	135: ImmBorrowLoc[7](loc2: LiquidityRequest<Ty0, Ty1>)
+	136: Call reserve::liquidity_request_amount<Ty0, Ty1>(&LiquidityRequest<Ty0, Ty1>): u64
+	137: ImmBorrowLoc[7](loc2: LiquidityRequest<Ty0, Ty1>)
+	138: Call reserve::liquidity_request_fee<Ty0, Ty1>(&LiquidityRequest<Ty0, Ty1>): u64
+	139: Pack[11](BorrowEvent)
+	140: Call event::emit<BorrowEvent>(BorrowEvent)
+	141: MoveLoc[8](loc3: &mut Obligation<Ty0>)
+	142: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	143: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	144: MoveLoc[3](Arg3: &Clock)
+	145: Call obligation::zero_out_rewards_if_looped<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, &Clock)
+	146: MoveLoc[7](loc2: LiquidityRequest<Ty0, Ty1>)
+	147: Ret
+}
+
+public fulfill_liquidity_request<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: LiquidityRequest<Ty0, Ty1>, Arg3: &mut TxContext): Coin<Ty1> {
+L4:	loc0: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(13)
+B2:
+	7: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[3](Arg3: &mut TxContext)
+	10: Pop
+	11: LdConst[0](u64: 1)
+	12: Abort
+B3:
+	13: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	14: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	15: MoveLoc[1](Arg1: u64)
+	16: VecMutBorrow(51)
+	17: StLoc[4](loc0: &mut Reserve<Ty0>)
+	18: CopyLoc[4](loc0: &mut Reserve<Ty0>)
+	19: FreezeRef
+	20: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	21: Call type_name::get<Ty1>(): TypeName
+	22: Eq
+	23: BrFalse(25)
+B4:
+	24: Branch(31)
+B5:
+	25: MoveLoc[4](loc0: &mut Reserve<Ty0>)
+	26: Pop
+	27: MoveLoc[3](Arg3: &mut TxContext)
+	28: Pop
+	29: LdConst[2](u64: 3)
+	30: Abort
+B6:
+	31: MoveLoc[4](loc0: &mut Reserve<Ty0>)
+	32: MoveLoc[2](Arg2: LiquidityRequest<Ty0, Ty1>)
+	33: Call reserve::fulfill_liquidity_request<Ty0, Ty1>(&mut Reserve<Ty0>, LiquidityRequest<Ty0, Ty1>): Balance<Ty1>
+	34: MoveLoc[3](Arg3: &mut TxContext)
+	35: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	36: Ret
+}
+
+public withdraw_ctokens<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &ObligationOwnerCap<Ty0>, Arg3: &Clock, Arg4: u64, Arg5: &mut TxContext): Coin<CToken<Ty0, Ty1>> {
+L6:	loc0: Balance<CToken<Ty0, Ty1>>
+L7:	loc1: address
+L8:	loc2: &mut Obligation<Ty0>
+L9:	loc3: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: FreezeRef
+	2: Call object::id_address<LendingMarket<Ty0>>(&LendingMarket<Ty0>): address
+	3: StLoc[7](loc1: address)
+	4: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	5: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	6: ReadRef
+	7: LdConst[6](u64: 7)
+	8: Eq
+	9: BrFalse(11)
+B1:
+	10: Branch(21)
+B2:
+	11: MoveLoc[2](Arg2: &ObligationOwnerCap<Ty0>)
+	12: Pop
+	13: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	14: Pop
+	15: MoveLoc[5](Arg5: &mut TxContext)
+	16: Pop
+	17: MoveLoc[3](Arg3: &Clock)
+	18: Pop
+	19: LdConst[0](u64: 1)
+	20: Abort
+B3:
+	21: CopyLoc[4](Arg4: u64)
+	22: LdU64(0)
+	23: Gt
+	24: BrFalse(26)
+B4:
+	25: Branch(36)
+B5:
+	26: MoveLoc[2](Arg2: &ObligationOwnerCap<Ty0>)
+	27: Pop
+	28: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	29: Pop
+	30: MoveLoc[5](Arg5: &mut TxContext)
+	31: Pop
+	32: MoveLoc[3](Arg3: &Clock)
+	33: Pop
+	34: LdConst[1](u64: 2)
+	35: Abort
+B6:
+	36: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	37: MutBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	38: MoveLoc[2](Arg2: &ObligationOwnerCap<Ty0>)
+	39: ImmBorrowFieldGeneric[5](ObligationOwnerCap.obligation_id: ID)
+	40: ReadRef
+	41: Call object_table::borrow_mut<ID, Obligation<Ty0>>(&mut ObjectTable<ID, Obligation<Ty0>>, ID): &mut Obligation<Ty0>
+	42: StLoc[8](loc2: &mut Obligation<Ty0>)
+	43: CopyLoc[8](loc2: &mut Obligation<Ty0>)
+	44: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	45: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	46: CopyLoc[3](Arg3: &Clock)
+	47: Call obligation::refresh<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, &Clock)
+	48: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	49: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	50: MoveLoc[1](Arg1: u64)
+	51: VecMutBorrow(51)
+	52: StLoc[9](loc3: &mut Reserve<Ty0>)
+	53: CopyLoc[9](loc3: &mut Reserve<Ty0>)
+	54: FreezeRef
+	55: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	56: Call type_name::get<Ty1>(): TypeName
+	57: Eq
+	58: BrFalse(60)
+B7:
+	59: Branch(72)
+B8:
+	60: MoveLoc[9](loc3: &mut Reserve<Ty0>)
+	61: Pop
+	62: MoveLoc[8](loc2: &mut Obligation<Ty0>)
+	63: Pop
+	64: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	65: Pop
+	66: MoveLoc[5](Arg5: &mut TxContext)
+	67: Pop
+	68: MoveLoc[3](Arg3: &Clock)
+	69: Pop
+	70: LdConst[2](u64: 3)
+	71: Abort
+B9:
+	72: CopyLoc[4](Arg4: u64)
+	73: LdConst[8](u64: 1844..)
+	74: Eq
+	75: BrFalse(86)
+B10:
+	76: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	77: ImmBorrowFieldGeneric[4](LendingMarket.rate_limiter: RateLimiter)
+	78: ReadRef
+	79: CopyLoc[8](loc2: &mut Obligation<Ty0>)
+	80: FreezeRef
+	81: CopyLoc[9](loc3: &mut Reserve<Ty0>)
+	82: FreezeRef
+	83: CopyLoc[3](Arg3: &Clock)
+	84: Call max_withdraw_amount<Ty0>(RateLimiter, &Obligation<Ty0>, &Reserve<Ty0>, &Clock): u64
+	85: StLoc[4](Arg4: u64)
+B11:
+	86: CopyLoc[8](loc2: &mut Obligation<Ty0>)
+	87: CopyLoc[9](loc3: &mut Reserve<Ty0>)
+	88: CopyLoc[3](Arg3: &Clock)
+	89: CopyLoc[4](Arg4: u64)
+	90: Call obligation::withdraw<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock, u64)
+	91: MoveLoc[7](loc1: address)
+	92: Call type_name::get<Ty1>(): TypeName
+	93: CopyLoc[9](loc3: &mut Reserve<Ty0>)
+	94: FreezeRef
+	95: Call object::id_address<Reserve<Ty0>>(&Reserve<Ty0>): address
+	96: CopyLoc[8](loc2: &mut Obligation<Ty0>)
+	97: FreezeRef
+	98: Call object::id_address<Obligation<Ty0>>(&Obligation<Ty0>): address
+	99: CopyLoc[4](Arg4: u64)
+	100: Pack[10](WithdrawEvent)
+	101: Call event::emit<WithdrawEvent>(WithdrawEvent)
+	102: MoveLoc[9](loc3: &mut Reserve<Ty0>)
+	103: MoveLoc[4](Arg4: u64)
+	104: Call reserve::withdraw_ctokens<Ty0, Ty1>(&mut Reserve<Ty0>, u64): Balance<CToken<Ty0, Ty1>>
+	105: StLoc[6](loc0: Balance<CToken<Ty0, Ty1>>)
+	106: MoveLoc[8](loc2: &mut Obligation<Ty0>)
+	107: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	108: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	109: MoveLoc[3](Arg3: &Clock)
+	110: Call obligation::zero_out_rewards_if_looped<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, &Clock)
+	111: MoveLoc[6](loc0: Balance<CToken<Ty0, Ty1>>)
+	112: MoveLoc[5](Arg5: &mut TxContext)
+	113: Call coin::from_balance<CToken<Ty0, Ty1>>(Balance<CToken<Ty0, Ty1>>, &mut TxContext): Coin<CToken<Ty0, Ty1>>
+	114: Ret
+}
+
+public liquidate<Ty0, Ty1, Ty2>(Arg0: &mut LendingMarket<Ty0>, Arg1: ID, Arg2: u64, Arg3: u64, Arg4: &Clock, Arg5: &mut Coin<Ty1>, Arg6: &mut TxContext): Coin<CToken<Ty0, Ty2>> * RateLimiterExemption<Ty0, Ty2> {
+L7:	loc0: Balance<CToken<Ty0, Ty2>>
+L8:	loc1: RateLimiterExemption<Ty0, Ty2>
+L9:	loc2: address
+L10:	loc3: u64
+L11:	loc4: &mut Obligation<Ty0>
+L12:	loc5: u64
+L13:	loc6: &mut Reserve<Ty0>
+L14:	loc7: &Reserve<Ty0>
+L15:	loc8: Decimal
+L16:	loc9: Coin<Ty1>
+L17:	loc10: u64
+L18:	loc11: &mut Reserve<Ty0>
+L19:	loc12: &Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: FreezeRef
+	2: Call object::id_address<LendingMarket<Ty0>>(&LendingMarket<Ty0>): address
+	3: StLoc[9](loc2: address)
+	4: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	5: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	6: ReadRef
+	7: LdConst[6](u64: 7)
+	8: Eq
+	9: BrFalse(11)
+B1:
+	10: Branch(21)
+B2:
+	11: MoveLoc[5](Arg5: &mut Coin<Ty1>)
+	12: Pop
+	13: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	14: Pop
+	15: MoveLoc[6](Arg6: &mut TxContext)
+	16: Pop
+	17: MoveLoc[4](Arg4: &Clock)
+	18: Pop
+	19: LdConst[0](u64: 1)
+	20: Abort
+B3:
+	21: CopyLoc[5](Arg5: &mut Coin<Ty1>)
+	22: FreezeRef
+	23: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	24: LdU64(0)
+	25: Gt
+	26: BrFalse(28)
+B4:
+	27: Branch(38)
+B5:
+	28: MoveLoc[5](Arg5: &mut Coin<Ty1>)
+	29: Pop
+	30: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	31: Pop
+	32: MoveLoc[6](Arg6: &mut TxContext)
+	33: Pop
+	34: MoveLoc[4](Arg4: &Clock)
+	35: Pop
+	36: LdConst[1](u64: 2)
+	37: Abort
+B6:
+	38: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	39: MutBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	40: MoveLoc[1](Arg1: ID)
+	41: Call object_table::borrow_mut<ID, Obligation<Ty0>>(&mut ObjectTable<ID, Obligation<Ty0>>, ID): &mut Obligation<Ty0>
+	42: StLoc[11](loc4: &mut Obligation<Ty0>)
+	43: CopyLoc[11](loc4: &mut Obligation<Ty0>)
+	44: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	45: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	46: CopyLoc[4](Arg4: &Clock)
+	47: Call obligation::refresh<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, &Clock)
+	48: CopyLoc[11](loc4: &mut Obligation<Ty0>)
+	49: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	50: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	51: CopyLoc[2](Arg2: u64)
+	52: CopyLoc[3](Arg3: u64)
+	53: CopyLoc[4](Arg4: &Clock)
+	54: CopyLoc[5](Arg5: &mut Coin<Ty1>)
+	55: FreezeRef
+	56: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	57: Call obligation::liquidate<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, u64, u64, &Clock, u64): u64 * Decimal
+	58: StLoc[15](loc8: Decimal)
+	59: StLoc[17](loc10: u64)
+	60: CopyLoc[15](loc8: Decimal)
+	61: LdU64(0)
+	62: Call decimal::from(u64): Decimal
+	63: Call decimal::gt(Decimal, Decimal): bool
+	64: BrFalse(66)
+B7:
+	65: Branch(78)
+B8:
+	66: MoveLoc[5](Arg5: &mut Coin<Ty1>)
+	67: Pop
+	68: MoveLoc[11](loc4: &mut Obligation<Ty0>)
+	69: Pop
+	70: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	71: Pop
+	72: MoveLoc[6](Arg6: &mut TxContext)
+	73: Pop
+	74: MoveLoc[4](Arg4: &Clock)
+	75: Pop
+	76: LdConst[1](u64: 2)
+	77: Abort
+B9:
+	78: MoveLoc[5](Arg5: &mut Coin<Ty1>)
+	79: CopyLoc[15](loc8: Decimal)
+	80: Call decimal::ceil(Decimal): u64
+	81: CopyLoc[6](Arg6: &mut TxContext)
+	82: Call coin::split<Ty1>(&mut Coin<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	83: StLoc[16](loc9: Coin<Ty1>)
+	84: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	85: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	86: CopyLoc[2](Arg2: u64)
+	87: VecMutBorrow(51)
+	88: StLoc[13](loc6: &mut Reserve<Ty0>)
+	89: CopyLoc[13](loc6: &mut Reserve<Ty0>)
+	90: FreezeRef
+	91: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	92: Call type_name::get<Ty1>(): TypeName
+	93: Eq
+	94: BrFalse(96)
+B10:
+	95: Branch(108)
+B11:
+	96: MoveLoc[13](loc6: &mut Reserve<Ty0>)
+	97: Pop
+	98: MoveLoc[11](loc4: &mut Obligation<Ty0>)
+	99: Pop
+	100: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	101: Pop
+	102: MoveLoc[6](Arg6: &mut TxContext)
+	103: Pop
+	104: MoveLoc[4](Arg4: &Clock)
+	105: Pop
+	106: LdConst[2](u64: 3)
+	107: Abort
+B12:
+	108: MoveLoc[13](loc6: &mut Reserve<Ty0>)
+	109: MoveLoc[16](loc9: Coin<Ty1>)
+	110: Call coin::into_balance<Ty1>(Coin<Ty1>): Balance<Ty1>
+	111: CopyLoc[15](loc8: Decimal)
+	112: Call reserve::repay_liquidity<Ty0, Ty1>(&mut Reserve<Ty0>, Balance<Ty1>, Decimal)
+	113: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	114: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	115: CopyLoc[3](Arg3: u64)
+	116: VecMutBorrow(51)
+	117: StLoc[18](loc11: &mut Reserve<Ty0>)
+	118: CopyLoc[18](loc11: &mut Reserve<Ty0>)
+	119: FreezeRef
+	120: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	121: Call type_name::get<Ty2>(): TypeName
+	122: Eq
+	123: BrFalse(125)
+B13:
+	124: Branch(137)
+B14:
+	125: MoveLoc[18](loc11: &mut Reserve<Ty0>)
+	126: Pop
+	127: MoveLoc[11](loc4: &mut Obligation<Ty0>)
+	128: Pop
+	129: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	130: Pop
+	131: MoveLoc[6](Arg6: &mut TxContext)
+	132: Pop
+	133: MoveLoc[4](Arg4: &Clock)
+	134: Pop
+	135: LdConst[2](u64: 3)
+	136: Abort
+B15:
+	137: CopyLoc[18](loc11: &mut Reserve<Ty0>)
+	138: CopyLoc[17](loc10: u64)
+	139: Call reserve::withdraw_ctokens<Ty0, Ty2>(&mut Reserve<Ty0>, u64): Balance<CToken<Ty0, Ty2>>
+	140: StLoc[7](loc0: Balance<CToken<Ty0, Ty2>>)
+	141: MoveLoc[18](loc11: &mut Reserve<Ty0>)
+	142: MutBorrowLoc[7](loc0: Balance<CToken<Ty0, Ty2>>)
+	143: Call reserve::deduct_liquidation_fee<Ty0, Ty2>(&mut Reserve<Ty0>, &mut Balance<CToken<Ty0, Ty2>>): u64 * u64
+	144: StLoc[10](loc3: u64)
+	145: StLoc[12](loc5: u64)
+	146: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	147: ImmBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	148: MoveLoc[2](Arg2: u64)
+	149: VecImmBorrow(51)
+	150: StLoc[14](loc7: &Reserve<Ty0>)
+	151: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	152: ImmBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	153: MoveLoc[3](Arg3: u64)
+	154: VecImmBorrow(51)
+	155: StLoc[19](loc12: &Reserve<Ty0>)
+	156: MoveLoc[9](loc2: address)
+	157: MoveLoc[14](loc7: &Reserve<Ty0>)
+	158: Call object::id_address<Reserve<Ty0>>(&Reserve<Ty0>): address
+	159: MoveLoc[19](loc12: &Reserve<Ty0>)
+	160: Call object::id_address<Reserve<Ty0>>(&Reserve<Ty0>): address
+	161: CopyLoc[11](loc4: &mut Obligation<Ty0>)
+	162: FreezeRef
+	163: Call object::id_address<Obligation<Ty0>>(&Obligation<Ty0>): address
+	164: Call type_name::get<Ty1>(): TypeName
+	165: Call type_name::get<Ty2>(): TypeName
+	166: MoveLoc[15](loc8: Decimal)
+	167: Call decimal::ceil(Decimal): u64
+	168: MoveLoc[17](loc10: u64)
+	169: MoveLoc[12](loc5: u64)
+	170: MoveLoc[10](loc3: u64)
+	171: Pack[14](LiquidateEvent)
+	172: Call event::emit<LiquidateEvent>(LiquidateEvent)
+	173: MoveLoc[11](loc4: &mut Obligation<Ty0>)
+	174: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	175: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	176: MoveLoc[4](Arg4: &Clock)
+	177: Call obligation::zero_out_rewards_if_looped<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, &Clock)
+	178: ImmBorrowLoc[7](loc0: Balance<CToken<Ty0, Ty2>>)
+	179: Call balance::value<CToken<Ty0, Ty2>>(&Balance<CToken<Ty0, Ty2>>): u64
+	180: PackGeneric[3](RateLimiterExemption<Ty0, Ty2>)
+	181: StLoc[8](loc1: RateLimiterExemption<Ty0, Ty2>)
+	182: MoveLoc[7](loc0: Balance<CToken<Ty0, Ty2>>)
+	183: MoveLoc[6](Arg6: &mut TxContext)
+	184: Call coin::from_balance<CToken<Ty0, Ty2>>(Balance<CToken<Ty0, Ty2>>, &mut TxContext): Coin<CToken<Ty0, Ty2>>
+	185: MoveLoc[8](loc1: RateLimiterExemption<Ty0, Ty2>)
+	186: Ret
+}
+
+public repay<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: ID, Arg3: &Clock, Arg4: &mut Coin<Ty1>, Arg5: &mut TxContext) {
+L6:	loc0: address
+L7:	loc1: &mut Obligation<Ty0>
+L8:	loc2: Decimal
+L9:	loc3: Coin<Ty1>
+L10:	loc4: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: FreezeRef
+	2: Call object::id_address<LendingMarket<Ty0>>(&LendingMarket<Ty0>): address
+	3: StLoc[6](loc0: address)
+	4: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	5: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	6: ReadRef
+	7: LdConst[6](u64: 7)
+	8: Eq
+	9: BrFalse(11)
+B1:
+	10: Branch(21)
+B2:
+	11: MoveLoc[4](Arg4: &mut Coin<Ty1>)
+	12: Pop
+	13: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	14: Pop
+	15: MoveLoc[5](Arg5: &mut TxContext)
+	16: Pop
+	17: MoveLoc[3](Arg3: &Clock)
+	18: Pop
+	19: LdConst[0](u64: 1)
+	20: Abort
+B3:
+	21: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	22: MutBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	23: MoveLoc[2](Arg2: ID)
+	24: Call object_table::borrow_mut<ID, Obligation<Ty0>>(&mut ObjectTable<ID, Obligation<Ty0>>, ID): &mut Obligation<Ty0>
+	25: StLoc[7](loc1: &mut Obligation<Ty0>)
+	26: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	27: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	28: MoveLoc[1](Arg1: u64)
+	29: VecMutBorrow(51)
+	30: StLoc[10](loc4: &mut Reserve<Ty0>)
+	31: CopyLoc[10](loc4: &mut Reserve<Ty0>)
+	32: FreezeRef
+	33: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	34: Call type_name::get<Ty1>(): TypeName
+	35: Eq
+	36: BrFalse(38)
+B4:
+	37: Branch(52)
+B5:
+	38: MoveLoc[10](loc4: &mut Reserve<Ty0>)
+	39: Pop
+	40: MoveLoc[7](loc1: &mut Obligation<Ty0>)
+	41: Pop
+	42: MoveLoc[4](Arg4: &mut Coin<Ty1>)
+	43: Pop
+	44: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	45: Pop
+	46: MoveLoc[5](Arg5: &mut TxContext)
+	47: Pop
+	48: MoveLoc[3](Arg3: &Clock)
+	49: Pop
+	50: LdConst[2](u64: 3)
+	51: Abort
+B6:
+	52: CopyLoc[10](loc4: &mut Reserve<Ty0>)
+	53: CopyLoc[3](Arg3: &Clock)
+	54: Call reserve::compound_interest<Ty0>(&mut Reserve<Ty0>, &Clock)
+	55: CopyLoc[7](loc1: &mut Obligation<Ty0>)
+	56: CopyLoc[10](loc4: &mut Reserve<Ty0>)
+	57: CopyLoc[3](Arg3: &Clock)
+	58: CopyLoc[4](Arg4: &mut Coin<Ty1>)
+	59: FreezeRef
+	60: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	61: Call decimal::from(u64): Decimal
+	62: Call obligation::repay<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock, Decimal): Decimal
+	63: StLoc[8](loc2: Decimal)
+	64: MoveLoc[4](Arg4: &mut Coin<Ty1>)
+	65: CopyLoc[8](loc2: Decimal)
+	66: Call decimal::ceil(Decimal): u64
+	67: MoveLoc[5](Arg5: &mut TxContext)
+	68: Call coin::split<Ty1>(&mut Coin<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	69: StLoc[9](loc3: Coin<Ty1>)
+	70: CopyLoc[10](loc4: &mut Reserve<Ty0>)
+	71: MoveLoc[9](loc3: Coin<Ty1>)
+	72: Call coin::into_balance<Ty1>(Coin<Ty1>): Balance<Ty1>
+	73: CopyLoc[8](loc2: Decimal)
+	74: Call reserve::repay_liquidity<Ty0, Ty1>(&mut Reserve<Ty0>, Balance<Ty1>, Decimal)
+	75: MoveLoc[6](loc0: address)
+	76: Call type_name::get<Ty1>(): TypeName
+	77: MoveLoc[10](loc4: &mut Reserve<Ty0>)
+	78: FreezeRef
+	79: Call object::id_address<Reserve<Ty0>>(&Reserve<Ty0>): address
+	80: CopyLoc[7](loc1: &mut Obligation<Ty0>)
+	81: FreezeRef
+	82: Call object::id_address<Obligation<Ty0>>(&Obligation<Ty0>): address
+	83: MoveLoc[8](loc2: Decimal)
+	84: Call decimal::ceil(Decimal): u64
+	85: Pack[12](RepayEvent)
+	86: Call event::emit<RepayEvent>(RepayEvent)
+	87: MoveLoc[7](loc1: &mut Obligation<Ty0>)
+	88: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	89: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	90: MoveLoc[3](Arg3: &Clock)
+	91: Call obligation::zero_out_rewards_if_looped<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, &Clock)
+	92: Ret
+}
+
+public forgive<Ty0, Ty1>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &mut LendingMarket<Ty0>, Arg2: u64, Arg3: ID, Arg4: &Clock, Arg5: u64) {
+L6:	loc0: Decimal
+L7:	loc1: address
+L8:	loc2: &mut Obligation<Ty0>
+L9:	loc3: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	1: FreezeRef
+	2: Call object::id_address<LendingMarket<Ty0>>(&LendingMarket<Ty0>): address
+	3: StLoc[7](loc1: address)
+	4: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	5: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	6: ReadRef
+	7: LdConst[6](u64: 7)
+	8: Eq
+	9: BrFalse(11)
+B1:
+	10: Branch(17)
+B2:
+	11: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	12: Pop
+	13: MoveLoc[4](Arg4: &Clock)
+	14: Pop
+	15: LdConst[0](u64: 1)
+	16: Abort
+B3:
+	17: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	18: MutBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	19: MoveLoc[3](Arg3: ID)
+	20: Call object_table::borrow_mut<ID, Obligation<Ty0>>(&mut ObjectTable<ID, Obligation<Ty0>>, ID): &mut Obligation<Ty0>
+	21: StLoc[8](loc2: &mut Obligation<Ty0>)
+	22: CopyLoc[8](loc2: &mut Obligation<Ty0>)
+	23: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	24: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	25: CopyLoc[4](Arg4: &Clock)
+	26: Call obligation::refresh<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, &Clock)
+	27: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	28: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	29: MoveLoc[2](Arg2: u64)
+	30: VecMutBorrow(51)
+	31: StLoc[9](loc3: &mut Reserve<Ty0>)
+	32: CopyLoc[9](loc3: &mut Reserve<Ty0>)
+	33: FreezeRef
+	34: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	35: Call type_name::get<Ty1>(): TypeName
+	36: Eq
+	37: BrFalse(39)
+B4:
+	38: Branch(47)
+B5:
+	39: MoveLoc[9](loc3: &mut Reserve<Ty0>)
+	40: Pop
+	41: MoveLoc[8](loc2: &mut Obligation<Ty0>)
+	42: Pop
+	43: MoveLoc[4](Arg4: &Clock)
+	44: Pop
+	45: LdConst[2](u64: 3)
+	46: Abort
+B6:
+	47: CopyLoc[8](loc2: &mut Obligation<Ty0>)
+	48: CopyLoc[9](loc3: &mut Reserve<Ty0>)
+	49: MoveLoc[4](Arg4: &Clock)
+	50: MoveLoc[5](Arg5: u64)
+	51: Call decimal::from(u64): Decimal
+	52: Call obligation::forgive<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock, Decimal): Decimal
+	53: StLoc[6](loc0: Decimal)
+	54: CopyLoc[9](loc3: &mut Reserve<Ty0>)
+	55: CopyLoc[6](loc0: Decimal)
+	56: Call reserve::forgive_debt<Ty0>(&mut Reserve<Ty0>, Decimal)
+	57: MoveLoc[7](loc1: address)
+	58: Call type_name::get<Ty1>(): TypeName
+	59: MoveLoc[9](loc3: &mut Reserve<Ty0>)
+	60: FreezeRef
+	61: Call object::id_address<Reserve<Ty0>>(&Reserve<Ty0>): address
+	62: MoveLoc[8](loc2: &mut Obligation<Ty0>)
+	63: FreezeRef
+	64: Call object::id_address<Obligation<Ty0>>(&Obligation<Ty0>): address
+	65: MoveLoc[6](loc0: Decimal)
+	66: Call decimal::ceil(Decimal): u64
+	67: Pack[13](ForgiveEvent)
+	68: Call event::emit<ForgiveEvent>(ForgiveEvent)
+	69: Ret
+}
+
+public claim_rewards<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: &ObligationOwnerCap<Ty0>, Arg2: &Clock, Arg3: u64, Arg4: u64, Arg5: bool, Arg6: &mut TxContext): Coin<Ty1> {
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(17)
+B2:
+	7: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[6](Arg6: &mut TxContext)
+	10: Pop
+	11: MoveLoc[2](Arg2: &Clock)
+	12: Pop
+	13: MoveLoc[1](Arg1: &ObligationOwnerCap<Ty0>)
+	14: Pop
+	15: LdConst[0](u64: 1)
+	16: Abort
+B3:
+	17: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	18: MoveLoc[1](Arg1: &ObligationOwnerCap<Ty0>)
+	19: ImmBorrowFieldGeneric[5](ObligationOwnerCap.obligation_id: ID)
+	20: ReadRef
+	21: MoveLoc[2](Arg2: &Clock)
+	22: MoveLoc[3](Arg3: u64)
+	23: MoveLoc[4](Arg4: u64)
+	24: MoveLoc[5](Arg5: bool)
+	25: LdFalse
+	26: MoveLoc[6](Arg6: &mut TxContext)
+	27: Call claim_rewards_by_obligation_id<Ty0, Ty1>(&mut LendingMarket<Ty0>, ID, &Clock, u64, u64, bool, bool, &mut TxContext): Coin<Ty1>
+	28: Ret
+}
+
+public claim_rewards_and_deposit<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: ID, Arg2: &Clock, Arg3: u64, Arg4: u64, Arg5: bool, Arg6: u64, Arg7: &mut TxContext) {
+L8:	loc0: Coin<CToken<Ty0, Ty1>>
+L9:	loc1: &mut Reserve<Ty0>
+L10:	loc2: Coin<Ty1>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(15)
+B2:
+	7: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[7](Arg7: &mut TxContext)
+	10: Pop
+	11: MoveLoc[2](Arg2: &Clock)
+	12: Pop
+	13: LdConst[0](u64: 1)
+	14: Abort
+B3:
+	15: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	16: CopyLoc[1](Arg1: ID)
+	17: CopyLoc[2](Arg2: &Clock)
+	18: MoveLoc[3](Arg3: u64)
+	19: MoveLoc[4](Arg4: u64)
+	20: MoveLoc[5](Arg5: bool)
+	21: LdTrue
+	22: CopyLoc[7](Arg7: &mut TxContext)
+	23: Call claim_rewards_by_obligation_id<Ty0, Ty1>(&mut LendingMarket<Ty0>, ID, &Clock, u64, u64, bool, bool, &mut TxContext): Coin<Ty1>
+	24: StLoc[10](loc2: Coin<Ty1>)
+	25: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	26: ImmBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	27: CopyLoc[1](Arg1: ID)
+	28: Call object_table::borrow<ID, Obligation<Ty0>>(&ObjectTable<ID, Obligation<Ty0>>, ID): &Obligation<Ty0>
+	29: Call obligation::borrowed_amount<Ty0, Ty1>(&Obligation<Ty0>): Decimal
+	30: LdU64(0)
+	31: Call decimal::from(u64): Decimal
+	32: Call decimal::gt(Decimal, Decimal): bool
+	33: BrFalse(41)
+B4:
+	34: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	35: CopyLoc[6](Arg6: u64)
+	36: CopyLoc[1](Arg1: ID)
+	37: CopyLoc[2](Arg2: &Clock)
+	38: MutBorrowLoc[10](loc2: Coin<Ty1>)
+	39: CopyLoc[7](Arg7: &mut TxContext)
+	40: Call repay<Ty0, Ty1>(&mut LendingMarket<Ty0>, u64, ID, &Clock, &mut Coin<Ty1>, &mut TxContext)
+B5:
+	41: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	42: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	43: CopyLoc[6](Arg6: u64)
+	44: VecMutBorrow(51)
+	45: StLoc[9](loc1: &mut Reserve<Ty0>)
+	46: CopyLoc[9](loc1: &mut Reserve<Ty0>)
+	47: FreezeRef
+	48: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	49: Call type_name::get<Ty1>(): TypeName
+	50: Eq
+	51: BrFalse(53)
+B6:
+	52: Branch(63)
+B7:
+	53: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	54: Pop
+	55: MoveLoc[9](loc1: &mut Reserve<Ty0>)
+	56: Pop
+	57: MoveLoc[7](Arg7: &mut TxContext)
+	58: Pop
+	59: MoveLoc[2](Arg2: &Clock)
+	60: Pop
+	61: LdConst[2](u64: 3)
+	62: Abort
+B8:
+	63: ImmBorrowLoc[10](loc2: Coin<Ty1>)
+	64: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	65: Call decimal::from(u64): Decimal
+	66: CopyLoc[9](loc1: &mut Reserve<Ty0>)
+	67: FreezeRef
+	68: Call reserve::ctoken_ratio<Ty0>(&Reserve<Ty0>): Decimal
+	69: Call decimal::div(Decimal, Decimal): Decimal
+	70: Call decimal::floor(Decimal): u64
+	71: LdU64(0)
+	72: Eq
+	73: BrFalse(85)
+B9:
+	74: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	75: Pop
+	76: MoveLoc[7](Arg7: &mut TxContext)
+	77: Pop
+	78: MoveLoc[2](Arg2: &Clock)
+	79: Pop
+	80: MoveLoc[9](loc1: &mut Reserve<Ty0>)
+	81: MoveLoc[10](loc2: Coin<Ty1>)
+	82: Call coin::into_balance<Ty1>(Coin<Ty1>): Balance<Ty1>
+	83: Call reserve::join_fees<Ty0, Ty1>(&mut Reserve<Ty0>, Balance<Ty1>)
+	84: Branch(101)
+B10:
+	85: MoveLoc[9](loc1: &mut Reserve<Ty0>)
+	86: Pop
+	87: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	88: CopyLoc[6](Arg6: u64)
+	89: CopyLoc[2](Arg2: &Clock)
+	90: MoveLoc[10](loc2: Coin<Ty1>)
+	91: CopyLoc[7](Arg7: &mut TxContext)
+	92: Call deposit_liquidity_and_mint_ctokens<Ty0, Ty1>(&mut LendingMarket<Ty0>, u64, &Clock, Coin<Ty1>, &mut TxContext): Coin<CToken<Ty0, Ty1>>
+	93: StLoc[8](loc0: Coin<CToken<Ty0, Ty1>>)
+	94: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	95: MoveLoc[6](Arg6: u64)
+	96: MoveLoc[1](Arg1: ID)
+	97: MoveLoc[2](Arg2: &Clock)
+	98: MoveLoc[8](loc0: Coin<CToken<Ty0, Ty1>>)
+	99: MoveLoc[7](Arg7: &mut TxContext)
+	100: Call deposit_ctokens_into_obligation_by_id<Ty0, Ty1>(&mut LendingMarket<Ty0>, u64, ID, &Clock, Coin<CToken<Ty0, Ty1>>, &mut TxContext)
+B11:
+	101: Ret
+}
+
+public init_staker<Ty0, Ty1: drop>(Arg0: &mut LendingMarket<Ty0>, Arg1: &LendingMarketOwnerCap<Ty0>, Arg2: u64, Arg3: TreasuryCap<Ty1>, Arg4: &mut TxContext) {
+L5:	loc0: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(13)
+B2:
+	7: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[4](Arg4: &mut TxContext)
+	10: Pop
+	11: LdConst[0](u64: 1)
+	12: Abort
+B3:
+	13: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	14: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	15: MoveLoc[2](Arg2: u64)
+	16: VecMutBorrow(51)
+	17: StLoc[5](loc0: &mut Reserve<Ty0>)
+	18: CopyLoc[5](loc0: &mut Reserve<Ty0>)
+	19: FreezeRef
+	20: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	21: Call type_name::get<SUI>(): TypeName
+	22: Eq
+	23: BrFalse(25)
+B4:
+	24: Branch(31)
+B5:
+	25: MoveLoc[5](loc0: &mut Reserve<Ty0>)
+	26: Pop
+	27: MoveLoc[4](Arg4: &mut TxContext)
+	28: Pop
+	29: LdConst[2](u64: 3)
+	30: Abort
+B6:
+	31: MoveLoc[5](loc0: &mut Reserve<Ty0>)
+	32: MoveLoc[3](Arg3: TreasuryCap<Ty1>)
+	33: MoveLoc[4](Arg4: &mut TxContext)
+	34: Call reserve::init_staker<Ty0, Ty1>(&mut Reserve<Ty0>, TreasuryCap<Ty1>, &mut TxContext)
+	35: Ret
+}
+
+public rebalance_staker<Ty0>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &mut SuiSystemState, Arg3: &mut TxContext) {
+L4:	loc0: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(15)
+B2:
+	7: MoveLoc[2](Arg2: &mut SuiSystemState)
+	8: Pop
+	9: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	10: Pop
+	11: MoveLoc[3](Arg3: &mut TxContext)
+	12: Pop
+	13: LdConst[0](u64: 1)
+	14: Abort
+B3:
+	15: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	16: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	17: MoveLoc[1](Arg1: u64)
+	18: VecMutBorrow(51)
+	19: StLoc[4](loc0: &mut Reserve<Ty0>)
+	20: CopyLoc[4](loc0: &mut Reserve<Ty0>)
+	21: FreezeRef
+	22: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	23: Call type_name::get<SUI>(): TypeName
+	24: Eq
+	25: BrFalse(27)
+B4:
+	26: Branch(35)
+B5:
+	27: MoveLoc[2](Arg2: &mut SuiSystemState)
+	28: Pop
+	29: MoveLoc[4](loc0: &mut Reserve<Ty0>)
+	30: Pop
+	31: MoveLoc[3](Arg3: &mut TxContext)
+	32: Pop
+	33: LdConst[2](u64: 3)
+	34: Abort
+B6:
+	35: MoveLoc[4](loc0: &mut Reserve<Ty0>)
+	36: MoveLoc[2](Arg2: &mut SuiSystemState)
+	37: MoveLoc[3](Arg3: &mut TxContext)
+	38: Call reserve::rebalance_staker<Ty0>(&mut Reserve<Ty0>, &mut SuiSystemState, &mut TxContext)
+	39: Ret
+}
+
+public unstake_sui_from_staker<Ty0>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &LiquidityRequest<Ty0, SUI>, Arg3: &mut SuiSystemState, Arg4: &mut TxContext) {
+L5:	loc0: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(17)
+B2:
+	7: MoveLoc[3](Arg3: &mut SuiSystemState)
+	8: Pop
+	9: MoveLoc[2](Arg2: &LiquidityRequest<Ty0, SUI>)
+	10: Pop
+	11: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	12: Pop
+	13: MoveLoc[4](Arg4: &mut TxContext)
+	14: Pop
+	15: LdConst[0](u64: 1)
+	16: Abort
+B3:
+	17: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	18: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	19: MoveLoc[1](Arg1: u64)
+	20: VecMutBorrow(51)
+	21: StLoc[5](loc0: &mut Reserve<Ty0>)
+	22: CopyLoc[5](loc0: &mut Reserve<Ty0>)
+	23: FreezeRef
+	24: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	25: Call type_name::get<SUI>(): TypeName
+	26: Neq
+	27: BrFalse(37)
+B4:
+	28: MoveLoc[3](Arg3: &mut SuiSystemState)
+	29: Pop
+	30: MoveLoc[5](loc0: &mut Reserve<Ty0>)
+	31: Pop
+	32: MoveLoc[2](Arg2: &LiquidityRequest<Ty0, SUI>)
+	33: Pop
+	34: MoveLoc[4](Arg4: &mut TxContext)
+	35: Pop
+	36: Ret
+B5:
+	37: MoveLoc[5](loc0: &mut Reserve<Ty0>)
+	38: MoveLoc[2](Arg2: &LiquidityRequest<Ty0, SUI>)
+	39: MoveLoc[3](Arg3: &mut SuiSystemState)
+	40: MoveLoc[4](Arg4: &mut TxContext)
+	41: Call reserve::unstake_sui_from_staker<Ty0>(&mut Reserve<Ty0>, &LiquidityRequest<Ty0, SUI>, &mut SuiSystemState, &mut TxContext)
+	42: Ret
+}
+
+max_borrow_amount<Ty0>(Arg0: RateLimiter, Arg1: &Obligation<Ty0>, Arg2: &Reserve<Ty0>, Arg3: &Clock): u64 {
+L4:	loc0: bool
+L5:	loc1: u64
+L6:	loc2: u64
+L7:	loc3: u64
+L8:	loc4: u64
+L9:	loc5: Decimal
+B0:
+	0: MutBorrowLoc[0](Arg0: RateLimiter)
+	1: MoveLoc[3](Arg3: &Clock)
+	2: Call clock::timestamp_ms(&Clock): u64
+	3: LdU64(1000)
+	4: Div
+	5: Call rate_limiter::remaining_outflow(&mut RateLimiter, u64): Decimal
+	6: StLoc[9](loc5: Decimal)
+	7: CopyLoc[2](Arg2: &Reserve<Ty0>)
+	8: MoveLoc[9](loc5: Decimal)
+	9: LdU64(1000000000)
+	10: Call decimal::from(u64): Decimal
+	11: Call decimal::min(Decimal, Decimal): Decimal
+	12: Call reserve::usd_to_token_amount_lower_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	13: Call decimal::saturating_floor(Decimal): u64
+	14: StLoc[8](loc4: u64)
+	15: MoveLoc[1](Arg1: &Obligation<Ty0>)
+	16: CopyLoc[2](Arg2: &Reserve<Ty0>)
+	17: Call obligation::max_borrow_amount<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	18: CopyLoc[2](Arg2: &Reserve<Ty0>)
+	19: Call reserve::max_borrow_amount<Ty0>(&Reserve<Ty0>): u64
+	20: Call math::min(u64, u64): u64
+	21: MoveLoc[8](loc4: u64)
+	22: Call math::min(u64, u64): u64
+	23: StLoc[7](loc3: u64)
+	24: CopyLoc[7](loc3: u64)
+	25: Call decimal::from(u64): Decimal
+	26: LdU64(1)
+	27: Call decimal::from(u64): Decimal
+	28: CopyLoc[2](Arg2: &Reserve<Ty0>)
+	29: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	30: Call reserve_config::borrow_fee(&ReserveConfig): Decimal
+	31: Call decimal::add(Decimal, Decimal): Decimal
+	32: Call decimal::div(Decimal, Decimal): Decimal
+	33: Call decimal::floor(Decimal): u64
+	34: StLoc[6](loc2: u64)
+	35: CopyLoc[6](loc2: u64)
+	36: Call decimal::from(u64): Decimal
+	37: MoveLoc[2](Arg2: &Reserve<Ty0>)
+	38: Call reserve::config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	39: Call reserve_config::borrow_fee(&ReserveConfig): Decimal
+	40: Call decimal::mul(Decimal, Decimal): Decimal
+	41: Call decimal::ceil(Decimal): u64
+	42: StLoc[5](loc1: u64)
+	43: CopyLoc[6](loc2: u64)
+	44: MoveLoc[5](loc1: u64)
+	45: Add
+	46: MoveLoc[7](loc3: u64)
+	47: Gt
+	48: BrFalse(54)
+B1:
+	49: CopyLoc[6](loc2: u64)
+	50: LdU64(0)
+	51: Gt
+	52: StLoc[4](loc0: bool)
+	53: Branch(56)
+B2:
+	54: LdFalse
+	55: StLoc[4](loc0: bool)
+B3:
+	56: MoveLoc[4](loc0: bool)
+	57: BrFalse(62)
+B4:
+	58: MoveLoc[6](loc2: u64)
+	59: LdU64(1)
+	60: Sub
+	61: StLoc[6](loc2: u64)
+B5:
+	62: MoveLoc[6](loc2: u64)
+	63: Ret
+}
+
+max_withdraw_amount<Ty0>(Arg0: RateLimiter, Arg1: &Obligation<Ty0>, Arg2: &Reserve<Ty0>, Arg3: &Clock): u64 {
+L4:	loc0: u64
+L5:	loc1: Decimal
+B0:
+	0: MutBorrowLoc[0](Arg0: RateLimiter)
+	1: MoveLoc[3](Arg3: &Clock)
+	2: Call clock::timestamp_ms(&Clock): u64
+	3: LdU64(1000)
+	4: Div
+	5: Call rate_limiter::remaining_outflow(&mut RateLimiter, u64): Decimal
+	6: StLoc[5](loc1: Decimal)
+	7: CopyLoc[2](Arg2: &Reserve<Ty0>)
+	8: MoveLoc[5](loc1: Decimal)
+	9: LdU64(1000000000)
+	10: Call decimal::from(u64): Decimal
+	11: Call decimal::min(Decimal, Decimal): Decimal
+	12: Call reserve::usd_to_token_amount_lower_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	13: CopyLoc[2](Arg2: &Reserve<Ty0>)
+	14: Call reserve::ctoken_ratio<Ty0>(&Reserve<Ty0>): Decimal
+	15: Call decimal::div(Decimal, Decimal): Decimal
+	16: Call decimal::floor(Decimal): u64
+	17: StLoc[4](loc0: u64)
+	18: MoveLoc[1](Arg1: &Obligation<Ty0>)
+	19: CopyLoc[2](Arg2: &Reserve<Ty0>)
+	20: Call obligation::max_withdraw_amount<Ty0>(&Obligation<Ty0>, &Reserve<Ty0>): u64
+	21: MoveLoc[4](loc0: u64)
+	22: Call math::min(u64, u64): u64
+	23: MoveLoc[2](Arg2: &Reserve<Ty0>)
+	24: Call reserve::max_redeem_amount<Ty0>(&Reserve<Ty0>): u64
+	25: Call math::min(u64, u64): u64
+	26: Ret
+}
+
+public obligation_id<Ty0>(Arg0: &ObligationOwnerCap<Ty0>): ID {
+B0:
+	0: MoveLoc[0](Arg0: &ObligationOwnerCap<Ty0>)
+	1: ImmBorrowFieldGeneric[5](ObligationOwnerCap.obligation_id: ID)
+	2: ReadRef
+	3: Ret
+}
+
+reserve_array_index<Ty0, Ty1>(Arg0: &LendingMarket<Ty0>): u64 {
+L1:	loc0: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[1](loc0: u64)
+B1:
+	2: CopyLoc[1](loc0: u64)
+	3: CopyLoc[0](Arg0: &LendingMarket<Ty0>)
+	4: ImmBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	5: VecLen(51)
+	6: Lt
+	7: BrFalse(26)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &LendingMarket<Ty0>)
+	10: ImmBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	11: CopyLoc[1](loc0: u64)
+	12: VecImmBorrow(51)
+	13: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	14: Call type_name::get<Ty1>(): TypeName
+	15: Eq
+	16: BrFalse(21)
+B4:
+	17: MoveLoc[0](Arg0: &LendingMarket<Ty0>)
+	18: Pop
+	19: MoveLoc[1](loc0: u64)
+	20: Ret
+B5:
+	21: MoveLoc[1](loc0: u64)
+	22: LdU64(1)
+	23: Add
+	24: StLoc[1](loc0: u64)
+	25: Branch(2)
+B6:
+	26: MoveLoc[0](Arg0: &LendingMarket<Ty0>)
+	27: Pop
+	28: MoveLoc[1](loc0: u64)
+	29: Ret
+}
+
+public reserve<Ty0, Ty1>(Arg0: &LendingMarket<Ty0>): &Reserve<Ty0> {
+L1:	loc0: u64
+B0:
+	0: CopyLoc[0](Arg0: &LendingMarket<Ty0>)
+	1: Call reserve_array_index<Ty0, Ty1>(&LendingMarket<Ty0>): u64
+	2: StLoc[1](loc0: u64)
+	3: MoveLoc[0](Arg0: &LendingMarket<Ty0>)
+	4: ImmBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	5: MoveLoc[1](loc0: u64)
+	6: VecImmBorrow(51)
+	7: Ret
+}
+
+public obligation<Ty0>(Arg0: &LendingMarket<Ty0>, Arg1: ID): &Obligation<Ty0> {
+B0:
+	0: MoveLoc[0](Arg0: &LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	2: MoveLoc[1](Arg1: ID)
+	3: Call object_table::borrow<ID, Obligation<Ty0>>(&ObjectTable<ID, Obligation<Ty0>>, ID): &Obligation<Ty0>
+	4: Ret
+}
+
+public fee_receiver<Ty0>(Arg0: &LendingMarket<Ty0>): address {
+B0:
+	0: MoveLoc[0](Arg0: &LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[6](LendingMarket.fee_receiver: address)
+	2: ReadRef
+	3: Ret
+}
+
+public rate_limiter_exemption_amount<Ty0, Ty1>(Arg0: &RateLimiterExemption<Ty0, Ty1>): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &RateLimiterExemption<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[3](RateLimiterExemption.amount: u64)
+	2: ReadRef
+	3: Ret
+}
+
+entry migrate<Ty0>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &mut LendingMarket<Ty0>) {
+B0:
+	0: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: LdU64(1)
+	5: Sub
+	6: Eq
+	7: BrFalse(9)
+B1:
+	8: Branch(13)
+B2:
+	9: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	10: Pop
+	11: LdConst[0](u64: 1)
+	12: Abort
+B3:
+	13: LdConst[6](u64: 7)
+	14: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	15: MutBorrowFieldGeneric[0](LendingMarket.version: u64)
+	16: WriteRef
+	17: Ret
+}
+
+public add_reserve<Ty0, Ty1>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &mut LendingMarket<Ty0>, Arg2: &PriceInfoObject, Arg3: ReserveConfig, Arg4: &CoinMetadata<Ty1>, Arg5: &Clock, Arg6: &mut TxContext) {
+L7:	loc0: Reserve<Ty0>
+B0:
+	0: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(19)
+B2:
+	7: MoveLoc[2](Arg2: &PriceInfoObject)
+	8: Pop
+	9: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	10: Pop
+	11: MoveLoc[6](Arg6: &mut TxContext)
+	12: Pop
+	13: MoveLoc[4](Arg4: &CoinMetadata<Ty1>)
+	14: Pop
+	15: MoveLoc[5](Arg5: &Clock)
+	16: Pop
+	17: LdConst[0](u64: 1)
+	18: Abort
+B3:
+	19: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	20: FreezeRef
+	21: Call reserve_array_index<Ty0, Ty1>(&LendingMarket<Ty0>): u64
+	22: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	23: ImmBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	24: VecLen(51)
+	25: Eq
+	26: BrFalse(28)
+B4:
+	27: Branch(40)
+B5:
+	28: MoveLoc[2](Arg2: &PriceInfoObject)
+	29: Pop
+	30: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	31: Pop
+	32: MoveLoc[6](Arg6: &mut TxContext)
+	33: Pop
+	34: MoveLoc[4](Arg4: &CoinMetadata<Ty1>)
+	35: Pop
+	36: MoveLoc[5](Arg5: &Clock)
+	37: Pop
+	38: LdConst[3](u64: 4)
+	39: Abort
+B6:
+	40: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	41: FreezeRef
+	42: Call object::id<LendingMarket<Ty0>>(&LendingMarket<Ty0>): ID
+	43: MoveLoc[3](Arg3: ReserveConfig)
+	44: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	45: ImmBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	46: VecLen(51)
+	47: MoveLoc[4](Arg4: &CoinMetadata<Ty1>)
+	48: Call coin::get_decimals<Ty1>(&CoinMetadata<Ty1>): u8
+	49: MoveLoc[2](Arg2: &PriceInfoObject)
+	50: MoveLoc[5](Arg5: &Clock)
+	51: MoveLoc[6](Arg6: &mut TxContext)
+	52: Call reserve::create_reserve<Ty0, Ty1>(ID, ReserveConfig, u64, u8, &PriceInfoObject, &Clock, &mut TxContext): Reserve<Ty0>
+	53: StLoc[7](loc0: Reserve<Ty0>)
+	54: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	55: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	56: MoveLoc[7](loc0: Reserve<Ty0>)
+	57: VecPushBack(51)
+	58: Ret
+}
+
+public update_reserve_config<Ty0, Ty1>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &mut LendingMarket<Ty0>, Arg2: u64, Arg3: ReserveConfig) {
+L4:	loc0: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: LdConst[0](u64: 1)
+	10: Abort
+B3:
+	11: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	12: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	13: MoveLoc[2](Arg2: u64)
+	14: VecMutBorrow(51)
+	15: StLoc[4](loc0: &mut Reserve<Ty0>)
+	16: CopyLoc[4](loc0: &mut Reserve<Ty0>)
+	17: FreezeRef
+	18: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	19: Call type_name::get<Ty1>(): TypeName
+	20: Eq
+	21: BrFalse(23)
+B4:
+	22: Branch(27)
+B5:
+	23: MoveLoc[4](loc0: &mut Reserve<Ty0>)
+	24: Pop
+	25: LdConst[2](u64: 3)
+	26: Abort
+B6:
+	27: MoveLoc[4](loc0: &mut Reserve<Ty0>)
+	28: MoveLoc[3](Arg3: ReserveConfig)
+	29: Call reserve::update_reserve_config<Ty0>(&mut Reserve<Ty0>, ReserveConfig)
+	30: Ret
+}
+
+public change_reserve_price_feed<Ty0, Ty1>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &mut LendingMarket<Ty0>, Arg2: u64, Arg3: &PriceInfoObject, Arg4: &Clock) {
+L5:	loc0: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(15)
+B2:
+	7: MoveLoc[3](Arg3: &PriceInfoObject)
+	8: Pop
+	9: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	10: Pop
+	11: MoveLoc[4](Arg4: &Clock)
+	12: Pop
+	13: LdConst[0](u64: 1)
+	14: Abort
+B3:
+	15: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	16: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	17: MoveLoc[2](Arg2: u64)
+	18: VecMutBorrow(51)
+	19: StLoc[5](loc0: &mut Reserve<Ty0>)
+	20: CopyLoc[5](loc0: &mut Reserve<Ty0>)
+	21: FreezeRef
+	22: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	23: Call type_name::get<Ty1>(): TypeName
+	24: Eq
+	25: BrFalse(27)
+B4:
+	26: Branch(35)
+B5:
+	27: MoveLoc[5](loc0: &mut Reserve<Ty0>)
+	28: Pop
+	29: MoveLoc[3](Arg3: &PriceInfoObject)
+	30: Pop
+	31: MoveLoc[4](Arg4: &Clock)
+	32: Pop
+	33: LdConst[2](u64: 3)
+	34: Abort
+B6:
+	35: MoveLoc[5](loc0: &mut Reserve<Ty0>)
+	36: MoveLoc[3](Arg3: &PriceInfoObject)
+	37: MoveLoc[4](Arg4: &Clock)
+	38: Call reserve::change_price_feed<Ty0>(&mut Reserve<Ty0>, &PriceInfoObject, &Clock)
+	39: Ret
+}
+
+public add_pool_reward<Ty0, Ty1>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &mut LendingMarket<Ty0>, Arg2: u64, Arg3: bool, Arg4: Coin<Ty1>, Arg5: u64, Arg6: u64, Arg7: &Clock, Arg8: &mut TxContext) {
+L9:	loc0: &mut PoolRewardManager
+L10:	loc1: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(15)
+B2:
+	7: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[8](Arg8: &mut TxContext)
+	10: Pop
+	11: MoveLoc[7](Arg7: &Clock)
+	12: Pop
+	13: LdConst[0](u64: 1)
+	14: Abort
+B3:
+	15: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	16: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	17: MoveLoc[2](Arg2: u64)
+	18: VecMutBorrow(51)
+	19: StLoc[10](loc1: &mut Reserve<Ty0>)
+	20: MoveLoc[3](Arg3: bool)
+	21: BrFalse(26)
+B4:
+	22: MoveLoc[10](loc1: &mut Reserve<Ty0>)
+	23: Call reserve::deposits_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	24: StLoc[9](loc0: &mut PoolRewardManager)
+	25: Branch(29)
+B5:
+	26: MoveLoc[10](loc1: &mut Reserve<Ty0>)
+	27: Call reserve::borrows_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	28: StLoc[9](loc0: &mut PoolRewardManager)
+B6:
+	29: MoveLoc[9](loc0: &mut PoolRewardManager)
+	30: MoveLoc[4](Arg4: Coin<Ty1>)
+	31: Call coin::into_balance<Ty1>(Coin<Ty1>): Balance<Ty1>
+	32: MoveLoc[5](Arg5: u64)
+	33: MoveLoc[6](Arg6: u64)
+	34: MoveLoc[7](Arg7: &Clock)
+	35: MoveLoc[8](Arg8: &mut TxContext)
+	36: Call liquidity_mining::add_pool_reward<Ty1>(&mut PoolRewardManager, Balance<Ty1>, u64, u64, &Clock, &mut TxContext)
+	37: Ret
+}
+
+public cancel_pool_reward<Ty0, Ty1>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &mut LendingMarket<Ty0>, Arg2: u64, Arg3: bool, Arg4: u64, Arg5: &Clock, Arg6: &mut TxContext): Coin<Ty1> {
+L7:	loc0: &mut PoolRewardManager
+L8:	loc1: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(15)
+B2:
+	7: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[6](Arg6: &mut TxContext)
+	10: Pop
+	11: MoveLoc[5](Arg5: &Clock)
+	12: Pop
+	13: LdConst[0](u64: 1)
+	14: Abort
+B3:
+	15: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	16: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	17: MoveLoc[2](Arg2: u64)
+	18: VecMutBorrow(51)
+	19: StLoc[8](loc1: &mut Reserve<Ty0>)
+	20: MoveLoc[3](Arg3: bool)
+	21: BrFalse(26)
+B4:
+	22: MoveLoc[8](loc1: &mut Reserve<Ty0>)
+	23: Call reserve::deposits_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	24: StLoc[7](loc0: &mut PoolRewardManager)
+	25: Branch(29)
+B5:
+	26: MoveLoc[8](loc1: &mut Reserve<Ty0>)
+	27: Call reserve::borrows_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	28: StLoc[7](loc0: &mut PoolRewardManager)
+B6:
+	29: MoveLoc[7](loc0: &mut PoolRewardManager)
+	30: MoveLoc[4](Arg4: u64)
+	31: MoveLoc[5](Arg5: &Clock)
+	32: Call liquidity_mining::cancel_pool_reward<Ty1>(&mut PoolRewardManager, u64, &Clock): Balance<Ty1>
+	33: MoveLoc[6](Arg6: &mut TxContext)
+	34: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	35: Ret
+}
+
+public close_pool_reward<Ty0, Ty1>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &mut LendingMarket<Ty0>, Arg2: u64, Arg3: bool, Arg4: u64, Arg5: &Clock, Arg6: &mut TxContext): Coin<Ty1> {
+L7:	loc0: &mut PoolRewardManager
+L8:	loc1: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(15)
+B2:
+	7: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[6](Arg6: &mut TxContext)
+	10: Pop
+	11: MoveLoc[5](Arg5: &Clock)
+	12: Pop
+	13: LdConst[0](u64: 1)
+	14: Abort
+B3:
+	15: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	16: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	17: MoveLoc[2](Arg2: u64)
+	18: VecMutBorrow(51)
+	19: StLoc[8](loc1: &mut Reserve<Ty0>)
+	20: MoveLoc[3](Arg3: bool)
+	21: BrFalse(26)
+B4:
+	22: MoveLoc[8](loc1: &mut Reserve<Ty0>)
+	23: Call reserve::deposits_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	24: StLoc[7](loc0: &mut PoolRewardManager)
+	25: Branch(29)
+B5:
+	26: MoveLoc[8](loc1: &mut Reserve<Ty0>)
+	27: Call reserve::borrows_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	28: StLoc[7](loc0: &mut PoolRewardManager)
+B6:
+	29: MoveLoc[7](loc0: &mut PoolRewardManager)
+	30: MoveLoc[4](Arg4: u64)
+	31: MoveLoc[5](Arg5: &Clock)
+	32: Call liquidity_mining::close_pool_reward<Ty1>(&mut PoolRewardManager, u64, &Clock): Balance<Ty1>
+	33: MoveLoc[6](Arg6: &mut TxContext)
+	34: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	35: Ret
+}
+
+public update_rate_limiter_config<Ty0>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &mut LendingMarket<Ty0>, Arg2: &Clock, Arg3: RateLimiterConfig) {
+B0:
+	0: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(13)
+B2:
+	7: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[2](Arg2: &Clock)
+	10: Pop
+	11: LdConst[0](u64: 1)
+	12: Abort
+B3:
+	13: MoveLoc[3](Arg3: RateLimiterConfig)
+	14: MoveLoc[2](Arg2: &Clock)
+	15: Call clock::timestamp_ms(&Clock): u64
+	16: LdU64(1000)
+	17: Div
+	18: Call rate_limiter::new(RateLimiterConfig, u64): RateLimiter
+	19: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	20: MutBorrowFieldGeneric[4](LendingMarket.rate_limiter: RateLimiter)
+	21: WriteRef
+	22: Ret
+}
+
+public set_fee_receivers<Ty0>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &mut LendingMarket<Ty0>, Arg2: vector<address>, Arg3: vector<u64>) {
+L4:	loc0: u64
+L5:	loc1: u64
+L6:	loc2: u64
+L7:	loc3: u64
+L8:	loc4: u64
+L9:	loc5: u64
+L10:	loc6: u64
+L11:	loc7: vector<u64>
+L12:	loc8: vector<u64>
+L13:	loc9: u64
+B0:
+	0: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: LdConst[0](u64: 1)
+	10: Abort
+B3:
+	11: ImmBorrowLoc[2](Arg2: vector<address>)
+	12: VecLen(33)
+	13: ImmBorrowLoc[3](Arg3: vector<u64>)
+	14: VecLen(26)
+	15: Eq
+	16: BrFalse(18)
+B4:
+	17: Branch(22)
+B5:
+	18: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	19: Pop
+	20: LdConst[7](u64: 8)
+	21: Abort
+B6:
+	22: ImmBorrowLoc[2](Arg2: vector<address>)
+	23: VecLen(33)
+	24: LdU64(0)
+	25: Gt
+	26: BrFalse(28)
+B7:
+	27: Branch(32)
+B8:
+	28: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	29: Pop
+	30: LdConst[7](u64: 8)
+	31: Abort
+B9:
+	32: CopyLoc[3](Arg3: vector<u64>)
+	33: StLoc[11](loc7: vector<u64>)
+	34: LdU64(0)
+	35: StLoc[5](loc1: u64)
+	36: MoveLoc[11](loc7: vector<u64>)
+	37: StLoc[12](loc8: vector<u64>)
+	38: MutBorrowLoc[12](loc8: vector<u64>)
+	39: Call vector::reverse<u64>(&mut vector<u64>)
+	40: ImmBorrowLoc[12](loc8: vector<u64>)
+	41: VecLen(26)
+	42: StLoc[4](loc0: u64)
+	43: LdU64(0)
+	44: StLoc[8](loc4: u64)
+	45: MoveLoc[4](loc0: u64)
+	46: StLoc[9](loc5: u64)
+B10:
+	47: CopyLoc[8](loc4: u64)
+	48: CopyLoc[9](loc5: u64)
+	49: Lt
+	50: BrFalse(69)
+B11:
+	51: CopyLoc[8](loc4: u64)
+	52: Pop
+	53: MutBorrowLoc[12](loc8: vector<u64>)
+	54: VecPopBack(26)
+	55: StLoc[7](loc3: u64)
+	56: MoveLoc[5](loc1: u64)
+	57: StLoc[6](loc2: u64)
+	58: MoveLoc[7](loc3: u64)
+	59: StLoc[13](loc9: u64)
+	60: MoveLoc[6](loc2: u64)
+	61: MoveLoc[13](loc9: u64)
+	62: Add
+	63: StLoc[5](loc1: u64)
+	64: MoveLoc[8](loc4: u64)
+	65: LdU64(1)
+	66: Add
+	67: StLoc[8](loc4: u64)
+	68: Branch(47)
+B12:
+	69: MoveLoc[12](loc8: vector<u64>)
+	70: VecUnpack(26, 0)
+	71: MoveLoc[5](loc1: u64)
+	72: StLoc[10](loc6: u64)
+	73: CopyLoc[10](loc6: u64)
+	74: LdU64(0)
+	75: Gt
+	76: BrFalse(78)
+B13:
+	77: Branch(82)
+B14:
+	78: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	79: Pop
+	80: LdConst[7](u64: 8)
+	81: Abort
+B15:
+	82: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	83: ImmBorrowFieldGeneric[7](LendingMarket.id: UID)
+	84: LdFalse
+	85: Pack[4](FeeReceiversKey)
+	86: Call dynamic_field::exists_<FeeReceiversKey>(&UID, FeeReceiversKey): bool
+	87: BrFalse(97)
+B16:
+	88: CopyLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	89: MutBorrowFieldGeneric[7](LendingMarket.id: UID)
+	90: LdFalse
+	91: Pack[4](FeeReceiversKey)
+	92: Call dynamic_field::remove<FeeReceiversKey, FeeReceivers>(&mut UID, FeeReceiversKey): FeeReceivers
+	93: Unpack[5](FeeReceivers)
+	94: Pop
+	95: Pop
+	96: Pop
+B17:
+	97: MoveLoc[1](Arg1: &mut LendingMarket<Ty0>)
+	98: MutBorrowFieldGeneric[7](LendingMarket.id: UID)
+	99: LdFalse
+	100: Pack[4](FeeReceiversKey)
+	101: MoveLoc[2](Arg2: vector<address>)
+	102: MoveLoc[3](Arg3: vector<u64>)
+	103: MoveLoc[10](loc6: u64)
+	104: Pack[5](FeeReceivers)
+	105: Call dynamic_field::add<FeeReceiversKey, FeeReceivers>(&mut UID, FeeReceiversKey, FeeReceivers)
+	106: Ret
+}
+
+entry claim_fees<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: &mut TxContext) {
+L3:	loc0: u64
+L4:	loc1: Balance<Ty1>
+L5:	loc2: Balance<CToken<Ty0, Ty1>>
+L6:	loc3: Balance<CToken<Ty0, Ty1>>
+L7:	loc4: u128
+L8:	loc5: Balance<CToken<Ty0, Ty1>>
+L9:	loc6: Balance<Ty1>
+L10:	loc7: u128
+L11:	loc8: &FeeReceivers
+L12:	loc9: Balance<Ty1>
+L13:	loc10: u64
+L14:	loc11: u64
+L15:	loc12: u64
+L16:	loc13: &mut Reserve<Ty0>
+L17:	loc14: u64
+L18:	loc15: u64
+L19:	loc16: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(13)
+B2:
+	7: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[2](Arg2: &mut TxContext)
+	10: Pop
+	11: LdConst[0](u64: 1)
+	12: Abort
+B3:
+	13: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	14: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	15: MoveLoc[1](Arg1: u64)
+	16: VecMutBorrow(51)
+	17: StLoc[16](loc13: &mut Reserve<Ty0>)
+	18: CopyLoc[16](loc13: &mut Reserve<Ty0>)
+	19: FreezeRef
+	20: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	21: Call type_name::get<Ty1>(): TypeName
+	22: Eq
+	23: BrFalse(25)
+B4:
+	24: Branch(33)
+B5:
+	25: MoveLoc[16](loc13: &mut Reserve<Ty0>)
+	26: Pop
+	27: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	28: Pop
+	29: MoveLoc[2](Arg2: &mut TxContext)
+	30: Pop
+	31: LdConst[2](u64: 3)
+	32: Abort
+B6:
+	33: MoveLoc[16](loc13: &mut Reserve<Ty0>)
+	34: Call reserve::claim_fees<Ty0, Ty1>(&mut Reserve<Ty0>): Balance<CToken<Ty0, Ty1>> * Balance<Ty1>
+	35: StLoc[12](loc9: Balance<Ty1>)
+	36: StLoc[8](loc5: Balance<CToken<Ty0, Ty1>>)
+	37: ImmBorrowLoc[8](loc5: Balance<CToken<Ty0, Ty1>>)
+	38: Call balance::value<CToken<Ty0, Ty1>>(&Balance<CToken<Ty0, Ty1>>): u64
+	39: StLoc[18](loc15: u64)
+	40: ImmBorrowLoc[12](loc9: Balance<Ty1>)
+	41: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	42: StLoc[19](loc16: u64)
+	43: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	44: ImmBorrowFieldGeneric[7](LendingMarket.id: UID)
+	45: LdFalse
+	46: Pack[4](FeeReceiversKey)
+	47: Call dynamic_field::borrow<FeeReceiversKey, FeeReceivers>(&UID, FeeReceiversKey): &FeeReceivers
+	48: StLoc[11](loc8: &FeeReceivers)
+	49: CopyLoc[11](loc8: &FeeReceivers)
+	50: ImmBorrowField[8](FeeReceivers.weights: vector<u64>)
+	51: VecLen(26)
+	52: StLoc[15](loc12: u64)
+	53: CopyLoc[15](loc12: u64)
+	54: StLoc[3](loc0: u64)
+	55: LdU64(0)
+	56: StLoc[13](loc10: u64)
+	57: MoveLoc[3](loc0: u64)
+	58: StLoc[17](loc14: u64)
+B7:
+	59: CopyLoc[13](loc10: u64)
+	60: CopyLoc[17](loc14: u64)
+	61: Lt
+	62: BrFalse(169)
+B8:
+	63: CopyLoc[13](loc10: u64)
+	64: StLoc[14](loc11: u64)
+	65: CopyLoc[19](loc16: u64)
+	66: CastU128
+	67: CopyLoc[11](loc8: &FeeReceivers)
+	68: ImmBorrowField[8](FeeReceivers.weights: vector<u64>)
+	69: CopyLoc[14](loc11: u64)
+	70: VecImmBorrow(26)
+	71: ReadRef
+	72: CastU128
+	73: Mul
+	74: CopyLoc[11](loc8: &FeeReceivers)
+	75: ImmBorrowField[9](FeeReceivers.total_weight: u64)
+	76: ReadRef
+	77: CastU128
+	78: Div
+	79: StLoc[10](loc7: u128)
+	80: CopyLoc[14](loc11: u64)
+	81: CopyLoc[15](loc12: u64)
+	82: LdU64(1)
+	83: Sub
+	84: Eq
+	85: BrFalse(90)
+B9:
+	86: MutBorrowLoc[12](loc9: Balance<Ty1>)
+	87: Call balance::withdraw_all<Ty1>(&mut Balance<Ty1>): Balance<Ty1>
+	88: StLoc[4](loc1: Balance<Ty1>)
+	89: Branch(96)
+B10:
+	90: MutBorrowLoc[12](loc9: Balance<Ty1>)
+	91: MoveLoc[10](loc7: u128)
+	92: CastU64
+	93: Call balance::split<Ty1>(&mut Balance<Ty1>, u64): Balance<Ty1>
+	94: StLoc[4](loc1: Balance<Ty1>)
+	95: Branch(96)
+B11:
+	96: MoveLoc[4](loc1: Balance<Ty1>)
+	97: StLoc[9](loc6: Balance<Ty1>)
+	98: ImmBorrowLoc[9](loc6: Balance<Ty1>)
+	99: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	100: LdU64(0)
+	101: Gt
+	102: BrFalse(113)
+B12:
+	103: MoveLoc[9](loc6: Balance<Ty1>)
+	104: CopyLoc[2](Arg2: &mut TxContext)
+	105: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	106: CopyLoc[11](loc8: &FeeReceivers)
+	107: ImmBorrowField[10](FeeReceivers.receivers: vector<address>)
+	108: CopyLoc[14](loc11: u64)
+	109: VecImmBorrow(33)
+	110: ReadRef
+	111: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	112: Branch(115)
+B13:
+	113: MoveLoc[9](loc6: Balance<Ty1>)
+	114: Call balance::destroy_zero<Ty1>(Balance<Ty1>)
+B14:
+	115: CopyLoc[18](loc15: u64)
+	116: CastU128
+	117: CopyLoc[11](loc8: &FeeReceivers)
+	118: ImmBorrowField[8](FeeReceivers.weights: vector<u64>)
+	119: CopyLoc[14](loc11: u64)
+	120: VecImmBorrow(26)
+	121: ReadRef
+	122: CastU128
+	123: Mul
+	124: CopyLoc[11](loc8: &FeeReceivers)
+	125: ImmBorrowField[9](FeeReceivers.total_weight: u64)
+	126: ReadRef
+	127: CastU128
+	128: Div
+	129: StLoc[7](loc4: u128)
+	130: CopyLoc[14](loc11: u64)
+	131: CopyLoc[15](loc12: u64)
+	132: LdU64(1)
+	133: Sub
+	134: Eq
+	135: BrFalse(140)
+B15:
+	136: MutBorrowLoc[8](loc5: Balance<CToken<Ty0, Ty1>>)
+	137: Call balance::withdraw_all<CToken<Ty0, Ty1>>(&mut Balance<CToken<Ty0, Ty1>>): Balance<CToken<Ty0, Ty1>>
+	138: StLoc[5](loc2: Balance<CToken<Ty0, Ty1>>)
+	139: Branch(145)
+B16:
+	140: MutBorrowLoc[8](loc5: Balance<CToken<Ty0, Ty1>>)
+	141: MoveLoc[7](loc4: u128)
+	142: CastU64
+	143: Call balance::split<CToken<Ty0, Ty1>>(&mut Balance<CToken<Ty0, Ty1>>, u64): Balance<CToken<Ty0, Ty1>>
+	144: StLoc[5](loc2: Balance<CToken<Ty0, Ty1>>)
+B17:
+	145: MoveLoc[5](loc2: Balance<CToken<Ty0, Ty1>>)
+	146: StLoc[6](loc3: Balance<CToken<Ty0, Ty1>>)
+	147: ImmBorrowLoc[6](loc3: Balance<CToken<Ty0, Ty1>>)
+	148: Call balance::value<CToken<Ty0, Ty1>>(&Balance<CToken<Ty0, Ty1>>): u64
+	149: LdU64(0)
+	150: Gt
+	151: BrFalse(162)
+B18:
+	152: MoveLoc[6](loc3: Balance<CToken<Ty0, Ty1>>)
+	153: CopyLoc[2](Arg2: &mut TxContext)
+	154: Call coin::from_balance<CToken<Ty0, Ty1>>(Balance<CToken<Ty0, Ty1>>, &mut TxContext): Coin<CToken<Ty0, Ty1>>
+	155: CopyLoc[11](loc8: &FeeReceivers)
+	156: ImmBorrowField[10](FeeReceivers.receivers: vector<address>)
+	157: MoveLoc[14](loc11: u64)
+	158: VecImmBorrow(33)
+	159: ReadRef
+	160: Call transfer::public_transfer<Coin<CToken<Ty0, Ty1>>>(Coin<CToken<Ty0, Ty1>>, address)
+	161: Branch(164)
+B19:
+	162: MoveLoc[6](loc3: Balance<CToken<Ty0, Ty1>>)
+	163: Call balance::destroy_zero<CToken<Ty0, Ty1>>(Balance<CToken<Ty0, Ty1>>)
+B20:
+	164: MoveLoc[13](loc10: u64)
+	165: LdU64(1)
+	166: Add
+	167: StLoc[13](loc10: u64)
+	168: Branch(59)
+B21:
+	169: MoveLoc[11](loc8: &FeeReceivers)
+	170: Pop
+	171: MoveLoc[2](Arg2: &mut TxContext)
+	172: Pop
+	173: MoveLoc[12](loc9: Balance<Ty1>)
+	174: Call balance::destroy_zero<Ty1>(Balance<Ty1>)
+	175: MoveLoc[8](loc5: Balance<CToken<Ty0, Ty1>>)
+	176: Call balance::destroy_zero<CToken<Ty0, Ty1>>(Balance<CToken<Ty0, Ty1>>)
+	177: Ret
+}
+
+public new_obligation_owner_cap<Ty0>(Arg0: &LendingMarketOwnerCap<Ty0>, Arg1: &LendingMarket<Ty0>, Arg2: ID, Arg3: &mut TxContext): ObligationOwnerCap<Ty0> {
+B0:
+	0: CopyLoc[1](Arg1: &LendingMarket<Ty0>)
+	1: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	2: ReadRef
+	3: LdConst[6](u64: 7)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(13)
+B2:
+	7: MoveLoc[1](Arg1: &LendingMarket<Ty0>)
+	8: Pop
+	9: MoveLoc[3](Arg3: &mut TxContext)
+	10: Pop
+	11: LdConst[0](u64: 1)
+	12: Abort
+B3:
+	13: MoveLoc[1](Arg1: &LendingMarket<Ty0>)
+	14: ImmBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	15: CopyLoc[2](Arg2: ID)
+	16: Call object_table::contains<ID, Obligation<Ty0>>(&ObjectTable<ID, Obligation<Ty0>>, ID): bool
+	17: BrFalse(19)
+B4:
+	18: Branch(23)
+B5:
+	19: MoveLoc[3](Arg3: &mut TxContext)
+	20: Pop
+	21: LdConst[6](u64: 7)
+	22: Abort
+B6:
+	23: MoveLoc[3](Arg3: &mut TxContext)
+	24: Call object::new(&mut TxContext): UID
+	25: MoveLoc[2](Arg2: ID)
+	26: PackGeneric[2](ObligationOwnerCap<Ty0>)
+	27: Ret
+}
+
+deposit_ctokens_into_obligation_by_id<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: u64, Arg2: ID, Arg3: &Clock, Arg4: Coin<CToken<Ty0, Ty1>>, Arg5: &mut TxContext) {
+L6:	loc0: address
+L7:	loc1: &mut Obligation<Ty0>
+L8:	loc2: &mut Reserve<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: FreezeRef
+	2: Call object::id_address<LendingMarket<Ty0>>(&LendingMarket<Ty0>): address
+	3: StLoc[6](loc0: address)
+	4: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	5: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	6: ReadRef
+	7: LdConst[6](u64: 7)
+	8: Eq
+	9: BrFalse(11)
+B1:
+	10: Branch(17)
+B2:
+	11: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	12: Pop
+	13: MoveLoc[3](Arg3: &Clock)
+	14: Pop
+	15: LdConst[0](u64: 1)
+	16: Abort
+B3:
+	17: ImmBorrowLoc[4](Arg4: Coin<CToken<Ty0, Ty1>>)
+	18: Call coin::value<CToken<Ty0, Ty1>>(&Coin<CToken<Ty0, Ty1>>): u64
+	19: LdU64(0)
+	20: Gt
+	21: BrFalse(23)
+B4:
+	22: Branch(29)
+B5:
+	23: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	24: Pop
+	25: MoveLoc[3](Arg3: &Clock)
+	26: Pop
+	27: LdConst[1](u64: 2)
+	28: Abort
+B6:
+	29: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	30: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	31: MoveLoc[1](Arg1: u64)
+	32: VecMutBorrow(51)
+	33: StLoc[8](loc2: &mut Reserve<Ty0>)
+	34: CopyLoc[8](loc2: &mut Reserve<Ty0>)
+	35: FreezeRef
+	36: Call reserve::coin_type<Ty0>(&Reserve<Ty0>): TypeName
+	37: Call type_name::get<Ty1>(): TypeName
+	38: Eq
+	39: BrFalse(41)
+B7:
+	40: Branch(49)
+B8:
+	41: MoveLoc[8](loc2: &mut Reserve<Ty0>)
+	42: Pop
+	43: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	44: Pop
+	45: MoveLoc[3](Arg3: &Clock)
+	46: Pop
+	47: LdConst[2](u64: 3)
+	48: Abort
+B9:
+	49: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	50: MutBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	51: MoveLoc[2](Arg2: ID)
+	52: Call object_table::borrow_mut<ID, Obligation<Ty0>>(&mut ObjectTable<ID, Obligation<Ty0>>, ID): &mut Obligation<Ty0>
+	53: StLoc[7](loc1: &mut Obligation<Ty0>)
+	54: MoveLoc[6](loc0: address)
+	55: Call type_name::get<Ty1>(): TypeName
+	56: CopyLoc[8](loc2: &mut Reserve<Ty0>)
+	57: FreezeRef
+	58: Call object::id_address<Reserve<Ty0>>(&Reserve<Ty0>): address
+	59: CopyLoc[7](loc1: &mut Obligation<Ty0>)
+	60: FreezeRef
+	61: Call object::id_address<Obligation<Ty0>>(&Obligation<Ty0>): address
+	62: ImmBorrowLoc[4](Arg4: Coin<CToken<Ty0, Ty1>>)
+	63: Call coin::value<CToken<Ty0, Ty1>>(&Coin<CToken<Ty0, Ty1>>): u64
+	64: Pack[9](DepositEvent)
+	65: Call event::emit<DepositEvent>(DepositEvent)
+	66: CopyLoc[7](loc1: &mut Obligation<Ty0>)
+	67: CopyLoc[8](loc2: &mut Reserve<Ty0>)
+	68: CopyLoc[3](Arg3: &Clock)
+	69: ImmBorrowLoc[4](Arg4: Coin<CToken<Ty0, Ty1>>)
+	70: Call coin::value<CToken<Ty0, Ty1>>(&Coin<CToken<Ty0, Ty1>>): u64
+	71: Call obligation::deposit<Ty0>(&mut Obligation<Ty0>, &mut Reserve<Ty0>, &Clock, u64)
+	72: MoveLoc[8](loc2: &mut Reserve<Ty0>)
+	73: MoveLoc[4](Arg4: Coin<CToken<Ty0, Ty1>>)
+	74: Call coin::into_balance<CToken<Ty0, Ty1>>(Coin<CToken<Ty0, Ty1>>): Balance<CToken<Ty0, Ty1>>
+	75: Call reserve::deposit_ctokens<Ty0, Ty1>(&mut Reserve<Ty0>, Balance<CToken<Ty0, Ty1>>)
+	76: MoveLoc[7](loc1: &mut Obligation<Ty0>)
+	77: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	78: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	79: MoveLoc[3](Arg3: &Clock)
+	80: Call obligation::zero_out_rewards_if_looped<Ty0>(&mut Obligation<Ty0>, &mut vector<Reserve<Ty0>>, &Clock)
+	81: Ret
+}
+
+claim_rewards_by_obligation_id<Ty0, Ty1>(Arg0: &mut LendingMarket<Ty0>, Arg1: ID, Arg2: &Clock, Arg3: u64, Arg4: u64, Arg5: bool, Arg6: bool, Arg7: &mut TxContext): Coin<Ty1> {
+L8:	loc0: TypeName
+L9:	loc1: String
+L10:	loc2: &String
+L11:	loc3: &mut PoolRewardManager
+L12:	loc4: address
+L13:	loc5: &mut Obligation<Ty0>
+L14:	loc6: &PoolReward
+L15:	loc7: ID
+L16:	loc8: &mut PoolRewardManager
+L17:	loc9: &mut Reserve<Ty0>
+L18:	loc10: Coin<Ty1>
+B0:
+	0: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	1: FreezeRef
+	2: Call object::id_address<LendingMarket<Ty0>>(&LendingMarket<Ty0>): address
+	3: StLoc[12](loc4: address)
+	4: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	5: ImmBorrowFieldGeneric[0](LendingMarket.version: u64)
+	6: ReadRef
+	7: LdConst[6](u64: 7)
+	8: Eq
+	9: BrFalse(11)
+B1:
+	10: Branch(19)
+B2:
+	11: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	12: Pop
+	13: MoveLoc[7](Arg7: &mut TxContext)
+	14: Pop
+	15: MoveLoc[2](Arg2: &Clock)
+	16: Pop
+	17: LdConst[0](u64: 1)
+	18: Abort
+B3:
+	19: Call type_name::get<Ty1>(): TypeName
+	20: StLoc[8](loc0: TypeName)
+	21: ImmBorrowLoc[8](loc0: TypeName)
+	22: Call type_name::borrow_string(&TypeName): &String
+	23: StLoc[10](loc2: &String)
+	24: LdConst[10](vector<u8>: "97d..)
+	25: Call ascii::string(vector<u8>): String
+	26: StLoc[9](loc1: String)
+	27: MoveLoc[10](loc2: &String)
+	28: ImmBorrowLoc[9](loc1: String)
+	29: Neq
+	30: BrFalse(32)
+B4:
+	31: Branch(40)
+B5:
+	32: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	33: Pop
+	34: MoveLoc[7](Arg7: &mut TxContext)
+	35: Pop
+	36: MoveLoc[2](Arg2: &Clock)
+	37: Pop
+	38: LdConst[5](u64: 6)
+	39: Abort
+B6:
+	40: CopyLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	41: MutBorrowFieldGeneric[2](LendingMarket.obligations: ObjectTable<ID, Obligation<Ty0>>)
+	42: MoveLoc[1](Arg1: ID)
+	43: Call object_table::borrow_mut<ID, Obligation<Ty0>>(&mut ObjectTable<ID, Obligation<Ty0>>, ID): &mut Obligation<Ty0>
+	44: StLoc[13](loc5: &mut Obligation<Ty0>)
+	45: MoveLoc[0](Arg0: &mut LendingMarket<Ty0>)
+	46: MutBorrowFieldGeneric[1](LendingMarket.reserves: vector<Reserve<Ty0>>)
+	47: MoveLoc[3](Arg3: u64)
+	48: VecMutBorrow(51)
+	49: StLoc[17](loc9: &mut Reserve<Ty0>)
+	50: CopyLoc[17](loc9: &mut Reserve<Ty0>)
+	51: CopyLoc[2](Arg2: &Clock)
+	52: Call reserve::compound_interest<Ty0>(&mut Reserve<Ty0>, &Clock)
+	53: CopyLoc[5](Arg5: bool)
+	54: BrFalse(59)
+B7:
+	55: CopyLoc[17](loc9: &mut Reserve<Ty0>)
+	56: Call reserve::deposits_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	57: StLoc[11](loc3: &mut PoolRewardManager)
+	58: Branch(62)
+B8:
+	59: CopyLoc[17](loc9: &mut Reserve<Ty0>)
+	60: Call reserve::borrows_pool_reward_manager_mut<Ty0>(&mut Reserve<Ty0>): &mut PoolRewardManager
+	61: StLoc[11](loc3: &mut PoolRewardManager)
+B9:
+	62: MoveLoc[11](loc3: &mut PoolRewardManager)
+	63: StLoc[16](loc8: &mut PoolRewardManager)
+	64: MoveLoc[6](Arg6: bool)
+	65: BrFalse(91)
+B10:
+	66: CopyLoc[16](loc8: &mut PoolRewardManager)
+	67: FreezeRef
+	68: CopyLoc[4](Arg4: u64)
+	69: Call liquidity_mining::pool_reward(&PoolRewardManager, u64): &Option<PoolReward>
+	70: Call option::borrow<PoolReward>(&Option<PoolReward>): &PoolReward
+	71: StLoc[14](loc6: &PoolReward)
+	72: CopyLoc[2](Arg2: &Clock)
+	73: Call clock::timestamp_ms(&Clock): u64
+	74: MoveLoc[14](loc6: &PoolReward)
+	75: Call liquidity_mining::end_time_ms(&PoolReward): u64
+	76: Ge
+	77: BrFalse(79)
+B11:
+	78: Branch(91)
+B12:
+	79: MoveLoc[17](loc9: &mut Reserve<Ty0>)
+	80: Pop
+	81: MoveLoc[16](loc8: &mut PoolRewardManager)
+	82: Pop
+	83: MoveLoc[13](loc5: &mut Obligation<Ty0>)
+	84: Pop
+	85: MoveLoc[7](Arg7: &mut TxContext)
+	86: Pop
+	87: MoveLoc[2](Arg2: &Clock)
+	88: Pop
+	89: LdConst[4](u64: 5)
+	90: Abort
+B13:
+	91: CopyLoc[13](loc5: &mut Obligation<Ty0>)
+	92: CopyLoc[16](loc8: &mut PoolRewardManager)
+	93: MoveLoc[2](Arg2: &Clock)
+	94: CopyLoc[4](Arg4: u64)
+	95: Call obligation::claim_rewards<Ty0, Ty1>(&mut Obligation<Ty0>, &mut PoolRewardManager, &Clock, u64): Balance<Ty1>
+	96: MoveLoc[7](Arg7: &mut TxContext)
+	97: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	98: StLoc[18](loc10: Coin<Ty1>)
+	99: MoveLoc[16](loc8: &mut PoolRewardManager)
+	100: FreezeRef
+	101: MoveLoc[4](Arg4: u64)
+	102: Call liquidity_mining::pool_reward_id(&PoolRewardManager, u64): ID
+	103: StLoc[15](loc7: ID)
+	104: MoveLoc[12](loc4: address)
+	105: MoveLoc[17](loc9: &mut Reserve<Ty0>)
+	106: FreezeRef
+	107: Call object::id_address<Reserve<Ty0>>(&Reserve<Ty0>): address
+	108: MoveLoc[13](loc5: &mut Obligation<Ty0>)
+	109: FreezeRef
+	110: Call object::id_address<Obligation<Ty0>>(&Obligation<Ty0>): address
+	111: MoveLoc[5](Arg5: bool)
+	112: ImmBorrowLoc[15](loc7: ID)
+	113: Call object::id_to_address(&ID): address
+	114: Call type_name::get<Ty1>(): TypeName
+	115: ImmBorrowLoc[18](loc10: Coin<Ty1>)
+	116: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	117: Pack[15](ClaimRewardEvent)
+	118: Call event::emit<ClaimRewardEvent>(ClaimRewardEvent)
+	119: MoveLoc[18](loc10: Coin<Ty1>)
+	120: Ret
+}
+
+Constants [
+	0 => u64: 1
+	1 => u64: 2
+	2 => u64: 3
+	3 => u64: 4
+	4 => u64: 5
+	5 => u64: 6
+	6 => u64: 7
+	7 => u64: 8
+	8 => u64: 18446744073709551615
+	9 => vector<u64>: 016400000000000000
+	10 => vector<u8>: "97d2a76efce8e7cdf55b781bd3d23382237fb1d095f9b9cad0bf1fd5f7176b62::suilend_point_2::SUILEND_POINT_2" // interpreted as UTF8 string
+]
+}
+

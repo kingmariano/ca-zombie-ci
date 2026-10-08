@@ -1,0 +1,44 @@
+{
+  "finding": "C2-11",
+  "title": "Suilend (Sui) — old package versions v10–v24 vs the live market: reachability & extraction",
+  "chains": ["sui"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 331799904,
+  "block_numbers": {"sui": 331799904},
+  "targets_checked": 25,
+  "live_targets": 16,
+  "closed_reasons": [
+    "v1–v9 abort EIncorrectVersion (code 1); only v10–v25 pass the market.version=7 gate",
+    "v10–v21 cannot refresh live reserve prices: legacy Pyth deployment frozen (last update 2026-09-22), Pro PriceInfoObjects are a type mismatch, Pro VAAs rejected by the legacy Wormhole (different guardian sets), public Hermes 401",
+    "single-PTB version mixing (v22–v25 refresh + v10–v21 operation) fails with Sui InvalidLinkage",
+    "price freshness threshold is 0 seconds — old operations abort EOraclesAreStale/EPriceStale without a same-second timestamp",
+    "liquidation gating identical across all versions (is_liquidatable verified equal on live obligations v10/v18/v20/v24/v25)",
+    "v25-only pause/price-guard/oracle-timestamp features are inert today (no PauseKey/PriceGuard dynamic fields; all config bags empty), so their bypass yields nothing",
+    "all privileged entry points (forgive/migrate/add_reserve/new_obligation_owner_cap/set_*) are LendingMarketOwnerCap-gated in every version"
+  ],
+  "poc": {
+    "tests_passed": 9,
+    "tests_total": 9,
+    "ci_run_urls": ["see ci-log.txt / ci-artifacts/ (GitHub Actions run of ci/run.sh)"]
+  },
+  "key_facts": [
+    "Complete version chain v1–v25 resolved (packageVersionsAfter) with deploy dates; latest v25 0x59672975… (2026-09-28)",
+    "Callability map (devInspect create_obligation on the live market): v1–v9 ABORT(code=1); v10–v25 SUCCESS — v10–v24 are callable",
+    "Market state (main market 0x84030d26…): version=7, 45 reserves, 149,616 obligations; real-priced available ≈ $138.6M, borrowed ≈ $65.5M; stored-price total $1.918T is dominated by a retired FUD reserve artifact (stored $0.99987 vs real $6.45e-9, LTV=0)",
+    "26 markets registered, 25 at version 7; funded non-main markets are small",
+    "v8 added the borrow-request pattern (so v10–v24 have it); v19 added the liquidation-bonus cap, 0-ctoken guard, health recompute, highest-weight rule; v23/v24 added retired-reserve exemption, collateral recompute, min-1-ctoken, fee clamp; v25 added pause flags, price guards, oracle timestamp checks, confidence multiplier",
+    "No pause or price-guard state exists on mainnet today (dynamic-field enumeration of market + all 45 reserves; all config bags empty) — v25-only checks are inert",
+    "v18 liquidate on a live obligation aborts code 9 (EOraclesAreStale); v25 refresh+v25 liquidate executes to the health gate; v25 refresh+v18 liquidate fails InvalidLinkage; v18 refresh with legacy object aborts code 4 (frozen feed); Pro VAA replay to legacy Wormhole aborts code 0",
+    "Liquidation-bonus differential of v10–v18 (missing v19 cap): 222/400 recent liquidations capped, extra ≈ $4,389 over 36 days (≈$120.5/day); a 15-day window gives $250.8/day; range $120–255/day — conditional on an unproven same-second two-tx pattern and winning liquidation races",
+    "Freshness cadence: SUI reserve price timestamp updates ~every 15–30 s from ordinary activity; sub-second windows"
+  ],
+  "caveats": [
+    "The same-second two-tx pattern (attacker's own v25 refresh tx + old-version op tx in the same checkpoint) is reasoned from the freshness code and Sui checkpoint semantics but was NOT simulated end-to-end (devInspect cannot chain transactions; sui-fork not run). It is the main residual, not a proven extraction.",
+    "Liquidation-differential estimate is an event-stream approximation using current prices and assuming an old-package liquidator wins the race; partial-repay/full-seize cases approximated.",
+    "Point-in-time reads (2026-10-08, Sui checkpoint 331,799,904); public RPC/GraphQL/Hermes availability was as observed; any change can reopen the surface.",
+    "No transactions were signed or sent; all evidence is devInspect/dry simulations against live state plus on-chain reads."
+  ],
+  "one_liner": "Suilend old packages v10–v24 are callable on the live $138.6M-real market, but external unprivileged extraction proven today is $0: v10–v21's legacy oracle refresh path is frozen, mixed-version PTBs fail InvalidLinkage, and the 0-second freshness rule blocks single-tx use; residual = a conditional ~$120–255/day liquidation-bonus differential via an unproven same-second two-tx pattern, plus a latent v22–v24 bypass of v25 pause/price-guards if ever enabled."
+}

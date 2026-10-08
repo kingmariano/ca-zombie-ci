@@ -1,0 +1,151 @@
+// Move bytecode v6
+module f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf.oracles {
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::i64;
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::price;
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::price_feed;
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::price_identifier;
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::price_info;
+use 0000000000000000000000000000000000000000000000000000000000000001::option;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::math;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::decimal;
+
+public get_pyth_price_and_identifier(Arg0: &PriceInfoObject, Arg1: &Clock): Option<Decimal> * Decimal * PriceIdentifier {
+L2:	loc0: I64
+L3:	loc1: bool
+L4:	loc2: u64
+L5:	loc3: Decimal
+L6:	loc4: Price
+L7:	loc5: &PriceFeed
+L8:	loc6: PriceIdentifier
+L9:	loc7: PriceInfo
+L10:	loc8: u64
+B0:
+	0: MoveLoc[0](Arg0: &PriceInfoObject)
+	1: Call price_info::get_price_info_from_price_info_object(&PriceInfoObject): PriceInfo
+	2: StLoc[9](loc7: PriceInfo)
+	3: ImmBorrowLoc[9](loc7: PriceInfo)
+	4: Call price_info::get_price_feed(&PriceInfo): &PriceFeed
+	5: StLoc[7](loc5: &PriceFeed)
+	6: CopyLoc[7](loc5: &PriceFeed)
+	7: Call price_feed::get_price_identifier(&PriceFeed): PriceIdentifier
+	8: StLoc[8](loc6: PriceIdentifier)
+	9: CopyLoc[7](loc5: &PriceFeed)
+	10: Call price_feed::get_ema_price(&PriceFeed): Price
+	11: Call parse_price_to_decimal(Price): Decimal
+	12: StLoc[5](loc3: Decimal)
+	13: MoveLoc[7](loc5: &PriceFeed)
+	14: Call price_feed::get_price(&PriceFeed): Price
+	15: StLoc[6](loc4: Price)
+	16: ImmBorrowLoc[6](loc4: Price)
+	17: Call price::get_price(&Price): I64
+	18: StLoc[2](loc0: I64)
+	19: ImmBorrowLoc[2](loc0: I64)
+	20: Call i64::get_magnitude_if_positive(&I64): u64
+	21: StLoc[10](loc8: u64)
+	22: ImmBorrowLoc[6](loc4: Price)
+	23: Call price::get_conf(&Price): u64
+	24: LdConst[0](u64: 10)
+	25: Mul
+	26: MoveLoc[10](loc8: u64)
+	27: Gt
+	28: BrFalse(35)
+B1:
+	29: MoveLoc[1](Arg1: &Clock)
+	30: Pop
+	31: Call option::none<Decimal>(): Option<Decimal>
+	32: MoveLoc[5](loc3: Decimal)
+	33: MoveLoc[8](loc6: PriceIdentifier)
+	34: Ret
+B2:
+	35: MoveLoc[1](Arg1: &Clock)
+	36: Call clock::timestamp_ms(&Clock): u64
+	37: LdU64(1000)
+	38: Div
+	39: StLoc[4](loc2: u64)
+	40: CopyLoc[4](loc2: u64)
+	41: ImmBorrowLoc[6](loc4: Price)
+	42: Call price::get_timestamp(&Price): u64
+	43: Gt
+	44: BrFalse(53)
+B3:
+	45: MoveLoc[4](loc2: u64)
+	46: ImmBorrowLoc[6](loc4: Price)
+	47: Call price::get_timestamp(&Price): u64
+	48: Sub
+	49: LdConst[1](u64: 60)
+	50: Gt
+	51: StLoc[3](loc1: bool)
+	52: Branch(55)
+B4:
+	53: LdFalse
+	54: StLoc[3](loc1: bool)
+B5:
+	55: MoveLoc[3](loc1: bool)
+	56: BrFalse(61)
+B6:
+	57: Call option::none<Decimal>(): Option<Decimal>
+	58: MoveLoc[5](loc3: Decimal)
+	59: MoveLoc[8](loc6: PriceIdentifier)
+	60: Ret
+B7:
+	61: MoveLoc[6](loc4: Price)
+	62: Call parse_price_to_decimal(Price): Decimal
+	63: Call option::some<Decimal>(Decimal): Option<Decimal>
+	64: MoveLoc[5](loc3: Decimal)
+	65: MoveLoc[8](loc6: PriceIdentifier)
+	66: Ret
+}
+
+parse_price_to_decimal(Arg0: Price): Decimal {
+L1:	loc0: I64
+L2:	loc1: Decimal
+L3:	loc2: I64
+L4:	loc3: u64
+B0:
+	0: ImmBorrowLoc[0](Arg0: Price)
+	1: Call price::get_price(&Price): I64
+	2: StLoc[1](loc0: I64)
+	3: ImmBorrowLoc[1](loc0: I64)
+	4: Call i64::get_magnitude_if_positive(&I64): u64
+	5: StLoc[4](loc3: u64)
+	6: ImmBorrowLoc[0](Arg0: Price)
+	7: Call price::get_expo(&Price): I64
+	8: StLoc[3](loc2: I64)
+	9: ImmBorrowLoc[3](loc2: I64)
+	10: Call i64::get_is_negative(&I64): bool
+	11: BrFalse(23)
+B1:
+	12: MoveLoc[4](loc3: u64)
+	13: Call decimal::from(u64): Decimal
+	14: LdU64(10)
+	15: ImmBorrowLoc[3](loc2: I64)
+	16: Call i64::get_magnitude_if_negative(&I64): u64
+	17: CastU8
+	18: Call math::pow(u64, u8): u64
+	19: Call decimal::from(u64): Decimal
+	20: Call decimal::div(Decimal, Decimal): Decimal
+	21: StLoc[2](loc1: Decimal)
+	22: Branch(33)
+B2:
+	23: MoveLoc[4](loc3: u64)
+	24: Call decimal::from(u64): Decimal
+	25: LdU64(10)
+	26: ImmBorrowLoc[3](loc2: I64)
+	27: Call i64::get_magnitude_if_positive(&I64): u64
+	28: CastU8
+	29: Call math::pow(u64, u8): u64
+	30: Call decimal::from(u64): Decimal
+	31: Call decimal::mul(Decimal, Decimal): Decimal
+	32: StLoc[2](loc1: Decimal)
+B3:
+	33: MoveLoc[2](loc1: Decimal)
+	34: Ret
+}
+
+Constants [
+	0 => u64: 10
+	1 => u64: 60
+]
+}
+

@@ -1,0 +1,1800 @@
+// Move bytecode v6
+module f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf.reserve {
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::price_identifier;
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::price_info;
+use b87cea7e4220461e35dff856185814d6a37ef479ce895ffbe4efa1d1af5aacbc::sprungsui;
+use 0000000000000000000000000000000000000000000000000000000000000001::option;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::dynamic_field;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::math;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::sui;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 0000000000000000000000000000000000000000000000000000000000000003::sui_system;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::cell;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::decimal;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::liquidity_mining;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::oracles;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::reserve_config;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::staker;
+
+struct Reserve<phantom Ty0> has store, key {
+	id: UID,
+	lending_market_id: ID,
+	array_index: u64,
+	coin_type: TypeName,
+	config: Cell<ReserveConfig>,
+	mint_decimals: u8,
+	price_identifier: PriceIdentifier,
+	price: Decimal,
+	smoothed_price: Decimal,
+	price_last_update_timestamp_s: u64,
+	available_amount: u64,
+	ctoken_supply: u64,
+	borrowed_amount: Decimal,
+	cumulative_borrow_rate: Decimal,
+	interest_last_update_timestamp_s: u64,
+	unclaimed_spread_fees: Decimal,
+	attributed_borrow_value: Decimal,
+	deposits_pool_reward_manager: PoolRewardManager,
+	borrows_pool_reward_manager: PoolRewardManager
+}
+
+struct CToken<phantom Ty0, phantom Ty1> has drop {
+	dummy_field: bool
+}
+
+struct LiquidityRequest<phantom Ty0, phantom Ty1> {
+	amount: u64,
+	fee: u64
+}
+
+struct BalanceKey has copy, drop, store {
+	dummy_field: bool
+}
+
+struct StakerKey has copy, drop, store {
+	dummy_field: bool
+}
+
+struct Balances<phantom Ty0, phantom Ty1> has store {
+	available_amount: Balance<Ty1>,
+	ctoken_supply: Supply<CToken<Ty0, Ty1>>,
+	fees: Balance<Ty1>,
+	ctoken_fees: Balance<CToken<Ty0, Ty1>>,
+	deposited_ctokens: Balance<CToken<Ty0, Ty1>>
+}
+
+struct InterestUpdateEvent has copy, drop {
+	lending_market_id: address,
+	coin_type: TypeName,
+	reserve_id: address,
+	cumulative_borrow_rate: Decimal,
+	available_amount: u64,
+	borrowed_amount: Decimal,
+	unclaimed_spread_fees: Decimal,
+	ctoken_supply: u64,
+	borrow_interest_paid: Decimal,
+	spread_fee: Decimal,
+	supply_interest_earned: Decimal,
+	borrow_interest_paid_usd_estimate: Decimal,
+	protocol_fee_usd_estimate: Decimal,
+	supply_interest_earned_usd_estimate: Decimal
+}
+
+struct ReserveAssetDataEvent has copy, drop {
+	lending_market_id: address,
+	coin_type: TypeName,
+	reserve_id: address,
+	available_amount: Decimal,
+	supply_amount: Decimal,
+	borrowed_amount: Decimal,
+	available_amount_usd_estimate: Decimal,
+	supply_amount_usd_estimate: Decimal,
+	borrowed_amount_usd_estimate: Decimal,
+	borrow_apr: Decimal,
+	supply_apr: Decimal,
+	ctoken_supply: u64,
+	cumulative_borrow_rate: Decimal,
+	price: Decimal,
+	smoothed_price: Decimal,
+	price_last_update_timestamp_s: u64
+}
+
+struct ClaimStakingRewardsEvent has copy, drop {
+	lending_market_id: address,
+	coin_type: TypeName,
+	reserve_id: address,
+	amount: u64
+}
+
+public(friend) create_reserve<Ty0, Ty1>(Arg0: ID, Arg1: ReserveConfig, Arg2: u64, Arg3: u8, Arg4: &PriceInfoObject, Arg5: &Clock, Arg6: &mut TxContext): Reserve<Ty0> {
+L7:	loc0: Option<Decimal>
+L8:	loc1: PriceIdentifier
+L9:	loc2: Reserve<Ty0>
+L10:	loc3: Decimal
+B0:
+	0: MoveLoc[4](Arg4: &PriceInfoObject)
+	1: CopyLoc[5](Arg5: &Clock)
+	2: Call oracles::get_pyth_price_and_identifier(&PriceInfoObject, &Clock): Option<Decimal> * Decimal * PriceIdentifier
+	3: StLoc[8](loc1: PriceIdentifier)
+	4: StLoc[10](loc3: Decimal)
+	5: StLoc[7](loc0: Option<Decimal>)
+	6: ImmBorrowLoc[7](loc0: Option<Decimal>)
+	7: Call option::is_some<Decimal>(&Option<Decimal>): bool
+	8: BrFalse(10)
+B1:
+	9: Branch(16)
+B2:
+	10: MoveLoc[6](Arg6: &mut TxContext)
+	11: Pop
+	12: MoveLoc[5](Arg5: &Clock)
+	13: Pop
+	14: LdConst[4](u64: 4)
+	15: Abort
+B3:
+	16: CopyLoc[6](Arg6: &mut TxContext)
+	17: Call object::new(&mut TxContext): UID
+	18: MoveLoc[0](Arg0: ID)
+	19: MoveLoc[2](Arg2: u64)
+	20: Call type_name::get<Ty1>(): TypeName
+	21: MoveLoc[1](Arg1: ReserveConfig)
+	22: Call cell::new<ReserveConfig>(ReserveConfig): Cell<ReserveConfig>
+	23: MoveLoc[3](Arg3: u8)
+	24: MoveLoc[8](loc1: PriceIdentifier)
+	25: MutBorrowLoc[7](loc0: Option<Decimal>)
+	26: Call option::extract<Decimal>(&mut Option<Decimal>): Decimal
+	27: MoveLoc[10](loc3: Decimal)
+	28: CopyLoc[5](Arg5: &Clock)
+	29: Call clock::timestamp_ms(&Clock): u64
+	30: LdU64(1000)
+	31: Div
+	32: LdU64(0)
+	33: LdU64(0)
+	34: LdU64(0)
+	35: Call decimal::from(u64): Decimal
+	36: LdU64(1)
+	37: Call decimal::from(u64): Decimal
+	38: MoveLoc[5](Arg5: &Clock)
+	39: Call clock::timestamp_ms(&Clock): u64
+	40: LdU64(1000)
+	41: Div
+	42: LdU64(0)
+	43: Call decimal::from(u64): Decimal
+	44: LdU64(0)
+	45: Call decimal::from(u64): Decimal
+	46: CopyLoc[6](Arg6: &mut TxContext)
+	47: Call liquidity_mining::new_pool_reward_manager(&mut TxContext): PoolRewardManager
+	48: MoveLoc[6](Arg6: &mut TxContext)
+	49: Call liquidity_mining::new_pool_reward_manager(&mut TxContext): PoolRewardManager
+	50: PackGeneric[0](Reserve<Ty0>)
+	51: StLoc[9](loc2: Reserve<Ty0>)
+	52: MutBorrowLoc[9](loc2: Reserve<Ty0>)
+	53: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	54: LdFalse
+	55: Pack[3](BalanceKey)
+	56: Call balance::zero<Ty1>(): Balance<Ty1>
+	57: LdFalse
+	58: PackGeneric[1](CToken<Ty0, Ty1>)
+	59: Call balance::create_supply<CToken<Ty0, Ty1>>(CToken<Ty0, Ty1>): Supply<CToken<Ty0, Ty1>>
+	60: Call balance::zero<Ty1>(): Balance<Ty1>
+	61: Call balance::zero<CToken<Ty0, Ty1>>(): Balance<CToken<Ty0, Ty1>>
+	62: Call balance::zero<CToken<Ty0, Ty1>>(): Balance<CToken<Ty0, Ty1>>
+	63: PackGeneric[2](Balances<Ty0, Ty1>)
+	64: Call dynamic_field::add<BalanceKey, Balances<Ty0, Ty1>>(&mut UID, BalanceKey, Balances<Ty0, Ty1>)
+	65: MoveLoc[9](loc2: Reserve<Ty0>)
+	66: Ret
+}
+
+public price_identifier<Ty0>(Arg0: &Reserve<Ty0>): &PriceIdentifier {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[1](Reserve.price_identifier: PriceIdentifier)
+	2: Ret
+}
+
+public borrows_pool_reward_manager<Ty0>(Arg0: &Reserve<Ty0>): &PoolRewardManager {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[2](Reserve.borrows_pool_reward_manager: PoolRewardManager)
+	2: Ret
+}
+
+public deposits_pool_reward_manager<Ty0>(Arg0: &Reserve<Ty0>): &PoolRewardManager {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[3](Reserve.deposits_pool_reward_manager: PoolRewardManager)
+	2: Ret
+}
+
+public array_index<Ty0>(Arg0: &Reserve<Ty0>): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[4](Reserve.array_index: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public available_amount<Ty0>(Arg0: &Reserve<Ty0>): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public borrowed_amount<Ty0>(Arg0: &Reserve<Ty0>): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public coin_type<Ty0>(Arg0: &Reserve<Ty0>): TypeName {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[7](Reserve.coin_type: TypeName)
+	2: ReadRef
+	3: Ret
+}
+
+public assert_price_is_fresh<Ty0>(Arg0: &Reserve<Ty0>, Arg1: &Clock) {
+B0:
+	0: MoveLoc[1](Arg1: &Clock)
+	1: Call clock::timestamp_ms(&Clock): u64
+	2: LdU64(1000)
+	3: Div
+	4: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	5: ImmBorrowFieldGeneric[8](Reserve.price_last_update_timestamp_s: u64)
+	6: ReadRef
+	7: Sub
+	8: LdConst[0](u64: 0)
+	9: Le
+	10: BrFalse(12)
+B1:
+	11: Branch(14)
+B2:
+	12: LdConst[0](u64: 0)
+	13: Abort
+B3:
+	14: Ret
+}
+
+public price<Ty0>(Arg0: &Reserve<Ty0>): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[9](Reserve.price: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public price_lower_bound<Ty0>(Arg0: &Reserve<Ty0>): Decimal {
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[9](Reserve.price: Decimal)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	4: ImmBorrowFieldGeneric[10](Reserve.smoothed_price: Decimal)
+	5: ReadRef
+	6: Call decimal::min(Decimal, Decimal): Decimal
+	7: Ret
+}
+
+public price_upper_bound<Ty0>(Arg0: &Reserve<Ty0>): Decimal {
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[9](Reserve.price: Decimal)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	4: ImmBorrowFieldGeneric[10](Reserve.smoothed_price: Decimal)
+	5: ReadRef
+	6: Call decimal::max(Decimal, Decimal): Decimal
+	7: Ret
+}
+
+public market_value<Ty0>(Arg0: &Reserve<Ty0>, Arg1: Decimal): Decimal {
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: Call price<Ty0>(&Reserve<Ty0>): Decimal
+	2: MoveLoc[1](Arg1: Decimal)
+	3: Call decimal::mul(Decimal, Decimal): Decimal
+	4: LdU64(10)
+	5: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	6: ImmBorrowFieldGeneric[11](Reserve.mint_decimals: u8)
+	7: ReadRef
+	8: Call math::pow(u64, u8): u64
+	9: Call decimal::from(u64): Decimal
+	10: Call decimal::div(Decimal, Decimal): Decimal
+	11: Ret
+}
+
+public market_value_lower_bound<Ty0>(Arg0: &Reserve<Ty0>, Arg1: Decimal): Decimal {
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: Call price_lower_bound<Ty0>(&Reserve<Ty0>): Decimal
+	2: MoveLoc[1](Arg1: Decimal)
+	3: Call decimal::mul(Decimal, Decimal): Decimal
+	4: LdU64(10)
+	5: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	6: ImmBorrowFieldGeneric[11](Reserve.mint_decimals: u8)
+	7: ReadRef
+	8: Call math::pow(u64, u8): u64
+	9: Call decimal::from(u64): Decimal
+	10: Call decimal::div(Decimal, Decimal): Decimal
+	11: Ret
+}
+
+public market_value_upper_bound<Ty0>(Arg0: &Reserve<Ty0>, Arg1: Decimal): Decimal {
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: Call price_upper_bound<Ty0>(&Reserve<Ty0>): Decimal
+	2: MoveLoc[1](Arg1: Decimal)
+	3: Call decimal::mul(Decimal, Decimal): Decimal
+	4: LdU64(10)
+	5: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	6: ImmBorrowFieldGeneric[11](Reserve.mint_decimals: u8)
+	7: ReadRef
+	8: Call math::pow(u64, u8): u64
+	9: Call decimal::from(u64): Decimal
+	10: Call decimal::div(Decimal, Decimal): Decimal
+	11: Ret
+}
+
+public ctoken_market_value<Ty0>(Arg0: &Reserve<Ty0>, Arg1: u64): Decimal {
+L2:	loc0: Decimal
+B0:
+	0: MoveLoc[1](Arg1: u64)
+	1: Call decimal::from(u64): Decimal
+	2: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	3: Call ctoken_ratio<Ty0>(&Reserve<Ty0>): Decimal
+	4: Call decimal::mul(Decimal, Decimal): Decimal
+	5: StLoc[2](loc0: Decimal)
+	6: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	7: MoveLoc[2](loc0: Decimal)
+	8: Call market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	9: Ret
+}
+
+public ctoken_market_value_lower_bound<Ty0>(Arg0: &Reserve<Ty0>, Arg1: u64): Decimal {
+L2:	loc0: Decimal
+B0:
+	0: MoveLoc[1](Arg1: u64)
+	1: Call decimal::from(u64): Decimal
+	2: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	3: Call ctoken_ratio<Ty0>(&Reserve<Ty0>): Decimal
+	4: Call decimal::mul(Decimal, Decimal): Decimal
+	5: StLoc[2](loc0: Decimal)
+	6: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	7: MoveLoc[2](loc0: Decimal)
+	8: Call market_value_lower_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	9: Ret
+}
+
+public ctoken_market_value_upper_bound<Ty0>(Arg0: &Reserve<Ty0>, Arg1: u64): Decimal {
+L2:	loc0: Decimal
+B0:
+	0: MoveLoc[1](Arg1: u64)
+	1: Call decimal::from(u64): Decimal
+	2: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	3: Call ctoken_ratio<Ty0>(&Reserve<Ty0>): Decimal
+	4: Call decimal::mul(Decimal, Decimal): Decimal
+	5: StLoc[2](loc0: Decimal)
+	6: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	7: MoveLoc[2](loc0: Decimal)
+	8: Call market_value_upper_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	9: Ret
+}
+
+public usd_to_token_amount_lower_bound<Ty0>(Arg0: &Reserve<Ty0>, Arg1: Decimal): Decimal {
+B0:
+	0: LdU64(10)
+	1: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	2: ImmBorrowFieldGeneric[11](Reserve.mint_decimals: u8)
+	3: ReadRef
+	4: Call math::pow(u64, u8): u64
+	5: Call decimal::from(u64): Decimal
+	6: MoveLoc[1](Arg1: Decimal)
+	7: Call decimal::mul(Decimal, Decimal): Decimal
+	8: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	9: Call price_upper_bound<Ty0>(&Reserve<Ty0>): Decimal
+	10: Call decimal::div(Decimal, Decimal): Decimal
+	11: Ret
+}
+
+public usd_to_token_amount_upper_bound<Ty0>(Arg0: &Reserve<Ty0>, Arg1: Decimal): Decimal {
+B0:
+	0: LdU64(10)
+	1: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	2: ImmBorrowFieldGeneric[11](Reserve.mint_decimals: u8)
+	3: ReadRef
+	4: Call math::pow(u64, u8): u64
+	5: Call decimal::from(u64): Decimal
+	6: MoveLoc[1](Arg1: Decimal)
+	7: Call decimal::mul(Decimal, Decimal): Decimal
+	8: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	9: Call price_lower_bound<Ty0>(&Reserve<Ty0>): Decimal
+	10: Call decimal::div(Decimal, Decimal): Decimal
+	11: Ret
+}
+
+public cumulative_borrow_rate<Ty0>(Arg0: &Reserve<Ty0>): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[12](Reserve.cumulative_borrow_rate: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public total_supply<Ty0>(Arg0: &Reserve<Ty0>): Decimal {
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	2: ReadRef
+	3: Call decimal::from(u64): Decimal
+	4: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	5: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	6: ReadRef
+	7: Call decimal::add(Decimal, Decimal): Decimal
+	8: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	9: ImmBorrowFieldGeneric[13](Reserve.unclaimed_spread_fees: Decimal)
+	10: ReadRef
+	11: Call decimal::sub(Decimal, Decimal): Decimal
+	12: Ret
+}
+
+public calculate_utilization_rate<Ty0>(Arg0: &Reserve<Ty0>): Decimal {
+L1:	loc0: Decimal
+L2:	loc1: Decimal
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	2: ReadRef
+	3: Call decimal::from(u64): Decimal
+	4: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	5: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	6: ReadRef
+	7: Call decimal::add(Decimal, Decimal): Decimal
+	8: StLoc[2](loc1: Decimal)
+	9: CopyLoc[2](loc1: Decimal)
+	10: LdU64(0)
+	11: Call decimal::from(u64): Decimal
+	12: Call decimal::eq(Decimal, Decimal): bool
+	13: BrFalse(20)
+B1:
+	14: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	15: Pop
+	16: LdU64(0)
+	17: Call decimal::from(u64): Decimal
+	18: StLoc[1](loc0: Decimal)
+	19: Branch(26)
+B2:
+	20: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	21: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	22: ReadRef
+	23: MoveLoc[2](loc1: Decimal)
+	24: Call decimal::div(Decimal, Decimal): Decimal
+	25: StLoc[1](loc0: Decimal)
+B3:
+	26: MoveLoc[1](loc0: Decimal)
+	27: Ret
+}
+
+public ctoken_ratio<Ty0>(Arg0: &Reserve<Ty0>): Decimal {
+L1:	loc0: Decimal
+L2:	loc1: Decimal
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: Call total_supply<Ty0>(&Reserve<Ty0>): Decimal
+	2: StLoc[2](loc1: Decimal)
+	3: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	4: ImmBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	5: ReadRef
+	6: LdU64(0)
+	7: Eq
+	8: BrFalse(15)
+B1:
+	9: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	10: Pop
+	11: LdU64(1)
+	12: Call decimal::from(u64): Decimal
+	13: StLoc[1](loc0: Decimal)
+	14: Branch(22)
+B2:
+	15: MoveLoc[2](loc1: Decimal)
+	16: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	17: ImmBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	18: ReadRef
+	19: Call decimal::from(u64): Decimal
+	20: Call decimal::div(Decimal, Decimal): Decimal
+	21: StLoc[1](loc0: Decimal)
+B3:
+	22: MoveLoc[1](loc0: Decimal)
+	23: Ret
+}
+
+public config<Ty0>(Arg0: &Reserve<Ty0>): &ReserveConfig {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[15](Reserve.config: Cell<ReserveConfig>)
+	2: Call cell::get<ReserveConfig>(&Cell<ReserveConfig>): &ReserveConfig
+	3: Ret
+}
+
+public calculate_borrow_fee<Ty0>(Arg0: &Reserve<Ty0>, Arg1: u64): u64 {
+B0:
+	0: MoveLoc[1](Arg1: u64)
+	1: Call decimal::from(u64): Decimal
+	2: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	3: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	4: Call reserve_config::borrow_fee(&ReserveConfig): Decimal
+	5: Call decimal::mul(Decimal, Decimal): Decimal
+	6: Call decimal::ceil(Decimal): u64
+	7: Ret
+}
+
+public max_borrow_amount<Ty0>(Arg0: &Reserve<Ty0>): u64 {
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	2: ReadRef
+	3: Call decimal::from(u64): Decimal
+	4: LdConst[10](u64: 100)
+	5: Call decimal::from(u64): Decimal
+	6: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	7: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	8: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	9: Call reserve_config::borrow_limit(&ReserveConfig): u64
+	10: Call decimal::from(u64): Decimal
+	11: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	12: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	13: ReadRef
+	14: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	15: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	16: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	17: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	18: Call reserve_config::borrow_limit_usd(&ReserveConfig): u64
+	19: Call decimal::from(u64): Decimal
+	20: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	21: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	22: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	23: ReadRef
+	24: Call market_value_upper_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	25: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	26: Call usd_to_token_amount_lower_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	27: Call decimal::min(Decimal, Decimal): Decimal
+	28: Call decimal::min(Decimal, Decimal): Decimal
+	29: Call decimal::floor(Decimal): u64
+	30: Ret
+}
+
+public max_redeem_amount<Ty0>(Arg0: &Reserve<Ty0>): u64 {
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	2: ReadRef
+	3: Call decimal::from(u64): Decimal
+	4: LdConst[10](u64: 100)
+	5: Call decimal::from(u64): Decimal
+	6: Call decimal::sub(Decimal, Decimal): Decimal
+	7: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	8: Call ctoken_ratio<Ty0>(&Reserve<Ty0>): Decimal
+	9: Call decimal::div(Decimal, Decimal): Decimal
+	10: Call decimal::floor(Decimal): u64
+	11: Ret
+}
+
+public ctoken_supply<Ty0>(Arg0: &Reserve<Ty0>): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public unclaimed_spread_fees<Ty0>(Arg0: &Reserve<Ty0>): Decimal {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[13](Reserve.unclaimed_spread_fees: Decimal)
+	2: ReadRef
+	3: Ret
+}
+
+public balances<Ty0, Ty1>(Arg0: &Reserve<Ty0>): &Balances<Ty0, Ty1> {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[0](Reserve.id: UID)
+	2: LdFalse
+	3: Pack[3](BalanceKey)
+	4: Call dynamic_field::borrow<BalanceKey, Balances<Ty0, Ty1>>(&UID, BalanceKey): &Balances<Ty0, Ty1>
+	5: Ret
+}
+
+public balances_available_amount<Ty0, Ty1>(Arg0: &Balances<Ty0, Ty1>): &Balance<Ty1> {
+B0:
+	0: MoveLoc[0](Arg0: &Balances<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[16](Balances.available_amount: Balance<Ty1>)
+	2: Ret
+}
+
+public balances_ctoken_supply<Ty0, Ty1>(Arg0: &Balances<Ty0, Ty1>): &Supply<CToken<Ty0, Ty1>> {
+B0:
+	0: MoveLoc[0](Arg0: &Balances<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[17](Balances.ctoken_supply: Supply<CToken<Ty0, Ty1>>)
+	2: Ret
+}
+
+public balances_fees<Ty0, Ty1>(Arg0: &Balances<Ty0, Ty1>): &Balance<Ty1> {
+B0:
+	0: MoveLoc[0](Arg0: &Balances<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[18](Balances.fees: Balance<Ty1>)
+	2: Ret
+}
+
+public balances_ctoken_fees<Ty0, Ty1>(Arg0: &Balances<Ty0, Ty1>): &Balance<CToken<Ty0, Ty1>> {
+B0:
+	0: MoveLoc[0](Arg0: &Balances<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[19](Balances.ctoken_fees: Balance<CToken<Ty0, Ty1>>)
+	2: Ret
+}
+
+public(friend) liquidity_request_amount<Ty0, Ty1>(Arg0: &LiquidityRequest<Ty0, Ty1>): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &LiquidityRequest<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[20](LiquidityRequest.amount: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public(friend) liquidity_request_fee<Ty0, Ty1>(Arg0: &LiquidityRequest<Ty0, Ty1>): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &LiquidityRequest<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[21](LiquidityRequest.fee: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public staker<Ty0, Ty1>(Arg0: &Reserve<Ty0>): &Staker<Ty1> {
+B0:
+	0: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[0](Reserve.id: UID)
+	2: LdFalse
+	3: Pack[4](StakerKey)
+	4: Call dynamic_field::borrow<StakerKey, Staker<Ty1>>(&UID, StakerKey): &Staker<Ty1>
+	5: Ret
+}
+
+public(friend) deposits_pool_reward_manager_mut<Ty0>(Arg0: &mut Reserve<Ty0>): &mut PoolRewardManager {
+B0:
+	0: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: MutBorrowFieldGeneric[3](Reserve.deposits_pool_reward_manager: PoolRewardManager)
+	2: Ret
+}
+
+public(friend) borrows_pool_reward_manager_mut<Ty0>(Arg0: &mut Reserve<Ty0>): &mut PoolRewardManager {
+B0:
+	0: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: MutBorrowFieldGeneric[2](Reserve.borrows_pool_reward_manager: PoolRewardManager)
+	2: Ret
+}
+
+public(friend) deduct_liquidation_fee<Ty0, Ty1>(Arg0: &mut Reserve<Ty0>, Arg1: &mut Balance<CToken<Ty0, Ty1>>): u64 * u64 {
+L2:	loc0: Decimal
+L3:	loc1: u64
+L4:	loc2: u64
+L5:	loc3: Decimal
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: FreezeRef
+	2: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	3: Call reserve_config::liquidation_bonus(&ReserveConfig): Decimal
+	4: StLoc[2](loc0: Decimal)
+	5: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	6: FreezeRef
+	7: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	8: Call reserve_config::protocol_liquidation_fee(&ReserveConfig): Decimal
+	9: StLoc[5](loc3: Decimal)
+	10: CopyLoc[5](loc3: Decimal)
+	11: LdU64(1)
+	12: Call decimal::from(u64): Decimal
+	13: CopyLoc[2](loc0: Decimal)
+	14: Call decimal::add(Decimal, Decimal): Decimal
+	15: CopyLoc[5](loc3: Decimal)
+	16: Call decimal::add(Decimal, Decimal): Decimal
+	17: Call decimal::div(Decimal, Decimal): Decimal
+	18: CopyLoc[1](Arg1: &mut Balance<CToken<Ty0, Ty1>>)
+	19: FreezeRef
+	20: Call balance::value<CToken<Ty0, Ty1>>(&Balance<CToken<Ty0, Ty1>>): u64
+	21: Call decimal::from(u64): Decimal
+	22: Call decimal::mul(Decimal, Decimal): Decimal
+	23: Call decimal::ceil(Decimal): u64
+	24: StLoc[4](loc2: u64)
+	25: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	26: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	27: LdFalse
+	28: Pack[3](BalanceKey)
+	29: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, Ty1>>(&mut UID, BalanceKey): &mut Balances<Ty0, Ty1>
+	30: MutBorrowFieldGeneric[19](Balances.ctoken_fees: Balance<CToken<Ty0, Ty1>>)
+	31: CopyLoc[1](Arg1: &mut Balance<CToken<Ty0, Ty1>>)
+	32: CopyLoc[4](loc2: u64)
+	33: Call balance::split<CToken<Ty0, Ty1>>(&mut Balance<CToken<Ty0, Ty1>>, u64): Balance<CToken<Ty0, Ty1>>
+	34: Call balance::join<CToken<Ty0, Ty1>>(&mut Balance<CToken<Ty0, Ty1>>, Balance<CToken<Ty0, Ty1>>): u64
+	35: Pop
+	36: CopyLoc[2](loc0: Decimal)
+	37: LdU64(1)
+	38: Call decimal::from(u64): Decimal
+	39: MoveLoc[2](loc0: Decimal)
+	40: Call decimal::add(Decimal, Decimal): Decimal
+	41: MoveLoc[5](loc3: Decimal)
+	42: Call decimal::add(Decimal, Decimal): Decimal
+	43: Call decimal::div(Decimal, Decimal): Decimal
+	44: MoveLoc[1](Arg1: &mut Balance<CToken<Ty0, Ty1>>)
+	45: FreezeRef
+	46: Call balance::value<CToken<Ty0, Ty1>>(&Balance<CToken<Ty0, Ty1>>): u64
+	47: Call decimal::from(u64): Decimal
+	48: Call decimal::mul(Decimal, Decimal): Decimal
+	49: Call decimal::ceil(Decimal): u64
+	50: StLoc[3](loc1: u64)
+	51: MoveLoc[4](loc2: u64)
+	52: MoveLoc[3](loc1: u64)
+	53: Ret
+}
+
+public(friend) join_fees<Ty0, Ty1>(Arg0: &mut Reserve<Ty0>, Arg1: Balance<Ty1>) {
+B0:
+	0: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	2: LdFalse
+	3: Pack[3](BalanceKey)
+	4: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, Ty1>>(&mut UID, BalanceKey): &mut Balances<Ty0, Ty1>
+	5: MutBorrowFieldGeneric[18](Balances.fees: Balance<Ty1>)
+	6: MoveLoc[1](Arg1: Balance<Ty1>)
+	7: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	8: Pop
+	9: Ret
+}
+
+public(friend) update_reserve_config<Ty0>(Arg0: &mut Reserve<Ty0>, Arg1: ReserveConfig) {
+B0:
+	0: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: MutBorrowFieldGeneric[15](Reserve.config: Cell<ReserveConfig>)
+	2: MoveLoc[1](Arg1: ReserveConfig)
+	3: Call cell::set<ReserveConfig>(&mut Cell<ReserveConfig>, ReserveConfig): ReserveConfig
+	4: Call reserve_config::destroy(ReserveConfig)
+	5: Ret
+}
+
+public(friend) update_price<Ty0>(Arg0: &mut Reserve<Ty0>, Arg1: &Clock, Arg2: &PriceInfoObject) {
+L3:	loc0: Decimal
+L4:	loc1: Option<Decimal>
+L5:	loc2: PriceIdentifier
+B0:
+	0: MoveLoc[2](Arg2: &PriceInfoObject)
+	1: CopyLoc[1](Arg1: &Clock)
+	2: Call oracles::get_pyth_price_and_identifier(&PriceInfoObject, &Clock): Option<Decimal> * Decimal * PriceIdentifier
+	3: StLoc[5](loc2: PriceIdentifier)
+	4: StLoc[3](loc0: Decimal)
+	5: StLoc[4](loc1: Option<Decimal>)
+	6: MoveLoc[5](loc2: PriceIdentifier)
+	7: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	8: ImmBorrowFieldGeneric[1](Reserve.price_identifier: PriceIdentifier)
+	9: ReadRef
+	10: Eq
+	11: BrFalse(13)
+B1:
+	12: Branch(19)
+B2:
+	13: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	14: Pop
+	15: MoveLoc[1](Arg1: &Clock)
+	16: Pop
+	17: LdConst[1](u64: 1)
+	18: Abort
+B3:
+	19: ImmBorrowLoc[4](loc1: Option<Decimal>)
+	20: Call option::is_some<Decimal>(&Option<Decimal>): bool
+	21: BrFalse(23)
+B4:
+	22: Branch(29)
+B5:
+	23: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	24: Pop
+	25: MoveLoc[1](Arg1: &Clock)
+	26: Pop
+	27: LdConst[4](u64: 4)
+	28: Abort
+B6:
+	29: MutBorrowLoc[4](loc1: Option<Decimal>)
+	30: Call option::extract<Decimal>(&mut Option<Decimal>): Decimal
+	31: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	32: MutBorrowFieldGeneric[9](Reserve.price: Decimal)
+	33: WriteRef
+	34: MoveLoc[3](loc0: Decimal)
+	35: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	36: MutBorrowFieldGeneric[10](Reserve.smoothed_price: Decimal)
+	37: WriteRef
+	38: MoveLoc[1](Arg1: &Clock)
+	39: Call clock::timestamp_ms(&Clock): u64
+	40: LdU64(1000)
+	41: Div
+	42: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	43: MutBorrowFieldGeneric[8](Reserve.price_last_update_timestamp_s: u64)
+	44: WriteRef
+	45: Ret
+}
+
+public(friend) compound_interest<Ty0>(Arg0: &mut Reserve<Ty0>, Arg1: &Clock) {
+L2:	loc0: Decimal
+L3:	loc1: u64
+L4:	loc2: Decimal
+L5:	loc3: Decimal
+L6:	loc4: u64
+L7:	loc5: Decimal
+B0:
+	0: MoveLoc[1](Arg1: &Clock)
+	1: Call clock::timestamp_ms(&Clock): u64
+	2: LdU64(1000)
+	3: Div
+	4: StLoc[3](loc1: u64)
+	5: CopyLoc[3](loc1: u64)
+	6: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	7: ImmBorrowFieldGeneric[22](Reserve.interest_last_update_timestamp_s: u64)
+	8: ReadRef
+	9: Sub
+	10: StLoc[6](loc4: u64)
+	11: CopyLoc[6](loc4: u64)
+	12: LdU64(0)
+	13: Eq
+	14: BrFalse(18)
+B1:
+	15: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	16: Pop
+	17: Ret
+B2:
+	18: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	19: FreezeRef
+	20: Call calculate_utilization_rate<Ty0>(&Reserve<Ty0>): Decimal
+	21: StLoc[7](loc5: Decimal)
+	22: LdU64(1)
+	23: Call decimal::from(u64): Decimal
+	24: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	25: FreezeRef
+	26: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	27: MoveLoc[7](loc5: Decimal)
+	28: Call reserve_config::calculate_apr(&ReserveConfig, Decimal): Decimal
+	29: LdU64(31536000)
+	30: Call decimal::from(u64): Decimal
+	31: Call decimal::div(Decimal, Decimal): Decimal
+	32: Call decimal::add(Decimal, Decimal): Decimal
+	33: MoveLoc[6](loc4: u64)
+	34: Call decimal::pow(Decimal, u64): Decimal
+	35: StLoc[2](loc0: Decimal)
+	36: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	37: ImmBorrowFieldGeneric[12](Reserve.cumulative_borrow_rate: Decimal)
+	38: ReadRef
+	39: CopyLoc[2](loc0: Decimal)
+	40: Call decimal::mul(Decimal, Decimal): Decimal
+	41: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	42: MutBorrowFieldGeneric[12](Reserve.cumulative_borrow_rate: Decimal)
+	43: WriteRef
+	44: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	45: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	46: ReadRef
+	47: MoveLoc[2](loc0: Decimal)
+	48: LdU64(1)
+	49: Call decimal::from(u64): Decimal
+	50: Call decimal::sub(Decimal, Decimal): Decimal
+	51: Call decimal::mul(Decimal, Decimal): Decimal
+	52: StLoc[4](loc2: Decimal)
+	53: CopyLoc[4](loc2: Decimal)
+	54: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	55: FreezeRef
+	56: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	57: Call reserve_config::spread_fee(&ReserveConfig): Decimal
+	58: Call decimal::mul(Decimal, Decimal): Decimal
+	59: StLoc[5](loc3: Decimal)
+	60: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	61: ImmBorrowFieldGeneric[13](Reserve.unclaimed_spread_fees: Decimal)
+	62: ReadRef
+	63: CopyLoc[5](loc3: Decimal)
+	64: Call decimal::add(Decimal, Decimal): Decimal
+	65: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	66: MutBorrowFieldGeneric[13](Reserve.unclaimed_spread_fees: Decimal)
+	67: WriteRef
+	68: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	69: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	70: ReadRef
+	71: CopyLoc[4](loc2: Decimal)
+	72: Call decimal::add(Decimal, Decimal): Decimal
+	73: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	74: MutBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	75: WriteRef
+	76: MoveLoc[3](loc1: u64)
+	77: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	78: MutBorrowFieldGeneric[22](Reserve.interest_last_update_timestamp_s: u64)
+	79: WriteRef
+	80: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	81: ImmBorrowFieldGeneric[23](Reserve.lending_market_id: ID)
+	82: Call object::id_to_address(&ID): address
+	83: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	84: ImmBorrowFieldGeneric[7](Reserve.coin_type: TypeName)
+	85: ReadRef
+	86: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	87: ImmBorrowFieldGeneric[0](Reserve.id: UID)
+	88: Call object::uid_to_address(&UID): address
+	89: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	90: ImmBorrowFieldGeneric[12](Reserve.cumulative_borrow_rate: Decimal)
+	91: ReadRef
+	92: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	93: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	94: ReadRef
+	95: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	96: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	97: ReadRef
+	98: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	99: ImmBorrowFieldGeneric[13](Reserve.unclaimed_spread_fees: Decimal)
+	100: ReadRef
+	101: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	102: ImmBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	103: ReadRef
+	104: CopyLoc[4](loc2: Decimal)
+	105: CopyLoc[5](loc3: Decimal)
+	106: CopyLoc[4](loc2: Decimal)
+	107: CopyLoc[5](loc3: Decimal)
+	108: Call decimal::sub(Decimal, Decimal): Decimal
+	109: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	110: FreezeRef
+	111: CopyLoc[4](loc2: Decimal)
+	112: Call market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	113: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	114: FreezeRef
+	115: CopyLoc[5](loc3: Decimal)
+	116: Call market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	117: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	118: FreezeRef
+	119: MoveLoc[4](loc2: Decimal)
+	120: MoveLoc[5](loc3: Decimal)
+	121: Call decimal::sub(Decimal, Decimal): Decimal
+	122: Call market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	123: Pack[6](InterestUpdateEvent)
+	124: Call event::emit<InterestUpdateEvent>(InterestUpdateEvent)
+	125: Ret
+}
+
+public(friend) claim_fees<Ty0, Ty1>(Arg0: &mut Reserve<Ty0>): Balance<CToken<Ty0, Ty1>> * Balance<Ty1> {
+L1:	loc0: &mut Balances<Ty0, Ty1>
+L2:	loc1: u64
+L3:	loc2: Balance<CToken<Ty0, Ty1>>
+L4:	loc3: Balance<Ty1>
+L5:	loc4: Balance<Ty1>
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	2: LdFalse
+	3: Pack[3](BalanceKey)
+	4: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, Ty1>>(&mut UID, BalanceKey): &mut Balances<Ty0, Ty1>
+	5: StLoc[1](loc0: &mut Balances<Ty0, Ty1>)
+	6: CopyLoc[1](loc0: &mut Balances<Ty0, Ty1>)
+	7: MutBorrowFieldGeneric[18](Balances.fees: Balance<Ty1>)
+	8: Call balance::withdraw_all<Ty1>(&mut Balance<Ty1>): Balance<Ty1>
+	9: StLoc[4](loc3: Balance<Ty1>)
+	10: CopyLoc[1](loc0: &mut Balances<Ty0, Ty1>)
+	11: MutBorrowFieldGeneric[19](Balances.ctoken_fees: Balance<CToken<Ty0, Ty1>>)
+	12: Call balance::withdraw_all<CToken<Ty0, Ty1>>(&mut Balance<CToken<Ty0, Ty1>>): Balance<CToken<Ty0, Ty1>>
+	13: StLoc[3](loc2: Balance<CToken<Ty0, Ty1>>)
+	14: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	15: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	16: ReadRef
+	17: LdConst[10](u64: 100)
+	18: Ge
+	19: BrFalse(61)
+B1:
+	20: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	21: ImmBorrowFieldGeneric[13](Reserve.unclaimed_spread_fees: Decimal)
+	22: ReadRef
+	23: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	24: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	25: ReadRef
+	26: LdConst[10](u64: 100)
+	27: Sub
+	28: Call decimal::from(u64): Decimal
+	29: Call decimal::min(Decimal, Decimal): Decimal
+	30: Call decimal::floor(Decimal): u64
+	31: StLoc[2](loc1: u64)
+	32: MoveLoc[1](loc0: &mut Balances<Ty0, Ty1>)
+	33: MutBorrowFieldGeneric[16](Balances.available_amount: Balance<Ty1>)
+	34: MoveLoc[2](loc1: u64)
+	35: Call balance::split<Ty1>(&mut Balance<Ty1>, u64): Balance<Ty1>
+	36: StLoc[5](loc4: Balance<Ty1>)
+	37: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	38: ImmBorrowFieldGeneric[13](Reserve.unclaimed_spread_fees: Decimal)
+	39: ReadRef
+	40: ImmBorrowLoc[5](loc4: Balance<Ty1>)
+	41: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	42: Call decimal::from(u64): Decimal
+	43: Call decimal::sub(Decimal, Decimal): Decimal
+	44: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	45: MutBorrowFieldGeneric[13](Reserve.unclaimed_spread_fees: Decimal)
+	46: WriteRef
+	47: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	48: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	49: ReadRef
+	50: ImmBorrowLoc[5](loc4: Balance<Ty1>)
+	51: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	52: Sub
+	53: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	54: MutBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	55: WriteRef
+	56: MutBorrowLoc[4](loc3: Balance<Ty1>)
+	57: MoveLoc[5](loc4: Balance<Ty1>)
+	58: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	59: Pop
+	60: Branch(65)
+B2:
+	61: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	62: Pop
+	63: MoveLoc[1](loc0: &mut Balances<Ty0, Ty1>)
+	64: Pop
+B3:
+	65: MoveLoc[3](loc2: Balance<CToken<Ty0, Ty1>>)
+	66: MoveLoc[4](loc3: Balance<Ty1>)
+	67: Ret
+}
+
+public(friend) deposit_liquidity_and_mint_ctokens<Ty0, Ty1>(Arg0: &mut Reserve<Ty0>, Arg1: Balance<Ty1>): Balance<CToken<Ty0, Ty1>> {
+L2:	loc0: &mut Balances<Ty0, Ty1>
+L3:	loc1: Decimal
+L4:	loc2: u64
+L5:	loc3: Decimal
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: FreezeRef
+	2: Call ctoken_ratio<Ty0>(&Reserve<Ty0>): Decimal
+	3: StLoc[3](loc1: Decimal)
+	4: ImmBorrowLoc[1](Arg1: Balance<Ty1>)
+	5: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	6: Call decimal::from(u64): Decimal
+	7: MoveLoc[3](loc1: Decimal)
+	8: Call decimal::div(Decimal, Decimal): Decimal
+	9: Call decimal::floor(Decimal): u64
+	10: StLoc[4](loc2: u64)
+	11: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	12: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	13: ReadRef
+	14: ImmBorrowLoc[1](Arg1: Balance<Ty1>)
+	15: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	16: Add
+	17: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	18: MutBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	19: WriteRef
+	20: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	21: ImmBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	22: ReadRef
+	23: CopyLoc[4](loc2: u64)
+	24: Add
+	25: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	26: MutBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	27: WriteRef
+	28: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	29: FreezeRef
+	30: Call total_supply<Ty0>(&Reserve<Ty0>): Decimal
+	31: StLoc[5](loc3: Decimal)
+	32: CopyLoc[5](loc3: Decimal)
+	33: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	34: FreezeRef
+	35: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	36: Call reserve_config::deposit_limit(&ReserveConfig): u64
+	37: Call decimal::from(u64): Decimal
+	38: Call decimal::le(Decimal, Decimal): bool
+	39: BrFalse(41)
+B1:
+	40: Branch(45)
+B2:
+	41: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	42: Pop
+	43: LdConst[2](u64: 2)
+	44: Abort
+B3:
+	45: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	46: FreezeRef
+	47: MoveLoc[5](loc3: Decimal)
+	48: Call market_value_upper_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	49: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	50: FreezeRef
+	51: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	52: Call reserve_config::deposit_limit_usd(&ReserveConfig): u64
+	53: Call decimal::from(u64): Decimal
+	54: Call decimal::le(Decimal, Decimal): bool
+	55: BrFalse(57)
+B4:
+	56: Branch(61)
+B5:
+	57: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	58: Pop
+	59: LdConst[2](u64: 2)
+	60: Abort
+B6:
+	61: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	62: FreezeRef
+	63: Call log_reserve_data<Ty0>(&Reserve<Ty0>)
+	64: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	65: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	66: LdFalse
+	67: Pack[3](BalanceKey)
+	68: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, Ty1>>(&mut UID, BalanceKey): &mut Balances<Ty0, Ty1>
+	69: StLoc[2](loc0: &mut Balances<Ty0, Ty1>)
+	70: CopyLoc[2](loc0: &mut Balances<Ty0, Ty1>)
+	71: MutBorrowFieldGeneric[16](Balances.available_amount: Balance<Ty1>)
+	72: MoveLoc[1](Arg1: Balance<Ty1>)
+	73: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	74: Pop
+	75: MoveLoc[2](loc0: &mut Balances<Ty0, Ty1>)
+	76: MutBorrowFieldGeneric[17](Balances.ctoken_supply: Supply<CToken<Ty0, Ty1>>)
+	77: MoveLoc[4](loc2: u64)
+	78: Call balance::increase_supply<CToken<Ty0, Ty1>>(&mut Supply<CToken<Ty0, Ty1>>, u64): Balance<CToken<Ty0, Ty1>>
+	79: Ret
+}
+
+public(friend) redeem_ctokens<Ty0, Ty1>(Arg0: &mut Reserve<Ty0>, Arg1: Balance<CToken<Ty0, Ty1>>): LiquidityRequest<Ty0, Ty1> {
+L2:	loc0: bool
+L3:	loc1: Decimal
+L4:	loc2: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: FreezeRef
+	2: Call ctoken_ratio<Ty0>(&Reserve<Ty0>): Decimal
+	3: StLoc[3](loc1: Decimal)
+	4: ImmBorrowLoc[1](Arg1: Balance<CToken<Ty0, Ty1>>)
+	5: Call balance::value<CToken<Ty0, Ty1>>(&Balance<CToken<Ty0, Ty1>>): u64
+	6: Call decimal::from(u64): Decimal
+	7: MoveLoc[3](loc1: Decimal)
+	8: Call decimal::mul(Decimal, Decimal): Decimal
+	9: Call decimal::floor(Decimal): u64
+	10: StLoc[4](loc2: u64)
+	11: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	12: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	13: ReadRef
+	14: CopyLoc[4](loc2: u64)
+	15: Sub
+	16: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	17: MutBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	18: WriteRef
+	19: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	20: ImmBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	21: ReadRef
+	22: ImmBorrowLoc[1](Arg1: Balance<CToken<Ty0, Ty1>>)
+	23: Call balance::value<CToken<Ty0, Ty1>>(&Balance<CToken<Ty0, Ty1>>): u64
+	24: Sub
+	25: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	26: MutBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	27: WriteRef
+	28: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	29: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	30: ReadRef
+	31: LdConst[10](u64: 100)
+	32: Ge
+	33: BrFalse(41)
+B1:
+	34: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	35: ImmBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	36: ReadRef
+	37: LdConst[10](u64: 100)
+	38: Ge
+	39: StLoc[2](loc0: bool)
+	40: Branch(43)
+B2:
+	41: LdFalse
+	42: StLoc[2](loc0: bool)
+B3:
+	43: MoveLoc[2](loc0: bool)
+	44: BrFalse(46)
+B4:
+	45: Branch(50)
+B5:
+	46: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	47: Pop
+	48: LdConst[5](u64: 5)
+	49: Abort
+B6:
+	50: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	51: FreezeRef
+	52: Call log_reserve_data<Ty0>(&Reserve<Ty0>)
+	53: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	54: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	55: LdFalse
+	56: Pack[3](BalanceKey)
+	57: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, Ty1>>(&mut UID, BalanceKey): &mut Balances<Ty0, Ty1>
+	58: MutBorrowFieldGeneric[17](Balances.ctoken_supply: Supply<CToken<Ty0, Ty1>>)
+	59: MoveLoc[1](Arg1: Balance<CToken<Ty0, Ty1>>)
+	60: Call balance::decrease_supply<CToken<Ty0, Ty1>>(&mut Supply<CToken<Ty0, Ty1>>, Balance<CToken<Ty0, Ty1>>): u64
+	61: Pop
+	62: MoveLoc[4](loc2: u64)
+	63: LdU64(0)
+	64: PackGeneric[3](LiquidityRequest<Ty0, Ty1>)
+	65: Ret
+}
+
+public(friend) fulfill_liquidity_request<Ty0, Ty1>(Arg0: &mut Reserve<Ty0>, Arg1: LiquidityRequest<Ty0, Ty1>): Balance<Ty1> {
+L2:	loc0: u64
+L3:	loc1: &mut Balances<Ty0, Ty1>
+L4:	loc2: u64
+L5:	loc3: Balance<Ty1>
+B0:
+	0: MoveLoc[1](Arg1: LiquidityRequest<Ty0, Ty1>)
+	1: UnpackGeneric[3](LiquidityRequest<Ty0, Ty1>)
+	2: StLoc[4](loc2: u64)
+	3: StLoc[2](loc0: u64)
+	4: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	5: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	6: LdFalse
+	7: Pack[3](BalanceKey)
+	8: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, Ty1>>(&mut UID, BalanceKey): &mut Balances<Ty0, Ty1>
+	9: StLoc[3](loc1: &mut Balances<Ty0, Ty1>)
+	10: CopyLoc[3](loc1: &mut Balances<Ty0, Ty1>)
+	11: MutBorrowFieldGeneric[16](Balances.available_amount: Balance<Ty1>)
+	12: MoveLoc[2](loc0: u64)
+	13: Call balance::split<Ty1>(&mut Balance<Ty1>, u64): Balance<Ty1>
+	14: StLoc[5](loc3: Balance<Ty1>)
+	15: MoveLoc[3](loc1: &mut Balances<Ty0, Ty1>)
+	16: MutBorrowFieldGeneric[18](Balances.fees: Balance<Ty1>)
+	17: MutBorrowLoc[5](loc3: Balance<Ty1>)
+	18: MoveLoc[4](loc2: u64)
+	19: Call balance::split<Ty1>(&mut Balance<Ty1>, u64): Balance<Ty1>
+	20: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	21: Pop
+	22: MoveLoc[5](loc3: Balance<Ty1>)
+	23: Ret
+}
+
+public(friend) init_staker<Ty0, Ty1: drop>(Arg0: &mut Reserve<Ty0>, Arg1: TreasuryCap<Ty1>, Arg2: &mut TxContext) {
+L3:	loc0: Staker<Ty1>
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[0](Reserve.id: UID)
+	2: LdFalse
+	3: Pack[4](StakerKey)
+	4: Call dynamic_field::exists_<StakerKey>(&UID, StakerKey): bool
+	5: Not
+	6: BrFalse(8)
+B1:
+	7: Branch(14)
+B2:
+	8: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	9: Pop
+	10: MoveLoc[2](Arg2: &mut TxContext)
+	11: Pop
+	12: LdConst[8](u64: 8)
+	13: Abort
+B3:
+	14: Call type_name::get<Ty1>(): TypeName
+	15: Call type_name::get<SPRUNGSUI>(): TypeName
+	16: Eq
+	17: BrFalse(19)
+B4:
+	18: Branch(25)
+B5:
+	19: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	20: Pop
+	21: MoveLoc[2](Arg2: &mut TxContext)
+	22: Pop
+	23: LdConst[7](u64: 7)
+	24: Abort
+B6:
+	25: MoveLoc[1](Arg1: TreasuryCap<Ty1>)
+	26: MoveLoc[2](Arg2: &mut TxContext)
+	27: Call staker::create_staker<Ty1>(TreasuryCap<Ty1>, &mut TxContext): Staker<Ty1>
+	28: StLoc[3](loc0: Staker<Ty1>)
+	29: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	30: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	31: LdFalse
+	32: Pack[4](StakerKey)
+	33: MoveLoc[3](loc0: Staker<Ty1>)
+	34: Call dynamic_field::add<StakerKey, Staker<Ty1>>(&mut UID, StakerKey, Staker<Ty1>)
+	35: Ret
+}
+
+public(friend) rebalance_staker<Ty0>(Arg0: &mut Reserve<Ty0>, Arg1: &mut SuiSystemState, Arg2: &mut TxContext) {
+L3:	loc0: Balance<SUI>
+L4:	loc1: &mut Staker<SPRUNGSUI>
+L5:	loc2: Balance<SUI>
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[0](Reserve.id: UID)
+	2: LdFalse
+	3: Pack[4](StakerKey)
+	4: Call dynamic_field::exists_<StakerKey>(&UID, StakerKey): bool
+	5: BrFalse(7)
+B1:
+	6: Branch(15)
+B2:
+	7: MoveLoc[1](Arg1: &mut SuiSystemState)
+	8: Pop
+	9: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	10: Pop
+	11: MoveLoc[2](Arg2: &mut TxContext)
+	12: Pop
+	13: LdConst[9](u64: 9)
+	14: Abort
+B3:
+	15: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	16: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	17: LdFalse
+	18: Pack[3](BalanceKey)
+	19: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, SUI>>(&mut UID, BalanceKey): &mut Balances<Ty0, SUI>
+	20: MutBorrowFieldGeneric[24](Balances.available_amount: Balance<SUI>)
+	21: Call balance::withdraw_all<SUI>(&mut Balance<SUI>): Balance<SUI>
+	22: StLoc[5](loc2: Balance<SUI>)
+	23: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	24: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	25: LdFalse
+	26: Pack[4](StakerKey)
+	27: Call dynamic_field::borrow_mut<StakerKey, Staker<SPRUNGSUI>>(&mut UID, StakerKey): &mut Staker<SPRUNGSUI>
+	28: StLoc[4](loc1: &mut Staker<SPRUNGSUI>)
+	29: CopyLoc[4](loc1: &mut Staker<SPRUNGSUI>)
+	30: MoveLoc[5](loc2: Balance<SUI>)
+	31: Call staker::deposit<SPRUNGSUI>(&mut Staker<SPRUNGSUI>, Balance<SUI>)
+	32: CopyLoc[4](loc1: &mut Staker<SPRUNGSUI>)
+	33: CopyLoc[1](Arg1: &mut SuiSystemState)
+	34: CopyLoc[2](Arg2: &mut TxContext)
+	35: Call staker::rebalance<SPRUNGSUI>(&mut Staker<SPRUNGSUI>, &mut SuiSystemState, &mut TxContext)
+	36: MoveLoc[4](loc1: &mut Staker<SPRUNGSUI>)
+	37: MoveLoc[1](Arg1: &mut SuiSystemState)
+	38: MoveLoc[2](Arg2: &mut TxContext)
+	39: Call staker::claim_fees<SPRUNGSUI>(&mut Staker<SPRUNGSUI>, &mut SuiSystemState, &mut TxContext): Balance<SUI>
+	40: StLoc[3](loc0: Balance<SUI>)
+	41: ImmBorrowLoc[3](loc0: Balance<SUI>)
+	42: Call balance::value<SUI>(&Balance<SUI>): u64
+	43: LdU64(0)
+	44: Gt
+	45: BrFalse(69)
+B4:
+	46: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	47: ImmBorrowFieldGeneric[23](Reserve.lending_market_id: ID)
+	48: Call object::id_to_address(&ID): address
+	49: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	50: ImmBorrowFieldGeneric[7](Reserve.coin_type: TypeName)
+	51: ReadRef
+	52: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	53: ImmBorrowFieldGeneric[0](Reserve.id: UID)
+	54: Call object::uid_to_address(&UID): address
+	55: ImmBorrowLoc[3](loc0: Balance<SUI>)
+	56: Call balance::value<SUI>(&Balance<SUI>): u64
+	57: Pack[8](ClaimStakingRewardsEvent)
+	58: Call event::emit<ClaimStakingRewardsEvent>(ClaimStakingRewardsEvent)
+	59: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	60: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	61: LdFalse
+	62: Pack[3](BalanceKey)
+	63: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, SUI>>(&mut UID, BalanceKey): &mut Balances<Ty0, SUI>
+	64: MutBorrowFieldGeneric[25](Balances.fees: Balance<SUI>)
+	65: MoveLoc[3](loc0: Balance<SUI>)
+	66: Call balance::join<SUI>(&mut Balance<SUI>, Balance<SUI>): u64
+	67: Pop
+	68: Branch(73)
+B5:
+	69: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	70: Pop
+	71: MoveLoc[3](loc0: Balance<SUI>)
+	72: Call balance::destroy_zero<SUI>(Balance<SUI>)
+B6:
+	73: Ret
+}
+
+public(friend) unstake_sui_from_staker<Ty0>(Arg0: &mut Reserve<Ty0>, Arg1: &LiquidityRequest<Ty0, SUI>, Arg2: &mut SuiSystemState, Arg3: &mut TxContext) {
+L4:	loc0: &Balances<Ty0, SUI>
+L5:	loc1: Balance<SUI>
+L6:	loc2: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[7](Reserve.coin_type: TypeName)
+	2: ReadRef
+	3: Call type_name::get<SUI>(): TypeName
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(17)
+B2:
+	7: MoveLoc[2](Arg2: &mut SuiSystemState)
+	8: Pop
+	9: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	10: Pop
+	11: MoveLoc[1](Arg1: &LiquidityRequest<Ty0, SUI>)
+	12: Pop
+	13: MoveLoc[3](Arg3: &mut TxContext)
+	14: Pop
+	15: LdConst[7](u64: 7)
+	16: Abort
+B3:
+	17: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	18: ImmBorrowFieldGeneric[0](Reserve.id: UID)
+	19: LdFalse
+	20: Pack[4](StakerKey)
+	21: Call dynamic_field::exists_<StakerKey>(&UID, StakerKey): bool
+	22: Not
+	23: BrFalse(33)
+B4:
+	24: MoveLoc[2](Arg2: &mut SuiSystemState)
+	25: Pop
+	26: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	27: Pop
+	28: MoveLoc[1](Arg1: &LiquidityRequest<Ty0, SUI>)
+	29: Pop
+	30: MoveLoc[3](Arg3: &mut TxContext)
+	31: Pop
+	32: Ret
+B5:
+	33: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	34: ImmBorrowFieldGeneric[0](Reserve.id: UID)
+	35: LdFalse
+	36: Pack[3](BalanceKey)
+	37: Call dynamic_field::borrow<BalanceKey, Balances<Ty0, SUI>>(&UID, BalanceKey): &Balances<Ty0, SUI>
+	38: StLoc[4](loc0: &Balances<Ty0, SUI>)
+	39: CopyLoc[1](Arg1: &LiquidityRequest<Ty0, SUI>)
+	40: ImmBorrowFieldGeneric[26](LiquidityRequest.amount: u64)
+	41: ReadRef
+	42: CopyLoc[4](loc0: &Balances<Ty0, SUI>)
+	43: ImmBorrowFieldGeneric[24](Balances.available_amount: Balance<SUI>)
+	44: Call balance::value<SUI>(&Balance<SUI>): u64
+	45: Le
+	46: BrFalse(58)
+B6:
+	47: MoveLoc[2](Arg2: &mut SuiSystemState)
+	48: Pop
+	49: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	50: Pop
+	51: MoveLoc[1](Arg1: &LiquidityRequest<Ty0, SUI>)
+	52: Pop
+	53: MoveLoc[3](Arg3: &mut TxContext)
+	54: Pop
+	55: MoveLoc[4](loc0: &Balances<Ty0, SUI>)
+	56: Pop
+	57: Ret
+B7:
+	58: MoveLoc[1](Arg1: &LiquidityRequest<Ty0, SUI>)
+	59: ImmBorrowFieldGeneric[26](LiquidityRequest.amount: u64)
+	60: ReadRef
+	61: MoveLoc[4](loc0: &Balances<Ty0, SUI>)
+	62: ImmBorrowFieldGeneric[24](Balances.available_amount: Balance<SUI>)
+	63: Call balance::value<SUI>(&Balance<SUI>): u64
+	64: Sub
+	65: StLoc[6](loc2: u64)
+	66: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	67: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	68: LdFalse
+	69: Pack[4](StakerKey)
+	70: Call dynamic_field::borrow_mut<StakerKey, Staker<SPRUNGSUI>>(&mut UID, StakerKey): &mut Staker<SPRUNGSUI>
+	71: MoveLoc[6](loc2: u64)
+	72: MoveLoc[2](Arg2: &mut SuiSystemState)
+	73: MoveLoc[3](Arg3: &mut TxContext)
+	74: Call staker::withdraw<SPRUNGSUI>(&mut Staker<SPRUNGSUI>, u64, &mut SuiSystemState, &mut TxContext): Balance<SUI>
+	75: StLoc[5](loc1: Balance<SUI>)
+	76: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	77: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	78: LdFalse
+	79: Pack[3](BalanceKey)
+	80: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, SUI>>(&mut UID, BalanceKey): &mut Balances<Ty0, SUI>
+	81: MutBorrowFieldGeneric[24](Balances.available_amount: Balance<SUI>)
+	82: MoveLoc[5](loc1: Balance<SUI>)
+	83: Call balance::join<SUI>(&mut Balance<SUI>, Balance<SUI>): u64
+	84: Pop
+	85: Ret
+}
+
+public(friend) borrow_liquidity<Ty0, Ty1>(Arg0: &mut Reserve<Ty0>, Arg1: u64): LiquidityRequest<Ty0, Ty1> {
+L2:	loc0: bool
+L3:	loc1: u64
+L4:	loc2: u64
+L5:	loc3: Decimal
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: FreezeRef
+	2: CopyLoc[1](Arg1: u64)
+	3: Call calculate_borrow_fee<Ty0>(&Reserve<Ty0>, u64): u64
+	4: StLoc[4](loc2: u64)
+	5: MoveLoc[1](Arg1: u64)
+	6: CopyLoc[4](loc2: u64)
+	7: Add
+	8: StLoc[3](loc1: u64)
+	9: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	10: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	11: ReadRef
+	12: CopyLoc[3](loc1: u64)
+	13: Sub
+	14: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	15: MutBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	16: WriteRef
+	17: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	18: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	19: ReadRef
+	20: CopyLoc[3](loc1: u64)
+	21: Call decimal::from(u64): Decimal
+	22: Call decimal::add(Decimal, Decimal): Decimal
+	23: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	24: MutBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	25: WriteRef
+	26: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	27: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	28: ReadRef
+	29: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	30: FreezeRef
+	31: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	32: Call reserve_config::borrow_limit(&ReserveConfig): u64
+	33: Call decimal::from(u64): Decimal
+	34: Call decimal::le(Decimal, Decimal): bool
+	35: BrFalse(37)
+B1:
+	36: Branch(41)
+B2:
+	37: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	38: Pop
+	39: LdConst[3](u64: 3)
+	40: Abort
+B3:
+	41: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	42: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	43: ReadRef
+	44: StLoc[5](loc3: Decimal)
+	45: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	46: FreezeRef
+	47: MoveLoc[5](loc3: Decimal)
+	48: Call market_value_upper_bound<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	49: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	50: FreezeRef
+	51: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	52: Call reserve_config::borrow_limit_usd(&ReserveConfig): u64
+	53: Call decimal::from(u64): Decimal
+	54: Call decimal::le(Decimal, Decimal): bool
+	55: BrFalse(57)
+B4:
+	56: Branch(61)
+B5:
+	57: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	58: Pop
+	59: LdConst[3](u64: 3)
+	60: Abort
+B6:
+	61: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	62: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	63: ReadRef
+	64: LdConst[10](u64: 100)
+	65: Ge
+	66: BrFalse(74)
+B7:
+	67: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	68: ImmBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	69: ReadRef
+	70: LdConst[10](u64: 100)
+	71: Ge
+	72: StLoc[2](loc0: bool)
+	73: Branch(76)
+B8:
+	74: LdFalse
+	75: StLoc[2](loc0: bool)
+B9:
+	76: MoveLoc[2](loc0: bool)
+	77: BrFalse(79)
+B10:
+	78: Branch(83)
+B11:
+	79: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	80: Pop
+	81: LdConst[5](u64: 5)
+	82: Abort
+B12:
+	83: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	84: FreezeRef
+	85: Call log_reserve_data<Ty0>(&Reserve<Ty0>)
+	86: MoveLoc[3](loc1: u64)
+	87: MoveLoc[4](loc2: u64)
+	88: PackGeneric[3](LiquidityRequest<Ty0, Ty1>)
+	89: Ret
+}
+
+public(friend) repay_liquidity<Ty0, Ty1>(Arg0: &mut Reserve<Ty0>, Arg1: Balance<Ty1>, Arg2: Decimal) {
+B0:
+	0: ImmBorrowLoc[1](Arg1: Balance<Ty1>)
+	1: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	2: CopyLoc[2](Arg2: Decimal)
+	3: Call decimal::ceil(Decimal): u64
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	8: Pop
+	9: LdConst[6](u64: 6)
+	10: Abort
+B3:
+	11: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	12: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	13: ReadRef
+	14: ImmBorrowLoc[1](Arg1: Balance<Ty1>)
+	15: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	16: Add
+	17: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	18: MutBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	19: WriteRef
+	20: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	21: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	22: ReadRef
+	23: MoveLoc[2](Arg2: Decimal)
+	24: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	25: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	26: MutBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	27: WriteRef
+	28: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	29: FreezeRef
+	30: Call log_reserve_data<Ty0>(&Reserve<Ty0>)
+	31: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	32: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	33: LdFalse
+	34: Pack[3](BalanceKey)
+	35: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, Ty1>>(&mut UID, BalanceKey): &mut Balances<Ty0, Ty1>
+	36: MutBorrowFieldGeneric[16](Balances.available_amount: Balance<Ty1>)
+	37: MoveLoc[1](Arg1: Balance<Ty1>)
+	38: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	39: Pop
+	40: Ret
+}
+
+public(friend) forgive_debt<Ty0>(Arg0: &mut Reserve<Ty0>, Arg1: Decimal) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	2: ReadRef
+	3: MoveLoc[1](Arg1: Decimal)
+	4: Call decimal::saturating_sub(Decimal, Decimal): Decimal
+	5: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	6: MutBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	7: WriteRef
+	8: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	9: FreezeRef
+	10: Call log_reserve_data<Ty0>(&Reserve<Ty0>)
+	11: Ret
+}
+
+public(friend) deposit_ctokens<Ty0, Ty1>(Arg0: &mut Reserve<Ty0>, Arg1: Balance<CToken<Ty0, Ty1>>) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: FreezeRef
+	2: Call log_reserve_data<Ty0>(&Reserve<Ty0>)
+	3: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	4: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	5: LdFalse
+	6: Pack[3](BalanceKey)
+	7: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, Ty1>>(&mut UID, BalanceKey): &mut Balances<Ty0, Ty1>
+	8: MutBorrowFieldGeneric[27](Balances.deposited_ctokens: Balance<CToken<Ty0, Ty1>>)
+	9: MoveLoc[1](Arg1: Balance<CToken<Ty0, Ty1>>)
+	10: Call balance::join<CToken<Ty0, Ty1>>(&mut Balance<CToken<Ty0, Ty1>>, Balance<CToken<Ty0, Ty1>>): u64
+	11: Pop
+	12: Ret
+}
+
+public(friend) withdraw_ctokens<Ty0, Ty1>(Arg0: &mut Reserve<Ty0>, Arg1: u64): Balance<CToken<Ty0, Ty1>> {
+B0:
+	0: CopyLoc[0](Arg0: &mut Reserve<Ty0>)
+	1: FreezeRef
+	2: Call log_reserve_data<Ty0>(&Reserve<Ty0>)
+	3: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	4: MutBorrowFieldGeneric[0](Reserve.id: UID)
+	5: LdFalse
+	6: Pack[3](BalanceKey)
+	7: Call dynamic_field::borrow_mut<BalanceKey, Balances<Ty0, Ty1>>(&mut UID, BalanceKey): &mut Balances<Ty0, Ty1>
+	8: MutBorrowFieldGeneric[27](Balances.deposited_ctokens: Balance<CToken<Ty0, Ty1>>)
+	9: MoveLoc[1](Arg1: u64)
+	10: Call balance::split<CToken<Ty0, Ty1>>(&mut Balance<CToken<Ty0, Ty1>>, u64): Balance<CToken<Ty0, Ty1>>
+	11: Ret
+}
+
+public(friend) change_price_feed<Ty0>(Arg0: &mut Reserve<Ty0>, Arg1: &PriceInfoObject, Arg2: &Clock) {
+L3:	loc0: PriceIdentifier
+B0:
+	0: MoveLoc[1](Arg1: &PriceInfoObject)
+	1: MoveLoc[2](Arg2: &Clock)
+	2: Call oracles::get_pyth_price_and_identifier(&PriceInfoObject, &Clock): Option<Decimal> * Decimal * PriceIdentifier
+	3: StLoc[3](loc0: PriceIdentifier)
+	4: Pop
+	5: Pop
+	6: MoveLoc[3](loc0: PriceIdentifier)
+	7: MoveLoc[0](Arg0: &mut Reserve<Ty0>)
+	8: MutBorrowFieldGeneric[1](Reserve.price_identifier: PriceIdentifier)
+	9: WriteRef
+	10: Ret
+}
+
+log_reserve_data<Ty0>(Arg0: &Reserve<Ty0>) {
+L1:	loc0: Decimal
+L2:	loc1: Decimal
+L3:	loc2: Decimal
+L4:	loc3: Decimal
+L5:	loc4: Decimal
+B0:
+	0: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	1: ImmBorrowFieldGeneric[5](Reserve.available_amount: u64)
+	2: ReadRef
+	3: Call decimal::from(u64): Decimal
+	4: StLoc[1](loc0: Decimal)
+	5: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	6: Call total_supply<Ty0>(&Reserve<Ty0>): Decimal
+	7: StLoc[4](loc3: Decimal)
+	8: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	9: Call calculate_utilization_rate<Ty0>(&Reserve<Ty0>): Decimal
+	10: StLoc[3](loc2: Decimal)
+	11: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	12: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	13: CopyLoc[3](loc2: Decimal)
+	14: Call reserve_config::calculate_apr(&ReserveConfig, Decimal): Decimal
+	15: StLoc[2](loc1: Decimal)
+	16: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	17: Call config<Ty0>(&Reserve<Ty0>): &ReserveConfig
+	18: MoveLoc[3](loc2: Decimal)
+	19: CopyLoc[2](loc1: Decimal)
+	20: Call reserve_config::calculate_supply_apr(&ReserveConfig, Decimal, Decimal): Decimal
+	21: StLoc[5](loc4: Decimal)
+	22: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	23: ImmBorrowFieldGeneric[23](Reserve.lending_market_id: ID)
+	24: Call object::id_to_address(&ID): address
+	25: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	26: ImmBorrowFieldGeneric[7](Reserve.coin_type: TypeName)
+	27: ReadRef
+	28: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	29: ImmBorrowFieldGeneric[0](Reserve.id: UID)
+	30: Call object::uid_to_address(&UID): address
+	31: CopyLoc[1](loc0: Decimal)
+	32: CopyLoc[4](loc3: Decimal)
+	33: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	34: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	35: ReadRef
+	36: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	37: MoveLoc[1](loc0: Decimal)
+	38: Call market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	39: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	40: MoveLoc[4](loc3: Decimal)
+	41: Call market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	42: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	43: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	44: ImmBorrowFieldGeneric[6](Reserve.borrowed_amount: Decimal)
+	45: ReadRef
+	46: Call market_value<Ty0>(&Reserve<Ty0>, Decimal): Decimal
+	47: MoveLoc[2](loc1: Decimal)
+	48: MoveLoc[5](loc4: Decimal)
+	49: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	50: ImmBorrowFieldGeneric[14](Reserve.ctoken_supply: u64)
+	51: ReadRef
+	52: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	53: ImmBorrowFieldGeneric[12](Reserve.cumulative_borrow_rate: Decimal)
+	54: ReadRef
+	55: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	56: ImmBorrowFieldGeneric[9](Reserve.price: Decimal)
+	57: ReadRef
+	58: CopyLoc[0](Arg0: &Reserve<Ty0>)
+	59: ImmBorrowFieldGeneric[10](Reserve.smoothed_price: Decimal)
+	60: ReadRef
+	61: MoveLoc[0](Arg0: &Reserve<Ty0>)
+	62: ImmBorrowFieldGeneric[8](Reserve.price_last_update_timestamp_s: u64)
+	63: ReadRef
+	64: Pack[7](ReserveAssetDataEvent)
+	65: Call event::emit<ReserveAssetDataEvent>(ReserveAssetDataEvent)
+	66: Ret
+}
+
+Constants [
+	0 => u64: 0
+	1 => u64: 1
+	2 => u64: 2
+	3 => u64: 3
+	4 => u64: 4
+	5 => u64: 5
+	6 => u64: 6
+	7 => u64: 7
+	8 => u64: 8
+	9 => u64: 9
+	10 => u64: 100
+]
+}
+

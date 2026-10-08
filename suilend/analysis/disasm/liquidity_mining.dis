@@ -1,0 +1,903 @@
+// Move bytecode v6
+module f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf.liquidity_mining {
+use 0000000000000000000000000000000000000000000000000000000000000001::option;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000002::bag;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::math;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use f95b06141ed4a174f239417323bde3f209b972f5930d8521ea38a52aff3a6ddf::decimal;
+
+struct PoolRewardManager has store, key {
+	id: UID,
+	total_shares: u64,
+	pool_rewards: vector<Option<PoolReward>>,
+	last_update_time_ms: u64
+}
+
+struct PoolReward has store, key {
+	id: UID,
+	pool_reward_manager_id: ID,
+	coin_type: TypeName,
+	start_time_ms: u64,
+	end_time_ms: u64,
+	total_rewards: u64,
+	allocated_rewards: Decimal,
+	cumulative_rewards_per_share: Decimal,
+	num_user_reward_managers: u64,
+	additional_fields: Bag
+}
+
+struct RewardBalance<phantom Ty0> has copy, drop, store {
+	dummy_field: bool
+}
+
+struct UserRewardManager has store {
+	pool_reward_manager_id: ID,
+	share: u64,
+	rewards: vector<Option<UserReward>>,
+	last_update_time_ms: u64
+}
+
+struct UserReward has store {
+	pool_reward_id: ID,
+	earned_rewards: Decimal,
+	cumulative_rewards_per_share: Decimal
+}
+
+public pool_reward_manager_id(Arg0: &UserRewardManager): ID {
+B0:
+	0: MoveLoc[0](Arg0: &UserRewardManager)
+	1: ImmBorrowField[0](UserRewardManager.pool_reward_manager_id: ID)
+	2: ReadRef
+	3: Ret
+}
+
+public shares(Arg0: &UserRewardManager): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &UserRewardManager)
+	1: ImmBorrowField[1](UserRewardManager.share: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public last_update_time_ms(Arg0: &UserRewardManager): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &UserRewardManager)
+	1: ImmBorrowField[2](UserRewardManager.last_update_time_ms: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public pool_reward_id(Arg0: &PoolRewardManager, Arg1: u64): ID {
+B0:
+	0: MoveLoc[0](Arg0: &PoolRewardManager)
+	1: ImmBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	2: MoveLoc[1](Arg1: u64)
+	3: VecImmBorrow(18)
+	4: Call option::borrow<PoolReward>(&Option<PoolReward>): &PoolReward
+	5: Call object::id<PoolReward>(&PoolReward): ID
+	6: Ret
+}
+
+public pool_reward(Arg0: &PoolRewardManager, Arg1: u64): &Option<PoolReward> {
+B0:
+	0: MoveLoc[0](Arg0: &PoolRewardManager)
+	1: ImmBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	2: MoveLoc[1](Arg1: u64)
+	3: VecImmBorrow(18)
+	4: Ret
+}
+
+public end_time_ms(Arg0: &PoolReward): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &PoolReward)
+	1: ImmBorrowField[4](PoolReward.end_time_ms: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public(friend) new_pool_reward_manager(Arg0: &mut TxContext): PoolRewardManager {
+B0:
+	0: MoveLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: LdU64(0)
+	3: VecPack(18, 0)
+	4: LdU64(0)
+	5: Pack[0](PoolRewardManager)
+	6: Ret
+}
+
+public(friend) add_pool_reward<Ty0>(Arg0: &mut PoolRewardManager, Arg1: Balance<Ty0>, Arg2: u64, Arg3: u64, Arg4: &Clock, Arg5: &mut TxContext) {
+L6:	loc0: Decimal
+L7:	loc1: Decimal
+L8:	loc2: u64
+L9:	loc3: u64
+L10:	loc4: u64
+L11:	loc5: TypeName
+L12:	loc6: ID
+L13:	loc7: UID
+L14:	loc8: Bag
+L15:	loc9: u64
+L16:	loc10: PoolReward
+L17:	loc11: u64
+B0:
+	0: MoveLoc[2](Arg2: u64)
+	1: MoveLoc[4](Arg4: &Clock)
+	2: Call clock::timestamp_ms(&Clock): u64
+	3: Call math::max(u64, u64): u64
+	4: StLoc[17](loc11: u64)
+	5: CopyLoc[3](Arg3: u64)
+	6: CopyLoc[17](loc11: u64)
+	7: Sub
+	8: LdConst[7](u64: 3600..)
+	9: Ge
+	10: BrFalse(12)
+B1:
+	11: Branch(18)
+B2:
+	12: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	13: Pop
+	14: MoveLoc[5](Arg5: &mut TxContext)
+	15: Pop
+	16: LdConst[1](u64: 1)
+	17: Abort
+B3:
+	18: CopyLoc[5](Arg5: &mut TxContext)
+	19: Call object::new(&mut TxContext): UID
+	20: StLoc[13](loc7: UID)
+	21: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	22: FreezeRef
+	23: Call object::id<PoolRewardManager>(&PoolRewardManager): ID
+	24: StLoc[12](loc6: ID)
+	25: Call type_name::get<Ty0>(): TypeName
+	26: StLoc[11](loc5: TypeName)
+	27: MoveLoc[17](loc11: u64)
+	28: StLoc[10](loc4: u64)
+	29: MoveLoc[3](Arg3: u64)
+	30: StLoc[9](loc3: u64)
+	31: ImmBorrowLoc[1](Arg1: Balance<Ty0>)
+	32: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	33: StLoc[8](loc2: u64)
+	34: LdU64(0)
+	35: Call decimal::from(u64): Decimal
+	36: StLoc[7](loc1: Decimal)
+	37: LdU64(0)
+	38: Call decimal::from(u64): Decimal
+	39: StLoc[6](loc0: Decimal)
+	40: MoveLoc[5](Arg5: &mut TxContext)
+	41: Call bag::new(&mut TxContext): Bag
+	42: StLoc[14](loc8: Bag)
+	43: MutBorrowLoc[14](loc8: Bag)
+	44: LdFalse
+	45: PackGeneric[0](RewardBalance<Ty0>)
+	46: MoveLoc[1](Arg1: Balance<Ty0>)
+	47: Call bag::add<RewardBalance<Ty0>, Balance<Ty0>>(&mut Bag, RewardBalance<Ty0>, Balance<Ty0>)
+	48: MoveLoc[13](loc7: UID)
+	49: MoveLoc[12](loc6: ID)
+	50: MoveLoc[11](loc5: TypeName)
+	51: MoveLoc[10](loc4: u64)
+	52: MoveLoc[9](loc3: u64)
+	53: MoveLoc[8](loc2: u64)
+	54: MoveLoc[7](loc1: Decimal)
+	55: MoveLoc[6](loc0: Decimal)
+	56: LdU64(0)
+	57: MoveLoc[14](loc8: Bag)
+	58: Pack[1](PoolReward)
+	59: StLoc[16](loc10: PoolReward)
+	60: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	61: Call find_available_index(&mut PoolRewardManager): u64
+	62: StLoc[15](loc9: u64)
+	63: CopyLoc[15](loc9: u64)
+	64: LdConst[6](u64: 50)
+	65: Lt
+	66: BrFalse(68)
+B4:
+	67: Branch(72)
+B5:
+	68: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	69: Pop
+	70: LdConst[3](u64: 3)
+	71: Abort
+B6:
+	72: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	73: MutBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	74: MoveLoc[15](loc9: u64)
+	75: VecMutBorrow(18)
+	76: MoveLoc[16](loc10: PoolReward)
+	77: Call option::fill<PoolReward>(&mut Option<PoolReward>, PoolReward)
+	78: Ret
+}
+
+public(friend) close_pool_reward<Ty0>(Arg0: &mut PoolRewardManager, Arg1: u64, Arg2: &Clock): Balance<Ty0> {
+L3:	loc0: Bag
+L4:	loc1: u64
+L5:	loc2: u64
+L6:	loc3: Balance<Ty0>
+B0:
+	0: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	1: MutBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	2: MoveLoc[1](Arg1: u64)
+	3: VecMutBorrow(18)
+	4: Call option::extract<PoolReward>(&mut Option<PoolReward>): PoolReward
+	5: Unpack[1](PoolReward)
+	6: StLoc[3](loc0: Bag)
+	7: StLoc[5](loc2: u64)
+	8: Pop
+	9: Pop
+	10: Pop
+	11: StLoc[4](loc1: u64)
+	12: Pop
+	13: Pop
+	14: Pop
+	15: Call object::delete(UID)
+	16: MoveLoc[2](Arg2: &Clock)
+	17: Call clock::timestamp_ms(&Clock): u64
+	18: MoveLoc[4](loc1: u64)
+	19: Ge
+	20: BrFalse(22)
+B1:
+	21: Branch(24)
+B2:
+	22: LdConst[5](u64: 5)
+	23: Abort
+B3:
+	24: MoveLoc[5](loc2: u64)
+	25: LdU64(0)
+	26: Eq
+	27: BrFalse(29)
+B4:
+	28: Branch(31)
+B5:
+	29: LdConst[4](u64: 4)
+	30: Abort
+B6:
+	31: MutBorrowLoc[3](loc0: Bag)
+	32: LdFalse
+	33: PackGeneric[0](RewardBalance<Ty0>)
+	34: Call bag::remove<RewardBalance<Ty0>, Balance<Ty0>>(&mut Bag, RewardBalance<Ty0>): Balance<Ty0>
+	35: StLoc[6](loc3: Balance<Ty0>)
+	36: MoveLoc[3](loc0: Bag)
+	37: Call bag::destroy_empty(Bag)
+	38: MoveLoc[6](loc3: Balance<Ty0>)
+	39: Ret
+}
+
+public(friend) cancel_pool_reward<Ty0>(Arg0: &mut PoolRewardManager, Arg1: u64, Arg2: &Clock): Balance<Ty0> {
+L3:	loc0: u64
+L4:	loc1: &mut PoolReward
+L5:	loc2: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	1: CopyLoc[2](Arg2: &Clock)
+	2: Call update_pool_reward_manager(&mut PoolRewardManager, &Clock)
+	3: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	4: MutBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	5: MoveLoc[1](Arg1: u64)
+	6: VecMutBorrow(18)
+	7: Call option::borrow_mut<PoolReward>(&mut Option<PoolReward>): &mut PoolReward
+	8: StLoc[4](loc1: &mut PoolReward)
+	9: MoveLoc[2](Arg2: &Clock)
+	10: Call clock::timestamp_ms(&Clock): u64
+	11: StLoc[3](loc0: u64)
+	12: CopyLoc[4](loc1: &mut PoolReward)
+	13: ImmBorrowField[5](PoolReward.total_rewards: u64)
+	14: ReadRef
+	15: Call decimal::from(u64): Decimal
+	16: CopyLoc[4](loc1: &mut PoolReward)
+	17: ImmBorrowField[6](PoolReward.allocated_rewards: Decimal)
+	18: ReadRef
+	19: Call decimal::sub(Decimal, Decimal): Decimal
+	20: Call decimal::floor(Decimal): u64
+	21: StLoc[5](loc2: u64)
+	22: MoveLoc[3](loc0: u64)
+	23: CopyLoc[4](loc1: &mut PoolReward)
+	24: MutBorrowField[4](PoolReward.end_time_ms: u64)
+	25: WriteRef
+	26: LdU64(0)
+	27: CopyLoc[4](loc1: &mut PoolReward)
+	28: MutBorrowField[5](PoolReward.total_rewards: u64)
+	29: WriteRef
+	30: MoveLoc[4](loc1: &mut PoolReward)
+	31: MutBorrowField[7](PoolReward.additional_fields: Bag)
+	32: LdFalse
+	33: PackGeneric[0](RewardBalance<Ty0>)
+	34: Call bag::borrow_mut<RewardBalance<Ty0>, Balance<Ty0>>(&mut Bag, RewardBalance<Ty0>): &mut Balance<Ty0>
+	35: MoveLoc[5](loc2: u64)
+	36: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	37: Ret
+}
+
+update_pool_reward_manager(Arg0: &mut PoolRewardManager, Arg1: &Clock) {
+L2:	loc0: bool
+L3:	loc1: u64
+L4:	loc2: u64
+L5:	loc3: &mut Option<PoolReward>
+L6:	loc4: &mut PoolReward
+L7:	loc5: u64
+L8:	loc6: Decimal
+B0:
+	0: MoveLoc[1](Arg1: &Clock)
+	1: Call clock::timestamp_ms(&Clock): u64
+	2: StLoc[3](loc1: u64)
+	3: CopyLoc[3](loc1: u64)
+	4: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	5: ImmBorrowField[8](PoolRewardManager.last_update_time_ms: u64)
+	6: ReadRef
+	7: Eq
+	8: BrFalse(12)
+B1:
+	9: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	10: Pop
+	11: Ret
+B2:
+	12: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	13: ImmBorrowField[9](PoolRewardManager.total_shares: u64)
+	14: ReadRef
+	15: LdU64(0)
+	16: Eq
+	17: BrFalse(23)
+B3:
+	18: MoveLoc[3](loc1: u64)
+	19: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	20: MutBorrowField[8](PoolRewardManager.last_update_time_ms: u64)
+	21: WriteRef
+	22: Ret
+B4:
+	23: LdU64(0)
+	24: StLoc[4](loc2: u64)
+B5:
+	25: CopyLoc[4](loc2: u64)
+	26: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	27: ImmBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	28: VecLen(18)
+	29: Lt
+	30: BrFalse(133)
+B6:
+	31: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	32: MutBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	33: CopyLoc[4](loc2: u64)
+	34: VecMutBorrow(18)
+	35: StLoc[5](loc3: &mut Option<PoolReward>)
+	36: CopyLoc[5](loc3: &mut Option<PoolReward>)
+	37: FreezeRef
+	38: Call option::is_none<PoolReward>(&Option<PoolReward>): bool
+	39: BrFalse(47)
+B7:
+	40: MoveLoc[5](loc3: &mut Option<PoolReward>)
+	41: Pop
+	42: MoveLoc[4](loc2: u64)
+	43: LdU64(1)
+	44: Add
+	45: StLoc[4](loc2: u64)
+	46: Branch(25)
+B8:
+	47: MoveLoc[5](loc3: &mut Option<PoolReward>)
+	48: Call option::borrow_mut<PoolReward>(&mut Option<PoolReward>): &mut PoolReward
+	49: StLoc[6](loc4: &mut PoolReward)
+	50: CopyLoc[3](loc1: u64)
+	51: CopyLoc[6](loc4: &mut PoolReward)
+	52: ImmBorrowField[10](PoolReward.start_time_ms: u64)
+	53: ReadRef
+	54: Lt
+	55: BrFalse(59)
+B9:
+	56: LdTrue
+	57: StLoc[2](loc0: bool)
+	58: Branch(67)
+B10:
+	59: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	60: ImmBorrowField[8](PoolRewardManager.last_update_time_ms: u64)
+	61: ReadRef
+	62: CopyLoc[6](loc4: &mut PoolReward)
+	63: ImmBorrowField[4](PoolReward.end_time_ms: u64)
+	64: ReadRef
+	65: Ge
+	66: StLoc[2](loc0: bool)
+B11:
+	67: MoveLoc[2](loc0: bool)
+	68: BrFalse(76)
+B12:
+	69: MoveLoc[6](loc4: &mut PoolReward)
+	70: Pop
+	71: MoveLoc[4](loc2: u64)
+	72: LdU64(1)
+	73: Add
+	74: StLoc[4](loc2: u64)
+	75: Branch(25)
+B13:
+	76: CopyLoc[3](loc1: u64)
+	77: CopyLoc[6](loc4: &mut PoolReward)
+	78: ImmBorrowField[4](PoolReward.end_time_ms: u64)
+	79: ReadRef
+	80: Call math::min(u64, u64): u64
+	81: CopyLoc[6](loc4: &mut PoolReward)
+	82: ImmBorrowField[10](PoolReward.start_time_ms: u64)
+	83: ReadRef
+	84: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	85: ImmBorrowField[8](PoolRewardManager.last_update_time_ms: u64)
+	86: ReadRef
+	87: Call math::max(u64, u64): u64
+	88: Sub
+	89: StLoc[7](loc5: u64)
+	90: CopyLoc[6](loc4: &mut PoolReward)
+	91: ImmBorrowField[5](PoolReward.total_rewards: u64)
+	92: ReadRef
+	93: Call decimal::from(u64): Decimal
+	94: MoveLoc[7](loc5: u64)
+	95: Call decimal::from(u64): Decimal
+	96: Call decimal::mul(Decimal, Decimal): Decimal
+	97: CopyLoc[6](loc4: &mut PoolReward)
+	98: ImmBorrowField[4](PoolReward.end_time_ms: u64)
+	99: ReadRef
+	100: CopyLoc[6](loc4: &mut PoolReward)
+	101: ImmBorrowField[10](PoolReward.start_time_ms: u64)
+	102: ReadRef
+	103: Sub
+	104: Call decimal::from(u64): Decimal
+	105: Call decimal::div(Decimal, Decimal): Decimal
+	106: StLoc[8](loc6: Decimal)
+	107: CopyLoc[6](loc4: &mut PoolReward)
+	108: ImmBorrowField[6](PoolReward.allocated_rewards: Decimal)
+	109: ReadRef
+	110: CopyLoc[8](loc6: Decimal)
+	111: Call decimal::add(Decimal, Decimal): Decimal
+	112: CopyLoc[6](loc4: &mut PoolReward)
+	113: MutBorrowField[6](PoolReward.allocated_rewards: Decimal)
+	114: WriteRef
+	115: CopyLoc[6](loc4: &mut PoolReward)
+	116: ImmBorrowField[11](PoolReward.cumulative_rewards_per_share: Decimal)
+	117: ReadRef
+	118: MoveLoc[8](loc6: Decimal)
+	119: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	120: ImmBorrowField[9](PoolRewardManager.total_shares: u64)
+	121: ReadRef
+	122: Call decimal::from(u64): Decimal
+	123: Call decimal::div(Decimal, Decimal): Decimal
+	124: Call decimal::add(Decimal, Decimal): Decimal
+	125: MoveLoc[6](loc4: &mut PoolReward)
+	126: MutBorrowField[11](PoolReward.cumulative_rewards_per_share: Decimal)
+	127: WriteRef
+	128: MoveLoc[4](loc2: u64)
+	129: LdU64(1)
+	130: Add
+	131: StLoc[4](loc2: u64)
+	132: Branch(25)
+B14:
+	133: MoveLoc[3](loc1: u64)
+	134: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	135: MutBorrowField[8](PoolRewardManager.last_update_time_ms: u64)
+	136: WriteRef
+	137: Ret
+}
+
+update_user_reward_manager(Arg0: &mut PoolRewardManager, Arg1: &mut UserRewardManager, Arg2: &Clock, Arg3: bool) {
+L4:	loc0: bool
+L5:	loc1: Decimal
+L6:	loc2: ID
+L7:	loc3: &mut Option<UserReward>
+L8:	loc4: u64
+L9:	loc5: u64
+L10:	loc6: Decimal
+L11:	loc7: &mut Option<PoolReward>
+L12:	loc8: &mut Option<UserReward>
+L13:	loc9: &mut PoolReward
+L14:	loc10: &mut UserReward
+B0:
+	0: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	1: FreezeRef
+	2: Call object::id<PoolRewardManager>(&PoolRewardManager): ID
+	3: CopyLoc[1](Arg1: &mut UserRewardManager)
+	4: ImmBorrowField[0](UserRewardManager.pool_reward_manager_id: ID)
+	5: ReadRef
+	6: Eq
+	7: BrFalse(9)
+B1:
+	8: Branch(17)
+B2:
+	9: MoveLoc[1](Arg1: &mut UserRewardManager)
+	10: Pop
+	11: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	12: Pop
+	13: MoveLoc[2](Arg2: &Clock)
+	14: Pop
+	15: LdConst[0](u64: 0)
+	16: Abort
+B3:
+	17: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	18: CopyLoc[2](Arg2: &Clock)
+	19: Call update_pool_reward_manager(&mut PoolRewardManager, &Clock)
+	20: MoveLoc[2](Arg2: &Clock)
+	21: Call clock::timestamp_ms(&Clock): u64
+	22: StLoc[8](loc4: u64)
+	23: MoveLoc[3](Arg3: bool)
+	24: Not
+	25: BrFalse(33)
+B4:
+	26: CopyLoc[8](loc4: u64)
+	27: CopyLoc[1](Arg1: &mut UserRewardManager)
+	28: ImmBorrowField[2](UserRewardManager.last_update_time_ms: u64)
+	29: ReadRef
+	30: Eq
+	31: StLoc[4](loc0: bool)
+	32: Branch(35)
+B5:
+	33: LdFalse
+	34: StLoc[4](loc0: bool)
+B6:
+	35: MoveLoc[4](loc0: bool)
+	36: BrFalse(42)
+B7:
+	37: MoveLoc[1](Arg1: &mut UserRewardManager)
+	38: Pop
+	39: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	40: Pop
+	41: Ret
+B8:
+	42: LdU64(0)
+	43: StLoc[9](loc5: u64)
+B9:
+	44: CopyLoc[9](loc5: u64)
+	45: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	46: ImmBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	47: VecLen(18)
+	48: Lt
+	49: BrFalse(182)
+B10:
+	50: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	51: MutBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	52: CopyLoc[9](loc5: u64)
+	53: VecMutBorrow(18)
+	54: StLoc[11](loc7: &mut Option<PoolReward>)
+	55: CopyLoc[11](loc7: &mut Option<PoolReward>)
+	56: FreezeRef
+	57: Call option::is_none<PoolReward>(&Option<PoolReward>): bool
+	58: BrFalse(66)
+B11:
+	59: MoveLoc[11](loc7: &mut Option<PoolReward>)
+	60: Pop
+	61: MoveLoc[9](loc5: u64)
+	62: LdU64(1)
+	63: Add
+	64: StLoc[9](loc5: u64)
+	65: Branch(44)
+B12:
+	66: MoveLoc[11](loc7: &mut Option<PoolReward>)
+	67: Call option::borrow_mut<PoolReward>(&mut Option<PoolReward>): &mut PoolReward
+	68: StLoc[13](loc9: &mut PoolReward)
+B13:
+	69: CopyLoc[1](Arg1: &mut UserRewardManager)
+	70: ImmBorrowField[12](UserRewardManager.rewards: vector<Option<UserReward>>)
+	71: VecLen(46)
+	72: CopyLoc[9](loc5: u64)
+	73: Le
+	74: BrFalse(80)
+B14:
+	75: CopyLoc[1](Arg1: &mut UserRewardManager)
+	76: MutBorrowField[12](UserRewardManager.rewards: vector<Option<UserReward>>)
+	77: Call option::none<UserReward>(): Option<UserReward>
+	78: VecPushBack(46)
+	79: Branch(69)
+B15:
+	80: CopyLoc[1](Arg1: &mut UserRewardManager)
+	81: MutBorrowField[12](UserRewardManager.rewards: vector<Option<UserReward>>)
+	82: CopyLoc[9](loc5: u64)
+	83: VecMutBorrow(46)
+	84: StLoc[12](loc8: &mut Option<UserReward>)
+	85: CopyLoc[12](loc8: &mut Option<UserReward>)
+	86: FreezeRef
+	87: Call option::is_none<UserReward>(&Option<UserReward>): bool
+	88: BrFalse(147)
+B16:
+	89: CopyLoc[1](Arg1: &mut UserRewardManager)
+	90: ImmBorrowField[2](UserRewardManager.last_update_time_ms: u64)
+	91: ReadRef
+	92: CopyLoc[13](loc9: &mut PoolReward)
+	93: ImmBorrowField[4](PoolReward.end_time_ms: u64)
+	94: ReadRef
+	95: Le
+	96: BrFalse(142)
+B17:
+	97: Branch(98)
+B18:
+	98: MoveLoc[12](loc8: &mut Option<UserReward>)
+	99: StLoc[7](loc3: &mut Option<UserReward>)
+	100: CopyLoc[13](loc9: &mut PoolReward)
+	101: FreezeRef
+	102: Call object::id<PoolReward>(&PoolReward): ID
+	103: StLoc[6](loc2: ID)
+	104: CopyLoc[1](Arg1: &mut UserRewardManager)
+	105: ImmBorrowField[2](UserRewardManager.last_update_time_ms: u64)
+	106: ReadRef
+	107: CopyLoc[13](loc9: &mut PoolReward)
+	108: ImmBorrowField[10](PoolReward.start_time_ms: u64)
+	109: ReadRef
+	110: Le
+	111: BrFalse(122)
+B19:
+	112: CopyLoc[13](loc9: &mut PoolReward)
+	113: ImmBorrowField[11](PoolReward.cumulative_rewards_per_share: Decimal)
+	114: ReadRef
+	115: CopyLoc[1](Arg1: &mut UserRewardManager)
+	116: ImmBorrowField[1](UserRewardManager.share: u64)
+	117: ReadRef
+	118: Call decimal::from(u64): Decimal
+	119: Call decimal::mul(Decimal, Decimal): Decimal
+	120: StLoc[5](loc1: Decimal)
+	121: Branch(125)
+B20:
+	122: LdU64(0)
+	123: Call decimal::from(u64): Decimal
+	124: StLoc[5](loc1: Decimal)
+B21:
+	125: MoveLoc[7](loc3: &mut Option<UserReward>)
+	126: MoveLoc[6](loc2: ID)
+	127: MoveLoc[5](loc1: Decimal)
+	128: CopyLoc[13](loc9: &mut PoolReward)
+	129: ImmBorrowField[11](PoolReward.cumulative_rewards_per_share: Decimal)
+	130: ReadRef
+	131: Pack[4](UserReward)
+	132: Call option::fill<UserReward>(&mut Option<UserReward>, UserReward)
+	133: CopyLoc[13](loc9: &mut PoolReward)
+	134: ImmBorrowField[13](PoolReward.num_user_reward_managers: u64)
+	135: ReadRef
+	136: LdU64(1)
+	137: Add
+	138: MoveLoc[13](loc9: &mut PoolReward)
+	139: MutBorrowField[13](PoolReward.num_user_reward_managers: u64)
+	140: WriteRef
+	141: Branch(177)
+B22:
+	142: MoveLoc[13](loc9: &mut PoolReward)
+	143: Pop
+	144: MoveLoc[12](loc8: &mut Option<UserReward>)
+	145: Pop
+	146: Branch(177)
+B23:
+	147: MoveLoc[12](loc8: &mut Option<UserReward>)
+	148: Call option::borrow_mut<UserReward>(&mut Option<UserReward>): &mut UserReward
+	149: StLoc[14](loc10: &mut UserReward)
+	150: CopyLoc[13](loc9: &mut PoolReward)
+	151: ImmBorrowField[11](PoolReward.cumulative_rewards_per_share: Decimal)
+	152: ReadRef
+	153: CopyLoc[14](loc10: &mut UserReward)
+	154: ImmBorrowField[14](UserReward.cumulative_rewards_per_share: Decimal)
+	155: ReadRef
+	156: Call decimal::sub(Decimal, Decimal): Decimal
+	157: CopyLoc[1](Arg1: &mut UserRewardManager)
+	158: ImmBorrowField[1](UserRewardManager.share: u64)
+	159: ReadRef
+	160: Call decimal::from(u64): Decimal
+	161: Call decimal::mul(Decimal, Decimal): Decimal
+	162: StLoc[10](loc6: Decimal)
+	163: CopyLoc[14](loc10: &mut UserReward)
+	164: ImmBorrowField[15](UserReward.earned_rewards: Decimal)
+	165: ReadRef
+	166: MoveLoc[10](loc6: Decimal)
+	167: Call decimal::add(Decimal, Decimal): Decimal
+	168: CopyLoc[14](loc10: &mut UserReward)
+	169: MutBorrowField[15](UserReward.earned_rewards: Decimal)
+	170: WriteRef
+	171: MoveLoc[13](loc9: &mut PoolReward)
+	172: ImmBorrowField[11](PoolReward.cumulative_rewards_per_share: Decimal)
+	173: ReadRef
+	174: MoveLoc[14](loc10: &mut UserReward)
+	175: MutBorrowField[14](UserReward.cumulative_rewards_per_share: Decimal)
+	176: WriteRef
+B24:
+	177: MoveLoc[9](loc5: u64)
+	178: LdU64(1)
+	179: Add
+	180: StLoc[9](loc5: u64)
+	181: Branch(44)
+B25:
+	182: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	183: Pop
+	184: MoveLoc[8](loc4: u64)
+	185: MoveLoc[1](Arg1: &mut UserRewardManager)
+	186: MutBorrowField[2](UserRewardManager.last_update_time_ms: u64)
+	187: WriteRef
+	188: Ret
+}
+
+public(friend) new_user_reward_manager(Arg0: &mut PoolRewardManager, Arg1: &Clock): UserRewardManager {
+L2:	loc0: UserRewardManager
+B0:
+	0: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	1: FreezeRef
+	2: Call object::id<PoolRewardManager>(&PoolRewardManager): ID
+	3: LdU64(0)
+	4: VecPack(46, 0)
+	5: CopyLoc[1](Arg1: &Clock)
+	6: Call clock::timestamp_ms(&Clock): u64
+	7: Pack[3](UserRewardManager)
+	8: StLoc[2](loc0: UserRewardManager)
+	9: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	10: MutBorrowLoc[2](loc0: UserRewardManager)
+	11: MoveLoc[1](Arg1: &Clock)
+	12: LdTrue
+	13: Call update_user_reward_manager(&mut PoolRewardManager, &mut UserRewardManager, &Clock, bool)
+	14: MoveLoc[2](loc0: UserRewardManager)
+	15: Ret
+}
+
+public(friend) change_user_reward_manager_share(Arg0: &mut PoolRewardManager, Arg1: &mut UserRewardManager, Arg2: u64, Arg3: &Clock) {
+B0:
+	0: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	1: CopyLoc[1](Arg1: &mut UserRewardManager)
+	2: MoveLoc[3](Arg3: &Clock)
+	3: LdFalse
+	4: Call update_user_reward_manager(&mut PoolRewardManager, &mut UserRewardManager, &Clock, bool)
+	5: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	6: ImmBorrowField[9](PoolRewardManager.total_shares: u64)
+	7: ReadRef
+	8: CopyLoc[1](Arg1: &mut UserRewardManager)
+	9: ImmBorrowField[1](UserRewardManager.share: u64)
+	10: ReadRef
+	11: Sub
+	12: CopyLoc[2](Arg2: u64)
+	13: Add
+	14: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	15: MutBorrowField[9](PoolRewardManager.total_shares: u64)
+	16: WriteRef
+	17: MoveLoc[2](Arg2: u64)
+	18: MoveLoc[1](Arg1: &mut UserRewardManager)
+	19: MutBorrowField[1](UserRewardManager.share: u64)
+	20: WriteRef
+	21: Ret
+}
+
+public(friend) claim_rewards<Ty0>(Arg0: &mut PoolRewardManager, Arg1: &mut UserRewardManager, Arg2: &Clock, Arg3: u64): Balance<Ty0> {
+L4:	loc0: u64
+L5:	loc1: &mut Option<UserReward>
+L6:	loc2: &mut PoolReward
+L7:	loc3: &mut UserReward
+L8:	loc4: &mut Balance<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	1: CopyLoc[1](Arg1: &mut UserRewardManager)
+	2: CopyLoc[2](Arg2: &Clock)
+	3: LdFalse
+	4: Call update_user_reward_manager(&mut PoolRewardManager, &mut UserRewardManager, &Clock, bool)
+	5: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	6: MutBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	7: CopyLoc[3](Arg3: u64)
+	8: VecMutBorrow(18)
+	9: Call option::borrow_mut<PoolReward>(&mut Option<PoolReward>): &mut PoolReward
+	10: StLoc[6](loc2: &mut PoolReward)
+	11: CopyLoc[6](loc2: &mut PoolReward)
+	12: ImmBorrowField[16](PoolReward.coin_type: TypeName)
+	13: ReadRef
+	14: Call type_name::get<Ty0>(): TypeName
+	15: Eq
+	16: BrFalse(18)
+B1:
+	17: Branch(26)
+B2:
+	18: MoveLoc[1](Arg1: &mut UserRewardManager)
+	19: Pop
+	20: MoveLoc[6](loc2: &mut PoolReward)
+	21: Pop
+	22: MoveLoc[2](Arg2: &Clock)
+	23: Pop
+	24: LdConst[2](u64: 2)
+	25: Abort
+B3:
+	26: MoveLoc[1](Arg1: &mut UserRewardManager)
+	27: MutBorrowField[12](UserRewardManager.rewards: vector<Option<UserReward>>)
+	28: MoveLoc[3](Arg3: u64)
+	29: VecMutBorrow(46)
+	30: StLoc[5](loc1: &mut Option<UserReward>)
+	31: CopyLoc[5](loc1: &mut Option<UserReward>)
+	32: Call option::borrow_mut<UserReward>(&mut Option<UserReward>): &mut UserReward
+	33: StLoc[7](loc3: &mut UserReward)
+	34: CopyLoc[7](loc3: &mut UserReward)
+	35: ImmBorrowField[15](UserReward.earned_rewards: Decimal)
+	36: ReadRef
+	37: Call decimal::floor(Decimal): u64
+	38: StLoc[4](loc0: u64)
+	39: CopyLoc[7](loc3: &mut UserReward)
+	40: ImmBorrowField[15](UserReward.earned_rewards: Decimal)
+	41: ReadRef
+	42: CopyLoc[4](loc0: u64)
+	43: Call decimal::from(u64): Decimal
+	44: Call decimal::sub(Decimal, Decimal): Decimal
+	45: MoveLoc[7](loc3: &mut UserReward)
+	46: MutBorrowField[15](UserReward.earned_rewards: Decimal)
+	47: WriteRef
+	48: CopyLoc[6](loc2: &mut PoolReward)
+	49: MutBorrowField[7](PoolReward.additional_fields: Bag)
+	50: LdFalse
+	51: PackGeneric[0](RewardBalance<Ty0>)
+	52: Call bag::borrow_mut<RewardBalance<Ty0>, Balance<Ty0>>(&mut Bag, RewardBalance<Ty0>): &mut Balance<Ty0>
+	53: StLoc[8](loc4: &mut Balance<Ty0>)
+	54: MoveLoc[2](Arg2: &Clock)
+	55: Call clock::timestamp_ms(&Clock): u64
+	56: CopyLoc[6](loc2: &mut PoolReward)
+	57: ImmBorrowField[4](PoolReward.end_time_ms: u64)
+	58: ReadRef
+	59: Ge
+	60: BrFalse(76)
+B4:
+	61: MoveLoc[5](loc1: &mut Option<UserReward>)
+	62: Call option::extract<UserReward>(&mut Option<UserReward>): UserReward
+	63: Unpack[4](UserReward)
+	64: Pop
+	65: Pop
+	66: Pop
+	67: CopyLoc[6](loc2: &mut PoolReward)
+	68: ImmBorrowField[13](PoolReward.num_user_reward_managers: u64)
+	69: ReadRef
+	70: LdU64(1)
+	71: Sub
+	72: MoveLoc[6](loc2: &mut PoolReward)
+	73: MutBorrowField[13](PoolReward.num_user_reward_managers: u64)
+	74: WriteRef
+	75: Branch(80)
+B5:
+	76: MoveLoc[6](loc2: &mut PoolReward)
+	77: Pop
+	78: MoveLoc[5](loc1: &mut Option<UserReward>)
+	79: Pop
+B6:
+	80: MoveLoc[8](loc4: &mut Balance<Ty0>)
+	81: MoveLoc[4](loc0: u64)
+	82: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	83: Ret
+}
+
+find_available_index(Arg0: &mut PoolRewardManager): u64 {
+L1:	loc0: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[1](loc0: u64)
+B1:
+	2: CopyLoc[1](loc0: u64)
+	3: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	4: ImmBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	5: VecLen(18)
+	6: Lt
+	7: BrFalse(24)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &mut PoolRewardManager)
+	10: ImmBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	11: CopyLoc[1](loc0: u64)
+	12: VecImmBorrow(18)
+	13: Call option::is_none<PoolReward>(&Option<PoolReward>): bool
+	14: BrFalse(19)
+B4:
+	15: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	16: Pop
+	17: MoveLoc[1](loc0: u64)
+	18: Ret
+B5:
+	19: MoveLoc[1](loc0: u64)
+	20: LdU64(1)
+	21: Add
+	22: StLoc[1](loc0: u64)
+	23: Branch(2)
+B6:
+	24: MoveLoc[0](Arg0: &mut PoolRewardManager)
+	25: MutBorrowField[3](PoolRewardManager.pool_rewards: vector<Option<PoolReward>>)
+	26: Call option::none<PoolReward>(): Option<PoolReward>
+	27: VecPushBack(18)
+	28: MoveLoc[1](loc0: u64)
+	29: Ret
+}
+
+Constants [
+	0 => u64: 0
+	1 => u64: 1
+	2 => u64: 2
+	3 => u64: 3
+	4 => u64: 4
+	5 => u64: 5
+	6 => u64: 50
+	7 => u64: 3600000
+]
+}
+
