@@ -1,0 +1,1929 @@
+{
+ "meta": {
+  "chain": "base",
+  "chain_id": 8453,
+  "rpc": "https://mainnet.base.org",
+  "block": 52347849,
+  "block_hash": "0xb3b229ead539bed34522fda98f65d80266115a2f3bb406b6fd060098af22ace5",
+  "enumeration_time_utc": "2026-10-08T19:46:54Z",
+  "liquidity_check_blocks": "approx 52,349,000-52,349,600",
+  "borrow_log_scan_range": [
+   45692792,
+   52348700
+  ],
+  "method": "read-only public RPC + GoldRush (Covalent) event logs; no transactions signed/sent"
+ },
+ "verified_deployment": {
+  "unitroller_proxy": "0x00dc4965916e03A734190fA382633657c71f867E",
+  "unitroller_implementation": "0xD31F102994eD0b01E5d5D25CBA0a4bFBCA9c5076",
+  "unitroller_creation": {
+   "tx": "0xd4ea7daed1f60e56060ba604d5d47c180dd219f437c1e023961b670cbeb60693",
+   "deployer": "0x6a138bd6d69feb3c2f5426549e60e644778ad04c",
+   "block": 45691089,
+   "time_utc": "2026-05-07"
+  },
+  "address_collision_explanation": "The docs-listed Unitroller address 0x00dc..f867E equals the Ethereum Comptroller IMPLEMENTATION address, not a hijack: deployer 0x6a138bd6.. uses CREATE with the same nonce sequence on both chains in different order. On Ethereum nonce1 = Comptroller impl; on Base nonce1 = Unitroller proxy. Same for oracle 0x03c1cF15.. (ETH nonce9 = caETH IRM; Base nonce9 = ChainlinkPriceOracle).",
+  "deploy_blocks": {
+   "unitroller": 45691089,
+   "comptroller_impl": 45691090,
+   "oracle": 45691570,
+   "caETH": 45692585,
+   "caCBBTC": 45692792,
+   "caUSDC": 45693019,
+   "caWARS": 45693164,
+   "caWBRL": 45693283,
+   "caWMXN": 46251609,
+   "caWCOP": 46251789,
+   "wars_feed": 45694280,
+   "wcop_feed": 46251465
+  },
+  "comptroller_source_identical_to_ethereum": true
+ },
+ "comptroller": {
+  "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+  "pendingAdmin": "0x0000000000000000000000000000000000000000",
+  "pauseGuardian": "0x0000000000000000000000000000000000000000",
+  "closeFactorMantissa": 500000000000000000,
+  "liquidationIncentiveMantissa": 1080000000000000000,
+  "maxAssets": 0,
+  "transferGuardianPaused": false,
+  "seizeGuardianPaused": false,
+  "mintGuardianPaused_global": false,
+  "borrowGuardianPaused_global": false,
+  "admin_type": "Gnosis Safe v1.4.1 proxy, 7 owners, threshold 4, nonce 15",
+  "admin_owners": [
+   "0xf7104Ad39080C53E2C8C74a34C34E622D8aBE2c5",
+   "0xa40D7d22873001f0140D76Afc0FF0779e4210eD0",
+   "0x5CA3F8EEBa12D83408fc097c2dAd79212456F20F",
+   "0x23ceC92F92bde95e401f0a2b50b072A6069dFBd5",
+   "0x5b72e13f78FEB8f5b44392f2e32940D4f37FA313",
+   "0x9850b4F631F1cae37bb1C42C8004ffc2Cd31DcBe",
+   "0x00A74411DDBC50C04353543d5D3f4296936DA645"
+  ]
+ },
+ "oracle": {
+  "address": "0x03c1cF154d621E0Fd7e2b88be3aE60CCf07Aca31",
+  "type": "ChainlinkPriceOracle (verified)",
+  "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+  "pendingOwner": "0x0000000000000000000000000000000000000000",
+  "notes": "getUnderlyingPrice identical to Ethereum deployment; reads latestRoundData(); NO staleness check; returns 0 if answer<=0"
+ },
+ "markets": [
+  {
+   "market": "0x654A9003Cb09ab8050D4Fdba12F4c5d3C60A548e",
+   "name": "Capyfi Ether",
+   "symbol": "caETH",
+   "decimals": 8,
+   "isCToken": true,
+   "isCEther": true,
+   "underlying": null,
+   "underlying_symbol": "ETH",
+   "underlying_decimals": 18,
+   "cash": 2413895498479136285,
+   "underlying_totalSupply": null,
+   "totalSupply": 12069388838,
+   "totalBorrows": 0,
+   "totalReserves": 17728800004509,
+   "exchangeRateStored": 200000000172264876366724941,
+   "exchangeRateCurrent": 200000000172264876366724941,
+   "initialExchangeRateMantissa": null,
+   "reserveFactorMantissa": 100000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0xcA142dA9286D37211e7e04FEc59D1de5de86EF33",
+   "accrualBlockNumber": 52091652,
+   "borrowIndex": 1000000000000000000,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "comptroller": "0x00dc4965916e03A734190fA382633657c71f867E",
+   "implementation": null,
+   "isListed": true,
+   "collateralFactorMantissa": 800000000000000000,
+   "isComped": false,
+   "borrowCap": 26000000000000000000,
+   "supplyCap": null,
+   "oracle_price": 2446237658790000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 18,
+    "priceFeed": "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",
+    "fixedPrice": "0"
+   },
+   "feed": {
+    "address": "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",
+    "description": "ETH / USD",
+    "decimals": 8,
+    "answer": "244623765879",
+    "updatedAt": 1791484825,
+    "roundId": "55340232221128662104"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "oracle_price_usd": 2446.23765879,
+   "defillama_price_usd": 2445.346485074446,
+   "cash_whole": 2.4138954984791363,
+   "cash_usd_oracle": 5904.96,
+   "cash_usd_defillama": 5902.81,
+   "total_borrows_whole": 0.0,
+   "total_reserves_whole": 1.7728800004509e-05,
+   "backing_surplus_underlying_wei": "0",
+   "fully_backed": true
+  },
+  {
+   "market": "0x0D8105B70539817d87474fD04c9724E20554B642",
+   "name": "Capyfi Coinbase Wrapped BTC",
+   "symbol": "caCBBTC",
+   "decimals": 8,
+   "isCToken": true,
+   "isCEther": false,
+   "underlying": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+   "underlying_symbol": "cbBTC",
+   "underlying_decimals": 8,
+   "cash": 7455379,
+   "underlying_totalSupply": 4717118663325,
+   "totalSupply": 372771450,
+   "totalBorrows": 50,
+   "totalReserves": 0,
+   "exchangeRateStored": 20000000000000000,
+   "exchangeRateCurrent": 20000000000000000,
+   "initialExchangeRateMantissa": null,
+   "reserveFactorMantissa": 100000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0x5BeA6bE1DCcD0b5066842d42852e6302d7f668e8",
+   "accrualBlockNumber": 52297244,
+   "borrowIndex": 1000000003013616309,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "comptroller": "0x00dc4965916e03A734190fA382633657c71f867E",
+   "implementation": "0x40161dC1b52A4dA762Df7C3b1e77288CB0A97DE6",
+   "isListed": true,
+   "collateralFactorMantissa": 800000000000000000,
+   "isComped": false,
+   "borrowCap": 400000000,
+   "supplyCap": null,
+   "oracle_price": 814557504759800000000000000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 8,
+    "priceFeed": "0x07DA0E54543a844a80ABE69c8A12F22B3aA59f9D",
+    "fixedPrice": "0"
+   },
+   "feed": {
+    "address": "0x07DA0E54543a844a80ABE69c8A12F22B3aA59f9D",
+    "description": "cbBTC / USD",
+    "decimals": 8,
+    "answer": "8145575047598",
+    "updatedAt": 1791485049,
+    "roundId": "36893488147419119954"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "oracle_price_usd": 81455.75047598,
+   "defillama_price_usd": 81446.6961395477,
+   "cash_whole": 0.07455379,
+   "cash_usd_oracle": 6072.83,
+   "cash_usd_defillama": 6072.16,
+   "total_borrows_whole": 5e-07,
+   "total_reserves_whole": 0.0,
+   "backing_surplus_underlying_wei": "0",
+   "fully_backed": true
+  },
+  {
+   "market": "0x5aDb71adb317CE975A405e90335068F0aF9F26C7",
+   "name": "Capyfi USDC",
+   "symbol": "caUSDC",
+   "decimals": 8,
+   "isCToken": true,
+   "isCEther": false,
+   "underlying": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+   "underlying_symbol": "USDC",
+   "underlying_decimals": 6,
+   "cash": 14985227137,
+   "underlying_totalSupply": 4343847383191130,
+   "totalSupply": 76126136095018,
+   "totalBorrows": 240007438,
+   "totalReserves": 1097,
+   "exchangeRateStored": 200000082218758,
+   "exchangeRateCurrent": 200000092767041,
+   "initialExchangeRateMantissa": null,
+   "reserveFactorMantissa": 150000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0xa6b02274f7B017C96d570bc2693119c90533E9c3",
+   "accrualBlockNumber": 52308524,
+   "borrowIndex": 1000082550953816327,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "comptroller": "0x00dc4965916e03A734190fA382633657c71f867E",
+   "implementation": "0x9BC729668f015e6059e8efeeB2145B08f94e1eFf",
+   "isListed": true,
+   "collateralFactorMantissa": 850000000000000000,
+   "isComped": false,
+   "borrowCap": 5000000000,
+   "supplyCap": null,
+   "oracle_price": 999812880000000000000000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 6,
+    "priceFeed": "0x7e860098F58bBFC8648a4311b374B1D669a2bc6B",
+    "fixedPrice": "0"
+   },
+   "feed": {
+    "address": "0x7e860098F58bBFC8648a4311b374B1D669a2bc6B",
+    "description": "USDC / USD",
+    "decimals": 8,
+    "answer": "99981288",
+    "updatedAt": 1791463709,
+    "roundId": "55340232221128654898"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "oracle_price_usd": 0.99981288,
+   "defillama_price_usd": 0.9996257477240991,
+   "cash_whole": 14985.227137,
+   "cash_usd_oracle": 14982.42,
+   "cash_usd_defillama": 14979.62,
+   "total_borrows_whole": 240.007438,
+   "total_reserves_whole": 0.001097,
+   "backing_surplus_underlying_wei": "0",
+   "fully_backed": true
+  },
+  {
+   "market": "0x304Cc2588850A59eC1E59a998Ce883De0e884d23",
+   "name": "Capyfi wARS",
+   "symbol": "caWARS",
+   "decimals": 8,
+   "isCToken": true,
+   "isCEther": false,
+   "underlying": "0x0DC4F92879B7670e5f4e4e6e3c801D229129D90D",
+   "underlying_symbol": "wARS",
+   "underlying_decimals": 18,
+   "cash": 41861466498684114250039410,
+   "underlying_totalSupply": 1638092851550479453055015243,
+   "totalSupply": 232307472613746616,
+   "totalBorrows": 4907746429349864408467126,
+   "totalReserves": 30044409851218130848465,
+   "exchangeRateStored": 201195286541191556067776454,
+   "exchangeRateCurrent": 201198630891420726590797831,
+   "initialExchangeRateMantissa": null,
+   "reserveFactorMantissa": 100000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0x7cf1058411a689D0456568AB118c2d20a2BBA927",
+   "accrualBlockNumber": 52332493,
+   "borrowIndex": 1077505565209745386,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "comptroller": "0x00dc4965916e03A734190fA382633657c71f867E",
+   "implementation": "0x3A1460836DF719aF3BaFA2deEd12C3D108445331",
+   "isListed": true,
+   "collateralFactorMantissa": 0,
+   "isComped": false,
+   "borrowCap": 20000000000000000000000000,
+   "supplyCap": null,
+   "oracle_price": 658980000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 18,
+    "priceFeed": "0x98Ac8AC56d833bD69d34F909Ac15226772FAc9aa",
+    "fixedPrice": "0"
+   },
+   "feed": {
+    "address": "0x98Ac8AC56d833bD69d34F909Ac15226772FAc9aa",
+    "description": "wARS/USD Price Feed",
+    "decimals": 8,
+    "answer": "65898",
+    "updatedAt": 1791480407,
+    "roundId": "18446744073709553393"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "oracle_price_usd": 0.00065898,
+   "defillama_price_usd": 0.0006231513299872165,
+   "cash_whole": 41861466.498684116,
+   "cash_usd_oracle": 27585.87,
+   "cash_usd_defillama": 26086.03,
+   "total_borrows_whole": 4907746.429349865,
+   "total_reserves_whole": 30044.40985121813,
+   "backing_surplus_underlying_wei": "0",
+   "fully_backed": true
+  },
+  {
+   "market": "0x601222822Dd82c68590A9C4A6B34Df62EF361FC8",
+   "name": "Capyfi wBRL",
+   "symbol": "caWBRL",
+   "decimals": 8,
+   "isCToken": true,
+   "isCEther": false,
+   "underlying": "0xD76f5Faf6888e24D9F04Bf92a0c8B921FE4390e0",
+   "underlying_symbol": "wBRL",
+   "underlying_decimals": 18,
+   "cash": 143001222891128263148477,
+   "underlying_totalSupply": 2382109775770410230115741,
+   "totalSupply": 739892318729203,
+   "totalBorrows": 5595236988100559540343,
+   "totalReserves": 59370297382462236930,
+   "exchangeRateStored": 200755009643788740018531074,
+   "exchangeRateCurrent": 200755082068813893729888275,
+   "initialExchangeRateMantissa": null,
+   "reserveFactorMantissa": 100000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0xf500115bdEFdE8a1Fa4e34f0B697d20DFD42ce29",
+   "accrualBlockNumber": 52344859,
+   "borrowIndex": 1047590920249132123,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "comptroller": "0x00dc4965916e03A734190fA382633657c71f867E",
+   "implementation": "0x7f02e67f6db2C0Df55C34aE9D6328f0bB81e7702",
+   "isListed": true,
+   "collateralFactorMantissa": 0,
+   "isComped": false,
+   "borrowCap": 35000000000000000000000,
+   "supplyCap": null,
+   "oracle_price": 199616730000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 18,
+    "priceFeed": "0x0b0E64c05083FdF9ED7C5D3d8262c4216eFc9394",
+    "fixedPrice": "0"
+   },
+   "feed": {
+    "address": "0x0b0E64c05083FdF9ED7C5D3d8262c4216eFc9394",
+    "description": "BRL / USD",
+    "decimals": 8,
+    "answer": "19961673",
+    "updatedAt": 1791482809,
+    "roundId": "36893488147419112489"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "oracle_price_usd": 0.19961673,
+   "defillama_price_usd": 0.196601637897894,
+   "cash_whole": 143001.22289112827,
+   "cash_usd_oracle": 28545.44,
+   "cash_usd_defillama": 28114.27,
+   "total_borrows_whole": 5595.23698810056,
+   "total_reserves_whole": 59.37029738246224,
+   "backing_surplus_underlying_wei": "0",
+   "fully_backed": true
+  },
+  {
+   "market": "0x089b87048766D82b983359574077dba2CC026fC8",
+   "name": "Capyfi wMXN",
+   "symbol": "caWMXN",
+   "decimals": 8,
+   "isCToken": true,
+   "isCEther": false,
+   "underlying": "0x337E7456B420bD3481e7FA61fA9850343d610d34",
+   "underlying_symbol": "wMXN",
+   "underlying_decimals": 18,
+   "cash": 200000000000000000000,
+   "underlying_totalSupply": 3550560810879279346804000,
+   "totalSupply": 1000000000000,
+   "totalBorrows": 0,
+   "totalReserves": 0,
+   "exchangeRateStored": 200000000000000000000000000,
+   "exchangeRateCurrent": 200000000000000000000000000,
+   "initialExchangeRateMantissa": null,
+   "reserveFactorMantissa": 100000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0xa5bE28000EBBD930A20bE90F48C85B10306F9A26",
+   "accrualBlockNumber": 46648269,
+   "borrowIndex": 1001257800608678680,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "comptroller": "0x00dc4965916e03A734190fA382633657c71f867E",
+   "implementation": "0x3ec15DCe6c1E03Bd77a6542E77ca0F23b8289eF8",
+   "isListed": true,
+   "collateralFactorMantissa": 0,
+   "isComped": false,
+   "borrowCap": 5000000000000000000000,
+   "supplyCap": null,
+   "oracle_price": 54949010000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 18,
+    "priceFeed": "0x9e8Ee77c76d4fa41306056D1C3196AF5da1600bd",
+    "fixedPrice": "0"
+   },
+   "feed": {
+    "address": "0x9e8Ee77c76d4fa41306056D1C3196AF5da1600bd",
+    "description": "MXN / USD",
+    "decimals": 8,
+    "answer": "5494901",
+    "updatedAt": 1791484987,
+    "roundId": "36893488147419108611"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "oracle_price_usd": 0.05494901,
+   "defillama_price_usd": 0.055509231496686774,
+   "cash_whole": 200.0,
+   "cash_usd_oracle": 10.99,
+   "cash_usd_defillama": 11.1,
+   "total_borrows_whole": 0.0,
+   "total_reserves_whole": 0.0,
+   "backing_surplus_underlying_wei": "0",
+   "fully_backed": true
+  },
+  {
+   "market": "0xc80102675B970811327F127DF1D3f3bbB70894ab",
+   "name": "Capyfi wCOP",
+   "symbol": "caWCOP",
+   "decimals": 8,
+   "isCToken": true,
+   "isCEther": false,
+   "underlying": "0x8a1D45e102e886510e891d2Ec656a708991e2D76",
+   "underlying_symbol": "wCOP",
+   "underlying_decimals": 18,
+   "cash": 50000000000000000000000,
+   "underlying_totalSupply": 603906641290946876925696896,
+   "totalSupply": 250000000000000,
+   "totalBorrows": 0,
+   "totalReserves": 0,
+   "exchangeRateStored": 200000000000000000000000000,
+   "exchangeRateCurrent": 200000000000000000000000000,
+   "initialExchangeRateMantissa": null,
+   "reserveFactorMantissa": 100000000000000000,
+   "protocolSeizeShareMantissa": 28000000000000000,
+   "interestRateModel": "0x021549095Cef224CBB182176FaB282a0F65E6720",
+   "accrualBlockNumber": 46648790,
+   "borrowIndex": 1001258881912585198,
+   "admin": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingAdmin": "0x0000000000000000000000000000000000000000",
+   "comptroller": "0x00dc4965916e03A734190fA382633657c71f867E",
+   "implementation": "0x5D84b91Af7fbf3BDA5D12eC5E308C4dd67E9Cb37",
+   "isListed": true,
+   "collateralFactorMantissa": 0,
+   "isComped": false,
+   "borrowCap": 1500000000000000000000000,
+   "supplyCap": null,
+   "oracle_price": 311000000000000,
+   "mintGuardianPaused": false,
+   "borrowGuardianPaused": false,
+   "oracle_config": {
+    "underlyingAssetDecimals": 18,
+    "priceFeed": "0x07D18E69143f7aaA62F94175af307bbD8c8e0Eaf",
+    "fixedPrice": "0"
+   },
+   "feed": {
+    "address": "0x07D18E69143f7aaA62F94175af307bbD8c8e0Eaf",
+    "description": "wCOP/USD Price Feed",
+    "decimals": 8,
+    "answer": "31100",
+    "updatedAt": 1791480407,
+    "roundId": "18446744073709553319"
+   },
+   "whitelist": "0x0000000000000000000000000000000000000000",
+   "oracle_price_usd": 0.000311,
+   "defillama_price_usd": 0.0003099597007094253,
+   "cash_whole": 50000.0,
+   "cash_usd_oracle": 15.55,
+   "cash_usd_defillama": 15.5,
+   "total_borrows_whole": 0.0,
+   "total_reserves_whole": 0.0,
+   "backing_surplus_underlying_wei": "-8388608",
+   "fully_backed": false
+  }
+ ],
+ "borrowers": {
+  "0x0a8116724df7f240118055221cc06547cf36a5b9": {
+   "borrower": "0x0a8116724df7f240118055221cc06547cf36a5b9",
+   "markets": {
+    "caWARS": {
+     "cTokenBalance": "4981989233593377",
+     "borrowBalance": "0",
+     "exchangeRate": "201195286541191556067776454"
+    },
+    "caWBRL": {
+     "cTokenBalance": "159117243414",
+     "borrowBalance": "0",
+     "exchangeRate": "200755009643788740018531074"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0x0e44086deb87e50ccf7bd1811ce6061008d4e42a": {
+   "borrower": "0x0e44086deb87e50ccf7bd1811ce6061008d4e42a",
+   "markets": {
+    "caETH": {
+     "cTokenBalance": "49998",
+     "borrowBalance": "0",
+     "exchangeRate": "200000000172264876366724941"
+    },
+    "caWARS": {
+     "cTokenBalance": "0",
+     "borrowBalance": "12882510120391459278",
+     "exchangeRate": "201195286541191556067776454"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "11143930023699542",
+   "shortfall": "0",
+   "assets_in": [
+    "0x654a9003cb09ab8050d4fdba12f4c5d3c60a548e",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0x19c523550e727eef7e41469afb10dde69ef1e9dd": {
+   "borrower": "0x19c523550e727eef7e41469afb10dde69ef1e9dd",
+   "markets": {
+    "caUSDC": {
+     "cTokenBalance": "328653322126",
+     "borrowBalance": "40002990",
+     "exchangeRate": "200000082218758"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "15865128491220490098",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7"
+   ]
+  },
+  "0x1c83cdef1c2bd63395a6a1d2f294334d3c6db5d4": {
+   "borrower": "0x1c83cdef1c2bd63395a6a1d2f294334d3c6db5d4",
+   "markets": {
+    "caUSDC": {
+     "cTokenBalance": "499999946519",
+     "borrowBalance": "0",
+     "exchangeRate": "200000082218758"
+    },
+    "caWARS": {
+     "cTokenBalance": "0",
+     "borrowBalance": "1764038319514125872",
+     "exchangeRate": "201195286541191556067776454"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "84982958180389192792",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0x260c74c5b151e152727763733190e7ad9fab9456": {
+   "borrower": "0x260c74c5b151e152727763733190e7ad9fab9456",
+   "markets": {},
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0x29dc812ec1b7c1ab3859df06a566bafda01fd0f5": {
+   "borrower": "0x29dc812ec1b7c1ab3859df06a566bafda01fd0f5",
+   "markets": {
+    "caETH": {
+     "cTokenBalance": "799997",
+     "borrowBalance": "0",
+     "exchangeRate": "200000000172264876366724941"
+    },
+    "caCBBTC": {
+     "cTokenBalance": "0",
+     "borrowBalance": "50",
+     "exchangeRate": "20000000000000000"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "273373365496611079",
+   "shortfall": "0",
+   "assets_in": [
+    "0x654a9003cb09ab8050d4fdba12f4c5d3c60a548e",
+    "0x0d8105b70539817d87474fd04c9724e20554b642",
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23",
+    "0x601222822dd82c68590a9c4a6b34df62ef361fc8",
+    "0x089b87048766d82b983359574077dba2cc026fc8",
+    "0xc80102675b970811327f127df1d3f3bbb70894ab"
+   ]
+  },
+  "0x36b8b9040796ad81501ba4ce380691dc5efa9b96": {
+   "borrower": "0x36b8b9040796ad81501ba4ce380691dc5efa9b96",
+   "markets": {
+    "caWBRL": {
+     "cTokenBalance": "18392511",
+     "borrowBalance": "0",
+     "exchangeRate": "200755009643788740018531074"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x601222822dd82c68590a9c4a6b34df62ef361fc8"
+   ]
+  },
+  "0x3d72fb63c17bf09ebb72293d1caef57c8718ab29": {
+   "borrower": "0x3d72fb63c17bf09ebb72293d1caef57c8718ab29",
+   "markets": {
+    "caUSDC": {
+     "cTokenBalance": "12940223",
+     "borrowBalance": "0",
+     "exchangeRate": "200000082218758"
+    },
+    "caWARS": {
+     "cTokenBalance": "0",
+     "borrowBalance": "2694333541925250676",
+     "exchangeRate": "201195286541191556067776454"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "423915263042859",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0x3e248867a2a2ddd1d901f7d595c4d02c6519b32a": {
+   "borrower": "0x3e248867a2a2ddd1d901f7d595c4d02c6519b32a",
+   "markets": {},
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": []
+  },
+  "0x4e2567902f227b5bf751e6e6c8877bf3837149d5": {
+   "borrower": "0x4e2567902f227b5bf751e6e6c8877bf3837149d5",
+   "markets": {
+    "caETH": {
+     "cTokenBalance": "1",
+     "borrowBalance": "0",
+     "exchangeRate": "200000000172264876366724941"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "392680638082",
+   "shortfall": "0",
+   "assets_in": [
+    "0x654a9003cb09ab8050d4fdba12f4c5d3c60a548e",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23",
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7"
+   ]
+  },
+  "0x51a79064735eab27e335968a96e986b55e239c3e": {
+   "borrower": "0x51a79064735eab27e335968a96e986b55e239c3e",
+   "markets": {
+    "caETH": {
+     "cTokenBalance": "250000",
+     "borrowBalance": "0",
+     "exchangeRate": "200000000172264876366724941"
+    },
+    "caWARS": {
+     "cTokenBalance": "0",
+     "borrowBalance": "12073074400460218531",
+     "exchangeRate": "201195286541191556067776454"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "90214244952141077",
+   "shortfall": "0",
+   "assets_in": [
+    "0x654a9003cb09ab8050d4fdba12f4c5d3c60a548e",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0x54354fd8325c01625932c1ec21debe880f517a64": {
+   "borrower": "0x54354fd8325c01625932c1ec21debe880f517a64",
+   "markets": {},
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23",
+    "0x0d8105b70539817d87474fd04c9724e20554b642"
+   ]
+  },
+  "0x60356f647b19f56f5dcaf249d0ff40de884b3df1": {
+   "borrower": "0x60356f647b19f56f5dcaf249d0ff40de884b3df1",
+   "markets": {
+    "caCBBTC": {
+     "cTokenBalance": "200",
+     "borrowBalance": "0",
+     "exchangeRate": "20000000000000000"
+    },
+    "caWBRL": {
+     "cTokenBalance": "0",
+     "borrowBalance": "1918371584678616",
+     "exchangeRate": "200755009643788740018531074"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "2230414313568923",
+   "shortfall": "0",
+   "assets_in": [
+    "0x0d8105b70539817d87474fd04c9724e20554b642",
+    "0x601222822dd82c68590a9c4a6b34df62ef361fc8"
+   ]
+  },
+  "0x608a7d8f22c61849ffda80c19540d2fcf625d7ed": {
+   "borrower": "0x608a7d8f22c61849ffda80c19540d2fcf625d7ed",
+   "markets": {
+    "caWBRL": {
+     "cTokenBalance": "77295349",
+     "borrowBalance": "0",
+     "exchangeRate": "200755009643788740018531074"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x601222822dd82c68590a9c4a6b34df62ef361fc8"
+   ]
+  },
+  "0x67025bedf924fff96db73f61b098a78c080948a9": {
+   "borrower": "0x67025bedf924fff96db73f61b098a78c080948a9",
+   "markets": {
+    "caUSDC": {
+     "cTokenBalance": "5005",
+     "borrowBalance": "0",
+     "exchangeRate": "200000082218758"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "850691138661",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0x7788ea4ce2b1eac4d6e25790bfe6d3d537cce53a": {
+   "borrower": "0x7788ea4ce2b1eac4d6e25790bfe6d3d537cce53a",
+   "markets": {},
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0x7e3022272b9d6386eb36569c8e5b7a2457d48d5c": {
+   "borrower": "0x7e3022272b9d6386eb36569c8e5b7a2457d48d5c",
+   "markets": {
+    "caETH": {
+     "cTokenBalance": "12024057594",
+     "borrowBalance": "0",
+     "exchangeRate": "200000000172264876366724941"
+    },
+    "caCBBTC": {
+     "cTokenBalance": "343456950",
+     "borrowBalance": "0",
+     "exchangeRate": "20000000000000000"
+    },
+    "caUSDC": {
+     "cTokenBalance": "74992458690000",
+     "borrowBalance": "0",
+     "exchangeRate": "200000082218758"
+    },
+    "caWARS": {
+     "cTokenBalance": "187500801062926923",
+     "borrowBalance": "4797275813261290204690354",
+     "exchangeRate": "201195286541191556067776454"
+    },
+    "caWBRL": {
+     "cTokenBalance": "630768635650706",
+     "borrowBalance": "5589781749286182901907",
+     "exchangeRate": "200755009643788740018531074"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "17679069497768149002581",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23",
+    "0x601222822dd82c68590a9c4a6b34df62ef361fc8",
+    "0x0d8105b70539817d87474fd04c9724e20554b642",
+    "0x654a9003cb09ab8050d4fdba12f4c5d3c60a548e"
+   ]
+  },
+  "0x97f0bcd42b62943289953eb6af8e77ce15735d92": {
+   "borrower": "0x97f0bcd42b62943289953eb6af8e77ce15735d92",
+   "markets": {
+    "caCBBTC": {
+     "cTokenBalance": "8356400",
+     "borrowBalance": "0",
+     "exchangeRate": "20000000000000000"
+    },
+    "caWARS": {
+     "cTokenBalance": "1285896215092328",
+     "borrowBalance": "91029529415408681633808",
+     "exchangeRate": "201195286541191556067776454"
+    },
+    "caWBRL": {
+     "cTokenBalance": "262405784005",
+     "borrowBalance": "0",
+     "exchangeRate": "200755009643788740018531074"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "49151331330855947937",
+   "shortfall": "0",
+   "assets_in": [
+    "0x0d8105b70539817d87474fd04c9724e20554b642",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0x9c284b20122471592e800226904a5b2ace5e258e": {
+   "borrower": "0x9c284b20122471592e800226904a5b2ace5e258e",
+   "markets": {
+    "caUSDC": {
+     "cTokenBalance": "11205189",
+     "borrowBalance": "0",
+     "exchangeRate": "200000082218758"
+    },
+    "caWARS": {
+     "cTokenBalance": "0",
+     "borrowBalance": "2332898649262338383",
+     "exchangeRate": "201195286541191556067776454"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "367192919503619",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0xa60fdb8ae18be9d8f4611a8eb156a161bc0bbbcc": {
+   "borrower": "0xa60fdb8ae18be9d8f4611a8eb156a161bc0bbbcc",
+   "markets": {
+    "caUSDC": {
+     "cTokenBalance": "49999985270",
+     "borrowBalance": "0",
+     "exchangeRate": "200000082218758"
+    },
+    "caWARS": {
+     "cTokenBalance": "0",
+     "borrowBalance": "6033851689780485559804",
+     "exchangeRate": "201195286541191556067776454"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "4522222883479340698",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0xadcdba2c6d8b4ae7f75558a6022d72dbf73f3a7c": {
+   "borrower": "0xadcdba2c6d8b4ae7f75558a6022d72dbf73f3a7c",
+   "markets": {},
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x654a9003cb09ab8050d4fdba12f4c5d3c60a548e",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0xafe8d60a33b81700f88cb733cd8d72b62d079a45": {
+   "borrower": "0xafe8d60a33b81700f88cb733cd8d72b62d079a45",
+   "markets": {
+    "caCBBTC": {
+     "cTokenBalance": "20457900",
+     "borrowBalance": "0",
+     "exchangeRate": "20000000000000000"
+    },
+    "caUSDC": {
+     "cTokenBalance": "0",
+     "borrowBalance": "200004469",
+     "exchangeRate": "200000082218758"
+    },
+    "caWBRL": {
+     "cTokenBalance": "6155258057233",
+     "borrowBalance": "0",
+     "exchangeRate": "200755009643788740018531074"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "67221420874968490560",
+   "shortfall": "0",
+   "assets_in": [
+    "0x0d8105b70539817d87474fd04c9724e20554b642",
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7"
+   ]
+  },
+  "0xb88cfc3c260a35138a91799325ef62cf528737f9": {
+   "borrower": "0xb88cfc3c260a35138a91799325ef62cf528737f9",
+   "markets": {},
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x0d8105b70539817d87474fd04c9724e20554b642",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0xba3958c690809206ed6a305ff7227666b21a2a7c": {
+   "borrower": "0xba3958c690809206ed6a305ff7227666b21a2a7c",
+   "markets": {},
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0xbad5684392e7111c86842f01707286edb15e92a9": {
+   "borrower": "0xbad5684392e7111c86842f01707286edb15e92a9",
+   "markets": {},
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x601222822dd82c68590a9c4a6b34df62ef361fc8"
+   ]
+  },
+  "0xbb7ab122a6ed7e48c02ee15998c755df0a8a0a89": {
+   "borrower": "0xbb7ab122a6ed7e48c02ee15998c755df0a8a0a89",
+   "markets": {},
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0xc0111a3a646b644a5df250423fa5af8d563f7139": {
+   "borrower": "0xc0111a3a646b644a5df250423fa5af8d563f7139",
+   "markets": {
+    "caETH": {
+     "cTokenBalance": "4231237",
+     "borrowBalance": "0",
+     "exchangeRate": "200000000172264876366724941"
+    },
+    "caWBRL": {
+     "cTokenBalance": "0",
+     "borrowBalance": "5453320442790532997",
+     "exchangeRate": "200755009643788740018531074"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "575441545650958635",
+   "shortfall": "0",
+   "assets_in": [
+    "0x654a9003cb09ab8050d4fdba12f4c5d3c60a548e",
+    "0x601222822dd82c68590a9c4a6b34df62ef361fc8"
+   ]
+  },
+  "0xe19fe0e2218a4d1ac67646ec39a911c066adea53": {
+   "borrower": "0xe19fe0e2218a4d1ac67646ec39a911c066adea53",
+   "markets": {
+    "caUSDC": {
+     "cTokenBalance": "60000",
+     "borrowBalance": "0",
+     "exchangeRate": "200000082218758"
+    },
+    "caWARS": {
+     "cTokenBalance": "0",
+     "borrowBalance": "12516316253991757",
+     "exchangeRate": "201195286541191556067776454"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "1950093483317",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0xecceffaa44f6931f4ccf78c64ed3da20600f850c": {
+   "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+   "markets": {},
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x601222822dd82c68590a9c4a6b34df62ef361fc8"
+   ]
+  },
+  "0xed6f6da3dcc321b745933e8c07beb682b5be5aff": {
+   "borrower": "0xed6f6da3dcc321b745933e8c07beb682b5be5aff",
+   "markets": {
+    "caUSDC": {
+     "cTokenBalance": "49999985270",
+     "borrowBalance": "0",
+     "exchangeRate": "200000082218758"
+    },
+    "caWARS": {
+     "cTokenBalance": "0",
+     "borrowBalance": "6033837311399957053921",
+     "exchangeRate": "201195286541191556067776454"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "4522232358544541373",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0xfb9572dfccac0791e0ac899455132836a437afe9": {
+   "borrower": "0xfb9572dfccac0791e0ac899455132836a437afe9",
+   "markets": {
+    "caWARS": {
+     "cTokenBalance": "6691063392",
+     "borrowBalance": "0",
+     "exchangeRate": "201195286541191556067776454"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "0",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  },
+  "0xfebea35fa118c5018c0e886295eb4006cd3b2b21": {
+   "borrower": "0xfebea35fa118c5018c0e886295eb4006cd3b2b21",
+   "markets": {
+    "caUSDC": {
+     "cTokenBalance": "149999955980",
+     "borrowBalance": "0",
+     "exchangeRate": "200000082218758"
+    },
+    "caWARS": {
+     "cTokenBalance": "36856119513953",
+     "borrowBalance": "7341638300636549133549",
+     "exchangeRate": "201195286541191556067776454"
+    }
+   },
+   "liq_err_code": 0,
+   "liquidity": "20657238631573786180",
+   "shortfall": "0",
+   "assets_in": [
+    "0x5adb71adb317ce975a405e90335068f0af9f26c7",
+    "0x304cc2588850a59ec1e59a998ce883de0e884d23"
+   ]
+  }
+ },
+ "borrow_events": {
+  "caETH": {
+   "address": "0x654A9003Cb09ab8050D4Fdba12F4c5d3C60A548e",
+   "deploy_block": 45692585,
+   "total_events": 122,
+   "borrows": []
+  },
+  "caCBBTC": {
+   "address": "0x0D8105B70539817d87474fD04c9724E20554B642",
+   "deploy_block": 45692792,
+   "total_events": 161,
+   "borrows": [
+    {
+     "block": 51604543,
+     "time": "2026-09-21T13:47:13Z",
+     "tx": "0xc08325789c767d6699299706652d551b8b3822db06bc6ad7140db9fbd1dbeac7",
+     "log_offset": 163,
+     "borrower": "0x29dc812ec1b7c1ab3859df06a566bafda01fd0f5",
+     "borrowAmount": "50",
+     "accountBorrows": "50",
+     "totalBorrows": "50"
+    }
+   ]
+  },
+  "caUSDC": {
+   "address": "0x5aDb71adb317CE975A405e90335068F0aF9F26C7",
+   "deploy_block": 45693019,
+   "total_events": 373,
+   "borrows": [
+    {
+     "block": 49962244,
+     "time": "2026-08-14T13:23:55Z",
+     "tx": "0x565b375227de9a6d249cc638d3f5d5754676de54b275baca0069e5c5e2ef9b26",
+     "log_offset": 297,
+     "borrower": "0xafe8d60a33b81700f88cb733cd8d72b62d079a45",
+     "borrowAmount": "50000000",
+     "accountBorrows": "50000000",
+     "totalBorrows": "50000000"
+    },
+    {
+     "block": 50234801,
+     "time": "2026-08-20T20:49:09Z",
+     "tx": "0xb33a3396c6621e3b4c5718211dd4693f5b6454dc742becd9e6916a6063769f97",
+     "log_offset": 240,
+     "borrower": "0x3e248867a2a2ddd1d901f7d595c4d02c6519b32a",
+     "borrowAmount": "1000000",
+     "accountBorrows": "1000000",
+     "totalBorrows": "51000270"
+    },
+    {
+     "block": 50245259,
+     "time": "2026-08-21T02:37:45Z",
+     "tx": "0xa3883439bcc2d83273e8e56352a6b54a56568baed9d202747ced4630f2ab9528",
+     "log_offset": 305,
+     "borrower": "0x19c523550e727eef7e41469afb10dde69ef1e9dd",
+     "borrowAmount": "20000000",
+     "accountBorrows": "20000000",
+     "totalBorrows": "70000280"
+    },
+    {
+     "block": 50289664,
+     "time": "2026-08-22T03:17:55Z",
+     "tx": "0xca40b8867fef8a1ebcb01f9c91cbfbad4b36557dfe59ef26559cad0d1b36ad10",
+     "log_offset": 161,
+     "borrower": "0x19c523550e727eef7e41469afb10dde69ef1e9dd",
+     "borrowAmount": "5000000",
+     "accountBorrows": "25000024",
+     "totalBorrows": "75000367"
+    },
+    {
+     "block": 50315035,
+     "time": "2026-08-22T17:23:37Z",
+     "tx": "0xc7f688351bf691c91d347dbaf755010b7bb3d238219b039ea029931f4ccce97b",
+     "log_offset": 353,
+     "borrower": "0x19c523550e727eef7e41469afb10dde69ef1e9dd",
+     "borrowAmount": "5000000",
+     "accountBorrows": "30000043",
+     "totalBorrows": "80000424"
+    },
+    {
+     "block": 50331508,
+     "time": "2026-08-23T02:32:43Z",
+     "tx": "0x588fdf179ced1a8452a40ec019de7125d8912ba78e7525053cb2d0a4cda781b6",
+     "log_offset": 339,
+     "borrower": "0x19c523550e727eef7e41469afb10dde69ef1e9dd",
+     "borrowAmount": "5000000",
+     "accountBorrows": "35000058",
+     "totalBorrows": "85000466"
+    },
+    {
+     "block": 50577559,
+     "time": "2026-08-28T19:14:25Z",
+     "tx": "0x34bd21a397819995ec8bd8058f693b4d50c71e584eb2134bb923ad108b7fe325",
+     "log_offset": 47,
+     "borrower": "0x19c523550e727eef7e41469afb10dde69ef1e9dd",
+     "borrowAmount": "5000000",
+     "accountBorrows": "40000351",
+     "totalBorrows": "90001177"
+    },
+    {
+     "block": 50676513,
+     "time": "2026-08-31T02:12:53Z",
+     "tx": "0x854a82532cd1b539bad10790e459c709ae2819e860c1840231d98e4c2dfb87d1",
+     "log_offset": 471,
+     "borrower": "0xbad5684392e7111c86842f01707286edb15e92a9",
+     "borrowAmount": "12370000",
+     "accountBorrows": "12370000",
+     "totalBorrows": "102371496"
+    },
+    {
+     "block": 52265696,
+     "time": "2026-10-06T21:05:39Z",
+     "tx": "0xd7c4388670480a9db89db35c44a1543b21dcc2b304e1fb839fd1fe86f177db67",
+     "log_offset": 306,
+     "borrower": "0xafe8d60a33b81700f88cb733cd8d72b62d079a45",
+     "borrowAmount": "100000000",
+     "accountBorrows": "150003957",
+     "totalBorrows": "190006791"
+    },
+    {
+     "block": 52307917,
+     "time": "2026-10-07T20:33:01Z",
+     "tx": "0x47ce0db85d80258ddec5fa8d72cf84e3b5cb5a540acc95da0a651a6f84bb76ba",
+     "log_offset": 553,
+     "borrower": "0xafe8d60a33b81700f88cb733cd8d72b62d079a45",
+     "borrowAmount": "50000000",
+     "accountBorrows": "200004457",
+     "totalBorrows": "240007424"
+    }
+   ]
+  },
+  "caWARS": {
+   "address": "0x304Cc2588850A59eC1E59a998Ce883De0e884d23",
+   "deploy_block": 45693164,
+   "total_events": 1726,
+   "borrows": [
+    {
+     "block": 46515051,
+     "time": "2026-05-26T18:17:29Z",
+     "tx": "0xdd9bfe10444a95de3cee7737f019199dc02ee4cc0609cfb83d0947750c869303",
+     "log_offset": 109,
+     "borrower": "0x4e2567902f227b5bf751e6e6c8877bf3837149d5",
+     "borrowAmount": "44000000000000000000000",
+     "accountBorrows": "44000000000000000000000",
+     "totalBorrows": "44000000000000000000000"
+    },
+    {
+     "block": 46521067,
+     "time": "2026-05-26T21:38:01Z",
+     "tx": "0x82e0b0c18d5119d083502c8cee6254b03e8aedfbb597357862716cd2e2aff5a3",
+     "log_offset": 27,
+     "borrower": "0x4e2567902f227b5bf751e6e6c8877bf3837149d5",
+     "borrowAmount": "9501360637785574848142",
+     "accountBorrows": "53503890934477284772914",
+     "totalBorrows": "53503890934477284800142"
+    },
+    {
+     "block": 46567055,
+     "time": "2026-05-27T23:10:57Z",
+     "tx": "0x4e8ff9eb9f1c86e712c0cf31a5ac914d82e870c8efacd347a5b9483f9de806c5",
+     "log_offset": 109,
+     "borrower": "0x4e2567902f227b5bf751e6e6c8877bf3837149d5",
+     "borrowAmount": "15000000000000000000000",
+     "accountBorrows": "65526112497548983260478",
+     "totalBorrows": "65526112497548983375823"
+    },
+    {
+     "block": 46815973,
+     "time": "2026-06-02T17:28:13Z",
+     "tx": "0x23082f5909f458457d562b0f05ba627709d1444020459a530d1210a1ad8a6bca",
+     "log_offset": 714,
+     "borrower": "0x7e3022272b9d6386eb36569c8e5b7a2457d48d5c",
+     "borrowAmount": "4500000000000000000000000",
+     "accountBorrows": "4500000000000000000000000",
+     "totalBorrows": "4500000000000000000318414"
+    },
+    {
+     "block": 47941379,
+     "time": "2026-06-28T18:41:45Z",
+     "tx": "0x3124df41ff6b6c83a2329a29e24ec0a473237b417a49372b04926410d741b16a",
+     "log_offset": 18,
+     "borrower": "0x54354fd8325c01625932c1ec21debe880f517a64",
+     "borrowAmount": "16417241054377777777777",
+     "accountBorrows": "16417241054377777777777",
+     "totalBorrows": "4583028057160779038869293"
+    },
+    {
+     "block": 48119381,
+     "time": "2026-07-02T21:35:09Z",
+     "tx": "0xebb62dd5debd497e64b0435ed391399b1ff19c420109af01425eb55bf106711b",
+     "log_offset": 288,
+     "borrower": "0x54354fd8325c01625932c1ec21debe880f517a64",
+     "borrowAmount": "26726840495152863766978",
+     "accountBorrows": "43177284322255514143712",
+     "totalBorrows": "4619023765577746791073044"
+    },
+    {
+     "block": 48590358,
+     "time": "2026-07-13T19:14:23Z",
+     "tx": "0x6530f46757f1d7654deb0fa9a7fe385fba978b98ad9cb223900a1d568c7f2b7e",
+     "log_offset": 6,
+     "borrower": "0x54354fd8325c01625932c1ec21debe880f517a64",
+     "borrowAmount": "26532400352476212385602",
+     "accountBorrows": "69939297930323602756766",
+     "totalBorrows": "4670119755352725904749817"
+    },
+    {
+     "block": 49058497,
+     "time": "2026-07-24T15:19:01Z",
+     "tx": "0x3611eb9261247cdfa7b67b2573a938441f1db9042288379de365005468c289f0",
+     "log_offset": 347,
+     "borrower": "0xe19fe0e2218a4d1ac67646ec39a911c066adea53",
+     "borrowAmount": "21483980000000000000000",
+     "accountBorrows": "21483980000000000000000",
+     "totalBorrows": "4645863554707631130836301"
+    },
+    {
+     "block": 49303275,
+     "time": "2026-07-30T07:18:17Z",
+     "tx": "0xc03177bfb25a89cf886d855615f85ee0bbd1b8b35ec3029540d149b928b78b3b",
+     "log_offset": 133,
+     "borrower": "0x7788ea4ce2b1eac4d6e25790bfe6d3d537cce53a",
+     "borrowAmount": "10000000000000000000000",
+     "accountBorrows": "10000000000000000000000",
+     "totalBorrows": "4647083027115424230804191"
+    },
+    {
+     "block": 49630653,
+     "time": "2026-08-06T21:10:53Z",
+     "tx": "0x3a34a0765fbc8166f7bba830b0c494975297c48c24b036af68ac1424f1d78f4e",
+     "log_offset": 233,
+     "borrower": "0x7788ea4ce2b1eac4d6e25790bfe6d3d537cce53a",
+     "borrowAmount": "10000000000000000000000",
+     "accountBorrows": "20036762551004007744551",
+     "totalBorrows": "4674166889795843187490080"
+    },
+    {
+     "block": 49697864,
+     "time": "2026-08-08T10:31:15Z",
+     "tx": "0xe053d828978bf74678cced40bf854c13c7295a61bc176ca980b45b21ebbe31d7",
+     "log_offset": 226,
+     "borrower": "0x7788ea4ce2b1eac4d6e25790bfe6d3d537cce53a",
+     "borrowAmount": "20000000000000000000000",
+     "accountBorrows": "40051889628192432739297",
+     "totalBorrows": "4697695727508699120585482"
+    },
+    {
+     "block": 49823377,
+     "time": "2026-08-11T08:15:01Z",
+     "tx": "0xe980b59d19f6916a116862c8c59171b7eb7521421ae455c6ea62f72d54b9ff6f",
+     "log_offset": 300,
+     "borrower": "0x7788ea4ce2b1eac4d6e25790bfe6d3d537cce53a",
+     "borrowAmount": "10000000000000000000000",
+     "accountBorrows": "50108402848991168156299",
+     "totalBorrows": "4714324176711932309409736"
+    },
+    {
+     "block": 49998748,
+     "time": "2026-08-15T09:40:43Z",
+     "tx": "0x85c4c2d95842bc5e96122bb9ef1d71054320f06f85a09c8ef86499c3a42fa601",
+     "log_offset": 297,
+     "borrower": "0x7788ea4ce2b1eac4d6e25790bfe6d3d537cce53a",
+     "borrowAmount": "3000000000000000000000",
+     "accountBorrows": "53207003587579550015277",
+     "totalBorrows": "4726600781419723778100764"
+    },
+    {
+     "block": 50082630,
+     "time": "2026-08-17T08:16:47Z",
+     "tx": "0x78fab212ba4a6ff87bb9e2d69c5ceda79f7df9636fa91d9967cbad0a33821a3b",
+     "log_offset": 337,
+     "borrower": "0x7788ea4ce2b1eac4d6e25790bfe6d3d537cce53a",
+     "borrowAmount": "6000000000000000000000",
+     "accountBorrows": "59257010351948103224049",
+     "totalBorrows": "4737043091559433495952893"
+    },
+    {
+     "block": 50136125,
+     "time": "2026-08-18T13:59:57Z",
+     "tx": "0x1c42f0722eb1d387ce46b9ec8722a3bb25ccc811f297fca1edeb8b4433ca9131",
+     "log_offset": 512,
+     "borrower": "0xadcdba2c6d8b4ae7f75558a6022d72dbf73f3a7c",
+     "borrowAmount": "240000000000000000000000",
+     "accountBorrows": "240000000000000000000000",
+     "totalBorrows": "4979865199943366453289631"
+    },
+    {
+     "block": 50138252,
+     "time": "2026-08-18T15:10:51Z",
+     "tx": "0x7e99957f82260899952f32478054bdd635372c0068c9a21032c0cd5def547938",
+     "log_offset": 23,
+     "borrower": "0xadcdba2c6d8b4ae7f75558a6022d72dbf73f3a7c",
+     "borrowAmount": "170000000000000000000000",
+     "accountBorrows": "410005762865623205548436",
+     "totalBorrows": "5149984776168237084574487"
+    },
+    {
+     "block": 50217879,
+     "time": "2026-08-20T11:25:05Z",
+     "tx": "0xeb4f5773e9df683fd0225b5b489772b50370142d49b3f029c8d715506ec22364",
+     "log_offset": 521,
+     "borrower": "0xadcdba2c6d8b4ae7f75558a6022d72dbf73f3a7c",
+     "borrowAmount": "270000000000000000000000",
+     "accountBorrows": "680378482722412690966296",
+     "totalBorrows": "5424666421554940022866262"
+    },
+    {
+     "block": 50740862,
+     "time": "2026-09-01T13:57:51Z",
+     "tx": "0xa3a71c1be5b7063048703628984359e9d2f3997fdcdec8d6c297860c2547bf48",
+     "log_offset": 173,
+     "borrower": "0x0a8116724df7f240118055221cc06547cf36a5b9",
+     "borrowAmount": "742564910000000000000000",
+     "accountBorrows": "742564910000000000000000",
+     "totalBorrows": "5454905708377374879671426"
+    },
+    {
+     "block": 50798957,
+     "time": "2026-09-02T22:14:21Z",
+     "tx": "0x4cdae1b5524168a2b5462dca21e5fc5eecb9af3670d6e49ff1223f2669134d0a",
+     "log_offset": 344,
+     "borrower": "0xb88cfc3c260a35138a91799325ef62cf528737f9",
+     "borrowAmount": "20000000000000000000000",
+     "accountBorrows": "20000000000000000000000",
+     "totalBorrows": "4735344358995762878803173"
+    },
+    {
+     "block": 50831972,
+     "time": "2026-09-03T16:34:51Z",
+     "tx": "0x1e1ca0206d61234f395fbfb04ceabd0165c119a62f25f9bf02f0ad2fca771b42",
+     "log_offset": 178,
+     "borrower": "0xadcdba2c6d8b4ae7f75558a6022d72dbf73f3a7c",
+     "borrowAmount": "160000000000000000000000",
+     "accountBorrows": "160000000000000000000000",
+     "totalBorrows": "4877051635025795117068029"
+    },
+    {
+     "block": 50833550,
+     "time": "2026-09-03T17:27:27Z",
+     "tx": "0x4f9c14d5bc89ed1bad0cc04e57f82e1b23f71dfca83ce0d080b88c880ee48305",
+     "log_offset": 720,
+     "borrower": "0x1c83cdef1c2bd63395a6a1d2f294334d3c6db5d4",
+     "borrowAmount": "102729160000000000000000",
+     "accountBorrows": "102729160000000000000000",
+     "totalBorrows": "4979866063110991026875814"
+    },
+    {
+     "block": 50868282,
+     "time": "2026-09-04T12:45:11Z",
+     "tx": "0x911adfd48a5456229cf92161562294b234bebcd0ab04c7ce7968831ba946cf2f",
+     "log_offset": 68,
+     "borrower": "0xadcdba2c6d8b4ae7f75558a6022d72dbf73f3a7c",
+     "borrowAmount": "150000000000000000000000",
+     "accountBorrows": "310064392548815398158260",
+     "totalBorrows": "5029016156421685486828281"
+    },
+    {
+     "block": 51326223,
+     "time": "2026-09-15T03:09:53Z",
+     "tx": "0x19c214dbdd66dc6698c9df0b7488ec4a3f69cf8445caaaa75004a3705c35684b",
+     "log_offset": 106,
+     "borrower": "0x97f0bcd42b62943289953eb6af8e77ce15735d92",
+     "borrowAmount": "90000000000000000000000",
+     "accountBorrows": "90000000000000000000000",
+     "totalBorrows": "4833021147710664593800003"
+    },
+    {
+     "block": 51519014,
+     "time": "2026-09-19T14:16:15Z",
+     "tx": "0xc48513ab5641bb826cca94fe5e3e191b657f76772713b3d9285e0a2b2d6f9019",
+     "log_offset": 313,
+     "borrower": "0x67025bedf924fff96db73f61b098a78c080948a9",
+     "borrowAmount": "2000000000000000000000",
+     "accountBorrows": "2000000000000000000000",
+     "totalBorrows": "4845625123009113184919112"
+    },
+    {
+     "block": 51832455,
+     "time": "2026-09-26T20:24:17Z",
+     "tx": "0xbb886737278206ed7b7229e2c623113e32e6d1a64587915f28ac976dd4133c58",
+     "log_offset": 556,
+     "borrower": "0xfebea35fa118c5018c0e886295eb4006cd3b2b21",
+     "borrowAmount": "7300000000000000000000",
+     "accountBorrows": "7300000000000000000000",
+     "totalBorrows": "4867882952894144587942659"
+    },
+    {
+     "block": 51837910,
+     "time": "2026-09-26T23:26:07Z",
+     "tx": "0xc0acca9e23f093b667374c8b583c534d1081736fcbe6987cf8648fba9da55ba9",
+     "log_offset": 965,
+     "borrower": "0xa60fdb8ae18be9d8f4611a8eb156a161bc0bbbcc",
+     "borrowAmount": "6000000000000000000000",
+     "accountBorrows": "6000000000000000000000",
+     "totalBorrows": "4874182722313558797570736"
+    },
+    {
+     "block": 51838121,
+     "time": "2026-09-26T23:33:09Z",
+     "tx": "0x8ec8e65ff750fc655d1e8fe5de33b05a4207d32b19eefab0be001aa2d8e0541c",
+     "log_offset": 11,
+     "borrower": "0xed6f6da3dcc321b745933e8c07beb682b5be5aff",
+     "borrowAmount": "6000000000000000000000",
+     "accountBorrows": "6000000000000000000000",
+     "totalBorrows": "4880194337285976848789729"
+    },
+    {
+     "block": 51845258,
+     "time": "2026-09-27T03:31:03Z",
+     "tx": "0x48fccbf6971d178abcc52b57c3f436d8265f902bef3173b219b00222e9cfd08d",
+     "log_offset": 179,
+     "borrower": "0xbb7ab122a6ed7e48c02ee15998c755df0a8a0a89",
+     "borrowAmount": "8000000000000000000000",
+     "accountBorrows": "8000000000000000000000",
+     "totalBorrows": "4888587852349905007466279"
+    },
+    {
+     "block": 51871263,
+     "time": "2026-09-27T17:57:53Z",
+     "tx": "0xce572d4038dbd39d9e2cf6fe08f9a4a14b0c4bda8866c24362ff8e36e826023e",
+     "log_offset": 440,
+     "borrower": "0x0e44086deb87e50ccf7bd1811ce6061008d4e42a",
+     "borrowAmount": "5120000000000000000000",
+     "accountBorrows": "5120000000000000000000",
+     "totalBorrows": "4895144934765113217114709"
+    },
+    {
+     "block": 51871563,
+     "time": "2026-09-27T18:07:53Z",
+     "tx": "0x0cabcf468a2152228be3405b12d61be2ec2c16fa686ddee10f1c65cbef64f587",
+     "log_offset": 365,
+     "borrower": "0x51a79064735eab27e335968a96e986b55e239c3e",
+     "borrowAmount": "5000000000000000000000",
+     "accountBorrows": "5000000000000000000000",
+     "totalBorrows": "4900161539634987391970709"
+    },
+    {
+     "block": 51884416,
+     "time": "2026-09-28T01:16:19Z",
+     "tx": "0x8aee3a4d5af3be09e8a8cb4cd75325ed8c6ed30c441daf96e89312f555d260fb",
+     "log_offset": 962,
+     "borrower": "0x260c74c5b151e152727763733190e7ad9fab9456",
+     "borrowAmount": "5005000000000000000000",
+     "accountBorrows": "5005000000000000000000",
+     "totalBorrows": "4905878915197420477081923"
+    },
+    {
+     "block": 51888818,
+     "time": "2026-09-28T03:43:03Z",
+     "tx": "0xf549b9e2388c14f3702c0e7caa82b08666996a9ef4aafa9cad26ec3260e6e59a",
+     "log_offset": 74,
+     "borrower": "0xfb9572dfccac0791e0ac899455132836a437afe9",
+     "borrowAmount": "5001000000000000000000",
+     "accountBorrows": "5001000000000000000000",
+     "totalBorrows": "4911124272214838239392356"
+    },
+    {
+     "block": 51911338,
+     "time": "2026-09-28T16:13:43Z",
+     "tx": "0x7a7372f045dd44e5bd7962dcd9d1ba6dfc2606551256f7eeb2cfc7b6c46c5bdb",
+     "log_offset": 276,
+     "borrower": "0xba3958c690809206ed6a305ff7227666b21a2a7c",
+     "borrowAmount": "7000000000000000000000",
+     "accountBorrows": "7000000000000000000000",
+     "totalBorrows": "4919376069799098447758232"
+    },
+    {
+     "block": 51913040,
+     "time": "2026-09-28T17:10:27Z",
+     "tx": "0x0a6372d0e097c02c5e52e710cc4c8c51ae3b08d05a1b962c53b21c629ce38816",
+     "log_offset": 681,
+     "borrower": "0x36b8b9040796ad81501ba4ce380691dc5efa9b96",
+     "borrowAmount": "8000000000000000000000",
+     "accountBorrows": "8000000000000000000000",
+     "totalBorrows": "4927470870181717686069844"
+    },
+    {
+     "block": 51917668,
+     "time": "2026-09-28T19:44:43Z",
+     "tx": "0x8a4c92fd708d00a0861ef135985dfb94069b3ff73e0023233f0b8a3941e89c43",
+     "log_offset": 224,
+     "borrower": "0x9c284b20122471592e800226904a5b2ace5e258e",
+     "borrowAmount": "5000000000000000000000",
+     "accountBorrows": "5000000000000000000000",
+     "totalBorrows": "4932729210328698424943637"
+    },
+    {
+     "block": 51921331,
+     "time": "2026-09-28T21:46:49Z",
+     "tx": "0x29dde5f615bdc6a4339c985d0817fa2b4b87a7170608d808a06aacd99de92eea",
+     "log_offset": 9,
+     "borrower": "0x3d72fb63c17bf09ebb72293d1caef57c8718ab29",
+     "borrowAmount": "5000000000000000000000",
+     "accountBorrows": "5000000000000000000000",
+     "totalBorrows": "4937933972664272512978531"
+    },
+    {
+     "block": 51958666,
+     "time": "2026-09-29T18:31:19Z",
+     "tx": "0x823a53d9a9bb5c878931adf128f14d80758c91067f987d427dcccdd35c08da1e",
+     "log_offset": 807,
+     "borrower": "0x9c284b20122471592e800226904a5b2ace5e258e",
+     "borrowAmount": "1000000000000000000000",
+     "accountBorrows": "1002307559245997026528",
+     "totalBorrows": "4928019774984272562558593"
+    },
+    {
+     "block": 51968458,
+     "time": "2026-09-29T23:57:43Z",
+     "tx": "0x21f74c7ed09cc6f16592ff2d13a4a171a6e1be3d3d1bf433622bd3a1d3c8aab2",
+     "log_offset": 496,
+     "borrower": "0x9c284b20122471592e800226904a5b2ace5e258e",
+     "borrowAmount": "5000000000000000000000",
+     "accountBorrows": "5002308970547495000793",
+     "totalBorrows": "4927556347370077755453813"
+    }
+   ]
+  },
+  "caWBRL": {
+   "address": "0x601222822Dd82c68590A9C4A6B34Df62EF361FC8",
+   "deploy_block": 45693283,
+   "total_events": 2013,
+   "borrows": [
+    {
+     "block": 46816779,
+     "time": "2026-06-02T17:55:05Z",
+     "tx": "0x1901c222a4ea979e04f3df4cf38a551a64b823a4ecde3d41bec743085d9005a5",
+     "log_offset": 1141,
+     "borrower": "0x7e3022272b9d6386eb36569c8e5b7a2457d48d5c",
+     "borrowAmount": "15000000000000000000000",
+     "accountBorrows": "15000000000000000000000",
+     "totalBorrows": "15000000000000000000000"
+    },
+    {
+     "block": 46896876,
+     "time": "2026-06-04T14:24:59Z",
+     "tx": "0x4f095f992a3c198359ed8ae352475a6c924fa240b188db0821e0420783a62902",
+     "log_offset": 248,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "300000000000000000000",
+     "accountBorrows": "300000000000000000000",
+     "totalBorrows": "15308041013856069975000"
+    },
+    {
+     "block": 46897110,
+     "time": "2026-06-04T14:32:47Z",
+     "tx": "0x730505356d35f30fcb5bec50d86b03a2ee227d1a05fe3bf4ea52449049e904bb",
+     "log_offset": 318,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "200000000000000000000",
+     "accountBorrows": "500000474893192006741",
+     "totalBorrows": "15508065246137604788938"
+    },
+    {
+     "block": 46897196,
+     "time": "2026-06-04T14:35:39Z",
+     "tx": "0x0725d5d3181650c94d73a940d1165ecd0735c76e5399a5ac6584bda0a9591b0c",
+     "log_offset": 234,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "220000000000000000000",
+     "accountBorrows": "720000767801710727632",
+     "totalBorrows": "15728074331017815051007"
+    },
+    {
+     "block": 46897262,
+     "time": "2026-06-04T14:37:51Z",
+     "tx": "0xe94480669d9c5ef956b55a803fdd3e7d29815e65657dd1e40372a6491171567f",
+     "log_offset": 3,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "200000000000000000000",
+     "accountBorrows": "920001093954201640839",
+     "totalBorrows": "15928081455663856750151"
+    },
+    {
+     "block": 46897335,
+     "time": "2026-06-04T14:40:17Z",
+     "tx": "0xaac5d9f848a7dffb1365d1ac5784ba456c256f144fc49db9c2be48143eb4bda7",
+     "log_offset": 578,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "170000000000000000000",
+     "accountBorrows": "1090001558059008655024",
+     "totalBorrows": "16098089490762095950242"
+    },
+    {
+     "block": 46897405,
+     "time": "2026-06-04T14:42:37Z",
+     "tx": "0xee5b0803a35bbf4a557cf2ebd899d20d0f7592586e171e38cb2eb7a7f751be5d",
+     "log_offset": 207,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "150000000000000000000",
+     "accountBorrows": "1240002088370661381310",
+     "totalBorrows": "16248097322865069078797"
+    },
+    {
+     "block": 46897578,
+     "time": "2026-06-04T14:48:23Z",
+     "tx": "0x0885a585b24beebee526c9dea04fbff3ad593ea523e06a58112c52c3811da7ed",
+     "log_offset": 485,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "120000000000000000000",
+     "accountBorrows": "1360003586914793232151",
+     "totalBorrows": "16368116958711754570058"
+    },
+    {
+     "block": 46897661,
+     "time": "2026-06-04T14:51:09Z",
+     "tx": "0x35b56c17a4c4cac81cd454cf3f536e484cd18eaa04d408ccf8d2842dce2e1d9f",
+     "log_offset": 16,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "100000000000000000000",
+     "accountBorrows": "1460004378627087416795",
+     "totalBorrows": "16468126487245027246611"
+    },
+    {
+     "block": 46897787,
+     "time": "2026-06-04T14:55:21Z",
+     "tx": "0x9c31500eb727f970edb5568a8079f18a1b137e7d193f48e308bdf4029a7d78ba",
+     "log_offset": 85,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "80000000000000000000",
+     "accountBorrows": "1540005673196541292522",
+     "totalBorrows": "16548141089347476420458"
+    },
+    {
+     "block": 46897929,
+     "time": "2026-06-04T15:00:05Z",
+     "tx": "0x12318ae39a2a92ac70531ca1e4a47acc234d30b755c60bf68b04d2172c4b6d98",
+     "log_offset": 252,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "50000000000000000000",
+     "accountBorrows": "1590007216207646457865",
+     "totalBorrows": "16598157669783454768532"
+    },
+    {
+     "block": 46897977,
+     "time": "2026-06-04T15:01:41Z",
+     "tx": "0xe3387be133626edd9a29c98c5e9ca13552147320beb3770127667cd9e33ec416",
+     "log_offset": 527,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "51000000000000000000",
+     "accountBorrows": "1641007755619933519168",
+     "totalBorrows": "16649163300732860796427"
+    },
+    {
+     "block": 46900451,
+     "time": "2026-06-04T16:24:09Z",
+     "tx": "0xddbcefeea30c4eaa459e64856b64f28b69084182abc390431febb294c622df2f",
+     "log_offset": 1131,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "2800000000000000000000",
+     "accountBorrows": "2800000000000000000000",
+     "totalBorrows": "17808407020744112511845"
+    },
+    {
+     "block": 46901730,
+     "time": "2026-06-04T17:06:47Z",
+     "tx": "0x6a45e4088dc86f9547a1d5f1bd0129b4ecc9dff008d06fb85cc03b6203955c24",
+     "log_offset": 18,
+     "borrower": "0xecceffaa44f6931f4ccf78c64ed3da20600f850c",
+     "borrowAmount": "1000000000000000000000",
+     "accountBorrows": "3800026328490507855188",
+     "totalBorrows": "18808574473770971684440"
+    },
+    {
+     "block": 48111368,
+     "time": "2026-07-02T17:08:03Z",
+     "tx": "0x658fd5563aa052662f26a3066bbb222cbdd26e4515479652703643bd045b8203",
+     "log_offset": 45,
+     "borrower": "0xc0111a3a646b644a5df250423fa5af8d563f7139",
+     "borrowAmount": "7396016003946823439",
+     "accountBorrows": "7396016003946823439",
+     "totalBorrows": "15198705995512911583490"
+    },
+    {
+     "block": 48111394,
+     "time": "2026-07-02T17:08:55Z",
+     "tx": "0x7167f8f1ab84dab5db02539e55c0b4c14918df65fc842c2943e6f08ecaf13780",
+     "log_offset": 598,
+     "borrower": "0xc0111a3a646b644a5df250423fa5af8d563f7139",
+     "borrowAmount": "1479203200789364691",
+     "accountBorrows": "8875221089725475988",
+     "totalBorrows": "15200189072339444268649"
+    },
+    {
+     "block": 48111456,
+     "time": "2026-07-02T17:10:59Z",
+     "tx": "0xa8e9b3a1a32d337a3a145c16563abe068f1696bd304d81d93f983a094d810eb3",
+     "log_offset": 198,
+     "borrower": "0xc0111a3a646b644a5df250423fa5af8d563f7139",
+     "borrowAmount": "1600000000000000000",
+     "accountBorrows": "10475226484222175126",
+     "totalBorrows": "15201798311249545568362"
+    },
+    {
+     "block": 49588186,
+     "time": "2026-08-05T21:35:19Z",
+     "tx": "0x265448985adf14348d00838bf6842fb6ecc91e1884653ae92c29935f15c74ba8",
+     "log_offset": 198,
+     "borrower": "0x3e248867a2a2ddd1d901f7d595c4d02c6519b32a",
+     "borrowAmount": "300000000000000000000",
+     "accountBorrows": "300000000000000000000",
+     "totalBorrows": "15717971957821807293500"
+    },
+    {
+     "block": 49636829,
+     "time": "2026-08-07T00:36:45Z",
+     "tx": "0x6547646dd93de28656dbfce4b4bd1e86d89d2a0426341495f17f927fe7993ff7",
+     "log_offset": 351,
+     "borrower": "0x60356f647b19f56f5dcaf249d0ff40de884b3df1",
+     "borrowAmount": "12200000000000000000",
+     "accountBorrows": "12200000000000000000",
+     "totalBorrows": "15737807684522475982128"
+    },
+    {
+     "block": 49666737,
+     "time": "2026-08-07T17:13:41Z",
+     "tx": "0x3d60fda852b2ac516479d625bcc93a33db72b1c22f498fbcd40f430f31a49684",
+     "log_offset": 975,
+     "borrower": "0x60356f647b19f56f5dcaf249d0ff40de884b3df1",
+     "borrowAmount": "9320000000000000000",
+     "accountBorrows": "21523662305248189083",
+     "totalBorrows": "15751852000561657735324"
+    },
+    {
+     "block": 50235000,
+     "time": "2026-08-20T20:55:47Z",
+     "tx": "0x631f758d823e17e29ac3c6c387430b4d51e32683dca74aed1f75fd111faab562",
+     "log_offset": 993,
+     "borrower": "0x3e248867a2a2ddd1d901f7d595c4d02c6519b32a",
+     "borrowAmount": "2000000000000000000",
+     "accountBorrows": "2330335113308257658",
+     "totalBorrows": "15520857803471104466619"
+    },
+    {
+     "block": 50626918,
+     "time": "2026-08-29T22:39:43Z",
+     "tx": "0x8bbfe9ba5ca575bebcde468cd48764832188ee53904fd8820068b20bf425059f",
+     "log_offset": 96,
+     "borrower": "0xbad5684392e7111c86842f01707286edb15e92a9",
+     "borrowAmount": "30000000000000000000",
+     "accountBorrows": "30000000000000000000",
+     "totalBorrows": "5590120401400391869464"
+    },
+    {
+     "block": 50657998,
+     "time": "2026-08-30T15:55:43Z",
+     "tx": "0x8b2b93af0b795f33b0fcedadfe853bd4bbb4b13562c285d596e7352d61e5e60b",
+     "log_offset": 122,
+     "borrower": "0xbad5684392e7111c86842f01707286edb15e92a9",
+     "borrowAmount": "450000000000000000000",
+     "accountBorrows": "480003299171466326398",
+     "totalBorrows": "6040735160257779511283"
+    },
+    {
+     "block": 50694720,
+     "time": "2026-08-31T12:19:47Z",
+     "tx": "0x68378c9eee69f841008f5dcf4d2a9075488399dfc13b7f2a9780f24e706d5e3a",
+     "log_offset": 649,
+     "borrower": "0x608a7d8f22c61849ffda80c19540d2fcf625d7ed",
+     "borrowAmount": "1807120000000000000000",
+     "accountBorrows": "1807120000000000000000",
+     "totalBorrows": "7848700793676929043185"
+    },
+    {
+     "block": 50789744,
+     "time": "2026-09-02T17:07:15Z",
+     "tx": "0xd0babd0fc2475b495d68e131856d3215a173be5c54b75a61d86a49447167b407",
+     "log_offset": 355,
+     "borrower": "0xbad5684392e7111c86842f01707286edb15e92a9",
+     "borrowAmount": "375970000000000000000",
+     "accountBorrows": "856263713053573162209",
+     "totalBorrows": "8228320213328428616373"
+    },
+    {
+     "block": 52102613,
+     "time": "2026-10-03T02:29:33Z",
+     "tx": "0x1d652a8862406a84f9cf00050ddc70ccf07d8b6ed9e84fcd35cadc71d35ffa57",
+     "log_offset": 941,
+     "borrower": "0x36b8b9040796ad81501ba4ce380691dc5efa9b96",
+     "borrowAmount": "35000000000000000000",
+     "accountBorrows": "35000000000000000000",
+     "totalBorrows": "5625283528491611721107"
+    },
+    {
+     "block": 52102613,
+     "time": "2026-10-03T02:29:33Z",
+     "tx": "0x1d652a8862406a84f9cf00050ddc70ccf07d8b6ed9e84fcd35cadc71d35ffa57",
+     "log_offset": 941,
+     "borrower": "0x36b8b9040796ad81501ba4ce380691dc5efa9b96",
+     "borrowAmount": "35000000000000000000",
+     "accountBorrows": "35000000000000000000",
+     "totalBorrows": "5625283528491611721107"
+    }
+   ]
+  },
+  "caWMXN": {
+   "address": "0x089b87048766D82b983359574077dba2CC026fC8",
+   "deploy_block": 46251609,
+   "total_events": 11,
+   "borrows": []
+  },
+  "caWCOP": {
+   "address": "0xc80102675B970811327F127DF1D3f3bbB70894ab",
+   "deploy_block": 46251789,
+   "total_events": 11,
+   "borrows": []
+  }
+ },
+ "feed_updaters": {
+  "wARS_feed_updater_safe": "0x35ede363d399f1a8aa60b5af0c32a23d4e638218 (Safe; updates every ~2h via relayer 0xacdc3eba833ec6edb048c109956440fcf0985314)",
+  "wCOP_feed_updater_safe": "same Safe"
+ },
+ "token_notes": {
+  "wARS": {
+   "address": "0x0DC4F92879B7670e5f4e4e6e3c801D229129D90D",
+   "impl": "0xba0030bba7112171a8a5bcc417ee1994051321b9",
+   "deploy_block": 32347496,
+   "type": "LatamStable (OZ5 UUPS ERC20)",
+   "roles_holder": "0x5CA3F8EEBa12D83408fc097c2dAd79212456F20F (EOA, also Capyfi Safe owner)"
+  },
+  "wBRL": {
+   "address": "0xD76f5Faf6888e24D9F04Bf92a0c8B921FE4390e0",
+   "impl": "0xfbab5dcb1647787ec8402a6509add256fa6c7f9d",
+   "deploy_block": 32735038,
+   "type": "LatamStable (OZ5 UUPS ERC20)",
+   "roles_holder": "0x5CA3F8EEBa12D83408fc097c2dAd79212456F20F (EOA)"
+  },
+  "wMXN": {
+   "address": "0x337E7456B420bD3481e7FA61fA9850343d610d34",
+   "impl": "0x425abec6165c83d30fcf81ec66635c6c7ee2bbf7",
+   "deploy_block": 32734948,
+   "type": "LatamStable (OZ5 UUPS ERC20)",
+   "roles_holder": "0x5CA3F8EEBa12D83408fc097c2dAd79212456F20F (EOA)"
+  },
+  "wCOP": {
+   "address": "0x8a1D45e102e886510e891d2Ec656a708991e2D76",
+   "impl": "0x6f6206fac28d9f60d221a63aae5fb5c3a9ea6652",
+   "deploy_block": 35880054,
+   "type": "LatamStable (OZ5 UUPS ERC20)",
+   "roles_holder": "0x5CA3F8EEBa12D83408fc097c2dAd79212456F20F (EOA)"
+  }
+ },
+ "totals_usd": {
+  "cash_oracle": 83118.07,
+  "cash_defillama": 81181.49,
+  "total_debt_oracle": 4591.01,
+  "total_reserves_oracle": 31.69
+ }
+}

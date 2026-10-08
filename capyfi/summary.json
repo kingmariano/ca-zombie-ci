@@ -1,0 +1,54 @@
+{
+  "finding": "C2-13",
+  "title": "CapyFi (Compound v2 fork): donation class closed; LAC/RPC collateral whitelist-gated; adjacent stBTC vault has permissionless yield-sniping leak",
+  "chains": ["ethereum", "base", "world-chain", "lachain"],
+  "headline_extractable_usd": 105.06,
+  "headline_confidence": "high",
+  "categories": {"E-U": 105.06, "H-O": 12229462.32, "P": 39204254.62, "S": 7016},
+  "latest_block": 26149795,
+  "block_numbers": {"ethereum": 26149795, "base": 52349895, "world_chain": 36074434, "lachain": 23472941},
+  "targets_checked": 51,
+  "live_targets": 51,
+  "closed_reasons": [
+    "Donation/exchange-rate inflation is net-negative in stock Compound v2 (fork PoC: -$85,868 loss on a $100k donation to caUSDC); deployed code is byte-for-byte upstream Compound except mint whitelist + COMP address",
+    "caLAC and caRPC (the only collateral with team-pushed oracle prices) have an ACTIVE whitelist; unprivileged mint reverts 'WhitelistAccess: not whitelisted' (live eth_call + fork test); no role-bypass exists",
+    "LAC oracle ($0.010015) and RPC oracle ($0.010598) are 1.4%/0.2% BELOW observable spot; feeds are owner/authorized-pushed (1-of-1 Safe updater) with bounds enabled, not DEX-fed -> no permissionless price manipulation",
+    "Ethereum loan book over-collateralized ($15.14M account liquidity vs $7.55M debt); only 2 shortfall accounts, max $2,015.80 backed by $0.46 collateral -> uncollectible dust (fork test)",
+    "Base: 32 borrowers, zero shortfalls; no whitelist needed; oracles canonical Chainlink or bounded team feeds reading 0.3-5.8% high",
+    "World Chain: 19 shortfall accounts totalling $0.0229; caLAC mint whitelist active with 0 members",
+    "LaChain: only CF>0 collateral is native LAC (CF 75%) whose oracle is a 4-of-7 multisig price 1.4% below spot; borrowable stable liquidity ~$44k and the only LAC venue is an $8.5k Uniswap v4 pool -> buying collateral to borrow is uneconomic"
+  ],
+  "poc": {
+    "tests_passed": 6,
+    "tests_total": 6,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37834120235",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37830202881"
+    ]
+  },
+  "key_facts": [
+    "Ethereum comptroller 0x0b9af1fd73885aD52680A1aeAa7A3f17AC702afA; impl 0x00dc4965916e03A734190fA382633657c71f867E = stock Compound v2 (Comptroller diff vs upstream = 2 lines; CToken diff = whitelist only)",
+    "13 Ethereum markets; real cash (ex-RPC nominal) $6.89M; borrows $7.55M; admin = Safe 0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24 (Safe v1.4.1, 4-of-7); no pending admin; pauseGuardian unset",
+    "Whitelist 0x302a893B1AC44fed29Cdf3e3a0a083d1Df3ce54E isActive=true; hasRole(WHITELISTED_ROLE) with exactly 3 whitelisted EOAs (0xBac110FF..., 0x9FB13A7d..., 0xB6E17577...); gates caLAC (0x0568F6cb...) and caRPC (0xF61159B4...) mint only; caLAC had no whitelist before block 23235190 and caRPC had an inactive one 23248204-23284148 (historical mint window)",
+    "LAC feed 0xF3585f9D9a671e630055Ce0c436AA214954ce6D4 (CapyfiAggregatorV3, owner=admin Safe, updater=1-of-1 Safe 0xBf41C0DC..., bounds $0.0085-$0.0115, ~3h cadence); RPC feed 0x5da9a0bc9342b801640366e61592EE50E0285437 (bounds $0.01-$0.02)",
+    "caLAC cash $1.175M: 98.33% supplied pre-whitelist by non-whitelisted EOA 0x677f699053987fA3F6C52506b4C9317bBF63aF47 (LAC via team ChainBridge+migration), which borrowed 588,292 USDT + 107,250 USDC = $695.5k at ~98% LTV; live liquidity +$17,138 (residual draw); -2.47% LAC oracle move makes it liquidatable; realizable liquidation profit bounded by the ~$8.5k LAC/USDC v4 pool",
+    "caRPC cash 4.09B RPC ($43.35M nominal) is 100% team-supplied (P): whitelisted EOAs funded by team RPC Safe 0xf0b223f5...; RPC token = Ripio Coin, 53.4% held by the same Safe; only live market is a $19.6k v4 pool",
+    "stBTC vault 0x6cbe98Eb2CdF0bc2E52A9b3ed014cd1740A4B30C: availableBalance 93.63831410 WBTC on-chain; offchainBalance 470.64873626 WBTC operator claim; totalManagedAssets 564.28705036 WBTC ($46.04M); stBTC supply 563.68798591; strategy EOA 0xbAD529586bBDb37D975184fa57805809bb205c70 holds 317.03928303 WBTC; instant-withdraw cap 65.42396158 WBTC ($5.34M)",
+    "YieldOracle 0x331e42aE8678A0c1BEB4cfC80FfF5A884d0877b2 .reportYield(strategy) is PERMISSIONLESS; apyBps=10 (0.1%); principal 470.001 WBTC -> accrual ~0.00129 WBTC/day (~$105.06/day)",
+    "Observed incumbent: EOA 0xa0F1C3aD83E07d97B5e7030e177718bE175275ea flash-borrows ~1,305 WBTC from Morpho 0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb hourly, deposits->reportYield->redeems->repays, capturing ~3,745 sats ($3)/cycle (tx 0xd3b720e8...9847 block 26149411)",
+    "Fork PoC: 30-day accrual -> atomic capture of 0.02472 WBTC ($2,017) via zero-fee Morpho flash loan; donation PoC loses $85,868; caLAC/caRPC mint reverts for unprivileged attacker; dust liquidation recovers $0.105 per $0.10 repaid (account seizable collateral <$0.50)",
+    "Base (8453): Unitroller 0x00dc4965916e03A734190fA382633657c71f867E, 7 markets, cash $83.1k, borrows $4,591, 32 borrowers zero shortfalls, E-U $0",
+    "World Chain (480): 7 markets, cash $44.8k, borrows $11.9k; E-U ~$0.02 dust; caWBRL admin still deployer EOA",
+    "LaChain (274): Unitroller 0x123Abe3A273FDBCeC7fc0EBedc05AaeF4eE63060; cLAC cash 71.8M LAC (~$718k at admin price $0.009995 vs spot $0.010158); cUXD insolvent on paper (~$5k); no whitelist"
+  ],
+  "caveats": [
+    "headline_extractable_usd is an ongoing DAILY FLOW (yield-sniping), not a stock: live pending yield at any moment is ~$1-3 (incumbent searcher keeps it drained hourly); PoC-proven single-tx capture after a 30-day report gap = $2,017",
+    "The stBTC vault is an adjacent CapyFi product (docs list it); the lending protocol itself is E-U $0 (plus a latent $17.1k residual draw on the under-margined caLAC whale position, §3.6 of the report)",
+    "If the operator raises strategyApyBps (max 50%), the sniping leak scales linearly with APY",
+    "The vault off-chain claim (470.65 WBTC) is operator-custodied and not verifiable on-chain (strategy EOA holds 317.04 WBTC; the rest sits at other operator addresses / was swapped)",
+    "caRPC 'cash' ($43.3M nominal) is 4.09B RPC tokens with only a ~$19.6k Uniswap v4 pool; a $100k sale nets ~$8.9k -> excluded from real cash",
+    "Ethereum admin can upgrade the Unitroller (P) -> supplier cash is H-O for users but also exposed to admin key compromise; not double-counted",
+    "Block numbers differ per chain; USD conversions use oracle prices at those blocks (WBTC $81,585.68, ETH $2,457.46)"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$105/day of ongoing stBTC yield via permissionless yield-sniping (zero-fee flash loan; currently harvested hourly by a third-party MEV searcher; PoC captured $2,017 after a 30-day report gap); the CapyFi lending protocol itself is E-U $0 (donation class closed in stock Compound, caLAC/caRPC mint whitelist-gated, oracles real/pushed-not-manipulable, no profitable liquidations) with a latent $17.1k residual draw on one under-margined caLAC position."
+}

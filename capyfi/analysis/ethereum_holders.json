@@ -1,0 +1,1660 @@
+{
+ "meta": {
+  "generated": "2026-10-08 (UTC)",
+  "chain": "ethereum (chainid 1)",
+  "rpc": "https://ethereum-rpc.publicnode.com",
+  "blocks": {
+   "whitelist_feeds_tokens_live": 26149522,
+   "markets_scan": 26149474,
+   "borrowers_live": 26149650,
+   "topic_decode_and_misc": 26149752,
+   "holders_live": 26149793
+  },
+  "etherscan": "V2 free tier; getLogs full-range paginated 1000/page; tokenholderlist = Pro-only (unavailable)",
+  "notes": [
+   "All reads are view calls at latest block, no tx sent.",
+   "RPC token Transfer logs truncated at 10000 records (Etherscan page cap); holder list is partial + live balanceOf checks.",
+   "USD conversions use the market's own oracle price (caLAC $0.010015, caRPC $0.01059766)."
+  ]
+ },
+ "whitelist": {
+  "proxy": "0x302a893B1AC44fed29Cdf3e3a0a083d1Df3ce54E",
+  "impl": "0x6b787016c8aea6e929fba643178e453eaad0f750",
+  "impl_name": "Whitelist (UUPS, AccessControlEnumerableUpgradeable)",
+  "isActive": true,
+  "WHITELISTED_ROLE": "0x8429d542926e6695b59ac6fbdcd9b37e8b1aeb757afab06ab60b1bb5878c3b49",
+  "roleAdmin_of_WHITELISTED_ROLE": "DEFAULT_ADMIN_ROLE (0x00..00)",
+  "members_whitelisted": [
+   "0xBac110FFEC95464Ab5F25d2DAe75C0aeA92F4C29",
+   "0x9FB13A7dF5D66698bC47E719578F923d853F0ee3",
+   "0xB6E1757763BdF04C22e25F13676C3488E4d3178b"
+  ],
+  "members_default_admin": [
+   "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24"
+  ],
+  "member_checks": {
+   "zero": {
+    "isWhitelisted": false,
+    "isAdmin": false
+   },
+   "dead": {
+    "isWhitelisted": false,
+    "isAdmin": false
+   },
+   "comptroller": {
+    "isWhitelisted": false,
+    "isAdmin": false
+   },
+   "ctLAC": {
+    "isWhitelisted": false,
+    "isAdmin": false
+   },
+   "ctRPC": {
+    "isWhitelisted": false,
+    "isAdmin": false
+   },
+   "wl_impl": {
+    "isWhitelisted": false,
+    "isAdmin": false
+   }
+  },
+  "role_grants_all_time": [
+   {
+    "block": 23233683,
+    "tx": "0x1103d8635f8c1ff94a7d355a1daa926c2bcf23b2b229caee0c0cd54d8687b739",
+    "role": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "account": "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24",
+    "sender": "0x6a138bd6d69feb3c2f5426549e60e644778ad04c"
+   },
+   {
+    "block": 23235190,
+    "tx": "0x9efe1a97b0341e39c44e7ae7262179e5e55383611292c3486f31e39fb4a57299",
+    "role": "0x8429d542926e6695b59ac6fbdcd9b37e8b1aeb757afab06ab60b1bb5878c3b49",
+    "account": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+    "sender": "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24"
+   },
+   {
+    "block": 23284155,
+    "tx": "0x0ae4561879ba4d744371f1fae4a59af8c1d8f6697a40cf6ce386759860664ada",
+    "role": "0x8429d542926e6695b59ac6fbdcd9b37e8b1aeb757afab06ab60b1bb5878c3b49",
+    "account": "0x9fb13a7df5d66698bc47e719578f923d853f0ee3",
+    "sender": "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24"
+   },
+   {
+    "block": 23347083,
+    "tx": "0x6457807ab59a23923f14124a6433aeca6f0836396aa57fcb37519cac95eea36e",
+    "role": "0x8429d542926e6695b59ac6fbdcd9b37e8b1aeb757afab06ab60b1bb5878c3b49",
+    "account": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+    "sender": "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24"
+   }
+  ],
+  "role_revoked_all_time": [],
+  "admin_identity": {
+   "address": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "type": "Gnosis Safe v1.4.1, threshold 4-of-7",
+   "owners": [
+    "0xa40D7d22873001f0140D76Afc0FF0779e4210eD0",
+    "0xf7104Ad39080C53E2C8C74a34C34E622D8aBE2c5",
+    "0x5CA3F8EEBa12D83408fc097c2dAd79212456F20F",
+    "0x23ceC92F92bde95e401f0a2b50b072A6069dFBd5",
+    "0x5b72e13f78FEB8f5b44392f2e32940D4f37FA313",
+    "0x9850b4F631F1cae37bb1C42C8004ffc2Cd31DcBe",
+    "0x00A74411DDBC50C04353543d5D3f4296936DA645"
+   ],
+   "note": "same address is comptroller admin, cToken admin, and owner of both CapyfiAggregatorV3 feeds"
+  },
+  "gate": {
+   "mint_modifier": "_checkWhitelist(msg.sender) on mintInternal only",
+   "skip_condition": "check skipped when whitelist == address(0) or whitelist.isActive() == false",
+   "other_user_functions_gated": "none (redeem/borrow/repay/transfer/seize/liquidate are NOT whitelist-gated)",
+   "self_registration_or_batchAdd": "none in implementation; only AccessControl grantRole (admin-only)",
+   "upgradeability": "UUPS upgradeTo/upgradeToAndCall admin-gated (DEFAULT_ADMIN_ROLE)"
+  },
+  "per_market_timeline": {
+   "caLAC": {
+    "whitelist_set_events": [
+     [
+      23235190,
+      "0x0",
+      "0x302a893B1AC44fed29Cdf3e3a0a083d1Df3ce54E",
+      "0x9efe1a97b0341e39c44e7ae7262179e5e55383611292c3486f31e39fb4a57299"
+     ]
+    ],
+    "meaning": "caLAC had NO whitelist (mint permissionless) until block 23235190; all later mints by whitelisted addresses only"
+   },
+   "caRPC": {
+    "whitelist_set_events": [
+     [
+      23247933,
+      "0x0",
+      "0x302a893B1AC44fed29Cdf3e3a0a083d1Df3ce54E",
+      "0x1b38d49cecf69c7034e07ead5df0e6188218b8c60b86d23cb15e3ce0a5a2165b"
+     ],
+     [
+      23248134,
+      "0x302a893B...",
+      "0x77d6f2ed3f8f2f41a4273cb0ec08d121b2b90151",
+      "0xcd0055c006ad84a3595ba82d1d005e3a17d59edd08a89b0f41c99e925d8e5998"
+     ],
+     [
+      23248204,
+      "0x77d6f2ed...",
+      "0x9a3b3e4a0fe860e5910230799db25a969cb5672c",
+      "0xff5a04ca21f8fb740eababa78aa5543244b863a4c5be65a12b8e5a683499a3d6"
+     ],
+     [
+      23284148,
+      "0x9a3b3e4a...",
+      "0x302a893B1AC44fed29Cdf3e3a0a083d1Df3ce54E",
+      "0x210832e0290a1e9e399fe920efc64b791f692b81cb200360133216d8abbd0604"
+     ]
+    ],
+    "temp_whitelist_state_now": {
+     "0x77d6f2ed3f8f2f41a4273cb0ec08d121b2b90151": {
+      "isActive": true,
+      "members": 0
+     },
+     "0x9a3b3e4a0fe860e5910230799db25a969cb5672c": {
+      "isActive": false,
+      "members": 0
+     }
+    },
+    "meaning": "caRPC switched through temp whitelists; between 23248204-23284148 the temp whitelist was inactive (check skipped). Admin minted 100k RPC at 23284148 in same tx before switching back (Mint log index < NewWhitelist log index). Since 23284148 all mints by whitelisted addresses."
+   }
+  }
+ },
+ "markets": {
+  "caLAC": {
+   "address": "0x0568F6cb5A0E84FACa107D02f81ddEB1803f3B50",
+   "cash_wei": "117332608315942560922722079",
+   "cash_human": "117332608.31594257",
+   "cash_usd_at_oracle": "1175086.0722841648",
+   "totalSupply_ctoken": "587690214030758984",
+   "collateralFactor": "600000000000000000",
+   "oracle_price_usd": 0.010015,
+   "whitelist": "0x302a893B1AC44fed29Cdf3e3a0a083d1Df3ce54E",
+   "mint_paused_now": false,
+   "borrow_paused_now": false,
+   "minters": {
+    "0xb6e1757763bdf04c22e25f13676c3488e4d3178b": "9453550082000000000000000000",
+    "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29": "6253733478161646206423635661",
+    "0x44076095e8983a235a16096b0725ac729aaece50": "129001100000000000000000000",
+    "0x677f699053987fa3f6c52506b4c9317bbf63af47": "117322032813640230000000000",
+    "0x0e3b966b0f7c468034de03f58b8001c1171f6c88": "45397153647714819340988338",
+    "0xc6b3ead10854bde9128225a8daecc7f0a6c0545f": "500000000000000000000000",
+    "0x260d0f8a3ab8d086d9e6f654036f707b9c24aee3": "60000000000000000000000",
+    "0xfa79a93363acb34268d82e309f2a35cb88600a92": "52556270383771643802071",
+    "0xb019e5666079dc89700f368887efa246ff75aa7d": "19383935758759734107491",
+    "0x44bdea079f71f981d4d0c6681a8b6bedd8e135fe": "4068469881336160162135"
+   },
+   "mint_events": [
+    {
+     "block": 22099234,
+     "tx": "0xf4b20d3cebf11f9d4acb20c248e1d602b75c9b5d7777c77f2eff0bdec9f2f293",
+     "minter": "0x260d0f8a3ab8d086d9e6f654036f707b9c24aee3",
+     "mintAmount": "50000000000000000000000",
+     "mintTokens": "250000000000000"
+    },
+    {
+     "block": 22099343,
+     "tx": "0x9d8602b61439f5642424a8670469fc8600323a1b3cb379d959014de344491bfc",
+     "minter": "0xfa79a93363acb34268d82e309f2a35cb88600a92",
+     "mintAmount": "52556270383771643802071",
+     "mintTokens": "262781351918858"
+    },
+    {
+     "block": 22224811,
+     "tx": "0xa8324609fa69b654852788d8b5a1737f1eb9c96816f9cde89f05b25115396791",
+     "minter": "0x677f699053987fa3f6c52506b4c9317bbf63af47",
+     "mintAmount": "50000000000000000000000000",
+     "mintTokens": "249998787183717701"
+    },
+    {
+     "block": 22339709,
+     "tx": "0x4ddf4cd7b9030b3515226815185b2d6653d65b224cd5235ed8ff68c35293581f",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "4999700000000000000000000",
+     "mintTokens": "24998378507213374"
+    },
+    {
+     "block": 22341307,
+     "tx": "0x24ca7fd251cdf2bad139356c6f1e4f13238d3c9fa2de86b85402aa9d1ea3b6fd",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "49999600000000000000000000",
+     "mintTokens": "249996784981305544"
+    },
+    {
+     "block": 22346029,
+     "tx": "0xc2af42f3b1e4c57d8e230647a6762773f5e8fc248a51080ddea539d92c67ba9b",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "99999600000000000000000000",
+     "mintTokens": "499995569867237232"
+    },
+    {
+     "block": 22370148,
+     "tx": "0xa011174d53e07481775c0440aa07cea25951c5db6eb31c6a05feaf1faef0da18",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "199999600000000000000000000",
+     "mintTokens": "999993139276388709"
+    },
+    {
+     "block": 22375440,
+     "tx": "0x4a4f89388d7d3227362d8264b9e7bc0582c764ca6b89e49c1e53bbf5ca37d9b9",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "106980600000000000000000000",
+     "mintTokens": "534900399952511920"
+    },
+    {
+     "block": 22376825,
+     "tx": "0xa27a586069529194e9cc1c5aebdd55e7f08ee3edf6dd854e6e206281099ea9c9",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "33999200000000000000000000",
+     "mintTokens": "169995173684554655"
+    },
+    {
+     "block": 22446043,
+     "tx": "0xe4de17398b791e6e48cc449b3bb4e1e13f807517784827e78915b2035be6f5e3",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "1000000000000000000000000000",
+     "mintTokens": "4999975693615792494"
+    },
+    {
+     "block": 22469399,
+     "tx": "0xa4b713e46d78253cbde58034684593761410581921e63f4ce6b1bea3c4899d58",
+     "minter": "0x44076095e8983a235a16096b0725ac729aaece50",
+     "mintAmount": "79001100000000000000000000",
+     "mintTokens": "395003579746143268"
+    },
+    {
+     "block": 22483098,
+     "tx": "0x5add3e5b3ffdbf97c4053981e7da679acfdf91a7dcf1009b84a3731a0485543c",
+     "minter": "0x44076095e8983a235a16096b0725ac729aaece50",
+     "mintAmount": "50000000000000000000000000",
+     "mintTokens": "249998784658337968"
+    },
+    {
+     "block": 22495957,
+     "tx": "0x9724f68c2aaedc91f4ddc3dc9625feff532925a87680b2b9b74175a9957b7c14",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "3992600440792937920911282",
+     "mintTokens": "19962905155906706"
+    },
+    {
+     "block": 22498019,
+     "tx": "0x49e3c5caf339416c4aab187231e8ba21159571d09f97140bc85590e2d319d6f1",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "1000000000000000000000000000",
+     "mintTokens": "4999975692996833545"
+    },
+    {
+     "block": 22520679,
+     "tx": "0x834d1eb5b44bf6d5f3ff83bd5e75b85084a017df057c7f5f5067836e551441d8",
+     "minter": "0x677f699053987fa3f6c52506b4c9317bbf63af47",
+     "mintAmount": "15993580000000000000000000",
+     "mintTokens": "79967511241418618"
+    },
+    {
+     "block": 22533671,
+     "tx": "0x2e37ae0e4ce678d8248d3027eb4fb32ffd1e5d035389a7d6858ea68059cd07d9",
+     "minter": "0xc6b3ead10854bde9128225a8daecc7f0a6c0545f",
+     "mintAmount": "500000000000000000000000",
+     "mintTokens": "2499987846371699"
+    },
+    {
+     "block": 22539358,
+     "tx": "0xeaefa866713d45654090c475ebf971bd66d17363bbdbb93d811abf33e42132cc",
+     "minter": "0x260d0f8a3ab8d086d9e6f654036f707b9c24aee3",
+     "mintAmount": "10000000000000000000000",
+     "mintTokens": "49999756927031"
+    },
+    {
+     "block": 22618144,
+     "tx": "0x7c688e2d46ce0299382a60457d1e81d2d340c69677727a8724e1f437fa8a36df",
+     "minter": "0x677f699053987fa3f6c52506b4c9317bbf63af47",
+     "mintAmount": "51328452813640230000000000",
+     "mintTokens": "256641016383620379"
+    },
+    {
+     "block": 22724951,
+     "tx": "0x560088b5e2daf548f41429bca59ed766df0ebe06319d7ae0439c2ef376f2bc9f",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "500000000000000000000000000",
+     "mintTokens": "2499987845701188240"
+    },
+    {
+     "block": 22777043,
+     "tx": "0x3f5e9031733a46b4891c5a23fea4778732f21583fbdcdea69365516227f9cf9c",
+     "minter": "0xb019e5666079dc89700f368887efa246ff75aa7d",
+     "mintAmount": "9691967879378405550707",
+     "mintTokens": "48459603794618"
+    },
+    {
+     "block": 22811065,
+     "tx": "0xcf7db00906421a15b9e02e2f160fd54d74c21164df0e78b621fa1952fac88452",
+     "minter": "0xb019e5666079dc89700f368887efa246ff75aa7d",
+     "mintAmount": "9691967879381328556784",
+     "mintTokens": "48459603792690"
+    },
+    {
+     "block": 22825234,
+     "tx": "0xb5f6447d52066eebcbcc60cf90ba575f5fa233cda7588edc601de4d28177b32d",
+     "minter": "0x0e3b966b0f7c468034de03f58b8001c1171f6c88",
+     "mintAmount": "3064056097760880345652966",
+     "mintTokens": "15320206003723343"
+    },
+    {
+     "block": 22825290,
+     "tx": "0xcaed27c411f4532896a992c6adf17f08ae7627cdd033eadc31c38f9307ac1ef3",
+     "minter": "0x0e3b966b0f7c468034de03f58b8001c1171f6c88",
+     "mintAmount": "37887587553122298541022125",
+     "mintTokens": "189437016744592878"
+    },
+    {
+     "block": 22826229,
+     "tx": "0x0348c513f9fbfb7abe76ac7c3a8ba2760ac09d662f333c40090367efdb35619d",
+     "minter": "0x0e3b966b0f7c468034de03f58b8001c1171f6c88",
+     "mintAmount": "4445509996831640454313247",
+     "mintTokens": "22227441916864128"
+    },
+    {
+     "block": 22891092,
+     "tx": "0xc8e8a00903dadca9d6523da9a486e9002aa1069fc95b6c0952d334bb32674934",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "500000000000000000000000000",
+     "mintTokens": "2499987845155020871"
+    },
+    {
+     "block": 23026813,
+     "tx": "0x7bb18bc61bc3617a60e50824b6b0d250a723138c4303993461c6e37acb142557",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "1000000000000000000000000000",
+     "mintTokens": "4999975689624741019"
+    },
+    {
+     "block": 23230081,
+     "tx": "0x376da1b36461eb7d77e127d77314d7d97f1bb7d30364acd9e6d0a134145955ca",
+     "minter": "0x44bdea079f71f981d4d0c6681a8b6bedd8e135fe",
+     "mintAmount": "400000000000000000000",
+     "mintTokens": "1999990275524"
+    },
+    {
+     "block": 23230151,
+     "tx": "0x9770cf670770fb53f5e033c276344d32de02ef32e0bfc7b19063a0c6fb4f4bd3",
+     "minter": "0x44bdea079f71f981d4d0c6681a8b6bedd8e135fe",
+     "mintAmount": "3668469881336160162135",
+     "mintTokens": "18342260221817"
+    },
+    {
+     "block": 23277670,
+     "tx": "0x6c67c23a542371086e722ccdfd72c95d41db1993403a88c26c5386f64db03e4b",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "1000000000000000000000000000",
+     "mintTokens": "4999975688620957856"
+    },
+    {
+     "block": 23291700,
+     "tx": "0x46af1870f945bc86a94e85a1177444daaa858cc1609a06f9ce8f8075c132371e",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "500000000000000000000000000",
+     "mintTokens": "2499987844287226919"
+    },
+    {
+     "block": 23298802,
+     "tx": "0x7f78e71f0084610b5a2a3dc04c9e2b1cc2a85669ea344a651204c85a1078ef0d",
+     "minter": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "mintAmount": "253762577720853268502724379",
+     "mintTokens": "1268806719268741368"
+    },
+    {
+     "block": 23377638,
+     "tx": "0x6d8d19143489cf63067ecdfe21de487e87b3c8464df4ecbea38f276db7ee6728",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "100000000000000000000",
+     "mintTokens": "499997568829"
+    },
+    {
+     "block": 23377657,
+     "tx": "0xde15c2b2ae74923a99804f93b83493fe500a8099afebd97720b6ef4e5603fdad",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "999999900000000000000000000",
+     "mintTokens": "4999975188293133340"
+    },
+    {
+     "block": 23390470,
+     "tx": "0xa58ead50e96f5d255038ca5462205da521ce84caedd31bb7e60a399367b27eba",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "750000000000000000000000000",
+     "mintTokens": "3749981766185242360"
+    },
+    {
+     "block": 23390507,
+     "tx": "0x336424389a01caa1c9d512a7dd8363c6c66a430bd743b2cff626eef2f07edf6a",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "875000000000000000000000000",
+     "mintTokens": "4374978727216002942"
+    },
+    {
+     "block": 23390670,
+     "tx": "0xc2d4da71ddbf9db77926a7dc6f0143ef02d6021bb4bf06f5139875c9e91f8dc4",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "1630000000000000000000000000",
+     "mintTokens": "8149960371841441390"
+    },
+    {
+     "block": 23390848,
+     "tx": "0x835c2c7e01e9676010518a8c943c0622ed03c8ae8bb8411e84da5c713428c98f",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "1879000000000000000000000000",
+     "mintTokens": "9394954318213641405"
+    },
+    {
+     "block": 23519749,
+     "tx": "0x2ca989923e179513584292b6b02aca11b54dabd934dc4d187f0c61f59d733856",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "500000000000000000000000000",
+     "mintTokens": "2499987843928524262"
+    },
+    {
+     "block": 23527504,
+     "tx": "0xa1be20d49a9beed853959d38e825ed6ff6788adbeaa89a18ad91689e51991866",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "118950082000000000000000000",
+     "mintTokens": "594747518066014627"
+    },
+    {
+     "block": 23784724,
+     "tx": "0xe9829b0115dbc63510ff96c53c784ce84f8c3dd2aeca466e1b22817aa082ca81",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "2000600000000000000000000000",
+     "mintTokens": "10002951359642217041"
+    },
+    {
+     "block": 24878809,
+     "tx": "0x14469e01aa00e865ecc4f9a8cd469d342f02254e12a463d4528df08b242a06b9",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "700000000000000000000000000",
+     "mintTokens": "3499982462909460596"
+    }
+   ],
+   "holders_from_logs_net": [
+    {
+     "addr": "0x677f699053987fa3f6c52506b4c9317bbf63af47",
+     "net": "577890834685431256"
+    },
+    {
+     "addr": "0x0e3b966b0f7c468034de03f58b8001c1171f6c88",
+     "net": "7221442596701875"
+    },
+    {
+     "addr": "0xc6b3ead10854bde9128225a8daecc7f0a6c0545f",
+     "net": "1205993980662458"
+    },
+    {
+     "addr": "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29",
+     "net": "740294741625647"
+    },
+    {
+     "addr": "0x260d0f8a3ab8d086d9e6f654036f707b9c24aee3",
+     "net": "299999756927031"
+    },
+    {
+     "addr": "0xfa79a93363acb34268d82e309f2a35cb88600a92",
+     "net": "262781351918858"
+    },
+    {
+     "addr": "0xb019e5666079dc89700f368887efa246ff75aa7d",
+     "net": "48459603792690"
+    },
+    {
+     "addr": "0x44bdea079f71f981d4d0c6681a8b6bedd8e135fe",
+     "net": "20342250497341"
+    },
+    {
+     "addr": "0x5123f2c922f6eaa4eb9e10b94c0dadc2509e5798",
+     "net": "65063199843"
+    },
+    {
+     "addr": "0x0c0435519ac226010638a61fd1d1bc652b5434de",
+     "net": "1403"
+    },
+    {
+     "addr": "0x36331e299247e5d0d3261e1d9852f6e0cffee95c",
+     "net": "192"
+    },
+    {
+     "addr": "0xa8ca67aca86c0e081bd17b039de3d8822f3d3414",
+     "net": "84"
+    },
+    {
+     "addr": "0xf0d539955974b248d763d60c3663ef272dfc6971",
+     "net": "81"
+    },
+    {
+     "addr": "0xa090fc409a9f25bf8e28257d42ef6904590c8984",
+     "net": "72"
+    },
+    {
+     "addr": "0x00000f91109c4d0007e90000d9facad5298a0cac",
+     "net": "60"
+    },
+    {
+     "addr": "0x00000000000762339537bd0fd01e44f661bd8f67",
+     "net": "34"
+    },
+    {
+     "addr": "0xb3445d5413abf63df1112a4a517de2602f249785",
+     "net": "24"
+    },
+    {
+     "addr": "0x043dfa52deb97ed9886c8a4d766442b6ee3756cb",
+     "net": "12"
+    },
+    {
+     "addr": "0x225f99aaaa914d0481ef3a0bedd8aabf1b9c4d1d",
+     "net": "12"
+    },
+    {
+     "addr": "0xe08d97e151473a848c3d9ca3f323cb720472d015",
+     "net": "11"
+    }
+   ],
+   "holder_live_balances": {
+    "0x677f699053987fa3f6c52506b4c9317bbf63af47": "577890834685431256",
+    "0xb6e1757763bdf04c22e25f13676c3488e4d3178b": "0",
+    "0x9fb13a7df5d66698bc47e719578f923d853f0ee3": "0",
+    "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24": "0",
+    "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29": "740294741625647"
+   }
+  },
+  "caRPC": {
+   "address": "0xF61159B4a0EE5b1615c9Afb3dA38111043344c32",
+   "cash_wei": "4090155904787103532336474708",
+   "cash_human": "4090155904.787103",
+   "cash_usd_at_oracle": "43346081.62592609",
+   "totalSupply_ctoken": "20450779515045170817",
+   "collateralFactor": "500000000000000000",
+   "oracle_price_usd": 0.01059766,
+   "whitelist": "0x302a893B1AC44fed29Cdf3e3a0a083d1Df3ce54E",
+   "mint_paused_now": false,
+   "borrow_paused_now": false,
+   "minters": {
+    "0xb6e1757763bdf04c22e25f13676c3488e4d3178b": "3090155892000000000000000000",
+    "0x9fb13a7df5d66698bc47e719578f923d853f0ee3": "1000000000000000000000000000",
+    "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24": "100000000000000000000"
+   },
+   "mint_events": [
+    {
+     "block": 23284148,
+     "tx": "0x210832e0290a1e9e399fe920efc64b791f692b81cb200360133216d8abbd0604",
+     "minter": "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24",
+     "mintAmount": "100000000000000000000",
+     "mintTokens": "500000000000"
+    },
+    {
+     "block": 23299835,
+     "tx": "0xdaa5c1bdff0ee01fbb40582dd0aa2c291365a247901fc35ca287290bf54c3cad",
+     "minter": "0x9fb13a7df5d66698bc47e719578f923d853f0ee3",
+     "mintAmount": "100000000000000000000",
+     "mintTokens": "500000000000"
+    },
+    {
+     "block": 23325630,
+     "tx": "0xb3bb67b1af5c20ebddef4462892408fb471c70ed633d880a927362daa1544d56",
+     "minter": "0x9fb13a7df5d66698bc47e719578f923d853f0ee3",
+     "mintAmount": "999999900000000000000000000",
+     "mintTokens": "4999999500000000000"
+    },
+    {
+     "block": 24872385,
+     "tx": "0xd1db632a2a7165019220f895a61eee9197a595215ab082b7a1b22ec429f7adcb",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "1090155892000000000000000000",
+     "mintTokens": "5450779303146199661"
+    },
+    {
+     "block": 24972160,
+     "tx": "0x19a082ee2f0376dee3fc2716d4c4bebc76aad844cc37983ab9015adb47cc17af",
+     "minter": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "mintAmount": "2000000000000000000000000000",
+     "mintTokens": "9999999711898971156"
+    }
+   ],
+   "holders_from_logs_net": [
+    {
+     "addr": "0xb6e1757763bdf04c22e25f13676c3488e4d3178b",
+     "net": "15450779015045170817"
+    },
+    {
+     "addr": "0x9fb13a7df5d66698bc47e719578f923d853f0ee3",
+     "net": "5000000000000000000"
+    },
+    {
+     "addr": "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24",
+     "net": "500000000000"
+    },
+    {
+     "addr": "0xf61159b4a0ee5b1615c9afb3da38111043344c32",
+     "net": "-20450779515045170817"
+    }
+   ],
+   "holder_live_balances": {
+    "0x677f699053987fa3f6c52506b4c9317bbf63af47": "0",
+    "0xb6e1757763bdf04c22e25f13676c3488e4d3178b": "15450779015045170817",
+    "0x9fb13a7df5d66698bc47e719578f923d853f0ee3": "5000000000000000000",
+    "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24": "500000000000",
+    "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29": "0"
+   }
+  }
+ },
+ "rpc_token": {
+  "address": "0xEd025A9Fe4b30bcd68460BCA42583090c2266468",
+  "name": "Ripio Coin",
+  "symbol": "RPC",
+  "decimals": 18,
+  "totalSupply": "9997912985000000000000000000",
+  "created_block": 13231201,
+  "created_by": "0x5f4f43baf7d65f2afb479ac756095b9fc89f3f9a",
+  "oracle_price_usd": 0.01059766,
+  "holders_live_balanceOf": {
+   "0xf0b223f5ff6702e273a50390e2435c1666c02cd7": "5342033534334975476437802062",
+   "0x98329910449586ba244d9edea97496f8ccf1c6be": "43886225452725271113031336",
+   "0x354cc8b3e1391b9c05faaceb867184970b8acd7d": "0",
+   "0x6d567152b405d1959437018659fc79cb4d9be34c": "0",
+   "0x163f7da0d6d77ec4c02886ec649f25950cbbbbc2": "81683571476122644410609231",
+   "0x58857661197cdc6a869c82b41b307412d066ef12": "599293171720000000",
+   "0x166b5fd1d06c65689f0867807962e0059598db9f": "3909036919911634327",
+   "0x784e4d53323c098f4333be368402675510a50644": "9000000000000000000000000",
+   "0xa1ab7a4aa264745912db261536291336f7e543ac": "0",
+   "0x13cc060bae260ee897a434400046a06853890885": "0",
+   "0xaad32471a05d79712c9fd02bcdd6438c75bfb2ec": "0",
+   "0x779ffa344f1b13545cadd0fee1fdaf84a549dcab": "0",
+   "0x9ea5aad2769a0dac6e839cda9bcccc338f77b819": "0",
+   "0xdfc9b1115b07c01c47ab6f84a59da85afd007297": "8155079445480687306",
+   "0xcaf1d9298a0a7ea465deedc2da60f1cc0e798cee": "0",
+   "0xb6e1757763bdf04c22e25f13676c3488e4d3178b": "18043948500000000000",
+   "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29": "0",
+   "0x9fb13a7df5d66698bc47e719578f923d853f0ee3": "0",
+   "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24": "0",
+   "0x6a138bd6d69feb3c2f5426549e60e644778ad04c": "0",
+   "0x01f82214691b4ac9a0a88c2d84690b231f2f0623": "512713146436093809344",
+   "0xEd025A9Fe4b30bcd68460BCA42583090c2266468": "18248072374040000000000"
+  },
+  "top_holder_note": "0xf0b223f5 (Gnosis Safe 3-of-7, owners overlap admin Safe) holds 5,342,033,534.33 RPC = 53.4% of supply",
+  "partial_holders_from_first_10000_transfers": {
+   "logs_analyzed": 10000,
+   "n_addrs": 5017,
+   "top": [
+    {
+     "addr": "0xf0b223f5ff6702e273a50390e2435c1666c02cd7",
+     "net": "9438638360000000000000000000"
+    },
+    {
+     "addr": "0x98329910449586ba244d9edea97496f8ccf1c6be",
+     "net": "170195879423588961113031336"
+    },
+    {
+     "addr": "0x354cc8b3e1391b9c05faaceb867184970b8acd7d",
+     "net": "100000000000000000000000000"
+    },
+    {
+     "addr": "0x6d567152b405d1959437018659fc79cb4d9be34c",
+     "net": "100000000000000000000000000"
+    },
+    {
+     "addr": "0x163f7da0d6d77ec4c02886ec649f25950cbbbbc2",
+     "net": "83178900630659552803789915"
+    },
+    {
+     "addr": "0x58857661197cdc6a869c82b41b307412d066ef12",
+     "net": "30881241963376561720000000"
+    },
+    {
+     "addr": "0x166b5fd1d06c65689f0867807962e0059598db9f",
+     "net": "18766240080431552791233867"
+    },
+    {
+     "addr": "0x784e4d53323c098f4333be368402675510a50644",
+     "net": "9000000000000000000000000"
+    },
+    {
+     "addr": "0xa1ab7a4aa264745912db261536291336f7e543ac",
+     "net": "8204590949944630000000000"
+    },
+    {
+     "addr": "0x13cc060bae260ee897a434400046a06853890885",
+     "net": "4749893495074452388398187"
+    },
+    {
+     "addr": "0xaad32471a05d79712c9fd02bcdd6438c75bfb2ec",
+     "net": "4485247880922834957663382"
+    },
+    {
+     "addr": "0x779ffa344f1b13545cadd0fee1fdaf84a549dcab",
+     "net": "2877572099426407843461232"
+    },
+    {
+     "addr": "0x9ea5aad2769a0dac6e839cda9bcccc338f77b819",
+     "net": "2000000000000000000000000"
+    },
+    {
+     "addr": "0xdfc9b1115b07c01c47ab6f84a59da85afd007297",
+     "net": "1830041201785313583924165"
+    },
+    {
+     "addr": "0xcaf1d9298a0a7ea465deedc2da60f1cc0e798cee",
+     "net": "1798978915466632922733249"
+    },
+    {
+     "addr": "0x89cc8b8f2652e9529c4ec8b47a90d93eed2b4bd8",
+     "net": "1790413663413515518138891"
+    },
+    {
+     "addr": "0x07af4e6d45fee49d19cba7eed5b01d50b685fe90",
+     "net": "1676824156054207735285156"
+    },
+    {
+     "addr": "0xd441819438cf70b79cd0d894e0b3dac32e04a591",
+     "net": "1496888929557000000000000"
+    },
+    {
+     "addr": "0xc6745475f4981915d4f771717e6f4c8b3796ae2d",
+     "net": "1253976864594243964969060"
+    },
+    {
+     "addr": "0x5c100078fb882957479c534436381ee40a8953fc",
+     "net": "1208259693108840119753893"
+    },
+    {
+     "addr": "0x01ff6318440f7d5553a82294d78262d5f5084eff",
+     "net": "1077740726237604309237218"
+    },
+    {
+     "addr": "0x89c5a745cf4e0a4dccedb576ace183d170641c85",
+     "net": "973315367954508750997027"
+    },
+    {
+     "addr": "0xe0e8cc0ae10f3f24343a630d6ead1a512ab73d8b",
+     "net": "872493982415706329529497"
+    },
+    {
+     "addr": "0x759ec1b3326de6fd4ba316f65a6f689c4e4c3092",
+     "net": "474241676034566780238604"
+    },
+    {
+     "addr": "0xe2e2a6179eec675a4f5f3ecac343aae11ffbbf6a",
+     "net": "413763802654848236495054"
+    }
+   ],
+   "note": "partial: only first 10000 Transfer logs (Etherscan pagination cap)"
+  },
+  "dex": {
+   "uniswap_v2_weth": {
+    "pair": "0x01f82214691b4ac9A0A88c2D84690B231F2F0623",
+    "token0": "WETH",
+    "token1": "RPC",
+    "reserves": [
+     "1969844441490857",
+     "512713146436093809344"
+    ],
+    "blockTimestampLast": 1788866819,
+    "implied_price_usd": "0.00939 (ETH $2445.08 / 512.713 RPC per 0.0019698 WETH)",
+    "depth_usd": "~9.7 (pool total), last trade ~2026-09-08"
+   },
+   "uniswap_v3_weth_3000": {
+    "pool": "0x166B5fD1D06c65689f0867807962e0059598DB9f",
+    "liquidity": "0"
+   },
+   "uniswap_v3_usdc_3000": {
+    "pool": "0xdfc9b1115b07C01C47AB6f84a59Da85AFD007297",
+    "liquidity": "0"
+   }
+  },
+  "dex_v4_live_crosscheck": {
+   "source": "c-13/analysis/lac_rpc_liquidity.md (sibling read, Uniswap v4 StateView)",
+   "pool_id": "0xd8442c1d563ba9b7dc1bba16430f6f999c0f8dd26914ca757d43ce88d416ebc7",
+   "pair": "RPC/USDC 0.3%, no hook",
+   "reserves": "923771.35 RPC / 9810.75 USDC (~$19,622)",
+   "spot_usd": 0.01062032,
+   "vol_24h_usd": 1448,
+   "vs_oracle": "oracle $0.01059766 is 0.21% BELOW spot",
+   "depth_note": "$100k RPC sale nets ~$8.9k; pool can absorb ~$9.8k total"
+  }
+ },
+ "lac_token": {
+  "address": "0x0Df3a853e4B604fC2ac0881E9Dc92db27fF7f51b",
+  "name": "LaCoin",
+  "symbol": "LAC",
+  "decimals": 18,
+  "totalSupply": "10000000000000000000000000000",
+  "created_block": 22075602,
+  "created_by": "0x5ca3f8eeba12d83408fc097c2dad79212456f20f (team, owner of admin Safe)",
+  "oracle_price_usd": 0.010015,
+  "legacy_token": {
+   "address": "0x7d12bcab2d53fae6d7e360acb71d9b55ecbd1ce3",
+   "name": "LaCoin",
+   "symbol": "LAC",
+   "totalSupply": "9794171727904938246229725833",
+   "admin_and_minter_roles": {
+    "DEFAULT_ADMIN_ROLE": [
+     "0x7Ac4810aBae4BB876812e40b11dCfdB8abc95b28"
+    ],
+    "MINTER_ROLE": [
+     "0x7Ac4810aBae4BB876812e40b11dCfdB8abc95b28",
+     "0x6C1CDD01F61de65d344Ae685c5Be5795d569B187"
+    ],
+    "PAUSER_ROLE": [
+     "0x7Ac4810aBae4BB876812e40b11dCfdB8abc95b28"
+    ]
+   },
+   "note": "0x7Ac4810a is a 171-byte Safe-like contract; bridge handler proxy 0x450cbb88 (ChainBridge) released legacy LAC"
+  },
+  "migration_contract": {
+   "address": "0x39b0899f4111f4d8c45bc2ce4c6fcf26dc4a1438",
+   "impl": "0x809a292a46877ef83f25b00eb668c57237da003c",
+   "name": "LaCoinMigration (UUPS)",
+   "received_full_10B_supply_from": "0x5ca3f8eeba12d83408fc097c2dad79212456f20f"
+  },
+  "holders_live_balanceOf": {
+   "0xb6e1757763bdf04c22e25f13676c3488e4d3178b": "8753551259940554308906366383",
+   "0x80c91e039e0ad3959161fffda5dad3f22fe2696d": "505455850100000000778846338",
+   "0x6c7bd6eb7024f8c06f47cd22fa6a2ef193039823": "391178940183303645923015227",
+   "0x39b0899f4111f4d8c45bc2ce4c6fcf26dc4a1438": "206786836764709946406445887",
+   "0x0568f6cb5a0e84faca107d02f81ddeb1803f3b50": "117332608315942560922722079",
+   "0x677f699053987fa3f6c52506b4c9317bbf63af47": "1000000000000004006412097",
+   "0xf3cf9d2c940d7560cf7d14c4566534ec8cdccfec": "6901000000000000000000000",
+   "0x5ca3f8eeba12d83408fc097c2dad79212456f20f": "0",
+   "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24": "0",
+   "0xf0b223f5ff6702e273a50390e2435c1666c02cd7": "0",
+   "0x7cca923387a3ce8d1f36354f8385aa9045798d51": "0",
+   "0x9fb13a7df5d66698bc47e719578f923d853f0ee3": "0",
+   "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29": "0",
+   "0x260d0f8a3ab8d086d9e6f654036f707b9c24aee3": "843394548687666440193399"
+  },
+  "top_holder_note": "0xb6e175 (team ops EOA, whitelisted) holds 8,753,551,259.94 LAC = 87.5% of supply",
+  "dex": "no Uniswap V2/V3/Sushi pairs; only live market is the v4 LAC/USDC pool above",
+  "dex_v4_live_crosscheck": {
+   "source": "c-13/analysis/lac_rpc_liquidity.md (sibling read, Uniswap v4 StateView)",
+   "pool_id": "0xa8f7d3148be7c6e66462f7d5da7843c94d974e0697e1768fb9c8b695f986a45b",
+   "pair": "LAC/USDC 1%, no hook",
+   "reserves": "419363.74 LAC / 4259.97 USDC (~$8,520)",
+   "spot_usd": 0.01015818,
+   "vol_24h_usd": 82,
+   "vs_oracle": "oracle $0.010015 is 1.41% BELOW spot",
+   "depth_note": "$100k LAC sale nets ~$4.1k; pool can absorb ~$4.3k total"
+  }
+ },
+ "feeds": {
+  "LAC": {
+   "address": "0xF3585f9D9a671e630055Ce0c436AA214954ce6D4",
+   "description": "LAC/USD Price Feed",
+   "decimals": 8,
+   "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingOwner": "0x0000000000000000000000000000000000000000",
+   "minAnswer": 850000,
+   "maxAnswer": 1150000,
+   "boundChecksEnabled": true,
+   "latestAnswer": 1001500,
+   "latestTimestamp": 1791479663,
+   "authorized_now": {
+    "0xbf41c0dc65ea4879d8a74e0a69737af7b3e0fa13": true,
+    "0x6a138bd6d69feb3c2f5426549e60e644778ad04c": false,
+    "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24": false
+   },
+   "updater_identity": "0xbf41c0dc65ea4879d8a74e0a69737af7b3e0fa13 = Gnosis Safe 1.4.1 (threshold 1), owner 0xaCDC3EBA833Ec6Edb048C109956440Fcf0985314 (EOA funded by 0x63789f76ba61e62a4b91c6e1349a733996d9810a)",
+   "updates": {
+    "updates": 2029,
+    "first": {
+     "block": 22989120,
+     "answer": "1100000",
+     "ts": 1753361399
+    },
+    "last": {
+     "block": 26149104,
+     "answer": "1001500",
+     "ts": 1791479663
+    },
+    "min_answer": "779300",
+    "max_answer": "1209700",
+    "distinct_answers": 343,
+    "updaters": {
+     "0x6a138bd6d69feb3c2f5426549e60e644778ad04c": 1,
+     "0xbf41c0dc65ea4879d8a74e0a69737af7b3e0fa13": 2028
+    }
+   },
+   "bounds_events": [
+    {
+     "block": 23097751,
+     "data": "0x00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000001e84800000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+     "block": 23383100,
+     "data": "0x000000000000000000000000000000000000000000000000000000000007a12000000000000000000000000000000000000000000000000000000000001e84800000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+     "block": 24742538,
+     "data": "0x00000000000000000000000000000000000000000000000000000000000cf8500000000000000000000000000000000000000000000000000000000000118c300000000000000000000000000000000000000000000000000000000000000001"
+    }
+   ],
+   "auth_added": [
+    {
+     "block": 22989136,
+     "addr": "0xbf41c0dc65ea4879d8a74e0a69737af7b3e0fa13",
+     "tx": "0x88c71f4009bafc04e60d8aa3b01b27160d016b8494d9adc63392053c253064e0"
+    }
+   ],
+   "auth_removed": [],
+   "ownership": [
+    {
+     "block": 22989120,
+     "prev": "0x0000000000000000000000000000000000000000",
+     "new": "0x6a138bd6d69feb3c2f5426549e60e644778ad04c"
+    },
+    {
+     "block": 23771795,
+     "prev": "0x6a138bd6d69feb3c2f5426549e60e644778ad04c",
+     "new": "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24"
+    }
+   ]
+  },
+  "RPC": {
+   "address": "0x5da9a0bc9342b801640366e61592EE50E0285437",
+   "description": "RPC/USD Price Feed",
+   "decimals": 8,
+   "owner": "0x6C15e4Bc44CC5674b1d7956D0e9596d2E509eD24",
+   "pendingOwner": "0x0000000000000000000000000000000000000000",
+   "minAnswer": 1000000,
+   "maxAnswer": 2000000,
+   "boundChecksEnabled": true,
+   "latestAnswer": 1059766,
+   "latestTimestamp": 1791479663,
+   "authorized_now": {
+    "0xbf41c0dc65ea4879d8a74e0a69737af7b3e0fa13": true,
+    "0x6a138bd6d69feb3c2f5426549e60e644778ad04c": false,
+    "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24": false
+   },
+   "updater_identity": "0xbf41c0dc65ea4879d8a74e0a69737af7b3e0fa13 = Gnosis Safe 1.4.1 (threshold 1), owner 0xaCDC3EBA833Ec6Edb048C109956440Fcf0985314 (EOA funded by 0x63789f76ba61e62a4b91c6e1349a733996d9810a)",
+   "updates": {
+    "updates": 2356,
+    "first": {
+     "block": 23899030,
+     "answer": "1013000",
+     "ts": 1764355355
+    },
+    "last": {
+     "block": 26149104,
+     "answer": "1059766",
+     "ts": 1791479663
+    },
+    "min_answer": "1000055",
+    "max_answer": "1338038",
+    "distinct_answers": 1695,
+    "updaters": {
+     "0x6a138bd6d69feb3c2f5426549e60e644778ad04c": 1,
+     "0xbf41c0dc65ea4879d8a74e0a69737af7b3e0fa13": 2355
+    }
+   },
+   "bounds_events": [
+    {
+     "block": 23919827,
+     "data": "0x00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000001e84800000000000000000000000000000000000000000000000000000000000000001"
+    }
+   ],
+   "auth_added": [
+    {
+     "block": 23919818,
+     "addr": "0xbf41c0dc65ea4879d8a74e0a69737af7b3e0fa13",
+     "tx": "0x9849627fb31151631a511d6365dc80fa9cbb4b4045b7b2d8c0056d5d5e2cde1c"
+    }
+   ],
+   "auth_removed": [],
+   "ownership": [
+    {
+     "block": 23899030,
+     "prev": "0x0000000000000000000000000000000000000000",
+     "new": "0x6a138bd6d69feb3c2f5426549e60e644778ad04c"
+    },
+    {
+     "block": 23929179,
+     "prev": "0x6a138bd6d69feb3c2f5426549e60e644778ad04c",
+     "new": "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24"
+    }
+   ]
+  }
+ },
+ "key_addresses": {
+  "0x6c15e4bc44cc5674b1d7956d0e9596d2e509ed24": {
+   "identity": "Gnosis Safe",
+   "owners_threshold": "4/7"
+  },
+  "0xbf41c0dc65ea4879d8a74e0a69737af7b3e0fa13": {
+   "identity": "Gnosis Safe",
+   "owners_threshold": "1/1"
+  },
+  "0xf0b223f5ff6702e273a50390e2435c1666c02cd7": {
+   "identity": "Gnosis Safe",
+   "owners_threshold": "3/7"
+  },
+  "0x6a138bd6d69feb3c2f5426549e60e644778ad04c": {
+   "identity": "EOA with EIP-7702 delegation to 0x63c0c19a282a1b52b07dd5a65b58948a07dae32b; main protocol deployer (comptroller, markets, feeds, whitelist); funded by 0x5ca3f8ee (team)"
+  },
+  "0x5ca3f8eeba12d83408fc097c2dad79212456f20f": {
+   "identity": "LAC token deployer; owner of admin Safe 0x6c15e4 and RPC holder Safe 0xf0b223f5"
+  },
+  "0x677f699053987fa3f6c52506b4c9317bbf63af47": {
+   "identity": "EOA, active since 2023 (Aave user), NOT whitelisted, main caLAC cash supplier",
+   "lac_acquisition": "3 legacy-LAC releases via ChainBridge (0x450cbb88) relayed by 0x037c742751727af58aafa321049cc6572cc8d26e and 0xac275029aff7471b02774ce95821d4045b27e66a (both funded by 0x63789f76ba61...), then 1:1 migrate() via 0x39b0899f, then mint into caLAC; all pre-whitelist",
+   "first_funding": "block 16137159 (2023) from 0x267be1c1d684... 0.00003 ETH"
+  },
+  "0xb6e1757763bdf04c22e25f13676c3488e4d3178b": {
+   "identity": "team ops EOA; whitelisted; holds 87.5% of LAC supply; caRPC cash supplier (75.5%); RPC funded directly by team Safe 0xf0b223f5"
+  },
+  "0x9fb13a7df5d66698bc47e719578f923d853f0ee3": {
+   "identity": "EOA; whitelisted; caRPC cash supplier (24.5%); RPC funded directly by team Safe 0xf0b223f5 at block 23289887"
+  },
+  "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29": {
+   "identity": "EOA; whitelisted; pre- and post-whitelist caLAC minter; funded by 0x4201a386 (ops funder)"
+  },
+  "0x7cca923387a3ce8d1f36354f8385aa9045798d51": {
+   "identity": "EOA; largest current borrower (caLAC + caWARS); shortfall $2,015.80; collateral dust; fresh 2025 wallet funded from 0x97d24df1ebcf"
+  },
+  "0x4201a38615ec7d1f57df6143e7a7ed82dd7a8ee4": {
+   "identity": "long-lived ops address; top minter in caUSDT/caUSDC/caWBTC/caETH_B; funded 0xb6e175 and 0xbac110"
+  }
+ },
+ "shortfall_now": [
+  {
+   "borrower": "0x1e1c8a2bda1ee312a373f9ced6d1037aa1e5918f",
+   "shortfall_wei": "1420547288357930842",
+   "shortfall_usd": "1.4205472883579306",
+   "borrows": {
+    "caLAC": "141841965886962640296"
+   },
+   "ctokens": {
+    "caETH_A": "83339156"
+   }
+  },
+  {
+   "borrower": "0x492d255234c83f2ddc5aa904d8a9db6743e9f046",
+   "shortfall_wei": "1903249777394858489",
+   "shortfall_usd": "1.9032497773948585",
+   "borrows": {
+    "caLAC": "429304460953395616033",
+    "caWARS": "1744552501926487480907"
+   },
+   "ctokens": {
+    "caUSDT": "19786750038"
+   }
+  },
+  {
+   "borrower": "0x54c32309b67e72bd44899e46ec630d14eb96125f",
+   "shortfall_wei": "199661113629932457",
+   "shortfall_usd": "0.19966111362993244",
+   "borrows": {
+    "caUSDT": "600152"
+   },
+   "ctokens": {
+    "caUSDC": "48438823547",
+    "caETH_B": "996119"
+   }
+  },
+  {
+   "borrower": "0x7cca923387a3ce8d1f36354f8385aa9045798d51",
+   "shortfall_wei": "2015800838967650078747",
+   "shortfall_usd": "2015.8008389676502",
+   "borrows": {
+    "caLAC": "201314704843057775205351",
+    "caWARS": "38496836902586257"
+   },
+   "ctokens": {
+    "caUSDC": "13801229",
+    "caETH_B": "904997"
+   }
+  },
+  {
+   "borrower": "0xced20c61a72d6ed57eca5afbcaff6f9a5d1e9e77",
+   "shortfall_wei": "48596542529742892049",
+   "shortfall_usd": "48.59654252974289",
+   "borrows": {
+    "caLAC": "4890167428760140876325"
+   },
+   "ctokens": {
+    "caETH_B": "942389"
+   }
+  }
+ ],
+ "borrowers_all_markets": {
+  "0x0e3b966b0f7c468034de03f58b8001c1171f6c88": {
+   "borrows": {
+    "caUSDT": "1785195918",
+    "caUSDC": "2567041361",
+    "caWBTC": "2190453",
+    "caETH_B": "409706299566984748"
+   },
+   "ctokens": {
+    "caLAC": "7221442596701875"
+   },
+   "account_liquidity": [
+    0,
+    1544426538302269873866,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0x0e6129ed7d9a59fe5ec374fe8e78cc12c15024f4": {
+   "borrows": {
+    "caUSDC": "1627527"
+   },
+   "ctokens": {
+    "caETH_B": "4902173"
+   },
+   "account_liquidity": [
+    0,
+    341518942028905593,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 1599
+  },
+  "0x1e1c8a2bda1ee312a373f9ced6d1037aa1e5918f": {
+   "borrows": {
+    "caLAC": "141841965886962640296"
+   },
+   "ctokens": {
+    "caETH_A": "83339156"
+   },
+   "account_liquidity": [
+    0,
+    0,
+    1420547288357930842
+   ],
+   "shortfall_wei": "1420547288357930842",
+   "code_size": 0
+  },
+  "0x22306c06f3c48a645f4101bb86f2e5e1ed4ff5bd": {
+   "borrows": {},
+   "ctokens": {
+    "caETH_B": "14706525"
+   },
+   "account_liquidity": [
+    0,
+    0,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 1558
+  },
+  "0x260d0f8a3ab8d086d9e6f654036f707b9c24aee3": {
+   "borrows": {
+    "caUSDT": "6664744578"
+   },
+   "ctokens": {
+    "caLAC": "299999756927031",
+    "caUSDT": "250000000000",
+    "caUSDC": "250000000000",
+    "caWBTC": "13843950",
+    "caETH_A": "147953750",
+    "caETH_B": "24956414832",
+    "caUXD": "125000000000",
+    "caWARS": "756156755639398"
+   },
+   "account_liquidity": [
+    0,
+    3768387165693991323423,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 23
+  },
+  "0x2dfa972aa8fcedf3079137227d7dbabec731648a": {
+   "borrows": {},
+   "ctokens": {},
+   "account_liquidity": [
+    0,
+    0,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 19456
+  },
+  "0x3a2cb18730682322122107c1dd85f022cce531c6": {
+   "borrows": {
+    "caWARS": "1065934753333886334398"
+   },
+   "ctokens": {
+    "caUSDT": "23958518801",
+    "caWBTC": "707932"
+   },
+   "account_liquidity": [
+    0,
+    3591026487242464899,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0x44076095e8983a235a16096b0725ac729aaece50": {
+   "borrows": {},
+   "ctokens": {},
+   "account_liquidity": [
+    0,
+    0,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0x44bdea079f71f981d4d0c6681a8b6bedd8e135fe": {
+   "borrows": {
+    "caETH_B": "4139763963324193"
+   },
+   "ctokens": {
+    "caLAC": "20342250497341"
+   },
+   "account_liquidity": [
+    0,
+    14325578368797311727,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 23
+  },
+  "0x492d255234c83f2ddc5aa904d8a9db6743e9f046": {
+   "borrows": {
+    "caLAC": "429304460953395616033",
+    "caWARS": "1744552501926487480907"
+   },
+   "ctokens": {
+    "caUSDT": "19786750038"
+   },
+   "account_liquidity": [
+    0,
+    0,
+    1903249777394858489
+   ],
+   "shortfall_wei": "1903249777394858489",
+   "code_size": 23
+  },
+  "0x54c32309b67e72bd44899e46ec630d14eb96125f": {
+   "borrows": {
+    "caUSDT": "600152"
+   },
+   "ctokens": {
+    "caUSDC": "48438823547",
+    "caETH_B": "996119"
+   },
+   "account_liquidity": [
+    0,
+    0,
+    199661113629932457
+   ],
+   "shortfall_wei": "199661113629932457",
+   "code_size": 0
+  },
+  "0x61059701a7c2963f3ec0ec78b27aaa8ab33a698c": {
+   "borrows": {
+    "caLAC": "189565216628697735720"
+   },
+   "ctokens": {
+    "caETH_B": "4928082"
+   },
+   "account_liquidity": [
+    0,
+    80728055233845731,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0x677f699053987fa3f6c52506b4c9317bbf63af47": {
+   "borrows": {
+    "caUSDT": "588292149721",
+    "caUSDC": "107249697375"
+   },
+   "ctokens": {
+    "caLAC": "577890834685431256",
+    "caETH_B": "43917407486"
+   },
+   "account_liquidity": [
+    0,
+    17048713000479441399918,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0x6fff5a040a851bd2a8703c99c45b02be2b9367cc": {
+   "borrows": {
+    "caUSDT": "92582",
+    "caUSDC": "4625",
+    "caWBTC": "2331"
+   },
+   "ctokens": {
+    "caETH_B": "5457259"
+   },
+   "account_liquidity": [
+    0,
+    198228049186263103,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 13890
+  },
+  "0x7607b3bd4b1a62b628e1aceb288272a0f8acf59d": {
+   "borrows": {
+    "caUSDT": "5339565"
+   },
+   "ctokens": {
+    "caETH_B": "19583550",
+    "caWARS": "5048816637716"
+   },
+   "account_liquidity": [
+    0,
+    2529418390090278995,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 23
+  },
+  "0x7995a9a3eadf18c820a78be5c37e8dff5baca2b8": {
+   "borrows": {
+    "caUSDT": "150505305",
+    "caWARS": "1766162329737372303521589"
+   },
+   "ctokens": {
+    "caETH_B": "3452087382"
+   },
+   "account_liquidity": [
+    0,
+    72168918235908578064,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 23
+  },
+  "0x7cca923387a3ce8d1f36354f8385aa9045798d51": {
+   "borrows": {
+    "caLAC": "201314704843057775205351",
+    "caWARS": "38496836902586257"
+   },
+   "ctokens": {
+    "caUSDC": "13801229",
+    "caETH_B": "904997"
+   },
+   "account_liquidity": [
+    0,
+    0,
+    2015800838967650078747
+   ],
+   "shortfall_wei": "2015800838967650078747",
+   "code_size": 23
+  },
+  "0x7dd80e702347e24974cd4ccee2b602b79b096656": {
+   "borrows": {
+    "caUSDT": "2733399",
+    "caUSDC": "136530",
+    "caWBTC": "17695"
+   },
+   "ctokens": {
+    "caETH_B": "59291661"
+   },
+   "account_liquidity": [
+    0,
+    6549085024244075784,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 5444
+  },
+  "0x894d9a62893b49f22c4b7c112ed0b76c2ddb80b1": {
+   "borrows": {
+    "caUSDC": "1023821"
+   },
+   "ctokens": {
+    "caETH_B": "14706481"
+   },
+   "account_liquidity": [
+    0,
+    4882761338069602603,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 2802
+  },
+  "0x8d95acf63dbdd07fa0cc5088c093b0d399cc3be3": {
+   "borrows": {
+    "caETH_B": "4792548247289",
+    "caWARS": "1039060220060821766172"
+   },
+   "ctokens": {
+    "caETH_A": "5000000",
+    "caETH_B": "2367578",
+    "caWARS": "1206445486303"
+   },
+   "account_liquidity": [
+    0,
+    254432184409799399,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 23
+  },
+  "0x9fb13a7df5d66698bc47e719578f923d853f0ee3": {
+   "borrows": {
+    "caUSDT": "1433576908502",
+    "caUSDC": "741449459699",
+    "caETH_B": "487845509957944097994"
+   },
+   "ctokens": {
+    "caRPC": "5000000000000000000"
+   },
+   "account_liquidity": [
+    0,
+    1932110586776382141550859,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0xa1acec96e6a6217aa8788bd1e853ddd8620c7ca6": {
+   "borrows": {},
+   "ctokens": {},
+   "account_liquidity": [
+    0,
+    0,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 23
+  },
+  "0xadcdba2c6d8b4ae7f75558a6022d72dbf73f3a7c": {
+   "borrows": {},
+   "ctokens": {},
+   "account_liquidity": [
+    0,
+    0,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 23
+  },
+  "0xae7ff6a282c3644ead9be2e87418d08e8760d9fe": {
+   "borrows": {
+    "caUSDC": "79780208",
+    "caWARS": "940366943985054838810848"
+   },
+   "ctokens": {
+    "caETH_B": "2001659891"
+   },
+   "account_liquidity": [
+    0,
+    104457606409429810795,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0xb099e1ec462e163bd4795758d2c25877fb3e541b": {
+   "borrows": {},
+   "ctokens": {},
+   "account_liquidity": [
+    0,
+    0,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 23
+  },
+  "0xb20ea2e898f31929862ca1e14e5d44a487de61fe": {
+   "borrows": {},
+   "ctokens": {},
+   "account_liquidity": [
+    0,
+    0,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0xb6e1757763bdf04c22e25f13676c3488e4d3178b": {
+   "borrows": {
+    "caUSDT": "12307051948",
+    "caWBTC": "120110312",
+    "caETH_B": "1261506895966347878067"
+   },
+   "ctokens": {
+    "caRPC": "15450779015045170817"
+   },
+   "account_liquidity": [
+    0,
+    13179716034465424538394493,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0xb9520993ec1d204d86ea1037c10b9fb1b903d010": {
+   "borrows": {},
+   "ctokens": {},
+   "account_liquidity": [
+    0,
+    0,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0xbac110ffec95464ab5f25d2dae75c0aea92f4c29": {
+   "borrows": {
+    "caUSDC": "6470348",
+    "caETH_B": "17439530203599485",
+    "caUXD": "3255488211176407760"
+   },
+   "ctokens": {
+    "caLAC": "740294741625647"
+   },
+   "account_liquidity": [
+    0,
+    837331256355436604277,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0xbc37de7a62a81d519db7ebf9ae59278ca021fcf6": {
+   "borrows": {
+    "caRPC": "116928151081298845158"
+   },
+   "ctokens": {
+    "caETH_B": "3732033"
+   },
+   "account_liquidity": [
+    0,
+    259699913134785085,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0xc3515723416ea4f249bb1c04fee39bc673708f7c": {
+   "borrows": {
+    "caETH_B": "267005383844013"
+   },
+   "ctokens": {
+    "caETH_B": "1995550"
+   },
+   "account_liquidity": [
+    0,
+    148608461492910313,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0xc6b3ead10854bde9128225a8daecc7f0a6c0545f": {
+   "borrows": {
+    "caUSDC": "1004813902"
+   },
+   "ctokens": {
+    "caLAC": "1205993980662458"
+   },
+   "account_liquidity": [
+    0,
+    444708176187886214892,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0xced20c61a72d6ed57eca5afbcaff6f9a5d1e9e77": {
+   "borrows": {
+    "caLAC": "4890167428760140876325"
+   },
+   "ctokens": {
+    "caETH_B": "942389"
+   },
+   "account_liquidity": [
+    0,
+    0,
+    48596542529742892049
+   ],
+   "shortfall_wei": "48596542529742892049",
+   "code_size": 0
+  },
+  "0xfa79a93363acb34268d82e309f2a35cb88600a92": {
+   "borrows": {
+    "caUSDT": "10995024",
+    "caUSDC": "11081341",
+    "caWBTC": "50432",
+    "caETH_A": "10094722325251364",
+    "caUXD": "11434318158696301340"
+   },
+   "ctokens": {
+    "caLAC": "262781351918858",
+    "caWARS": "480874209024387"
+   },
+   "account_liquidity": [
+    0,
+    216601923918765274133,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 0
+  },
+  "0xfac003734b5fc0a8f317cf0e7f861d05da8d79f1": {
+   "borrows": {
+    "caLAC": "7197698311073081209"
+   },
+   "ctokens": {
+    "caUSDC": "752669931"
+   },
+   "account_liquidity": [
+    0,
+    63664375190123203,
+    0
+   ],
+   "shortfall_wei": "0",
+   "code_size": 171
+  }
+ }
+}
