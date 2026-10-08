@@ -1,0 +1,39 @@
+{
+  "finding": "C2-16",
+  "title": "ApeSwap Lending (BSC) — Compound/Ola fork, all markets hard-paused; only dust liquidations remain",
+  "chains": ["bsc"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 225776.52, "P": 225941.64, "S": 165.12},
+  "latest_block": 126503091,
+  "block_numbers": {"bsc": 126489929},
+  "targets_checked": 10,
+  "live_targets": 10,
+  "closed_reasons": [
+    "mintGuardianPaused == true on all 10 markets (deprecation pause 2025-10-20) -> mint reverts 'paused'",
+    "borrowGuardianPaused == true on all 10 markets -> borrow reverts 'paused'",
+    "donation/exchange-rate inflation is unmonetizable: no victim can mint and the attacker cannot mint a share of its own donation",
+    "BANANA FixedPriceOracle overvalues BANANA ~10,000x vs real price, but activeCollateralUSDCap(oBANANA)=1 wei-USD blocks collateral activation",
+    "liquidation is the only live third-party-paying path; 87 shortfall accounts found, total seizeable collateral $14.68, total gross bonus $0.88 (dust)",
+    "ChainlinkPriceOracle feeds fresh (<=2 min) and match real prices; no flash manipulation",
+    "RainMaker claimComp pays the holder, not the caller; RainMaker holds only worthless BANANA"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 6, "ci_run_urls": []},
+  "key_facts": [
+    "cash across 10 markets: $225,941.64 (DefiLlama prices 2026-10-08); borrows $32,183.55; supplier claims $253,647.35; reserves $4,477.83",
+    "largest live liquidation fork-proven: borrower 0x0E546d42d7a3B94F2bB2E6Fef6F59Eb62E36b810, repay 1.5 BUSD -> seize 0.002258 BNB ($1.65), gross profit $0.15; BSC gas ~$0.07-0.1/tx -> net ~$0.05",
+    "all 1,194 current cToken holders scanned (GoldRush + CI log reconstruction): 87 with shortfall, all dust; max single gross $0.27",
+    "oBNBx Chainlink feed 0xc4429B539397a3166eF3ef132c29e34715a3ABb4 reverts -> 7 member accounts (0.19127 BNBx ~= $154.02) globally bricked; non-members can redeem $80.98; 0x..dEaD holds $11.10",
+    "admin = OlaLenCaptain 0x7638B5A0D94E1d55EfD5212Eaa820b3fd2399DA2; its admin = TimelockController 0x564bE05eDA09309d13a030f82e19844BA163C284; pausers/resumer/maintainers/security are Gnosis Safes",
+    "Ministry (0xAE933Da5860559080F47e594504CE5445D86f78a) admin is a plain EOA 0x7c1d6e7C7240f9218a71cf54C1908f1713093A32 with direct setOracleForAsset power -> key risk (P)",
+    "latent (fork-proven, admin-simulated): resume mint+borrow + lift oBANANA cap -> >$150k borrowed with ~$0.10 of BANANA collateral; full capacity ~$225.9k",
+    "Comptroller Unitroller 0xAD48B2C9DC6709a560018c678e918253a65DF86e impl 0xEaEe8D2EAb5BDE5AD05153dc375fa78fE5cA7d5e (ComptrollerV0_05); OToken impl 0x48fbf245Ae17A19d0b91a1b622518A205E2A98cc (CErc20DelegateV0_05)"
+  ],
+  "caveats": [
+    "Historical eth_getLogs coverage depends on the CI RPC archive window; vendored GoldRush holder snapshot used as fallback (cToken transfers are rare, state static)",
+    "USD values at DefiLlama 2026-10-08; BANANA real price from Coinbase/CMC/DEX pools (~$1.0e-10)",
+    "post-accrual interest (<1% since last touch per market) can change dust liquidation numbers slightly",
+    "fork tests run in CI only; no mainnet transactions"
+  ],
+  "one_liner": "external unprivileged attacker can extract ~$0 live: every market's mint+borrow is hard-paused, donation/exchange-rate inflation has no mint victim, oracles are fresh (except a dead BNBx feed that bricks $165), and the only live liquidation surface is $0.88 gross dust (<$0.15 largest single-shot, net ~$0 after gas); a privileged resume + oBANANA cap lift would re-open a ~$226k drain with ~$0.10 of BANANA"
+}
