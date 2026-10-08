@@ -1,0 +1,46 @@
+{
+  "finding": "C2-15",
+  "title": "WePiggy Compound-v2 fork: donation/rounding class closed; no empty market on any chain",
+  "chains": ["ethereum", "arbitrum", "optimism", "bsc"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 335711, "P": 408680, "S": 0},
+  "latest_block": 26150020,
+  "block_numbers": {"ethereum": 26150020, "arbitrum": 512965180, "optimism": 157942842, "bsc": 126492407},
+  "targets_checked": 39,
+  "live_targets": 39,
+  "closed_reasons": [
+    "Hundred-class donation/rounding primitive is present in PERC20/Comptroller code (getCashPrior=balanceOf; floor-rounded redeemUnderlying checked only by burned tokens) but requires an effectively empty market (totalSupply ~1-2 raw wei); no WePiggy market is empty on any chain (smallest CF>0 totalSupply = 2,807,075,675 raw, ETH pWBTC).",
+    "BSC deployment additionally has CF=0 on all 16 markets and borrowAllowed reverts 'borrow is paused' everywhere, disabling the borrow leg outright.",
+    "Fork-proven: full-cash drain redeemUnderlying(cash-1) and full-share redeem both fail (INSUFFICIENT_LIQUIDITY); exact-integer upper bound over (D,X) grids is negative for every config (ETH pWBTC best -$62,544; ARB/OP similar).",
+    "CF>0 markets use live Chainlink feeds; settable WePiggyPriceOracleV1.setPrice is onlyOwner (stale prices on CF=0, borrow-paused markets are inert).",
+    "Reserves ($408,680) are withdrawable only via _reduceReserves (onlyOwner = Gnosis Safe 4-of-7).",
+    "mintForMigrate (bypasses mintAllowed, caller-supplied mintTokens) is reachable only through migrator contracts whose entry points are PiggyBreeder onlyOwner."
+  ],
+  "poc": {
+    "tests_passed": 13,
+    "tests_total": 13,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37838446700",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37840221693"
+    ]
+  },
+  "key_facts": [
+    "WePiggy Ethereum comptroller 0x0C8c1ab017c3C0c8A48dD9F1DB2F59022D190f0b, block 26,150,020: 10 markets, cash $508,039 = claims $155,329 + reserves $358,549 - borrows $5,839.",
+    "pWBTC (largest market) holds $362,094 cash, of which $302,930 is reserves; supply claim only $59,759.",
+    "Arbitrum comptroller 0xaa87715E858b482931eB2f6f92E504571588390b, block 512,965,180: 6 markets, cash $83,147, reserves $43,109, claims $45,317.",
+    "Optimism comptroller 0x896aecb9E73Bf21C50855B7874729596d0e511CB, block 157,942,842: 7 markets, cash $72,001, reserves $7,013, claims $81,917.",
+    "BSC comptroller 0x8c925623708A94c7DE98a8e83e8200259fF716E0, block 126,492,407: 16 markets, cash $52,754, CF=0 and borrow paused on all; pMASK has a 46.8x donation remnant (inert).",
+    "Only unprivileged extraction found: liquidation dust = ETH $1.97 (16 shortfall accounts), ARB $0.40 (239), BSC $7.30 (268 debtors vs $23.7k collateral protected by dust debts), OP $0 (95 debtors, 0 underwater) - all below gas.",
+    "Owner of Ethereum comptroller/cTokens = Gnosis Safe 0x8114b3854d1e7b7f5f14896537c321e9062284ce (4-of-7); pauseGuardian 0x33f9694ec9751397c15cfb36d5aa61b63c2f725f.",
+    "minInterestAccumulated = 0 on all ETH markets; borrow/mint caps = 0 (unlimited) on ETH/ARB/OP except pUNI/pLINK/pOP mint caps; all CF>0 markets unpaused on ETH/ARB/OP."
+  ],
+  "caveats": [
+    "Secret hygiene: analysis/eth-markets.json initially embedded the keyed BlockPi RPC URL and was pushed to the public CI repo by runs 1-2; sanitized and re-pushed (run 3). Rotate the BlockPi API key as a precaution.",
+    "OP borrower logs for pLINK/pOP (~12% of OP borrows) not enumerated due to Blockscout rate limits; all 95 covered debtors healthy.",
+    "USD values use DefiLlama at query time; xLON has no price feed and is treated as ~$0 in liquidation value.",
+    "Fork tests use forge deal to simulate flash capital; flash availability was not a binding constraint for the negative result.",
+    "Latent: if any market's supply is ever burned to ~1-2 raw wei while cash remains (ETH/ARB/OP), or BSC re-enables CF/borrows while an inflated rate persists, the recipe re-arms."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from WePiggy (all four chains); the Hundred/Agave donation+rounding primitive is present in the code but no market is empty and BSC is borrow-paused with CF=0, leaving $335.7k holder-redeemable claims and $408.7k owner-only reserves."
+}

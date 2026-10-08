@@ -1,0 +1,619 @@
+run	Set up job	﻿2026-10-08T20:32:38.1977750Z Current runner version: '2.337.0'
+run	Set up job	2026-10-08T20:32:38.1998839Z ##[group]Runner Image Provisioner
+run	Set up job	2026-10-08T20:32:38.1999696Z Hosted Compute Agent
+run	Set up job	2026-10-08T20:32:38.2000564Z Version: 20261002.596
+run	Set up job	2026-10-08T20:32:38.2001338Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+run	Set up job	2026-10-08T20:32:38.2002116Z Build Date: 2026-10-02T22:28:27Z
+run	Set up job	2026-10-08T20:32:38.2002902Z Worker ID: {9f01fe2e-1851-4e4b-9285-62ce8a0fdb45}
+run	Set up job	2026-10-08T20:32:38.2003668Z Region: centralus
+run	Set up job	2026-10-08T20:32:38.2004251Z Cloud: Azure
+run	Set up job	2026-10-08T20:32:38.2004869Z ##[endgroup]
+run	Set up job	2026-10-08T20:32:38.2006086Z ##[group]Operating System
+run	Set up job	2026-10-08T20:32:38.2006716Z Ubuntu
+run	Set up job	2026-10-08T20:32:38.2007304Z 24.04.5
+run	Set up job	2026-10-08T20:32:38.2007868Z LTS
+run	Set up job	2026-10-08T20:32:38.2008460Z ##[endgroup]
+run	Set up job	2026-10-08T20:32:38.2009073Z ##[group]Runner Image
+run	Set up job	2026-10-08T20:32:38.2009740Z Image: ubuntu-24.04
+run	Set up job	2026-10-08T20:32:38.2010568Z Version: 20261004.327.1
+run	Set up job	2026-10-08T20:32:38.2011560Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+run	Set up job	2026-10-08T20:32:38.2013007Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+run	Set up job	2026-10-08T20:32:38.2013869Z ##[endgroup]
+run	Set up job	2026-10-08T20:32:38.2015056Z ##[group]GITHUB_TOKEN Permissions
+run	Set up job	2026-10-08T20:32:38.2016839Z Contents: read
+run	Set up job	2026-10-08T20:32:38.2017490Z Metadata: read
+run	Set up job	2026-10-08T20:32:38.2018105Z Packages: read
+run	Set up job	2026-10-08T20:32:38.2018716Z ##[endgroup]
+run	Set up job	2026-10-08T20:32:38.2020591Z Secret source: Actions
+run	Set up job	2026-10-08T20:32:38.2021606Z Cache mode: write
+run	Set up job	2026-10-08T20:32:38.2022296Z Prepare workflow directory
+run	Set up job	2026-10-08T20:32:38.2424258Z Prepare all required actions
+run	Set up job	2026-10-08T20:32:38.2460247Z Getting action download info
+run	Set up job	2026-10-08T20:32:38.5094576Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+run	Set up job	2026-10-08T20:32:38.5812534Z Download action repository 'foundry-rs/foundry-toolchain@v1' (SHA:908c540300062bd5a7e473851cdb4282204cee09)
+run	Set up job	2026-10-08T20:32:39.1176846Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+run	Set up job	2026-10-08T20:32:39.3103036Z Complete job name: run
+run	Run actions/checkout@v4	﻿2026-10-08T20:32:39.3624939Z ##[group]Run actions/checkout@v4
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3625641Z with:
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3626114Z   repository: kingmariano/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3628997Z   token: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3629444Z   ssh-strict: true
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3629901Z   ssh-user: git
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3630502Z   persist-credentials: true
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3630990Z   clean: true
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3631459Z   sparse-checkout-cone-mode: true
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3631972Z   fetch-depth: 1
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3632427Z   fetch-tags: false
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3632888Z   show-progress: true
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3633358Z   lfs: false
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3633814Z   submodules: false
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3634284Z   set-safe-directory: true
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3634792Z   allow-unsafe-pr-checkout: false
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3635394Z env:
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3635919Z   RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3636677Z   BLOCKPI_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3637400Z   NODEREAL_ETH_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3638004Z   ETHERSCANV2_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3638608Z   GOLD_RUSH_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3639149Z   ALCHEMY_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3639818Z   ANKR_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3697908Z   DRPC_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3698537Z   INFURA_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3699150Z   DUNE_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3699748Z   ARB_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3700519Z   BSC_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3701135Z   BASE_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3701702Z   OP_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3702252Z   POLYGON_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3702911Z   FANTOM_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3703468Z   CRONOS_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3704028Z   MOONRIVER_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3704582Z   GNOSIS_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3705115Z   SONIC_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3705574Z   FOUNDRY_FUZZ_RUNS: 256
+run	Run actions/checkout@v4	2026-10-08T20:32:39.3706286Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4465467Z Syncing repository: kingmariano/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4467793Z ##[group]Getting Git version info
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4468967Z Working directory is '/home/runner/work/ca-zombie-ci/ca-zombie-ci'
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4470703Z [command]/usr/bin/git version
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4534802Z git version 2.55.0
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4541824Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4552496Z Temporarily overriding HOME='/home/runner/work/_temp/de34f5eb-551b-4cd4-9093-0b8d367ad70e' before making global git config changes
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4554600Z Adding repository directory to the temporary git global config as a safe directory
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4557761Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ca-zombie-ci/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4606554Z Deleting the contents of '/home/runner/work/ca-zombie-ci/ca-zombie-ci'
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4609378Z ##[group]Initializing the repository
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4612442Z [command]/usr/bin/git init /home/runner/work/ca-zombie-ci/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4717030Z hint: Using 'master' as the name for the initial branch. This default branch name
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4718645Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4720106Z hint: to use in all of your new repositories, which will suppress this warning,
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4721414Z hint: call:
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4722193Z hint:
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4723529Z hint: 	git config --global init.defaultBranch <name>
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4724630Z hint:
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4725596Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4726935Z hint: 'development'. The just-created branch can be renamed via this command:
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4728056Z hint:
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4728749Z hint: 	git branch -m <name>
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4729518Z hint:
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4730891Z hint: Disable this message with "git config set advice.defaultBranchName false"
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4732434Z Initialized empty Git repository in /home/runner/work/ca-zombie-ci/ca-zombie-ci/.git/
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4734035Z [command]/usr/bin/git remote add origin https://github.com/kingmariano/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4781809Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4783198Z ##[group]Disabling automatic garbage collection
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4788348Z [command]/usr/bin/git config --local gc.auto 0
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4816288Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4817636Z ##[group]Setting up auth
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4822243Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+run	Run actions/checkout@v4	2026-10-08T20:32:39.4857240Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+run	Run actions/checkout@v4	2026-10-08T20:32:39.5189089Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+run	Run actions/checkout@v4	2026-10-08T20:32:39.5223084Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+run	Run actions/checkout@v4	2026-10-08T20:32:39.5426137Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+run	Run actions/checkout@v4	2026-10-08T20:32:39.5457642Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+run	Run actions/checkout@v4	2026-10-08T20:32:39.5658737Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+run	Run actions/checkout@v4	2026-10-08T20:32:39.5696609Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-08T20:32:39.5697398Z ##[group]Fetching the repository
+run	Run actions/checkout@v4	2026-10-08T20:32:39.5703542Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +72a7c13f4daa8b09e995c6c7bd729005e99b60f3:refs/remotes/origin/wepiggy
+run	Run actions/checkout@v4	2026-10-08T20:32:40.1718085Z From https://github.com/kingmariano/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-08T20:32:40.1720808Z  * [new ref]         72a7c13f4daa8b09e995c6c7bd729005e99b60f3 -> origin/wepiggy
+run	Run actions/checkout@v4	2026-10-08T20:32:40.1725660Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-08T20:32:40.1727698Z ##[group]Determining the checkout info
+run	Run actions/checkout@v4	2026-10-08T20:32:40.1729890Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-08T20:32:40.1731910Z [command]/usr/bin/git sparse-checkout disable
+run	Run actions/checkout@v4	2026-10-08T20:32:40.1823410Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+run	Run actions/checkout@v4	2026-10-08T20:32:40.1881236Z ##[group]Checking out the ref
+run	Run actions/checkout@v4	2026-10-08T20:32:40.1883560Z [command]/usr/bin/git checkout --progress --force -B wepiggy refs/remotes/origin/wepiggy
+run	Run actions/checkout@v4	2026-10-08T20:32:40.2327129Z Switched to a new branch 'wepiggy'
+run	Run actions/checkout@v4	2026-10-08T20:32:40.2339202Z branch 'wepiggy' set up to track 'origin/wepiggy'.
+run	Run actions/checkout@v4	2026-10-08T20:32:40.2344733Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-08T20:32:40.2391714Z [command]/usr/bin/git log -1 --format=%H
+run	Run actions/checkout@v4	2026-10-08T20:32:40.2419426Z 72a7c13f4daa8b09e995c6c7bd729005e99b60f3
+run	Run foundry-rs/foundry-toolchain@v1	﻿2026-10-08T20:32:40.2756053Z ##[group]Run foundry-rs/foundry-toolchain@v1
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2757321Z with:
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2758232Z   version: stable
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2759205Z   network: ethereum
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2760173Z   cache: true
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2761494Z   cache-key: run-72a7c13f4daa8b09e995c6c7bd729005e99b60f3
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2762870Z   cache-restore-keys: run-
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2763912Z env:
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2765138Z   RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2766805Z   BLOCKPI_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2768435Z   NODEREAL_ETH_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2769767Z   ETHERSCANV2_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2771205Z   GOLD_RUSH_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2772373Z   ALCHEMY_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2773848Z   ANKR_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2775088Z   DRPC_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2776259Z   INFURA_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2777416Z   DUNE_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2778493Z   ARB_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2779596Z   BSC_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2780876Z   BASE_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2782007Z   OP_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2783205Z   POLYGON_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2784394Z   FANTOM_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2785594Z   CRONOS_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2786814Z   MOONRIVER_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2788104Z   GNOSIS_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2789253Z   SONIC_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2790219Z   FOUNDRY_FUZZ_RUNS: 256
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.2791327Z ##[endgroup]
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.3682031Z Installing Foundry (version: stable)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.3685393Z Downloading foundryup installer from foundry-rs/foundryup@a27902ef04dcb43061fabf343365cb5afc95fc48...
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:40.4506657Z Running foundryup installer...
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:41.1910685Z Running: foundryup 
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.3111688Z Added /home/runner/.foundry/bin to PATH
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.3131438Z Primary key: linux-foundry-chain-fork-run-72a7c13f4daa8b09e995c6c7bd729005e99b60f3
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.3141168Z Restore keys: linux-foundry-chain-fork-run-
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4341425Z Cache not found
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4341858Z Running: forge --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4376468Z forge Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4377074Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4377676Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4378201Z Build Profile: dist
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4381890Z Running: cast --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4452720Z cast Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4453215Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4453723Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4454156Z Build Profile: dist
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4459306Z Running: anvil --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4496988Z anvil Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4497950Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4498672Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4499204Z Build Profile: dist
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4513981Z Running: chisel --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4541289Z chisel Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4541841Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4542406Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:32:43.4542995Z Build Profile: dist
+run	env info	﻿2026-10-08T20:32:43.4671032Z ##[group]Run df -h /
+run	env info	2026-10-08T20:32:43.4671355Z [36;1mdf -h /[0m
+run	env info	2026-10-08T20:32:43.4671564Z [36;1mnproc[0m
+run	env info	2026-10-08T20:32:43.4671775Z [36;1mforge --version[0m
+run	env info	2026-10-08T20:32:43.4672029Z [36;1mpython3 --version[0m
+run	env info	2026-10-08T20:32:43.4672283Z [36;1mnode --version || true[0m
+run	env info	2026-10-08T20:32:43.4930514Z shell: /usr/bin/bash -e {0}
+run	env info	2026-10-08T20:32:43.4930774Z env:
+run	env info	2026-10-08T20:32:43.4931264Z   RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4931691Z   BLOCKPI_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4932040Z   NODEREAL_ETH_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4932325Z   ETHERSCANV2_API_KEY: ***
+run	env info	2026-10-08T20:32:43.4932590Z   GOLD_RUSH_API_KEY: ***
+run	env info	2026-10-08T20:32:43.4932843Z   ALCHEMY_API_KEY: ***
+run	env info	2026-10-08T20:32:43.4933152Z   ANKR_API_KEY: ***
+run	env info	2026-10-08T20:32:43.4933436Z   DRPC_API_KEY: ***
+run	env info	2026-10-08T20:32:43.4933682Z   INFURA_API_KEY: ***
+run	env info	2026-10-08T20:32:43.4933943Z   DUNE_API_KEY: ***
+run	env info	2026-10-08T20:32:43.4934196Z   ARB_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4934514Z   BSC_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4934795Z   BASE_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4935072Z   OP_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4935341Z   POLYGON_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4935593Z   FANTOM_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4935856Z   CRONOS_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4936125Z   MOONRIVER_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4936386Z   GNOSIS_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4936628Z   SONIC_RPC_URL: ***
+run	env info	2026-10-08T20:32:43.4936831Z   FOUNDRY_FUZZ_RUNS: 256
+run	env info	2026-10-08T20:32:43.4937037Z ##[endgroup]
+run	env info	2026-10-08T20:32:43.5102293Z Filesystem      Size  Used Avail Use% Mounted on
+run	env info	2026-10-08T20:32:43.5102761Z /dev/root       145G   59G   86G  41% /
+run	env info	2026-10-08T20:32:43.5116790Z 4
+run	env info	2026-10-08T20:32:43.5157196Z forge Version: 1.8.5
+run	env info	2026-10-08T20:32:43.5157576Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	env info	2026-10-08T20:32:43.5157917Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	env info	2026-10-08T20:32:43.5158194Z Build Profile: dist
+run	env info	2026-10-08T20:32:43.5171470Z Python 3.12.3
+run	env info	2026-10-08T20:32:43.5828562Z v22.23.3
+run	select ETH fork RPC	﻿2026-10-08T20:32:43.5881110Z ##[group]Run pick() {
+run	select ETH fork RPC	2026-10-08T20:32:43.5881374Z [36;1mpick() {[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5881578Z [36;1m  for u in "$@"; do[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5881821Z [36;1m    [ -z "$u" ] && continue[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5882143Z [36;1m    r=$(curl -s -m 12 -X POST -H 'Content-Type: application/json' \[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5882563Z [36;1m          --data '{"jsonrpc":"2.0","id":1,"method":"eth_blockNumber","params":[]}' "$u" 2>/dev/null)[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5882949Z [36;1m    case "$r" in *result*) echo "$u"; return 0;; esac[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5883212Z [36;1m  done[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5883414Z [36;1m  echo ""; return 1[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5883622Z [36;1m}[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5884033Z [36;1mPICK=$(pick "https://ethereum-rpc.publicnode.com" "https://eth.drpc.org" "https://1rpc.io/eth" "$RPC_URL" || true)[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5884467Z [36;1mif [ -z "$PICK" ]; then[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5884767Z [36;1m  echo "WARNING: no working ETH RPC found; FORK_RPC_URL left unset"[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5885093Z [36;1melse[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5885311Z [36;1m  echo "ETH fork RPC selected"[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5885582Z [36;1m  echo "FORK_RPC_URL=$PICK" >> "$GITHUB_ENV"[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5885829Z [36;1mfi[0m
+run	select ETH fork RPC	2026-10-08T20:32:43.5946732Z shell: /usr/bin/bash -e {0}
+run	select ETH fork RPC	2026-10-08T20:32:43.5946993Z env:
+run	select ETH fork RPC	2026-10-08T20:32:43.5947314Z   RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5947697Z   BLOCKPI_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5948039Z   NODEREAL_ETH_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5948335Z   ETHERSCANV2_API_KEY: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5948613Z   GOLD_RUSH_API_KEY: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5948867Z   ALCHEMY_API_KEY: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5949181Z   ANKR_API_KEY: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5949446Z   DRPC_API_KEY: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5949842Z   INFURA_API_KEY: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5950139Z   DUNE_API_KEY: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5950533Z   ARB_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5950784Z   BSC_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5951024Z   BASE_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5951281Z   OP_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5951545Z   POLYGON_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5952108Z   FANTOM_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5952366Z   CRONOS_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5952624Z   MOONRIVER_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5952884Z   GNOSIS_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5953127Z   SONIC_RPC_URL: ***
+run	select ETH fork RPC	2026-10-08T20:32:43.5953333Z   FOUNDRY_FUZZ_RUNS: 256
+run	select ETH fork RPC	2026-10-08T20:32:43.5953538Z ##[endgroup]
+run	select ETH fork RPC	2026-10-08T20:32:43.7548805Z ETH fork RPC selected
+run	foundry tests	﻿2026-10-08T20:32:43.8406038Z ##[group]Run forge test -vvv
+run	foundry tests	2026-10-08T20:32:43.8406331Z [36;1mforge test -vvv[0m
+run	foundry tests	2026-10-08T20:32:43.8471446Z shell: /usr/bin/bash -e {0}
+run	foundry tests	2026-10-08T20:32:43.8471695Z env:
+run	foundry tests	2026-10-08T20:32:43.8472004Z   RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8472417Z   BLOCKPI_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8472772Z   NODEREAL_ETH_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8473056Z   ETHERSCANV2_API_KEY: ***
+run	foundry tests	2026-10-08T20:32:43.8473324Z   GOLD_RUSH_API_KEY: ***
+run	foundry tests	2026-10-08T20:32:43.8473581Z   ALCHEMY_API_KEY: ***
+run	foundry tests	2026-10-08T20:32:43.8473898Z   ANKR_API_KEY: ***
+run	foundry tests	2026-10-08T20:32:43.8474169Z   DRPC_API_KEY: ***
+run	foundry tests	2026-10-08T20:32:43.8474415Z   INFURA_API_KEY: ***
+run	foundry tests	2026-10-08T20:32:43.8474670Z   DUNE_API_KEY: ***
+run	foundry tests	2026-10-08T20:32:43.8474907Z   ARB_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8475153Z   BSC_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8475396Z   BASE_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8475646Z   OP_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8475904Z   POLYGON_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8476155Z   FANTOM_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8476414Z   CRONOS_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8476707Z   MOONRIVER_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8476962Z   GNOSIS_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8477207Z   SONIC_RPC_URL: ***
+run	foundry tests	2026-10-08T20:32:43.8477415Z   FOUNDRY_FUZZ_RUNS: 256
+run	foundry tests	2026-10-08T20:32:43.8477671Z   FORK_RPC_URL: https://ethereum-rpc.publicnode.com
+run	foundry tests	2026-10-08T20:32:43.8477942Z ##[endgroup]
+run	foundry tests	2026-10-08T20:32:44.5342593Z Compiling 23 files with Solc 0.8.24
+run	foundry tests	2026-10-08T20:32:46.5686460Z Solc 0.8.24 finished in 2.03s
+run	foundry tests	2026-10-08T20:32:46.5750990Z Compiler run successful with warnings:
+run	foundry tests	2026-10-08T20:32:46.5751527Z Warning (2018): Function state mutability can be restricted to view
+run	foundry tests	2026-10-08T20:32:46.5752012Z    --> test/Common.t.sol:137:5:
+run	foundry tests	2026-10-08T20:32:46.5752377Z     |
+run	foundry tests	2026-10-08T20:32:46.5752901Z 137 |     function otherCashUsd(address comptroller, address victim) internal returns (uint256 total) {
+run	foundry tests	2026-10-08T20:32:46.5753589Z     |     ^ (Relevant source part starts here and spans across multiple lines).
+run	foundry tests	2026-10-08T20:32:46.5753943Z 
+run	foundry tests	2026-10-08T20:33:01.0683721Z 
+run	foundry tests	2026-10-08T20:33:01.0684357Z Ran 3 tests for test/WepiggyArb.t.sol:WepiggyArbTest
+run	foundry tests	2026-10-08T20:33:01.0684765Z [PASS] test_arb_concrete_attack_fails() (gas: 6728017)
+run	foundry tests	2026-10-08T20:33:01.0685025Z Logs:
+run	foundry tests	2026-10-08T20:33:01.0685214Z   borrowed (USD): 55965
+run	foundry tests	2026-10-08T20:33:01.0685465Z   victim cash: 11033701795
+run	foundry tests	2026-10-08T20:33:01.0685684Z   attacker shares: 37750624701
+run	foundry tests	2026-10-08T20:33:01.0686028Z   shares needed to drain: 38672109773
+run	foundry tests	2026-10-08T20:33:01.0686269Z   net_ub USD: -7493781
+run	foundry tests	2026-10-08T20:33:01.0686399Z 
+run	foundry tests	2026-10-08T20:33:01.0686539Z [PASS] test_arb_hundred_upper_bound_negative() (gas: 7579850)
+run	foundry tests	2026-10-08T20:33:01.0686804Z Logs:
+run	foundry tests	2026-10-08T20:33:01.0687002Z   borrowable other cash (USD): 55965
+run	foundry tests	2026-10-08T20:33:01.0687154Z 
+run	foundry tests	2026-10-08T20:33:01.0687271Z [PASS] test_arb_no_empty_market() (gas: 237797)
+run	foundry tests	2026-10-08T20:33:01.0687795Z Logs:
+run	foundry tests	2026-10-08T20:33:01.0688100Z   market: pETH
+run	foundry tests	2026-10-08T20:33:01.0688374Z     totalSupply_raw: 15956103075
+run	foundry tests	2026-10-08T20:33:01.0688701Z   market: pWBTC
+run	foundry tests	2026-10-08T20:33:01.0689103Z     totalSupply_raw: 885584317
+run	foundry tests	2026-10-08T20:33:01.0689490Z   market: pUSDC
+run	foundry tests	2026-10-08T20:33:01.0689867Z     totalSupply_raw: 23124024714076
+run	foundry tests	2026-10-08T20:33:01.0690268Z   market: pUSDT
+run	foundry tests	2026-10-08T20:33:01.0690736Z     totalSupply_raw: 39947158644697
+run	foundry tests	2026-10-08T20:33:01.0691490Z   market: pLINK
+run	foundry tests	2026-10-08T20:33:01.0691831Z     totalSupply_raw: 113254229008
+run	foundry tests	2026-10-08T20:33:01.0692218Z   market: pDAI
+run	foundry tests	2026-10-08T20:33:01.0692588Z     totalSupply_raw: 7141241511247
+run	foundry tests	2026-10-08T20:33:01.0692854Z 
+run	foundry tests	2026-10-08T20:33:01.0693488Z Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 14.48s (13.72s CPU time)
+run	foundry tests	2026-10-08T20:33:06.6328697Z 
+run	foundry tests	2026-10-08T20:33:06.6329479Z Ran 3 tests for test/WepiggyOp.t.sol:WepiggyOpTest
+run	foundry tests	2026-10-08T20:33:06.6330036Z [PASS] test_op_concrete_attack_fails() (gas: 7679784)
+run	foundry tests	2026-10-08T20:33:06.6330669Z Logs:
+run	foundry tests	2026-10-08T20:33:06.6330891Z   borrowed (USD): 63759
+run	foundry tests	2026-10-08T20:33:06.6331112Z   victim cash: 11010373222
+run	foundry tests	2026-10-08T20:33:06.6331331Z   attacker shares: 46289352919
+run	foundry tests	2026-10-08T20:33:06.6331935Z   shares needed to drain: 46736776455
+run	foundry tests	2026-10-08T20:33:06.6332173Z   net_ub USD: -7496141
+run	foundry tests	2026-10-08T20:33:06.6332304Z 
+run	foundry tests	2026-10-08T20:33:06.6332441Z [PASS] test_op_hundred_upper_bound_negative() (gas: 6370011)
+run	foundry tests	2026-10-08T20:33:06.6332715Z Logs:
+run	foundry tests	2026-10-08T20:33:06.6332910Z   borrowable other cash (USD): 63759
+run	foundry tests	2026-10-08T20:33:06.6333062Z 
+run	foundry tests	2026-10-08T20:33:06.6333180Z [PASS] test_op_no_empty_market() (gas: 274697)
+run	foundry tests	2026-10-08T20:33:06.6333444Z Logs:
+run	foundry tests	2026-10-08T20:33:06.6333623Z   market: pETH
+run	foundry tests	2026-10-08T20:33:06.6333828Z     totalSupply_raw: 49129320416
+run	foundry tests	2026-10-08T20:33:06.6334043Z   market: pUSDC
+run	foundry tests	2026-10-08T20:33:06.6334254Z     totalSupply_raw: 141008729309396
+run	foundry tests	2026-10-08T20:33:06.6334472Z   market: pUSDT
+run	foundry tests	2026-10-08T20:33:06.6334675Z     totalSupply_raw: 14571010633254
+run	foundry tests	2026-10-08T20:33:06.6334894Z   market: pDAI
+run	foundry tests	2026-10-08T20:33:06.6335097Z     totalSupply_raw: 7956293284854
+run	foundry tests	2026-10-08T20:33:06.6335311Z   market: pWBTC
+run	foundry tests	2026-10-08T20:33:06.6335507Z     totalSupply_raw: 444117503
+run	foundry tests	2026-10-08T20:33:06.6335723Z   market: pLINK
+run	foundry tests	2026-10-08T20:33:06.6335921Z     totalSupply_raw: 1262950994059
+run	foundry tests	2026-10-08T20:33:06.6336139Z   market: pOP
+run	foundry tests	2026-10-08T20:33:06.6336344Z     totalSupply_raw: 2259958803886
+run	foundry tests	2026-10-08T20:33:06.6336484Z 
+run	foundry tests	2026-10-08T20:33:06.6336664Z Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 20.04s (19.62s CPU time)
+run	foundry tests	2026-10-08T20:33:06.8392838Z 
+run	foundry tests	2026-10-08T20:33:06.8393135Z Ran 3 tests for test/WepiggyBsc.t.sol:WepiggyBscTest
+run	foundry tests	2026-10-08T20:33:06.8393623Z [PASS] test_bsc_borrow_is_paused() (gas: 873524)
+run	foundry tests	2026-10-08T20:33:06.8393922Z [PASS] test_bsc_hundred_attack_blocked() (gas: 2465217)
+run	foundry tests	2026-10-08T20:33:06.8394171Z Logs:
+run	foundry tests	2026-10-08T20:33:06.8394352Z   mint err: 0
+run	foundry tests	2026-10-08T20:33:06.8394472Z 
+run	foundry tests	2026-10-08T20:33:06.8394612Z [PASS] test_bsc_no_empty_market_and_cf_zero() (gas: 934033)
+run	foundry tests	2026-10-08T20:33:06.8394894Z Logs:
+run	foundry tests	2026-10-08T20:33:06.8395223Z   market: pBNB
+run	foundry tests	2026-10-08T20:33:06.8395538Z     totalSupply_raw: 138244773897
+run	foundry tests	2026-10-08T20:33:06.8395886Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8396230Z   market: pETH
+run	foundry tests	2026-10-08T20:33:06.8396543Z     totalSupply_raw: 7894096628
+run	foundry tests	2026-10-08T20:33:06.8396894Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8397221Z   market: pBTCB
+run	foundry tests	2026-10-08T20:33:06.8397540Z     totalSupply_raw: 282680314
+run	foundry tests	2026-10-08T20:33:06.8397898Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8398226Z   market: pDAI
+run	foundry tests	2026-10-08T20:33:06.8398553Z     totalSupply_raw: 444690653218
+run	foundry tests	2026-10-08T20:33:06.8398906Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8399230Z   market: pUSDT
+run	foundry tests	2026-10-08T20:33:06.8399550Z     totalSupply_raw: 45195618226310
+run	foundry tests	2026-10-08T20:33:06.8399909Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8416525Z   market: pUSDC
+run	foundry tests	2026-10-08T20:33:06.8416897Z     totalSupply_raw: 430880515005
+run	foundry tests	2026-10-08T20:33:06.8417215Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8417473Z   market: pBUSD
+run	foundry tests	2026-10-08T20:33:06.8417684Z     totalSupply_raw: 17570856845735
+run	foundry tests	2026-10-08T20:33:06.8417919Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8418129Z   market: pDOT
+run	foundry tests	2026-10-08T20:33:06.8418350Z     totalSupply_raw: 88138640429
+run	foundry tests	2026-10-08T20:33:06.8418579Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8418781Z   market: pUNI
+run	foundry tests	2026-10-08T20:33:06.8418990Z     totalSupply_raw: 255272395137
+run	foundry tests	2026-10-08T20:33:06.8419215Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8419815Z   market: pCAKE
+run	foundry tests	2026-10-08T20:33:06.8420026Z     totalSupply_raw: 3174594747466
+run	foundry tests	2026-10-08T20:33:06.8420250Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8420554Z   market: pLTC
+run	foundry tests	2026-10-08T20:33:06.8420759Z     totalSupply_raw: 85470570290
+run	foundry tests	2026-10-08T20:33:06.8420982Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8421185Z   market: pLINK
+run	foundry tests	2026-10-08T20:33:06.8421390Z     totalSupply_raw: 447537502171
+run	foundry tests	2026-10-08T20:33:06.8421611Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8421824Z   market: pADA
+run	foundry tests	2026-10-08T20:33:06.8422032Z     totalSupply_raw: 57813243108850
+run	foundry tests	2026-10-08T20:33:06.8422265Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8422468Z   market: pFIL
+run	foundry tests	2026-10-08T20:33:06.8422671Z     totalSupply_raw: 9602729445
+run	foundry tests	2026-10-08T20:33:06.8423035Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8423240Z   market: pNULS
+run	foundry tests	2026-10-08T20:33:06.8423449Z     totalSupply_raw: 23977684466222
+run	foundry tests	2026-10-08T20:33:06.8423680Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8423883Z   market: pMASK
+run	foundry tests	2026-10-08T20:33:06.8424094Z     totalSupply_raw: 278431914
+run	foundry tests	2026-10-08T20:33:06.8424318Z     collateralFactor: 0
+run	foundry tests	2026-10-08T20:33:06.8424448Z 
+run	foundry tests	2026-10-08T20:33:06.8424635Z Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 20.25s (24.53s CPU time)
+run	foundry tests	2026-10-08T20:33:07.3475706Z 
+run	foundry tests	2026-10-08T20:33:07.3476095Z Ran 4 tests for test/WepiggyEth.t.sol:WepiggyEthTest
+run	foundry tests	2026-10-08T20:33:07.3476455Z [PASS] test_eth_concrete_attack_fails() (gas: 6487650)
+run	foundry tests	2026-10-08T20:33:07.3476714Z Logs:
+run	foundry tests	2026-10-08T20:33:07.3476907Z   borrowed (USD): 145936
+run	foundry tests	2026-10-08T20:33:07.3477124Z   victim cash: 160443062921
+run	foundry tests	2026-10-08T20:33:07.3477354Z   attacker shares: 383885009449
+run	foundry tests	2026-10-08T20:33:07.3477597Z   shares needed to drain: 387585757364
+run	foundry tests	2026-10-08T20:33:07.3477836Z   net_ub USD: -115389752
+run	foundry tests	2026-10-08T20:33:07.3477984Z 
+run	foundry tests	2026-10-08T20:33:07.3478128Z [PASS] test_eth_donation_inflates_but_is_fair() (gas: 980694)
+run	foundry tests	2026-10-08T20:33:07.3478398Z Logs:
+run	foundry tests	2026-10-08T20:33:07.3478589Z   rate before: 26049363275537628
+run	foundry tests	2026-10-08T20:33:07.3478854Z   rate after 100 WBTC donation: 3588475588211564691
+run	foundry tests	2026-10-08T20:33:07.3479104Z   redeem err: 0
+run	foundry tests	2026-10-08T20:33:07.3479304Z   WBTC out: 99999999
+run	foundry tests	2026-10-08T20:33:07.3479431Z 
+run	foundry tests	2026-10-08T20:33:07.3479564Z [PASS] test_eth_hundred_upper_bound_negative() (gas: 7156558)
+run	foundry tests	2026-10-08T20:33:07.3479831Z Logs:
+run	foundry tests	2026-10-08T20:33:07.3480033Z   borrowable other cash (USD): 145936
+run	foundry tests	2026-10-08T20:33:07.3480267Z   D: 100000000
+run	foundry tests	2026-10-08T20:33:07.3480689Z   X: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3480891Z   net_ub USD: -407572
+run	foundry tests	2026-10-08T20:33:07.3481095Z   D: 100000000
+run	foundry tests	2026-10-08T20:33:07.3481283Z   X: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3481482Z   net_ub USD: -3512832
+run	foundry tests	2026-10-08T20:33:07.3481682Z   D: 100000000
+run	foundry tests	2026-10-08T20:33:07.3481868Z   X: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3482068Z   net_ub USD: -34565429
+run	foundry tests	2026-10-08T20:33:07.3482275Z   D: 100000000
+run	foundry tests	2026-10-08T20:33:07.3482460Z   X: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3482659Z   net_ub USD: -345091403
+run	foundry tests	2026-10-08T20:33:07.3482858Z   D: 100000000
+run	foundry tests	2026-10-08T20:33:07.3483046Z   X: 10000000000000
+run	foundry tests	2026-10-08T20:33:07.3483248Z   net_ub USD: -3450351148
+run	foundry tests	2026-10-08T20:33:07.3483454Z   D: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3483647Z   X: 0
+run	foundry tests	2026-10-08T20:33:07.3483832Z   net_ub USD: -62544
+run	foundry tests	2026-10-08T20:33:07.3484033Z   D: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3484220Z   X: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3484407Z   net_ub USD: -118206
+run	foundry tests	2026-10-08T20:33:07.3484606Z   D: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3484792Z   X: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3484986Z   net_ub USD: -619165
+run	foundry tests	2026-10-08T20:33:07.3485182Z   D: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3485366Z   X: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3485561Z   net_ub USD: -5628756
+run	foundry tests	2026-10-08T20:33:07.3485788Z   D: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3485973Z   X: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3486170Z   net_ub USD: -55724659
+run	foundry tests	2026-10-08T20:33:07.3486377Z   D: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3486561Z   X: 10000000000000
+run	foundry tests	2026-10-08T20:33:07.3486761Z   net_ub USD: -556683701
+run	foundry tests	2026-10-08T20:33:07.3486959Z   D: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3487188Z   X: 0
+run	foundry tests	2026-10-08T20:33:07.3487586Z   net_ub USD: -62544
+run	foundry tests	2026-10-08T20:33:07.3487778Z   D: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3487961Z   X: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3488148Z   net_ub USD: -68474
+run	foundry tests	2026-10-08T20:33:07.3488341Z   D: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3488524Z   X: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3488707Z   net_ub USD: -121843
+run	foundry tests	2026-10-08T20:33:07.3488897Z   D: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3489077Z   X: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3489265Z   net_ub USD: -655531
+run	foundry tests	2026-10-08T20:33:07.3489456Z   D: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3489634Z   X: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3489825Z   net_ub USD: -5992410
+run	foundry tests	2026-10-08T20:33:07.3490020Z   D: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3490199Z   X: 10000000000000
+run	foundry tests	2026-10-08T20:33:07.3490567Z   net_ub USD: -59361208
+run	foundry tests	2026-10-08T20:33:07.3490895Z   D: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3491076Z   X: 0
+run	foundry tests	2026-10-08T20:33:07.3491254Z   net_ub USD: -62544
+run	foundry tests	2026-10-08T20:33:07.3491448Z   D: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3491631Z   X: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3491816Z   net_ub USD: -63141
+run	foundry tests	2026-10-08T20:33:07.3492013Z   D: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3492195Z   X: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3492378Z   net_ub USD: -68513
+run	foundry tests	2026-10-08T20:33:07.3492567Z   D: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3492748Z   X: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3492931Z   net_ub USD: -122233
+run	foundry tests	2026-10-08T20:33:07.3493121Z   D: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3493301Z   X: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3493491Z   net_ub USD: -659430
+run	foundry tests	2026-10-08T20:33:07.3493680Z   D: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3493862Z   X: 10000000000000
+run	foundry tests	2026-10-08T20:33:07.3494053Z   net_ub USD: -6031406
+run	foundry tests	2026-10-08T20:33:07.3494251Z   D: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3494432Z   X: 0
+run	foundry tests	2026-10-08T20:33:07.3494607Z   net_ub USD: -62544
+run	foundry tests	2026-10-08T20:33:07.3494797Z   D: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3494985Z   X: 1000000000
+run	foundry tests	2026-10-08T20:33:07.3495172Z   net_ub USD: -62603
+run	foundry tests	2026-10-08T20:33:07.3495365Z   D: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3495545Z   X: 10000000000
+run	foundry tests	2026-10-08T20:33:07.3495730Z   net_ub USD: -63141
+run	foundry tests	2026-10-08T20:33:07.3495923Z   D: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3496105Z   X: 100000000000
+run	foundry tests	2026-10-08T20:33:07.3496289Z   net_ub USD: -68516
+run	foundry tests	2026-10-08T20:33:07.3496477Z   D: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3496658Z   X: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3496846Z   net_ub USD: -122270
+run	foundry tests	2026-10-08T20:33:07.3497041Z   D: 1000000000000
+run	foundry tests	2026-10-08T20:33:07.3497225Z   X: 10000000000000
+run	foundry tests	2026-10-08T20:33:07.3497416Z   net_ub USD: -659822
+run	foundry tests	2026-10-08T20:33:07.3497536Z 
+run	foundry tests	2026-10-08T20:33:07.3497649Z [PASS] test_eth_no_empty_market() (gas: 385164)
+run	foundry tests	2026-10-08T20:33:07.3497889Z Logs:
+run	foundry tests	2026-10-08T20:33:07.3498065Z   market: pETH
+run	foundry tests	2026-10-08T20:33:07.3498267Z     totalSupply_raw: 58933816020
+run	foundry tests	2026-10-08T20:33:07.3498481Z   market: pDAI
+run	foundry tests	2026-10-08T20:33:07.3498682Z     totalSupply_raw: 9481265435172
+run	foundry tests	2026-10-08T20:33:07.3498902Z   market: pUSDT
+run	foundry tests	2026-10-08T20:33:07.3499108Z     totalSupply_raw: 113483637570304
+run	foundry tests	2026-10-08T20:33:07.3499328Z   market: pUSDC
+run	foundry tests	2026-10-08T20:33:07.3499528Z     totalSupply_raw: 7033348905793
+run	foundry tests	2026-10-08T20:33:07.3499746Z   market: pWBTC
+run	foundry tests	2026-10-08T20:33:07.3499944Z     totalSupply_raw: 2807075675
+run	foundry tests	2026-10-08T20:33:07.3500154Z   market: pUNI
+run	foundry tests	2026-10-08T20:33:07.3500506Z     totalSupply_raw: 19957458411913
+run	foundry tests	2026-10-08T20:33:07.3500802Z   market: pYFII
+run	foundry tests	2026-10-08T20:33:07.3500998Z     totalSupply_raw: 30172583300
+run	foundry tests	2026-10-08T20:33:07.3501205Z   market: pLRC
+run	foundry tests	2026-10-08T20:33:07.3501403Z     totalSupply_raw: 204281442241
+run	foundry tests	2026-10-08T20:33:07.3501614Z   market: pxLON
+run	foundry tests	2026-10-08T20:33:07.3501812Z     totalSupply_raw: 8862065902232
+run	foundry tests	2026-10-08T20:33:07.3502026Z   market: pRAI
+run	foundry tests	2026-10-08T20:33:07.3502221Z     totalSupply_raw: 2285683
+run	foundry tests	2026-10-08T20:33:07.3502355Z 
+run	foundry tests	2026-10-08T20:33:07.3502531Z Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 20.76s (20.58s CPU time)
+run	foundry tests	2026-10-08T20:33:07.3626887Z 
+run	foundry tests	2026-10-08T20:33:07.3627403Z Ran 4 test suites in 20.78s (75.54s CPU time): 13 tests passed, 0 failed, 0 skipped (13 total tests)
+run	upload results	﻿2026-10-08T20:33:07.3746299Z ##[group]Run actions/upload-artifact@v4
+run	upload results	2026-10-08T20:33:07.3746749Z with:
+run	upload results	2026-10-08T20:33:07.3746945Z   name: result-wepiggy
+run	upload results	2026-10-08T20:33:07.3747184Z   path: wepiggy/ci-out/**
+run	upload results	wepiggy/**/*.log
+run	upload results	
+run	upload results	2026-10-08T20:33:07.3747438Z   if-no-files-found: ignore
+run	upload results	2026-10-08T20:33:07.3747654Z   retention-days: 7
+run	upload results	2026-10-08T20:33:07.3747854Z   compression-level: 6
+run	upload results	2026-10-08T20:33:07.3748057Z   overwrite: false
+run	upload results	2026-10-08T20:33:07.3748261Z   include-hidden-files: false
+run	upload results	2026-10-08T20:33:07.3748474Z env:
+run	upload results	2026-10-08T20:33:07.3748734Z   RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3749116Z   BLOCKPI_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3749453Z   NODEREAL_ETH_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3749773Z   ETHERSCANV2_API_KEY: ***
+run	upload results	2026-10-08T20:33:07.3750037Z   GOLD_RUSH_API_KEY: ***
+run	upload results	2026-10-08T20:33:07.3750284Z   ALCHEMY_API_KEY: ***
+run	upload results	2026-10-08T20:33:07.3750959Z   ANKR_API_KEY: ***
+run	upload results	2026-10-08T20:33:07.3751223Z   DRPC_API_KEY: ***
+run	upload results	2026-10-08T20:33:07.3751466Z   INFURA_API_KEY: ***
+run	upload results	2026-10-08T20:33:07.3751711Z   DUNE_API_KEY: ***
+run	upload results	2026-10-08T20:33:07.3751965Z   ARB_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3752203Z   BSC_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3752443Z   BASE_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3752683Z   OP_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3752937Z   POLYGON_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3753185Z   FANTOM_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3753436Z   CRONOS_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3753690Z   MOONRIVER_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3753938Z   GNOSIS_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3754178Z   SONIC_RPC_URL: ***
+run	upload results	2026-10-08T20:33:07.3754378Z   FOUNDRY_FUZZ_RUNS: 256
+run	upload results	2026-10-08T20:33:07.3754620Z   FORK_RPC_URL: https://ethereum-rpc.publicnode.com
+run	upload results	2026-10-08T20:33:07.3754882Z ##[endgroup]
+run	upload results	2026-10-08T20:33:07.4970792Z (node:2262) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+run	upload results	2026-10-08T20:33:07.4971356Z (Use `node --trace-deprecation ...` to show where the warning was created)
+run	upload results	2026-10-08T20:33:07.5153836Z No files were found with the provided path: wepiggy/ci-out/**
+run	upload results	2026-10-08T20:33:07.5154263Z wepiggy/**/*.log. No artifacts will be uploaded.
+run	Post Run foundry-rs/foundry-toolchain@v1	﻿2026-10-08T20:33:07.5294068Z Post job cleanup.
+run	Post Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:33:07.6332681Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/ca-zombie-ci/ca-zombie-ci --files-from manifest.txt --use-compress-program zstdmt
+run	Post Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:33:08.0929010Z Sent 319748 of 319748 (100.0%), 1.1 MBs/sec
+run	Post Run foundry-rs/foundry-toolchain@v1	2026-10-08T20:33:08.3176256Z Cache saved with the key: linux-foundry-chain-fork-run-72a7c13f4daa8b09e995c6c7bd729005e99b60f3
+run	Post Run actions/checkout@v4	﻿2026-10-08T20:33:08.3290829Z Post job cleanup.
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.3932990Z [command]/usr/bin/git version
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.3968254Z git version 2.55.0
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.3995783Z Temporarily overriding HOME='/home/runner/work/_temp/792b23e7-4552-4d63-abeb-c952d80fa483' before making global git config changes
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.3996694Z Adding repository directory to the temporary git global config as a safe directory
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.4001497Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ca-zombie-ci/ca-zombie-ci
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.4035763Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.4066135Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.4288546Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.4309498Z http.https://github.com/.extraheader
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.4324475Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.4348899Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.4591368Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+run	Post Run actions/checkout@v4	2026-10-08T20:33:08.4625230Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+run	Complete job	﻿2026-10-08T20:33:08.4969213Z Cleaning up orphan processes
+run	Complete job	2026-10-08T20:33:08.5196126Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
