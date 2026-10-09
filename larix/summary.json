@@ -1,0 +1,40 @@
+{
+ "finding": "C2-25",
+ "title": "Larix (Solend fork) — 2021 UpdateReserveConfig missing-check hypothesis refuted; config-update path fully gated",
+ "chains": ["solana"],
+ "headline_extractable_usd": 0,
+ "headline_confidence": "high",
+ "categories": {"E-U": 0, "H-O": 1271380.2, "P": 0, "S": 0},
+ "latest_block": 454765700,
+ "block_numbers": {"solana": 454765700},
+ "targets_checked": 2,
+ "live_targets": 2,
+ "closed_reasons": [
+  "deployed binaries (main 2022-04-01, aux 2022-04-19) enforce market-owner signature and reserve.lending_market == market.key in SetConfig (tag 14)",
+  "RPC simulation: mismatched market rejected (Custom 5); owner-not-signer rejected (Custom 12); own-market baseline passes gates",
+  "all top reserves refreshable (live oracles); no unprivileged config path"
+ ],
+ "poc": {
+  "tests_passed": 4,
+  "tests_total": 4,
+  "ci_run_urls": []
+ },
+ "key_facts": [
+  "programs: 7Zb1bGi32pfsrBkzWdqd4dFhUXwp5Nybr1zuaEwN34hy (main), 3cKREQ3Z7ioCQ4oa23uGEuzekhQWPxKiBEZ87WfaAZ5p (aux)",
+  "upgrade authority (both, still set): GwqwyQqJ5kr3X7iUDQKgJ1FJYjxmCieiY5PikmMbsL1Q (single EOA, 4.99 SOL)",
+  "market owner: EknzKAAkFzbD1mY7ovWZVtuFptgetn5yw99LSqfE6XH9 (single EOA, 321.5 SOL)",
+  "main ELF sha256 435230e5f814a8d6d7cf9921194dd63f5863c4f84434048773aa42bbe2f598a7; aux ELF sha256 4650233ee7a07803e279991a6ba463c62586e60cee526a27e5420cfaabbc3049",
+  "SetConfig handler messages contain no market-match message; the check is enforced via shared error branch at 0x3D210 (pubkey_eq) -> error 5 'Reserve provided is not owned by the lending program'",
+  "main vs aux .text differ 1492/566888 bytes (0.26%), constants only; check region byte-identical",
+  "available liquidity main $1,170,428 + aux $100,952 = $1,271,380; all 20 reserves >=$100 refreshable (H-O)",
+  "main market has 10,163 obligations (3,113 with debt); nominal stale values $138.4M/$12.1M frozen at 2021-22 refreshes",
+  "Solend patch lineage: commit 132d74cf171dac66f896c4009ad6836f8c0b3799 (2021-08-19); Larix first public commit 2021-08-21"
+ ],
+ "caveats": [
+  "Solana RPC has no state-override simulation; the market-mismatch proof uses two real markets on the aux program whose code is identical to main",
+  "obligation values are stale (frozen at last refresh in 2021-22), not current market values",
+  "the $1.271M is point-in-time (2026-10-09) and is H-O (holder redeem), not attacker-extractable; privileged control (owner/upgrade EOA) is a separate P risk",
+  "no full audit of unrelated Larix instructions was performed"
+ ],
+ "one_liner": "External unprivileged attacker can extract ~$0 from Larix: the deployed SetConfig path enforces market-owner signature and the reserve<->market binding (2021 Solend check present), so the unpatched-config-update hypothesis is refuted; $1.27M of reserve liquidity is holder-redeemable (H-O)."
+}
