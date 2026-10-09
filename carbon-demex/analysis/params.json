@@ -1,0 +1,70 @@
+{
+  "finding": "C2-32",
+  "chain": "carbon-1",
+  "captured_at_utc": "2026-10-09T14:44:41Z",
+  "terminal_height": 100279059,
+  "terminal_time": "2026-09-25T20:01:25.423995619Z",
+  "sources": [
+    "staking-explorer.com/parameters/carbon (indexer; frozen at halt)",
+    "cached https://api.carbon.network/cosmos/staking/v1beta1/pool",
+    "cached https://api.carbon.network/cosmos/staking/v1beta1/params",
+    "cached https://api.carbon.network/cosmos/distribution/v1beta1/params",
+    "cached https://api.carbon.network/cosmos/mint/v1beta1/inflation",
+    "cached https://api.carbon.network/cosmos/base/tendermint/v1beta1/node_info"
+  ],
+  "gov_params": {
+    "min_deposit_swth": 10000,
+    "max_deposit_period_days": 1,
+    "voting_period_days": 1,
+    "quorum": 0.334,
+    "threshold": 0.50,
+    "veto_threshold": 0.334,
+    "expedited": "none exposed on the parameters page",
+    "note": "1-day voting period is the shortest of the Cosmos capture set; but the chain is halted so no vote can run."
+  },
+  "staking_params": {
+    "unbonding_time_days": 30,
+    "max_validators": 23,
+    "max_entries": 7,
+    "historical_entries": 1000,
+    "min_commission_rate": 0
+  },
+  "slashing_params": {
+    "signed_blocks_window": 216000,
+    "min_signed_per_window": 0.75,
+    "downtime_jail_duration_minutes": 60,
+    "slash_fraction_double_sign": 0.05,
+    "slash_fraction_downtime": 0.001
+  },
+  "distribution_params": {
+    "community_tax": 0.10,
+    "base_proposer_reward": 0,
+    "bonus_proposer_reward": 0
+  },
+  "mint_params": {
+    "inflation_current": 0,
+    "goal_bonded": 0.67,
+    "blocks_per_year": 6311520,
+    "min_inflation": 0,
+    "max_inflation": 0,
+    "annual_provisions_swth": 0
+  },
+  "staking_state": {
+    "bonded_swth": 532905309.25350966,
+    "not_bonded_swth": 289293863.06507719,
+    "unbonding_swth": 498,
+    "total_supply_swth": 1898139617.69436032,
+    "bonded_pct_of_supply": 0.2808,
+    "not_bonded_pct_of_supply": 0.1524,
+    "stake_health_pct": 64.81,
+    "active_nodes": 6,
+    "inactive_nodes": 45
+  },
+  "node": {
+    "app_version": "2.84.0",
+    "git_commit": "5381f6af840b6662d0cbf51677b9ebfacdb56d41",
+    "go_version": "go1.22.11",
+    "cometbft": "0.38.19",
+    "sdk": "v0.50.13-0.20260122031902-71d641ec3895 (per staking-explorer binary metadata)"
+  }
+}

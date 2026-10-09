@@ -1,0 +1,65 @@
+{
+  "finding": "C2-32",
+  "chain": "carbon-1",
+  "captured_at_utc": "2026-10-09T14:44:41Z",
+  "terminal_height": 100279059,
+  "governance_movable_assets": {
+    "community_pool": {
+      "total_allocation_swth": 83388105,
+      "unspent_locked_swth": 55321211,
+      "spent_via_proposals_swth": 28066894,
+      "unspent_usd_at_spot": 8915.26,
+      "spendable_via": "MsgCommunityPoolSpend (distribution module, standard SDK v0.50)",
+      "precedent": "28,066,894 SWTH has historically been paid out via passed proposals",
+      "source": "staking-explorer.com/tokenomics/carbon (frozen at halt)"
+    },
+    "distribution_pool": {
+      "total_swth": 3966043,
+      "unclaimed_staking_rewards_swth": 3660812,
+      "unwithdrawn_validator_commission_swth": 305231,
+      "usd_at_spot": 639.1,
+      "spendable_via": "not a spendable pot: this is the fee-pool accounting backing delegator/validator claims; MsgCommunityPoolSpend cannot take it (feePool CommunityPool accounting excludes outstanding rewards)"
+    },
+    "module_and_user_value_tvl": {
+      "defillama_chain_carbon_usd": 250096.98,
+      "demex_usd": 184651.0,
+      "nitron_usd": 65445.85,
+      "demex_composition_usd_2026_10_05": {
+        "grouped_USD_cgt1_perp_pool_NAV_and_pools": 175690.69,
+        "DMX": 8502.24,
+        "ATOM": 398.89,
+        "stATOM": 53.5,
+        "NEO": 2.59,
+        "milkTIA": 2.1,
+        "OSMO": 0.93,
+        "stOSMO": 0.19,
+        "GAS": 0.0001
+      },
+      "nitron_composition_usd_2026_10_05": {
+        "NEO": 18134.89, "USDC": 19580.9954, "ETH": 1353.06, "CMETH": 6188.01, "USDT": 4351.99,
+        "MILKTIA": 3193.83, "ATOM": 2416.92, "WBTC": 1841.32, "LUNA": 1570.49, "TIA": 1241.53,
+        "DMX": 1085.34, "ZIL": 982.96, "WSTETH": 117.4, "INJ": 118.67, "STTIA": 3066.0,
+        "other": "<600 combined"
+      },
+      "directly_gov_spendable_usd": 0,
+      "why_not": "No Carbon module exposes a governance message that transfers module balances. Checked carbon-js-sdk v0.11.75 tx protos for all 30 modules: only MsgUpdateParams / relayer / controller / blacklist style ops carry an authority (gov) field; fund-moving messages (bridge MsgWithdrawToken, coin MsgAdminIbcWithdraw, insurance MsgTopUpInsurance, perpspool MsgWithdrawFromPool, liquiditypool MsgRemoveLiquidity, adl MsgPayBadDebt) are creator/controller/relayer/user-gated, not authority-gated. Reaching this TVL requires a malicious software upgrade (validators must run modified binaries) or a bridge-controller compromise."
+    },
+    "bridges": {
+      "module": "x/bridge (Axelar-based connections) + x/coin bridge registry",
+      "gov_gated_messages": ["MsgUpdateParams", "MsgRevertPendingAction", "MsgConfirmPendingAction", "MsgAddRelayer", "MsgRemoveRelayer"],
+      "non_gov_fund_messages": ["MsgWithdrawToken (creator/relayer flow)", "MsgExecuteFromCarbon", "MsgStartRelay"],
+      "escrowed_value": "not separately measurable post-halt; bridged denom supplies on the assets page are small (e.g. usdc.1.2.343151 supply 292,932,560 raw, eth.1.2.942d87 0.069 ETH at 18dp) and many rows are 2^63 placeholders",
+      "note": "A governance capture could add itself as relayer (authority MsgAddRelayer) and potentially confirm forged pending actions, but that requires the chain to run and the capture to succeed first."
+    },
+    "liquidity_pools": {
+      "module": "x/liquiditypool (native AMM) — counted inside Demex/Nitron TVL",
+      "spendable_via": "LP shares are user-owned; gov cannot spend them directly"
+    },
+    "insurance_fund": {
+      "module": "x/insurance",
+      "messages": ["MsgTopUpInsurance (anyone can add)", "MsgUpdateParams (gov)"],
+      "withdraw_message": "none in the SDK — the fund is consumed by bad-debt/adl logic per params ('percentage of the total insurance fund that can be used per interval')"
+    }
+  },
+  "conclusion": "The only directly gov-movable asset is the community pool: 55,321,211 SWTH unspent (~$8.9k nominal). Its realizable value is bounded by the single Osmosis exit pool (~$606 of OSMO). The $250,097 chain TVL is P-class (software upgrade / privileged) and S-class (frozen by the halt), not capture-proceeds."
+}
