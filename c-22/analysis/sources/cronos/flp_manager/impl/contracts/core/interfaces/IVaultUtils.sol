@@ -1,0 +1,43 @@
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+interface IVaultUtils {
+    struct Position {
+        uint256 size;
+        uint256 collateral;
+        uint256 averagePrice;
+        uint256 entryFundingRate;
+        uint256 reserveAmount;
+        uint256 realisedPnl;
+        uint256 lastIncreasedTime;
+        address brokerAddress; 
+        uint256 brokerFeeBasisPoints;
+    }
+
+    function updateCumulativeFundingRate(address _collateralToken, address _indexToken) external returns (bool);
+    function validateIncreasePosition(address _account, address _collateralToken, address _indexToken, uint256 _sizeDelta, bool _isLong) external view;
+    function validateDecreasePosition(address _account, address _collateralToken, address _indexToken, uint256 _collateralDelta, uint256 _sizeDelta, bool _isLong, address _receiver) external view;
+    function validateLiquidation(address _account, address _collateralToken, address _indexToken, bool _isLong, bool _raise) external view returns (uint256, uint256);
+    function validateLiquidationForBot(address _account, address _collateralToken, address _indexToken, bool _isLong, bool _raise) external view returns (uint256, uint256);
+    function validateBufferAmount(address _token) external view;
+    function getLiquidationFee(uint256 remainingCollateralUsd) external view returns (uint256);
+    function getEntryFundingRate(address _collateralToken, address _indexToken, bool _isLong) external view returns (uint256);
+    function getPositionFee(uint256 _sizeDelta) external view returns (uint256);
+    function getBrokerFee(uint256 _sizeDelta, uint256 _brokerFeeBasisPoints) external view returns (uint256);
+    function getPositionFeeForBot(uint256 _sizeDelta) external view returns (uint256);
+    function getFundingFee(address _account, address _collateralToken, address _indexToken, bool _isLong, uint256 _size, uint256 _entryFundingRate) external view returns (uint256);
+    function getBuyUsdgFeeBasisPoints(address _token, uint256 _usdgAmount) external view returns (uint256);
+    function getSellUsdgFeeBasisPoints(address _token, uint256 _usdgAmount) external view returns (uint256);
+    function getSwapFeeBasisPoints(address _tokenIn, address _tokenOut, uint256 _usdgAmount) external view returns (uint256);
+    function getFeeBasisPoints(address _token, uint256 _usdgDelta, uint256 _feeBasisPoints, uint256 _taxBasisPoints, bool _increment) external view returns (uint256);
+    function getDelta(address _indexToken, uint256 _size, uint256 _averagePrice, bool _isLong, uint256 _lastIncreasedTime) external view returns (bool, uint256);
+    function getNextAveragePrice(address _indexToken, uint256 _size, uint256 _averagePrice, bool _isLong, uint256 _nextPrice, uint256 _sizeDelta, uint256 _lastIncreasedTime )external view returns (uint256);
+    function getNextGlobalShortAveragePrice(address _indexToken, uint256 _nextPrice, uint256 _sizeDelta) external view returns (uint256);
+    function getGlobalShortDelta(address _token) external view returns (bool, uint256);
+    function getNextFundingRate(address _token) external view returns (uint256);
+    function getRedemptionAmount(address _token, uint256 _usdgAmount) external view returns (uint256);
+    function adjustForDecimals(uint256 _amount, address _tokenDiv, address _tokenMul) external view returns (uint256);
+    function getPositionLeverage(address _account, address _collateralToken, address _indexToken, bool _isLong) external view returns (uint256);
+    function getPositionBroker(address _account, address _collateralToken, address _indexToken, bool _isLong) external view returns (address, uint256);
+}
