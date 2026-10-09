@@ -1,0 +1,44 @@
+{
+  "finding": "C2-28",
+  "title": "Sommelier cellars / gravity module: no extractable residual — gravity balance is 1:1 bridge collateral, cellarfees below threshold, community pool capture closed, cork cellars are depositor vaults with an EOA authority",
+  "chains": ["sommelier-3", "ethereum", "arbitrum", "optimism", "scroll"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 37882.02, "S": 0, "capture": 0},
+  "latest_block": 28183408,
+  "block_numbers": {"sommelier-3": 28183408, "ethereum": 26155618},
+  "targets_checked": 54,
+  "live_targets": 43,
+  "closed_reasons": [
+    "Gravity module escrow (36,864,615.016774 SOMM, $12,687.47 paper) is the exact 1:1 backing of the Ethereum ERC-20 SOMM total supply (36,864,615,016,774 at 6 decimals, eth_call block 26,155,618) — bridge collateral, not residual: cosmos-originated bridge-outs lock usomm in the module account and bridge-ins release it; no unprivileged path moves it.",
+    "No pending bridge state exists to exploit or cancel: unbatched SendToEthereum store prefix 0x07 is empty (0 entries); outgoing-tx prefix 0x06 contains only 72 SignerSetTx and no BatchTx/ContractCallTx; last send ID 858 / batch nonce 805; last SOMM batch created at height 23,353,970, last WETH at 24,586,140 (outgoing path dormant ~3.6M blocks).",
+    "The only relevant gravity bug (GHSA-4vf2-m5pw-3r3r — batch timeout cleanup could cancel/re-queue already-paid-out txs, escrow double-spend) is fixed in gravity-bridge v6.1.0 and the live chain runs sommelier v10.0.2.",
+    "Gravity module funds are not gov-movable: no gov message spends a module account; CommunityPoolEthereumSpendProposal spends only the community pool (feePool), not the gravity escrow.",
+    "Cellarfees module holds only $2,169.00 (1,551.368 USDC + 0.15 stETH + 5.806 FRAX + 0.143 USDT) — below its $10,000 auto-auction threshold; proceeds_portion=1.0 sends the balance to a hard-coded 2-of-2 multisig somm1rvu9w27sstm2z7jgyq7kll0hfj4fdhsgnw0tat; not redirectable by gov and not takeable by anyone.",
+    "Community pool 110,069,732.502057 SOMM (~$37,882.02 paper) is gov-only and capture is closed: live gov params quorum=0.5/threshold=0.5/veto=0.334 (ABCI gov store h 28,183,210); solo capture >= bonded 71,464,846.36 SOMM (~$24,595.61 paper) while all public DEX float is 2,094,342 SOMM = 2.93% of need (no CEX); v10 PoA bloc (Foundation + 3 validators, power floor 0.67) ~73.94% veto-proof; CP DEX exit ~$0.5-1k (C2-08 corrected economics).",
+    "Cork-managed cellars (36 Ethereum + 6 L2) hold ~$1,186,275 of depositor vault value (Ethereum $996,443.70, Arbitrum $158,016.68, Optimism $31,814.82, Scroll dust) — self-service depositor withdrawals (H-O), not protocol residual; scheduling is authority-gated (fail-closed) to a single EOA somm1lcsjy2d5s33h0sddd8lpuqvwyz5ruz7ju4aeqa and no corks are scheduled on any chain.",
+    "Auction, axelarcork, pubsub, fee_collector and gov module accounts are empty at the pinned height."
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37951763164"]},
+  "key_facts": [
+    "sommelier-3 snapshot heights: 28,183,103 (balances) / 28,183,210 (gov store) / CI 28,183,408; node v10.0.2 (commit 9788f65d3cb0), SDK v0.47.15, ibc-go v7.10.0; SOMM $0.0003441638 (DefiLlama).",
+    "Gravity module somm16n3lc7cywa68mg50qhp847034w88pntq22vzye: 36,864,615,016,774 usomm (only denom) == ERC-20 SOMM 0xa670d7237398238de01267472c6f13e5b8010fd1 totalSupply (6 decimals) — invariant verified cross-chain; store mapping 0x10: usomm -> a670d723...0fd1.",
+    "Gravity params: bridge_ethereum_address 0x0 (unset; event attributes only in v6.1.0); last_observed_event_nonce 5042; last send ID 858; last batch nonce 805; 115 completed SOMM batches (max nonce 803).",
+    "Cellarfees params: auction_interval 15,000 blocks; auction_threshold_usd_value $10,000; proceeds_portion 1.0; proceeds address hard-coded somm1rvu9w27sstm2z7jgyq7kll0hfj4fdhsgnw0tat (2-of-2 LegacyAmino multisig, 99.993555 SOMM).",
+    "Community pool 110,069,732.502057 SOMM ($37,882.02 paper); distribution module account 113,514,090.60 SOMM = pool + ~3.44M outstanding validator rewards (not spendable via MsgCommunityPoolSpend; SDK feePool SafeSub bound).",
+    "Bonded 71,464,846.361922 SOMM / not-bonded 74,814,643.871328 SOMM (h 28,183,103); gov min_deposit 5,000 SOMM; voting 2 days; burn_vote_veto true.",
+    "Cork v2 managed cellars (Ethereum, 36 IDs) live value $996,443.70 across 35/36 — top: Real Yield USD 0x97e6E0a4 $450.0k (450,719.32 aEthUSDT balanceOf-verified), YieldETH 0xb5b29320 $151.1k (60.652 WETH), Turbo RSETH 0x1dffb366 $89.0k (32.457 rsETH), 0xfd6db501 $77.9k (31.264 WETH), FeesAndReserves 0xF4279E93 $65.7k (25,797.05 USDC).",
+    "Axelarcork managed cellars: Arbitrum 4 ($158,016.68; aWETH 53.81 = $133.7k), Optimism 1 ($31,814.82; rETH 10.832), Scroll 1 (dust); DefiLlama Sommelier TVL $970,724 cross-check.",
+    "CorkAuthority somm1lcsjy2d5s33h0sddd8lpuqvwyz5ruz7ju4aeqa is a single-key secp256k1 EOA (account 61, seq 191, 173,054.65 SOMM); v10 cork/axelarcork msg servers fail closed and accept only signer==params.CorkAuthority; rotatable only by ParameterChangeProposal; scheduled_corks empty on all chains.",
+    "Corpus correction: the tracker's 'cork cellars $209,492' prior figure is not reproducible from the live managed-cellar list; live gross is ~$1.19M (depositor funds). The 'gravity module dust' label understates the balance (36.86M SOMM) but is correct on extractability: the balance is bridge collateral."
+  ],
+  "caveats": [
+    "USD values are paper values at the live DefiLlama SOMM price; realizable SOMM exit for large balances is far lower (DEX float 2.09M SOMM, C2-08).",
+    "Cellar TVL (~$1.19M) is depositor-owned vault value; what the CorkAuthority key could actually move depends on each cellar's code (not audited in this bounded entry).",
+    "Blockscout rate-limited the CI re-scan of Arbitrum cellars (HTTP 403); Arbitrum/Optimism figures are from the session-time scan (analysis/local/raw/), consistent with DefiLlama per-chain TVL.",
+    "sommelier-3 public LCDs do not serve /cosmos/gov/v1/params; gov params were read from the gov store via ABCI and match C2-08's verified quorum.",
+    "Historical sommelier-3 state is pruned on public nodes; all balances are single-height snapshots (heights recorded).",
+    "No fork PoC is applicable (Cosmos module accounting, not an EVM path); verification is live state + exact-version source + CI evidence run."
+  ],
+  "one_liner": "External unprivileged attacker can extract $0.00 live from Sommelier's gravity module / cellars: the 36.86M SOMM 'gravity dust' is the exact 1:1 bridge collateral for the ERC-20 SOMM supply with zero pending sends/batches and the one relevant bug patched in v10.0.2; cellarfees ($2,169) are below the $10k auto-flow threshold to a fixed multisig; the community pool (110.07M SOMM, $37.9k paper) is gov-only with capture closed (2.93% of solo need on-chain, PoA bloc veto-proof); the ~$1.19M of cork-managed cellars is depositor vault value behind a dormant single-EOA authority — no E-U path exists."
+}
