@@ -1,0 +1,67 @@
+{
+ "program": "So1endDq2YkqhipRh3WViPa8hdiSpxWy6z3Z6tMCpAo",
+ "mainMarket": "4UpD2fh7xH3VP9QQaXtsS1YY3bxzWhtfpks7FatyKvdY",
+ "slotStart": 454779371,
+ "slotEnd": 454779385,
+ "startedAtIso": "2026-10-09T06:00:13Z",
+ "finishedAtIso": "2026-10-09T06:00:18Z",
+ "rpcEndpoints": [
+  "https://api.mainnet-beta.solana.com",
+  "https://solana-rpc.publicnode.com"
+ ],
+ "targetFilter": "storedUsd >= 1000.0 or market == main",
+ "criteria": {
+  "liquidatableNow": "unhealthy_borrow_value > 0 AND borrowed_value >= unhealthy_borrow_value",
+  "near95": "not liquidatable AND unhealthy_borrow_value > 0 AND borrowed_value >= 0.95 * unhealthy_borrow_value",
+  "health": "allowed_borrow_value / borrowed_value_upper_bound",
+  "note": "classification uses the obligation's own stored (last-updated) values; stale obligations may not reflect current reserve prices"
+ },
+ "totals": {
+  "markets": 1,
+  "obligations": 6,
+  "withDebt": 2,
+  "liquidatableNow": 1,
+  "near95": 0,
+  "stale": 6,
+  "unhealthyPositive": 1,
+  "liquidatableBorrowedUsd": 0.0
+ },
+ "validation": {
+  "reserveMembership": 0,
+  "depositValueMismatch": 0,
+  "borrowValueMismatch": 0,
+  "malformed": 0,
+  "vanished": 0,
+  "fetchFailed": 0,
+  "symbolMiss": 0,
+  "fullAccountsFetched": 1,
+  "recordsWritten": 1
+ },
+ "rpcStats": {
+  "calls": 4,
+  "retries": 0,
+  "bytesIn": 3172
+ },
+ "markets": [
+  {
+   "market": "CX1GCNCgkyPu45tqiiCqjqiaukzzEizMHHvqQNNqyk5g",
+   "name": "FUMoney",
+   "storedUsd": 3409.62,
+   "nReserves": 1,
+   "slotAtScan": 454779376,
+   "nObligations": 6,
+   "nWithDebt": 2,
+   "nLiquidatableNow": 1,
+   "nNear95": 0,
+   "nStale": 6,
+   "nUnhealthyPositive": 1,
+   "nBorrowingIsolated": 0,
+   "nCountOnly": 0,
+   "liquidatableBorrowedUsd": 0.0,
+   "path": "single",
+   "partial": false,
+   "errors": [],
+   "seconds": 2.6
+  }
+ ]
+}

@@ -1,0 +1,56 @@
+{
+  "finding": "C2-24",
+  "title": "Save (ex-Solend) — config-rot tail holds no live unprivileged extraction",
+  "chains": ["solana"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 94449832,
+    "P": 0,
+    "S": 0
+  },
+  "latest_block": 454775874,
+  "block_numbers": {
+    "solana": 454775874
+  },
+  "targets_checked": 603,
+  "live_targets": 154,
+  "closed_reasons": [
+    "449/603 reserves cannot refresh: all 142 Switchboard-v2, 73 Switchboard On-Demand and 29 legacy Pyth oracle accounts fail the deployed freshness gates (SB feeds frozen since ~Jan 2025; legacy Pyth status=Unknown since ~2024); 9 oracle accounts missing",
+    "Of the 154 refreshable reserves, only 1 has program price >1.02x real with LTV>0 ('sadfdsaf' Fartcoin 6.19x) and it is triple-blocked: available=0, borrow_limit=0, attributed_borrow_limit_open=0",
+    "Main pool: 271,599 obligations scanned; 4,924 stored-liquidatable ($37.08M at last refresh) are currently healthy (program-proven for samples; all 13 current-liquidatable are dust)",
+    "Tail: all sizeable currently-liquidatable positions are in whitelisted-liquidator markets (KHAI $2.38M, GNME $0.54M, TRUNK $0.35M nominal; $3.27M total) whose own reserves are frozen — not liquidatable even by the whitelisted keeper; permissionless remainder is $34-96 dust",
+    "Live oracles are 17 Pyth push-feed accounts (Full verification, <=120s) that a fresh attacker cannot manipulate; 2022 USDH/Saber vector (Switchboard v1) is structurally dead",
+    "Flash loans cannot bypass health gates; forgive_debt and closeable are privileged"
+  ],
+  "poc": {
+    "tests_passed": 5,
+    "tests_total": 5,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37891076915",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37891539771"
+    ]
+  },
+  "key_facts": [
+    "Program So1endDq2YkqhipRh3WViPa8hdiSpxWy6z3Z6tMCpAo, deployed build solendprotocol/solana-program-library@d04ce00b (2025-07-02), last deploy slot 350,614,570, upgrade authority RY93CZYe5g6drtG7W9PmHRPzaBLZ1uwihTzayQTmJfh",
+    "Refresh simulation (simulateTransaction, read-only) for all 603 reserves: 154 OK / 449 fail (447 InvalidOracleConfig + 2 MathOverflow); main pool 40/89 refreshable",
+    "Oracle decode of 289 referenced accounts: 17 valid (all Pyth pull push feeds), 0/142 SB-v2, 0/73 SB On-Demand, 0/29 legacy Pyth, 9 missing",
+    "Main pool available liquidity $93,854,922 (real prices), 93.6M in refreshable reserves; H-O via redeem (no oracle needed)",
+    "Tail available $21,243,428 nominal: $1,117,385 refreshable, $594,910 frozen-but-redeemable at real prices, $19.5M stored-price-only dead tokens (no market)",
+    "Config rot: LST reserves all price off the SOL/USD Pyth feed with stale scaled_price_offset_bps — sSOL -0.01% vs real +18.0%, stSOL 0% vs +10.3%, INF 0% vs +45.6% (LTV 0), wstETH uses ETH feed scale 0 vs real +19.7%; conservative for borrowing, but creates 5-18% liquidation spread",
+    "Latent (current prices): $107.7k main-pool debt within 5% of liquidation, $3.73M at 0.90-0.95, $1.17M at 0.80-0.90, $0 above 1.0; interest accrual will eventually push some over, handing first-mover liquidators 5-18% spreads (up to ~31% on INF/sSOL-type collaterals)",
+    "Nominal bad debt in frozen tail markets ~$125M (ScarCoin $93.8M USDC claim vs ~$0.0015 STCC, stacc eco $10.9M, Star Atlas $6.9M, GNME $6.85M, TRUNK $4.97M, KHAI $2.03M) — uncollectible debt, not attacker-extractable",
+    "11 markets have whitelisted_liquidator set (Solend keeper addresses); main market is permissionless",
+    "No market or reserve is outflow-blocked (rate-limiter packed order is (max_outflow, window_duration); zero-max entries have window=0 = disabled)",
+    "closeable liquidation bypass unused: 0 closeable obligations program-wide (memcmp offset 187); the 2 extra_oracle reserves can only tighten, not loosen, limits"
+  ],
+  "caveats": [
+    "simulateTransaction is a dry-run against current state (no signed/sent transactions); proves program logic, not state changes",
+    "Real prices from Jupiter/DexScreener; dead tokens without markets valued at stored prices and flagged",
+    "Point-in-time analysis (slots 454,758,062-454,775,874, 2026-10-09); prices and interest move continuously",
+    "Tail scan covered all 137 markets with reserves plus main; markets with zero reserves have nothing to scan",
+    "Child-agent supplementary obligation files are corroboration only; an earlier version used a wrong header offset convention and was corrected mid-run — the authoritative files are main-obligation-stats.json, main-liquidation-eval.json, tail-liquidation-now.json and tail-near-now-liquidatable.json"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live (dust only, ~$96) from the Save/ex-Solend config-rot tail: 449/603 reserves are frozen by dead oracles (all Switchboard + legacy Pyth feeds offline), the 154 live reserves are correctly priced except one junk-market Fartcoin reserve that is fenced by zero limits, and no material obligation is currently liquidatable (whitelisted-market bad debt ~$3.27M is frozen even for the keeper); latent risk is $3.84M of main-pool debt within 10% of liquidation ($107.7k within 5%) where stale LST price scales would pay first-mover liquidators 5-18% spreads."
+}
