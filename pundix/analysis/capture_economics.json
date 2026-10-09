@@ -1,0 +1,54 @@
+{
+  "height": "28956602",
+  "quorum": 0.4,
+  "threshold": 0.5,
+  "veto": 0.334,
+  "bonded_PUNDIX": 685703.5398226428,
+  "bonded_usd": 76724.27,
+  "proceeds": {
+    "community_pool_usd": 1844.44,
+    "community_pool_PURSE": 792064487.2489712,
+    "community_pool_PUNDIX": 1840.3196939727463,
+    "gov_movable_beyond_cp": 0.0,
+    "note": "CP is the only asset any gov message can move immediately; escrows/pools/user balances are not gov-spendable; software upgrade is validator-adopted (P)."
+  },
+  "scenarios": {
+    "naive_quorum_only_QxB": {
+      "pundix": 274281.4159290571,
+      "usd": 30689.71
+    },
+    "precise_self_inclusive_Q_over_1mQ_xB": {
+      "pundix": 457135.69321509526,
+      "usd": 51149.51,
+      "note": "v0.45 tally: attacker's own stake enters the quorum denominator; minimum when nobody else votes."
+    },
+    "majority_of_cast_votes_full_turnout_opposition": {
+      "pundix": 685703.5398226428,
+      "usd": 76724.27
+    },
+    "veto_proof_full_turnout_opposition": {
+      "pundix": 1367301.0704247905,
+      "usd": 152989.12
+    }
+  },
+  "acquisition": {
+    "onchain_free_float_PUNDIX": 217406.352923643,
+    "onchain_free_float_usd": 24325.88,
+    "onchain_float_vs_naive_pct": 79.26,
+    "onchain_float_vs_precise_pct": 47.56,
+    "only_route": "IBC channel-0 from fxcore (voucher origin chain); fxcore public LCD/RPC endpoints return 503 (checked 2026-10-09) - bridge-in feasibility unverified.",
+    "note": "No DEX/AMM on PundiX chain (no wasm, no AMM module; 1,111 accounts total). Tokens must be bridged in via channel-0 (fxcore) or channel-1 (osmosis-1)."
+  },
+  "ev": {
+    "naive": -28845.27,
+    "precise": -49305.08,
+    "note": "Attacker's principal is recoverable after 21-day unbonding, but exposed to price risk; the CP itself is in bridged/native vouchers needing outbound bridge to realize USD."
+  },
+  "corpus_reconciliation": {
+    "claimed_capture_usd": 33600,
+    "implied": "0.40 x 685,703.54 x $0.1225 (Oct-4-2026 price) = $33.5k - the corpus figure used the correct live quorum but the pre-drawdown price",
+    "live_price_usd": 0.11189131591008934,
+    "correction": "self-inclusive denominator raises the true minimum to $51.1k; either way >= 16x the CP"
+  },
+  "verdict": "dead end confirmed: capture cost >= $30.7k (naive) / $51.1k (precise) vs CP $1,844.44; acquisition additionally constrained (float 217.4k < 274.3k/457.1k needed); EV <= -$28.8k"
+}
