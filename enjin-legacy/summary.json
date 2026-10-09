@@ -1,0 +1,41 @@
+{
+  "finding": "C2-23",
+  "title": "Enjin legacy CryptoItems (Ethereum) — post-exploit live extractability",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 100880.56, "S": 0},
+  "latest_block": 26152522,
+  "block_numbers": {"ethereum": 26152522, "incident": 25834071, "global_lock": 25835670, "pa_mitigation": 25853511},
+  "targets_checked": 4241,
+  "live_targets": 952,
+  "closed_reasons": [
+    "manager takeover locked: initialize(uint256) route replaced by a revert stub ('locked'); pendingManager=0; transferManager/updateContract manager-only (manager = attacker contract)",
+    "residual malicious adapter (0x99294e5e) caller-gated 'only pwn' (require msg.sender == 0x7083Ddec); attack contract write fns owner-gated",
+    "PA deployAdapter(0x33d332ab) + both item gateways(0x41c1df0e/0xf95d7da3) zeroed by Enjin at block 25853511 -> 'Function does not exist.'",
+    "Adapter 0x4E64 globally locked since block 25835670 (tx 0xe7f2d0a3...) -> all transfers and melts frozen, incl. for item owners",
+    "Adapter ledger writes / reserve release revert for non-approved callers (approved = PA only)"
+  ],
+  "poc": {
+    "tests_passed": 8,
+    "tests_total": 8,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Incident tx 0xd4a382da... moved 5,238,353 ENJ; total campaign extraction 6,453,855.47 ENJ from the Adapter reserve (blocks 25834071-25834440)",
+    "Templates remain under the attacker contract's manager control (0x7083Ddec...; owner EOA 0x5ec1BA78..., wallets now empty)",
+    "All 395 per-item shells were created by the attacker's sweep (single deployer = 0x7083Ddec...)",
+    "Malicious adapter registrations persist (NFT 0x6453dcf6->0x99294e5e; FT 0x23b872dd->0x99294e5e) but are unreachable/unusable",
+    "Reserve 3,272,608.45 ENJ = $100,880.56 (DefiLlama $0.030826, 2026-10-09) frozen by global lock; releasable only by the Adapter manager 0xE5cb0C8E... (globalUnlock/releaseERC20) => P",
+    "A live holder's melt of a live item succeeds at block 25834070 and reverts at latest (fork test 07) - redeemability pre-lock proven, frozen now",
+    "Platform inactive: 0 logs from PA in the last 100,000 blocks",
+    "Census (block 26,152,529): 395 shells (391 NFT/4 FT), 92,245 NFT instances minted ever, 15,163 item ids swept from 4,603 victims; >=952 live items found in sampled classes (55 shelled + 863 non-shell NFT + 34 FT balances)"
+  ],
+  "caveats": [
+    "USD at DefiLlama ENJ $0.030826 (2026-10-09); incident-era figure (~$142k) used ~$0.0275",
+    "Census coverage: all 395 shells first-25 indices + ~10 tail samples for large shells; non-shell live scan covered 3,846 ids; TransferSingle history limited to last 3M blocks",
+    "H-O is $0 today (frozen); if the operator unlocks the Adapter, holders could redeem up to the reserve (and the original attacker could only steal if gateways are also re-enabled)",
+    "All tests are fork-only; no mainnet transactions were sent"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from the Enjin legacy CryptoItems platform: every path is closed (takeover locked, malicious adapter caller-gated, PA gateways zeroed, Adapter globally locked); the remaining 3.27M ENJ reserve ($100.9k) is frozen and releasable only by the Enjin-controlled Adapter manager."
+}

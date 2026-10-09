@@ -1,0 +1,141 @@
+================================================================================
+ENJIN LEGACY CRYPTOITEMS (PA 0xfaafdc07 / Adapter 0x4e64) - eth_call battery
+block: latest = 26152497   attacker EOA = 0x0000000000000000000000000000000000001111   (READ-ONLY SIMULATION)
+================================================================================
+----------------------------------------------------------------
+## PA.safeTransferFrom(victim,attacker) from attacker
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c safeTransferFrom(address,address,uint256,uint256,bytes) 0xB3FbC3b41D9606b8A9ecBeA57581E526AeF958Ad 0x0000000000000000000000000000000000001111 36185027886661319085724848904006306622449963644202689625038397583044925980672 1 0x --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted: CryptoItemsTransfers: Sender is not approved, data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002c43727970746f4974656d735472616e73666572733a2053656e646572206973206e6f7420617070726f7665640000000000000000000000000000000000000000"
+
+----------------------------------------------------------------
+## PA.safeTransferFrom(victim,attacker) from victim (legit owner, post-lock)
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c safeTransferFrom(address,address,uint256,uint256,bytes) 0xB3FbC3b41D9606b8A9ecBeA57581E526AeF958Ad 0x0000000000000000000000000000000000001111 36185027886661319085724848904006306622449963644202689625038397583044925980672 1 0x --from 0xB3FbC3b41D9606b8A9ecBeA57581E526AeF958Ad
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## PA.melt([id],[1]) from attacker
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c melt(uint256[],uint256[]) [36185027886661319085724848904006306622449963644202689625038397583044925980672] [1] --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## PA.create(...) from attacker
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c create(string,uint256,uint256,address,uint256,uint16,uint8,uint256[3],bool) x 0 0 0x0000000000000000000000000000000000001111 0 0 0 [0,0,0] false --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted: LibItemCommon: _supply is 0, data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001b4c69624974656d436f6d6d6f6e3a205f737570706c7920697320300000000000"
+
+----------------------------------------------------------------
+## PA.setURI(id,x) from attacker
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c setURI(uint256,string) 36185027886661319085724848904006306622449963644202689625038397583044925980672 x --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted: CryptoItemsCreators: Sender is not the creator of _id, data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003543727970746f4974656d7343726561746f72733a2053656e646572206973206e6f74207468652063726561746f72206f66205f69640000000000000000000000"
+
+----------------------------------------------------------------
+## PA.assign(id,attacker) from attacker
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c assign(uint256,address) 36185027886661319085724848904006306622449963644202689625038397583044925980672 0x0000000000000000000000000000000000001111 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted: CryptoItemsCreators: Sender is not the creator of _id, data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003543727970746f4974656d7343726561746f72733a2053656e646572206973206e6f74207468652063726561746f72206f66205f69640000000000000000000000"
+
+----------------------------------------------------------------
+## PA.releaseReserve(id,1) from attacker
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c releaseReserve(uint256,uint128) 36185027886661319085724848904006306622449963644202689625038397583044925980672 1 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted: CryptoItemsCreators: Sender is not the creator of _id, data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003543727970746f4974656d7343726561746f72733a2053656e646572206973206e6f74207468652063726561746f72206f66205f69640000000000000000000000"
+
+----------------------------------------------------------------
+## PA.initialize(attacker) from attacker
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c initialize(address) 0x0000000000000000000000000000000000001111 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted: Managed: only manager, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000154d616e616765643a206f6e6c79206d616e616765720000000000000000000000"
+
+----------------------------------------------------------------
+## PA.transferManager(attacker) from attacker
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c transferManager(address) 0x0000000000000000000000000000000000001111 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## PA.acceptManager() from attacker
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c acceptManager() --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted: Sender must be the new manager., data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001f53656e646572206d75737420626520746865206e6577206d616e616765722e00"
+
+----------------------------------------------------------------
+## PA.removeManager() from attacker
+$ cast call 0xfaafdc07907ff5120a76b34b731b278c38d6043c removeManager() --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## moduleB 0x33d332ab(1,0x,0) direct from attacker
+$ cast call 0x68ee930ea6ad962205f1e29ae79bcc3dfa07c837 0x33d332ab 0x0000000000000000000000000000000000000000000000000000000000000001 0x 0x0000000000000000000000000000000000000000000000000000000000000000 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## moduleB 0x41c1df0e(attacker,victim,attacker,id) direct from attacker
+$ cast call 0x68ee930ea6ad962205f1e29ae79bcc3dfa07c837 0x41c1df0e 0x0000000000000000000000000000000000001111 0xB3FbC3b41D9606b8A9ecBeA57581E526AeF958Ad 0x0000000000000000000000000000000000001111 36185027886661319085724848904006306622449963644202689625038397583044925980672 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## moduleB 0xf95d7da3(attacker,victim,attacker,id,1) direct from attacker
+$ cast call 0x68ee930ea6ad962205f1e29ae79bcc3dfa07c837 0xf95d7da3 0x0000000000000000000000000000000000001111 0xB3FbC3b41D9606b8A9ecBeA57581E526AeF958Ad 0x0000000000000000000000000000000000001111 36185027886661319085724848904006306622449963644202689625038397583044925980672 1 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.setUint(key,1) from attacker
+$ cast call 0x4e643a25a64952895f553f20252861258727174e setUint(bytes32,uint256) 0x0000000000000000000000000000000000000000000000000000000000000000 1 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.setUint(key,1) from PA (spoof control)
+$ cast call 0x4e643a25a64952895f553f20252861258727174e setUint(bytes32,uint256) 0x0000000000000000000000000000000000000000000000000000000000000000 1 --from 0xfaafdc07907ff5120a76b34b731b278c38d6043c
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.setAddress(key,attacker) from attacker
+$ cast call 0x4e643a25a64952895f553f20252861258727174e setAddress(bytes32,address) 0x0000000000000000000000000000000000000000000000000000000000000000 0x0000000000000000000000000000000000001111 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.addApprovedAddress(attacker) from attacker
+$ cast call 0x4e643a25a64952895f553f20252861258727174e addApprovedAddress(address) 0x0000000000000000000000000000000000001111 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.removeApprovedAddress(attacker) from attacker
+$ cast call 0x4e643a25a64952895f553f20252861258727174e removeApprovedAddress(address) 0x0000000000000000000000000000000000001111 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.mintFungible(id,attacker,1) from attacker
+$ cast call 0x4e643a25a64952895f553f20252861258727174e mintFungible(uint256,address,uint256) 36185027886661319085724848904006306622449963644202689625038397583044925980672 0x0000000000000000000000000000000000001111 1 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.mintFungible(id,attacker,1) from PA (spoof control)
+$ cast call 0x4e643a25a64952895f553f20252861258727174e mintFungible(uint256,address,uint256) 36185027886661319085724848904006306622449963644202689625038397583044925980672 0x0000000000000000000000000000000000001111 1 --from 0xfaafdc07907ff5120a76b34b731b278c38d6043c
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.releaseETH(attacker,1) from attacker
+$ cast call 0x4e643a25a64952895f553f20252861258727174e releaseETH(address,uint256) 0x0000000000000000000000000000000000001111 1 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.globalUnlock() from attacker
+$ cast call 0x4e643a25a64952895f553f20252861258727174e globalUnlock() --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.globalLock() from attacker
+$ cast call 0x4e643a25a64952895f553f20252861258727174e globalLock() --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+----------------------------------------------------------------
+## Adapter.globalUnlock() from manager contract (spoof control)
+$ cast call 0x4e643a25a64952895f553f20252861258727174e globalUnlock() --from 0xE5cb0C8E160C5aC4669D1dfD689Df01bA9eea3eB
+0x
+
+----------------------------------------------------------------
+## manager.lockStorage() from attacker
+$ cast call 0xE5cb0C8E160C5aC4669D1dfD689Df01bA9eea3eB lockStorage() --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted: Sender is not a manager., data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001853656e646572206973206e6f742061206d616e616765722e0000000000000000"
+
+----------------------------------------------------------------
+## manager.releaseERC20(ENJ,attacker,1e18) from attacker
+$ cast call 0xE5cb0C8E160C5aC4669D1dfD689Df01bA9eea3eB releaseERC20(address,address,uint256) 0xf629cbd94d3791c9250152bd8dfbdf380e2a3b9c 0x0000000000000000000000000000000000001111 1000000000000000000 --from 0x0000000000000000000000000000000000001111
+Error: server returned an error response: error code 3: execution reverted: Sender is not a manager., data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001853656e646572206973206e6f742061206d616e616765722e0000000000000000"
+
+================================================================================
+done

@@ -1,0 +1,658 @@
+{
+  "address": "0xfaafdc07907ff5120a76b34b731b278c38d6043c",
+  "latest_block": 26152687,
+  "dispatch": "fallback: keccak256(bytes4 selector left-aligned || uint256(2)) -> storage mapping 'delegates(bytes4)' -> delegatecall; else revert 'Function does not exist.'; 6 hardcoded admin selectors handled in PA itself",
+  "hardcoded_admin": {
+    "0x48ff15b3": {
+      "sig": "acceptManager()",
+      "guard": "caller == pendingManager (slot1)"
+    },
+    "0x7457bbf7": {
+      "sig": "pendingManager() [inferred getter, not in signature DBs]",
+      "guard": "none (view, returns slot1)"
+    },
+    "0x8d0a3a08": {
+      "sig": "removeManager()",
+      "guard": "caller == getManager (slot0); clears manager+pending"
+    },
+    "0xa0a2daf0": {
+      "sig": "delegates(bytes4)",
+      "guard": "none (view)"
+    },
+    "0xba0e930a": {
+      "sig": "transferManager(address)",
+      "guard": "caller == getManager (slot0); sets slot1 pending"
+    },
+    "0xd5009584": {
+      "sig": "getManager()",
+      "guard": "none (view, returns slot0)"
+    }
+  },
+  "routed": {
+    "0x00549c2b": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "mintNonFungibles(uint256,address[])"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x00ad800c": {
+      "module": "0x684811e54a58fed4b813e8bb8685b511966b0ba4",
+      "module_name": "moduleA (ERC1155 read/approval helper)",
+      "signatures": [
+        "name(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x00fdd58e": {
+      "module": "0x684811e54a58fed4b813e8bb8685b511966b0ba4",
+      "module_name": "moduleA (ERC1155 read/approval helper)",
+      "signatures": [
+        "balanceOf(address,uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x0565276f": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x0aa6231e": {
+      "module": "0x130ed4c3ee034aa5906048508c056d9698bafd42",
+      "module_name": "module_130e (CryptoItemsEvents)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x0e89341c": {
+      "module": "0x684811e54a58fed4b813e8bb8685b511966b0ba4",
+      "module_name": "moduleA (ERC1155 read/approval helper)",
+      "signatures": [
+        "uri(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x11f7e404": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "minMeltValue(uint256)"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x12ab550f": {
+      "module": "0x7d846227baf9d8100170b6cf26802fecae5d88c1",
+      "module_name": "moduleI (CryptoItemsTransfers: safeTransferFrom/Batch/Multicast)",
+      "signatures": [
+        "transferFees(uint256,uint256,address,address)"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x22000392": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x239a46fc": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "acceptFeeRecipient(uint256)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x2665bc1c": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x28dbff7b": {
+      "module": "0x29bb095b2aede04a8724071344bf1fb7e424fe1c",
+      "module_name": "moduleJ (CryptoItemsReplicate/bridge helpers)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x2df3f42a": {
+      "module": "0x29bb095b2aede04a8724071344bf1fb7e424fe1c",
+      "module_name": "moduleJ (CryptoItemsReplicate/bridge helpers)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x2eb2c2d6": {
+      "module": "0x7d846227baf9d8100170b6cf26802fecae5d88c1",
+      "module_name": "moduleI (CryptoItemsTransfers: safeTransferFrom/Batch/Multicast)",
+      "signatures": [
+        "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)"
+      ],
+      "guard_class": "sender must be owner or scope-approved; Adapter platform gate + global lock"
+    },
+    "0x30ce02bd": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x34e07ff3": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "setTransferable(uint256,uint8)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x36d10002": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "addLog(uint256,string)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x3941412b": {
+      "module": "0x29bb095b2aede04a8724071344bf1fb7e424fe1c",
+      "module_name": "moduleJ (CryptoItemsReplicate/bridge helpers)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x3d7d20a4": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "mintFungibles(uint256,address[],uint256[])",
+        "DocumentRegistered(address,address,bytes32,string,uint256,bytes32)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x3f47e662": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "decimals(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x4049ddd2": {
+      "module": "0x29bb095b2aede04a8724071344bf1fb7e424fe1c",
+      "module_name": "moduleJ (CryptoItemsReplicate/bridge helpers)",
+      "signatures": [
+        "chainId(uint256)"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x40e0051c": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "scopeCountForId(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x4341963e": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "typeData(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x443bf984": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "mintableSupply(uint256)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x4a966a50": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x4aa8ade5": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x4e1273f4": {
+      "module": "0x684811e54a58fed4b813e8bb8685b511966b0ba4",
+      "module_name": "moduleA (ERC1155 read/approval helper)",
+      "signatures": [
+        "balanceOfBatch(address[],uint256[])"
+      ],
+      "guard_class": "public view"
+    },
+    "0x4e41a1fb": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "symbol(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x510b5158": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "creator(uint256)"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x53e76f2c": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "updateName(uint256,string)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x557e8369": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "setApprovalForScope(address,bytes32,bool)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x567db8ac": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x610291ce": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "isApprovedForScope(address,address,bytes32)"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x61455567": {
+      "module": "0x04866013862349a6a19a04c8a1590ea2cf026134",
+      "module_name": "module_0486 (delegate registry: updateContract)",
+      "signatures": [
+        "updateContract(address,string,string)"
+      ],
+      "guard_class": "manager-only (PA.getManager) - writes the delegates table"
+    },
+    "0x6352211e": {
+      "module": "0x68ee930ea6ad962205f1e29ae79bcc3dfa07c837",
+      "module_name": "moduleB (CryptoItemsAdapters: ownerOf/getAdapter/gateways, deployAdapter [disabled])",
+      "signatures": [
+        "ownerOf(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x6683de90": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "transferSettings(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x6907be85": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "acceptAssignment(uint256)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x70fb2621": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "getFeeRecipient(uint256)"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x71f77a64": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x7e2c20ad": {
+      "module": "0x29bb095b2aede04a8724071344bf1fb7e424fe1c",
+      "module_name": "moduleJ (CryptoItemsReplicate/bridge helpers)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0x819b25ba": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "reserve(uint256)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x862440e2": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "setURI(uint256,string)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x8fa1cc21": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "decreaseMaxMeltFee(uint256,uint16)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x9103d3ee": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "scopeForId(uint256,uint32)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x92ff6aea": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "circulatingSupply(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0x934930a1": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "setTransferFee(uint256,uint256)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0x9bb7f44e": {
+      "module": "0x68ee930ea6ad962205f1e29ae79bcc3dfa07c837",
+      "module_name": "moduleB (CryptoItemsAdapters: ownerOf/getAdapter/gateways, deployAdapter [disabled])",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0xa22cb465": {
+      "module": "0x684811e54a58fed4b813e8bb8685b511966b0ba4",
+      "module_name": "moduleA (ERC1155 read/approval helper)",
+      "signatures": [
+        "setApprovalForAll(address,bool)",
+        "niceFunctionHerePlzClick943230089(address,bool)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0xa3c4f748": {
+      "module": "0x29bb095b2aede04a8724071344bf1fb7e424fe1c",
+      "module_name": "moduleJ (CryptoItemsReplicate/bridge helpers)",
+      "signatures": [
+        "isReplicated(uint256)"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0xa6566f8d": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "setMeltFee(uint256,uint16)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0xb2aac5fb": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "whitelisted(uint256,address,address)"
+      ],
+      "guard_class": "public view"
+    },
+    "0xb37cd03d": {
+      "module": "0xd6afd25d38d19fafdce8471ffb00119859f54984",
+      "module_name": "moduleH (initialize/getStorageContractAddress)",
+      "signatures": [
+        "getStorageContractAddress()"
+      ],
+      "guard_class": "public view"
+    },
+    "0xb97f0eb7": {
+      "module": "0x68ee930ea6ad962205f1e29ae79bcc3dfa07c837",
+      "module_name": "moduleB (CryptoItemsAdapters: ownerOf/getAdapter/gateways, deployAdapter [disabled])",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0xbd85b039": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "totalSupply(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0xc2eed0de": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "releaseReserve(uint256,uint128)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0xc4d66de8": {
+      "module": "0xd6afd25d38d19fafdce8471ffb00119859f54984",
+      "module_name": "moduleH (initialize/getStorageContractAddress)",
+      "signatures": [
+        "initialize(address)"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0xc5817e1e": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "decreaseMaxTransferFee(uint256,uint256)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0xc8b1d5e1": {
+      "module": "0x130ed4c3ee034aa5906048508c056d9698bafd42",
+      "module_name": "module_130e (CryptoItemsEvents)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0xcd23dde0": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "create(string,uint256,uint256,address,uint256,uint16,uint8,uint256[3],bool)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0xd5894752": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "scopeUri(bytes32)"
+      ],
+      "guard_class": "public view"
+    },
+    "0xda8f728d": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0xdcf0f7d3": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0xddeadbb6": {
+      "module": "0x68ee930ea6ad962205f1e29ae79bcc3dfa07c837",
+      "module_name": "moduleB (CryptoItemsAdapters: ownerOf/getAdapter/gateways, deployAdapter [disabled])",
+      "signatures": [
+        "getAdapter(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0xdf0e9ddf": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0xe07d3b5a": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "assign(uint256,address)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0xe6e21c75": {
+      "module": "0x6df3f217ee696c6e779962c8747a04c35463794d",
+      "module_name": "moduleK (item admin: create/assign/mint/setX/releaseReserve)",
+      "signatures": [
+        "setWhitelisted(uint256,address,address,bool)"
+      ],
+      "guard_class": "guard per module: creator-of-id or manager; Adapter platform gate + global lock"
+    },
+    "0xe985e9c5": {
+      "module": "0x684811e54a58fed4b813e8bb8685b511966b0ba4",
+      "module_name": "moduleA (ERC1155 read/approval helper)",
+      "signatures": [
+        "isApprovedForAll(address,address)"
+      ],
+      "guard_class": "public view"
+    },
+    "0xea6df23f": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "isCreatorOf(uint256,address)"
+      ],
+      "guard_class": "public view"
+    },
+    "0xf0342125": {
+      "module": "0x68ee930ea6ad962205f1e29ae79bcc3dfa07c837",
+      "module_name": "moduleB (CryptoItemsAdapters: ownerOf/getAdapter/gateways, deployAdapter [disabled])",
+      "signatures": [
+        "getStorageContract()"
+      ],
+      "guard_class": "public view"
+    },
+    "0xf242432a": {
+      "module": "0x7d846227baf9d8100170b6cf26802fecae5d88c1",
+      "module_name": "moduleI (CryptoItemsTransfers: safeTransferFrom/Batch/Multicast)",
+      "signatures": [
+        "safeTransferFrom(address,address,uint256,uint256,bytes)"
+      ],
+      "guard_class": "sender must be owner or scope-approved; Adapter platform gate + global lock"
+    },
+    "0xf521a982": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "getCreatedTime(uint256)"
+      ],
+      "guard_class": "public view"
+    },
+    "0xf6089e12": {
+      "module": "0x1b73f45892d528379397922e8bf160b8710ee997",
+      "module_name": "moduleC (CryptoItemsUsers: item queries + melt entry)",
+      "signatures": [
+        "melt(uint256[],uint256[])"
+      ],
+      "guard_class": "public; burns caller-owned items via libs; payouts only for burned holdings; Adapter gate + global lock"
+    },
+    "0xfb2b9992": {
+      "module": "0x29bb095b2aede04a8724071344bf1fb7e424fe1c",
+      "module_name": "moduleJ (CryptoItemsReplicate/bridge helpers)",
+      "signatures": [
+        "<unresolved>"
+      ],
+      "guard_class": "see module decompile"
+    },
+    "0xff469a8e": {
+      "module": "0x7d846227baf9d8100170b6cf26802fecae5d88c1",
+      "module_name": "moduleI (CryptoItemsTransfers: safeTransferFrom/Batch/Multicast)",
+      "signatures": [
+        "safeMulticastTransferFrom(address[],address[],uint256[],uint256[],bytes)"
+      ],
+      "guard_class": "sender must be owner or scope-approved; Adapter platform gate + global lock"
+    }
+  },
+  "disabled_2026_08_28": {
+    "tx": "0x2d92aed4d9a7147ba6588e329b25a9ffcb66278bf939eeaf534d7697cf60a57e",
+    "block": 25853511,
+    "note": "manager EOA 0x1421d753 set delegates[sel] = address(0) for these previously-routed selectors (module B was the target until block 25853510)",
+    "selectors": {
+      "0x33d332ab": {
+        "sig": "deployAdapter(uint256,string,uint8)",
+        "was": "moduleB (CryptoItemsAdapters: ownerOf/getAdapter/gateways, deployAdapter [disabled])"
+      },
+      "0xf95d7da3": {
+        "sig": "transferFungiblesFromAdapter(address,address,address,uint256,uint256)",
+        "was": "moduleB"
+      },
+      "0x41c1df0e": {
+        "sig": "transferNonFungiblesFromAdapter(address,address,address,uint256)",
+        "was": "moduleB"
+      },
+      "0xfed9dc6a": {
+        "sig": "setApprovalForAllAdapter(address,uint256,bool,address)",
+        "was": "moduleB"
+      }
+    }
+  },
+  "adapter": {
+    "address": "0x4e643a25a64952895f553f20252861258727174e",
+    "role": "storage contract (item ledger) + ENJ reserve",
+    "gate": "write functions require platform-caller (PA) and are frozen by global lock",
+    "manager": "0xE5cb0C8E160C5aC4669D1dfD689Df01bA9eea3eB",
+    "isGlobalLocked": true,
+    "enj_reserve_wei": "3272608451601512688826076"
+  }
+}

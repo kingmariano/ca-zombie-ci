@@ -1,0 +1,30 @@
+block=26152556
+nf_manager=0x7083DdecE38216C7741fa76c75326Bea744ED321
+ft_manager=0x7083DdecE38216C7741fa76c75326Bea744ED321
+reserve_enj_wei=3272608451601512688826076 [3.272e24]
+delegate_nft_steal=0x99294e5e8dd62Fa0092A85AB37e8B5c44Ec29758
+delegate_ft_steal=0x99294e5e8dd62Fa0092A85AB37e8B5c44Ec29758
+delegate_nft_initialize=0x73497e1C3070A031e1EE05fdEAaeb73C9DD8fcB5
+attack_owner=0x5ec1BA7892D11059c39557b762a97DD695778Ca5
+== probe: deployAdapter route from random (expect revert 'Function does not exist.') ==
+Error: server returned an error response: error code 3: execution reverted: Function does not exist., data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001846756e6374696f6e20646f6573206e6f742065786973742e0000000000000000"
+== probe: NFT gateway route from random (expect revert 'Function does not exist.') ==
+Error: server returned an error response: error code 3: execution reverted: Function does not exist., data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001846756e6374696f6e20646f6573206e6f742065786973742e0000000000000000"
+== probe: NFT shell stealNFT route from random (expect revert 'only pwn') ==
+Error: server returned an error response: error code 3: execution reverted: only pwn, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000086f6e6c792070776e000000000000000000000000000000000000000000000000"
+== probe: FT shell transferFrom route from random (expect revert 'only pwn') ==
+Error: server returned an error response: error code 3: execution reverted: only pwn, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000086f6e6c792070776e000000000000000000000000000000000000000000000000"
+== probe: melt from random (non-owner; expect revert) ==
+Error: server returned an error response: error code 3: execution reverted
+{
+  "block": 26152556,
+  "nf_manager": "0x7083DdecE38216C7741fa76c75326Bea744ED321",
+  "ft_manager": "0x7083DdecE38216C7741fa76c75326Bea744ED321",
+  "reserve_enj_wei": "3272608451601512688826076 [3.272e24]",
+  "delegate_nft_steal": "0x99294e5e8dd62Fa0092A85AB37e8B5c44Ec29758",
+  "delegate_ft_steal": "0x99294e5e8dd62Fa0092A85AB37e8B5c44Ec29758",
+  "delegate_nft_initialize": "0x73497e1C3070A031e1EE05fdEAaeb73C9DD8fcB5",
+  "attack_contract_owner": "0x5ec1BA7892D11059c39557b762a97DD695778Ca5",
+  "note": "PA deployAdapter/gateway routes disabled by Enjin at block 25853511; templates' manager is the exploited attacker contract."
+}
+== done ==
