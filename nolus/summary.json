@@ -1,0 +1,69 @@
+{
+  "finding": "C2-31",
+  "title": "Nolus (pirin-1) governance capture \u2014 capital capture uneconomic; residual validator-deception migration risk",
+  "chains": [
+    "nolus"
+  ],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 118482.22,
+    "P": 1438826.34,
+    "S": 0.0
+  },
+  "latest_block": 27324002,
+  "block_numbers": {
+    "nolus": 27324002,
+    "nolus_primary_measurement": 27319088,
+    "nolus_gov_params_abci": 27319295
+  },
+  "targets_checked": 78,
+  "live_targets": 5,
+  "closed_reasons": [
+    "No permissionless (E-U) path exists: all value sits behind governance (CP spend / wasm sudo migration) or remote Solana-side systems; no public function pays an unprivileged caller",
+    "Capital capture uneconomic: quorum-only floor requires 106.6M NLS (~$400k, own-stake denominator correction; the $272k claim is wrong); empirical hostile-vote bloc (162.3M NLS NoWithVeto, prop 295) implies 324.7M NLS (~$1.19M) to survive veto; NLS market depth is 2.2M NLS visible asks and $62.4k/day all-venue volume, so real acquisition cost is multiples of spot",
+    "Proceeds are illiquid: CP = 240.0M NLS + $0.05 dust; immediate market sale ~$1.9k (MEXC bids); slow-sale of 392.0M NLS (42% of supply) optimistic $196-588k; net vs liquid proceeds -$271k (floor) to -$1.07M (opposed)",
+    "No other module-account pot is gov-spendable: fee pool is delegator rewards, staking pools are bookkeeping, vestings/wasm/fee_collector/interchainaccounts empty; IBC escrow is user funds",
+    "Osmosis/Neutron markets sunset (DefiLlama hallmarks), ICA-side balances ~$0; Solana-side positions (~$228k DL snapshot) not reached without unverified remote-lease/relayer trust assumptions",
+    "No MsgCommunityPoolSpend has ever executed on this chain (tx search: 0); governance history is 99/100 passed with all pin/migrate proposals 100% Yes"
+  ],
+  "poc": {
+    "tests_passed": 0,
+    "tests_total": 0,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37948203035"
+    ],
+    "ci_verification": "data-job (keyless re-fetch of all chain/market inputs + deterministic model re-run; success, block 27,324,402)",
+    "files": [
+      "ci/run.sh",
+      "ci/fetch_contracts.py",
+      "analysis/model.py",
+      "analysis/params.md",
+      "analysis/capture_model.md"
+    ]
+  },
+  "key_facts": [
+    "Gov params (ABCI, h 27,319,295): quorum 33.4%, threshold 50%, veto 33.4%, voting 3 days, min deposit 200 NLS (~$0.73)",
+    "Bonded 212,518,285.80 NLS at h 27,319,1xx; 217.16M at CI h 27,324,402 (+2.2% intraday); 19 validators; top-3 = 37.0% of bonded; unbonding 21 days",
+    "NLS spot $0.00364916 ($0.00367039 at CI); total supply 922.94M; mcap ~$3.25M; all-venue 24h volume $62.4k (MEXC $57.1k, Raydium $5.25k, Osmosis $23)",
+    "MEXC NLS/USDT book: 2.158M NLS total asks (1.85M within 2x mid), $1,926 bids \u2014 buying 106.6M NLS = 49x the visible book",
+    "Capture costs: claim basis 70.98M NLS/$259k; quorum floor (own-stake corrected) 106.58M NLS/$389k; threshold vs 80% turnout 170.0M/$620k; veto survival vs 162.3M NWV 324.66M/$1,185k; all-validators-NWV 347.5M/$1,241k",
+    "Community pool = 240,000,000.95 NLS + $0.05 micro-dust (USDC/ATOM/OSMO/NTRN balances are micro-unit dust, NOT $47k)",
+    "Protocol treasury contract holds 152,008,181.07 NLS (+$2.6 dust), accruing ~130 NLS/h from tx fees (x/tax fee_rate=100%, gov-updatable)",
+    "LPP vaults (Solana Metis, carried on Nolus): $97.1k USDC + $14.1k SOL + $6.4k cbBTC + $0.8k WETH = $118.3k \u2014 the only liquid pot; decimals validated vs DefiLlama ($116.9k idle TVL on 2026-10-04)",
+    "Gov-movable nominal total $1.55M (392.0M NLS = 42% of supply + $118.3k carried); liquid total $118.5k",
+    "Attack mechanics proven: wasm keeper authority = gov module (can open code_upload_access via MsgUpdateParams); Admin-contract sudo migrate_contracts honors explicit per-contract code_id including platform treasury (props 277/299/306/313/329/345) and protocol contracts (props 371/373); versioning checks are self-attested by the target code",
+    "Empirical opposition: prop 295 (scam) rejected with NoWithVeto = 162,331,398 NLS (76% of bonded); all 99 other proposals passed, all pin/migrate 100% Yes",
+    "Net capital-capture vs liquid proceeds: -$271k (floor spot), -$1.07M (empirical veto), -$1.05M (floor at 3x slippage) \u2014 before the attacker's own NLS exit overhang",
+    "Residual deception path: 1-2 proposals (open upload; pin+sudo-migrate; potentially bundleable) at ~$0.73/200 NLS deposit cost could drain treasury+LPP ($118.5k liquid, $1.43M NLS nominal); success depends on validators approving visibly non-team proposals"
+  ],
+  "caveats": [
+    "Point-in-time reads 2026-10-09 (primary h 27,319,088; CI h 27,324,402); NLS price/depth move and bonded rose intraday",
+    "Admin/treasury contract source is not public; interfaces recovered from deployed wasm (code 913/911/906/958/979) strings and executed governance proposals \u2014 mechanics strongly evidenced, not fork-executed (Cosmos chain, no EVM fork; no transactions sent per campaign rules)",
+    "NLS slow-sale scenarios are optimistic (assume price does not collapse while 42% of supply is distributed)",
+    "Solana-side positions (~$228k DefiLlama 2026-10-04) and the relayer trust model were not assessed; flagged as extension",
+    "Deception-path success probability is not quantifiable from on-chain data (depends on validator diligence)"
+  ],
+  "one_liner": "External unprivileged extraction $0; Nolus capture is not the claimed $272k-vs-$895k arbitrage: quorum-corrected floor is ~$389-400k, realistic opposition $0.62-1.19M, while proceeds are 93%+ illiquid NLS (CP 240.0M NLS + $0.05 dust; immediate depth ~$1.9k) and the only liquid pot is $118.3k of carried LPP assets \u2014 capital capture is deeply net-negative; residual risk is a low-capital validator-deception migration path whose mechanics are proven but whose payoff is liquidity-bounded (~$0.1-0.6M)."
+}

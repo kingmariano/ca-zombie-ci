@@ -1,0 +1,409 @@
+{
+ "finding": "C2-31",
+ "chain": "pirin-1 (Nolus)",
+ "app_version": "0.8.6",
+ "sdk": "v0.53.3-nolus-4",
+ "price_nls_usd": 0.00367851,
+ "facts": {
+  "bonded_nls": 217163595.297632,
+  "not_bonded_nls": 52919344.806044,
+  "total_supply_nls": 922953529.71544,
+  "validators": 19,
+  "top1_nls": 28656687.93724,
+  "top3_nls": 81481250.770788,
+  "top5_nls": 120428813.970109,
+  "median_turnout_nls": 150169884.686094,
+  "empirical_nwv_nls": 162331398.467336,
+  "gov": {
+   "quorum": 0.334,
+   "threshold": 0.5,
+   "veto": 0.334,
+   "voting_days": 3,
+   "min_deposit_nls": 200
+  }
+ },
+ "market_depth": {
+  "mexc_bid_usd_total": 3623.5540978399995,
+  "mexc_ask_nls_total": 2554650.51,
+  "mexc_ask_usd_top30": 3776.1038996500006,
+  "mexc_ask_nls_within_2x": 2248069.6799999997,
+  "mexc_ask_nls_within_10x": 2274057.2199999997,
+  "nls_24h_volume_usd": 62889.0
+ },
+ "capture_scenarios": {
+  "naive_claim_quorum_x_bonded": {
+   "nls": 72532640.8294091,
+   "usd_spot": 266812.0446173896,
+   "note": "campaign-claim basis (33.4% of bonded, spot) - ignores own-stake denominator"
+  },
+  "quorum_floor_own_stake_corrected": {
+   "nls": 108907869.11322688,
+   "usd_spot": 400618.68561169616,
+   "bonded_after": 326071464.41085887,
+   "note": "attacker votes alone; own stake raises the quorum denominator"
+  },
+  "opposition_threshold_80pct_turnout": {
+   "nls": 173730876.23810562,
+   "usd_spot": 639070.7655506339,
+   "note": "needs Yes>50% vs non-attacker votes cast at 80% of current bonded"
+  },
+  "empirical_nwv_veto_survival": {
+   "nls": 324662796.934672,
+   "usd_spot": 1194275.3451521602,
+   "nwv_observed": 162331398.467336,
+   "note": "survive NoWithVeto=162.33M (prop 295 scam; 76% of bonded): A >= 2x NWV"
+  },
+  "all_validators_nwv_80pct_turnout": {
+   "nls": 347461752.47621125,
+   "usd_spot": 1278141.5311012678,
+   "note": "worst realistic case: entire non-attacker bonded votes NWV at 80% turnout"
+  },
+  "acquisition_floor_depth_note": {
+   "nls": 108907869.11322688,
+   "days_at_20pct_of_daily_volume": 31.851252652426986,
+   "days_at_100pct_of_daily_volume": 6.370250530485397,
+   "mexc_visible_ask_multiple": 42.631220469067955,
+   "usd_spot": 400618.68561169616,
+   "usd_stress_3x_slippage": 1201856.0568350884,
+   "usd_stress_10x_slippage": 4006186.8561169617
+  },
+  "acquisition_empirical_veto_depth_note": {
+   "nls": 324662796.934672,
+   "days_at_20pct_of_daily_volume": 94.95105226288858,
+   "days_at_100pct_of_daily_volume": 18.99021045257772,
+   "mexc_visible_ask_multiple": 127.08697164790343,
+   "usd_spot": 1194275.3451521602,
+   "usd_stress_3x_slippage": 3582826.0354564805,
+   "usd_stress_10x_slippage": 11942753.451521602
+  }
+ },
+ "gov_movable": {
+  "cp_nls": 240000000.9549277,
+  "cp_other_usd": 0.05,
+  "treasury_nls": 152009107.979437,
+  "treasury_other_usd": 2.6,
+  "lpp_carried_usd": 118482.22,
+  "lpp_rows": [
+   {
+    "contract": "SOLANA-METIS-USDC-lpp",
+    "denom": "ibc/3E507F7BA8D40C5CDFFB",
+    "amount": 97252226332.0,
+    "usd": 97217.22
+   },
+   {
+    "contract": "SOLANA-METIS-SOL-lpp",
+    "denom": "ibc/32B15E261477BD3A14EE",
+    "amount": 93743944305.0,
+    "usd": 14061.59
+   },
+   {
+    "contract": "SOLANA-METIS-CB_BTC-lpp",
+    "denom": "ibc/3503E534494C431F5CD5",
+    "amount": 10651540.0,
+    "usd": 6390.92
+   },
+   {
+    "contract": "SOLANA-METIS-WETH-lpp",
+    "denom": "ibc/1F7E4E6396A1BE5B47F2",
+    "amount": 32499733.0,
+    "usd": 812.49
+   },
+   {
+    "contract": "NEUTRON-ASTROPORT-USDC_AXELAR-lpp",
+    "denom": "unls",
+    "amount": 6.0,
+    "usd": 0.0
+   },
+   {
+    "contract": "OSMOSIS-OSMOSIS-USDC_NOBLE-lpp",
+    "denom": "unls",
+    "amount": 1.0,
+    "usd": 0.0
+   },
+   {
+    "contract": "OSMOSIS-OSMOSIS-ST_ATOM-lpp",
+    "denom": "unls",
+    "amount": 1.0,
+    "usd": 0.0
+   }
+  ],
+  "reserves_usd": 0.02,
+  "nominal_total_usd": 1560494.32,
+  "liquid_total_usd": 118484.89,
+  "nls_tokens_in_pots": 392009108.9343647
+ },
+ "nls_liquidation": {
+  "avg_0.0015": {
+   "usd": 588013.663401547,
+   "avg_price": 0.0015,
+   "discount_vs_spot": 0.5922262002821794
+  },
+  "avg_0.001": {
+   "usd": 392009.1089343647,
+   "avg_price": 0.001,
+   "discount_vs_spot": 0.7281508001881196
+  },
+  "avg_0.0005": {
+   "usd": 196004.55446718234,
+   "avg_price": 0.0005,
+   "discount_vs_spot": 0.8640754000940598
+  },
+  "note": "392.0M NLS = 42% of total supply; MEXC bid depth is ~$1.9k and all-venue 24h volume $62.4k; immediate market sale recovers ~$2k. Slow-sale scenarios assume the price does not collapse further while 42% of supply is distributed."
+ },
+ "net": {
+  "capital_path_floor_spot": {
+   "cost": 400618.68561169616,
+   "liquid_proceeds": 118484.89,
+   "net_vs_liquid_only": -282133.8,
+   "note": "proceeds in NLS are not liquidatable at spot"
+  },
+  "capital_path_empirical_veto_spot": {
+   "cost": 1194275.3451521602,
+   "liquid_proceeds": 118484.89,
+   "net_vs_liquid_only": -1075790.45
+  },
+  "capital_path_floor_stress3x": {
+   "cost": 1201856.0568350884,
+   "net_vs_liquid_only": -1083371.17
+  },
+  "deception_path": {
+   "capital_required_usd": 1.471404,
+   "note": "two disguised proposals (1: wasm MsgUpdateParams -> open code upload; attacker stores malicious code; 2: MsgPinCodes + MsgSudoContract(Admin, migrate_contracts with explicit code_id) -> migrate treasury/LPP to malicious code). Versioning checks are self-attested by the target code, so a malicious contract can satisfy them. Requires validators to vote Yes on proposals they historically approve 100% Yes (99/100 passed; all migrations 100% Yes). Mechanics proven on-chain; success depends on validator diligence.",
+   "liquid_proceeds_usd": 118484.89,
+   "nls_nominal_usd": 1442009.43
+  }
+ },
+ "contract_inventory_top": [
+  {
+   "address": "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz",
+   "label": "treasury",
+   "code_id": "911",
+   "usd": 559169.62,
+   "balances": [
+    {
+     "denom": "ibc/32B15E261477BD3A14EE91726C48E49FDF8DDF54970E3652A1C48CD42FE3E084",
+     "amount": 199123.0,
+     "usd": 0.02986845
+    },
+    {
+     "denom": "ibc/3E507F7BA8D40C5CDFFB74234444ECEB6889562B82DE70E70F9EA8DE16B3D452",
+     "amount": 2571166.0,
+     "usd": 2.5702403802399996
+    },
+    {
+     "denom": "unls",
+     "amount": 152009107979437.0,
+     "usd": 559167.0237934388
+    }
+   ]
+  },
+  {
+   "address": "nolus1f0pqlmj609l8cy74g65737usspn38sfqyf7pprdef5knv8mm50ss06qlfw",
+   "label": "SOLANA-METIS-USDC-lpp",
+   "code_id": "979",
+   "usd": 97217.22,
+   "balances": [
+    {
+     "denom": "ibc/3E507F7BA8D40C5CDFFB74234444ECEB6889562B82DE70E70F9EA8DE16B3D452",
+     "amount": 97252226332.0,
+     "usd": 97217.21553052048
+    }
+   ]
+  },
+  {
+   "address": "nolus1fcvud8fgsw7vfwrlamxjmdq2khyflcf68r9hqztxqcay4n95nqwqu9dlu7",
+   "label": "SOLANA-METIS-SOL-lpp",
+   "code_id": "958",
+   "usd": 14061.59,
+   "balances": [
+    {
+     "denom": "ibc/32B15E261477BD3A14EE91726C48E49FDF8DDF54970E3652A1C48CD42FE3E084",
+     "amount": 93743944305.0,
+     "usd": 14061.59164575
+    }
+   ]
+  },
+  {
+   "address": "nolus1d2nthrs7df9unege7zkvqfxx03usm8dwj4xgztshtnwgsuxdq58sy37fyr",
+   "label": "SOLANA-METIS-CB_BTC-lpp",
+   "code_id": "965",
+   "usd": 6390.92,
+   "balances": [
+    {
+     "denom": "ibc/3503E534494C431F5CD534800B5A78D49C5BF87549AF565DC50CBA37307880F4",
+     "amount": 10651540.0,
+     "usd": 6390.924
+    }
+   ]
+  },
+  {
+   "address": "nolus17csexrg50zfuqg84wvj3k3fu5t0hsneyvu4dsgfalch3lrayacssk4q8ue",
+   "label": "SOLANA-METIS-WETH-lpp",
+   "code_id": "972",
+   "usd": 812.49,
+   "balances": [
+    {
+     "denom": "ibc/1F7E4E6396A1BE5B47F2BA3C20B8C6C95538EF0142F4A795C12876E26C5FB1A3",
+     "amount": 32499733.0,
+     "usd": 812.4933249999999
+    }
+   ]
+  },
+  {
+   "address": "nolus14qnh6egte0yufj2c5cunjxmdu995zkx8x8n24nw8wxx3rl992wpqugtkwh",
+   "label": "NEUTRON-ASTROPORT-USDC_NOBLE-profit",
+   "code_id": "906",
+   "usd": 70.67,
+   "balances": [
+    {
+     "denom": "ibc/18161D8EFBD00FF5B7683EF8E923B8913453567FBE3FB6672D75712B0DEB6682",
+     "amount": 70698281.0,
+     "usd": 70.67282961884
+    },
+    {
+     "denom": "ibc/3D6BC6E049CAEB905AC97031A42800588C58FB471EBDC7A3530FFCD0C3DC9E09",
+     "amount": 767584.0,
+     "usd": 0.00043327046464000006
+    },
+    {
+     "denom": "unls",
+     "amount": 100.0,
+     "usd": 3.6785100000000003e-07
+    }
+   ]
+  },
+  {
+   "address": "nolus1ut29qgydvpmllwclqdpzf9rzny0q5vqfapf6ylpd83z6arj9gsuqd5ctkn",
+   "label": "SOLANA-METIS-USDC-profit",
+   "code_id": "981",
+   "usd": 1.65,
+   "balances": [
+    {
+     "denom": "ibc/32B15E261477BD3A14EE91726C48E49FDF8DDF54970E3652A1C48CD42FE3E084",
+     "amount": 4481613.0,
+     "usd": 0.67224195
+    },
+    {
+     "denom": "ibc/3E507F7BA8D40C5CDFFB74234444ECEB6889562B82DE70E70F9EA8DE16B3D452",
+     "amount": 982513.0,
+     "usd": 0.9821592953199999
+    }
+   ]
+  },
+  {
+   "address": "nolus1r69jl4n2hp6vd4ex7xx5l9rcq8qcjeh8fefauzgvpnz2e0khqe9qnw25u4",
+   "label": "OSMOSIS-OSMOSIS-USDC_NOBLE-profit",
+   "code_id": "907",
+   "usd": 0.29,
+   "balances": [
+    {
+     "denom": "ibc/F5FABF52B54E65064B57BF6DBD8E5FAD22CEE9F4B8A57ADBB20CCD0173AA72A4",
+     "amount": 290932.0,
+     "usd": 0.29082726448
+    },
+    {
+     "denom": "unls",
+     "amount": 100.0,
+     "usd": 3.6785100000000003e-07
+    }
+   ]
+  },
+  {
+   "address": "nolus1pqe0lp4y9wjv7r9q4fdqahctceuvcr3x0n484zs5ku4mjynw3nts66t8dw",
+   "label": "Reserve",
+   "code_id": "906",
+   "usd": 0.02,
+   "balances": [
+    {
+     "denom": "unls",
+     "amount": 5000000.0,
+     "usd": 0.01839255
+    }
+   ]
+  },
+  {
+   "address": "nolus1hh3zk3y3zqhlqwnpvz9juvepxvzmp4gj93a38cn7nyt56zy4umxqn3xz6v",
+   "label": "OSMOSIS-OSMOSIS-ALL_SOL-profit",
+   "code_id": "907",
+   "usd": 0.01,
+   "balances": [
+    {
+     "denom": "ibc/762E1E45658845A12E214A91C3C05FDFC5951D60404FAADA225A369A96DCD9A9",
+     "amount": 93802299.0,
+     "usd": null
+    },
+    {
+     "denom": "unls",
+     "amount": 1499998.0,
+     "usd": 0.00551775764298
+    }
+   ]
+  },
+  {
+   "address": "nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f",
+   "label": "leaser",
+   "code_id": "906",
+   "usd": 0.0,
+   "balances": [
+    {
+     "denom": "unls",
+     "amount": 1000000.0,
+     "usd": 0.00367851
+    }
+   ]
+  },
+  {
+   "address": "nolus1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgsv3wzl4",
+   "label": "oracle",
+   "code_id": "906",
+   "usd": 0.0,
+   "balances": [
+    {
+     "denom": "unls",
+     "amount": 97334.0,
+     "usd": 0.00035804409234
+    }
+   ]
+  },
+  {
+   "address": "nolus1mf6ptkssddfmxvhdx0ech0k03ktp6kf9yk59renau2gvht3nq2gqkxgywu",
+   "label": "profit",
+   "code_id": "906",
+   "usd": 0.0,
+   "balances": [
+    {
+     "denom": "unls",
+     "amount": 100.0,
+     "usd": 3.6785100000000003e-07
+    }
+   ]
+  },
+  {
+   "address": "nolus1qqcr7exupnymvg6m63eqwu8pd4n5x6r5t3pyyxdy7r97rcgajmhqy3gn94",
+   "label": "NEUTRON-ASTROPORT-USDC_AXELAR-lpp",
+   "code_id": "848",
+   "usd": 0.0,
+   "balances": [
+    {
+     "denom": "unls",
+     "amount": 6.0,
+     "usd": 2.207106e-08
+    }
+   ]
+  },
+  {
+   "address": "nolus1udkxyfeh7kxjnzm0exfaq9hncqzm3rj59gut4qnll0gq2z4yff0sda5aw2",
+   "label": "NEUTRON-ASTROPORT-USDC_AXELAR-profit",
+   "code_id": "848",
+   "usd": 0.0,
+   "balances": [
+    {
+     "denom": "unls",
+     "amount": 100.0,
+     "usd": 3.6785100000000003e-07
+    }
+   ]
+  }
+ ],
+ "contract_inventory_total_usd": 677724.5
+}
