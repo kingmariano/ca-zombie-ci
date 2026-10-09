@@ -1,0 +1,44 @@
+{
+  "finding": "C2-20",
+  "title": "rsETH whale-Safe Router multicall self-reference bypass — $0 fresh E-U; $133.09M Aave position fenced by disabled Safe modules",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": { "E-U": 0, "H-O": 0, "P": 0, "S": 0 },
+  "latest_block": 26151684,
+  "block_numbers": { "ethereum": 26151684 },
+  "targets_checked": 97222,
+  "live_targets": 0,
+  "closed_reasons": [
+    "Whale Safe 0x40E93a52F6Af9fCD3b476aeDADD7FeABD9f7AbA8 disabled all modules post-hack (isModuleEnabled(0xeA18B13d)=false; getModulesPaginated=[]); the exact public exploit payload reverts GS104 at block 26,149,511",
+    "The recipe's action module 0xdcdc4ef8C992E75bb0F300536CD93E601c8882AB is also disabled on the whale Safe (fork-proved: entry-only re-arm still yields inner GS104)",
+    "The only other Router-reachable module-enabled Safe (0x3edc8427..., module 0x0763fea1..., whitelisted + enabled + un-paused) holds 1 HEX (~$0), 0 ETH and zero rsETH-family assets; no root-valid recipe payload for that module is public",
+    "The empty Safe 0xbbd6b5b3565e151528c44200d4ee1a6895206962 enables 0xeA18B13d but holds nothing and the module targets the whale (slot 2) — inert",
+    "Global census (block 26,151,578): 118,601 EnabledModule / 21,368 DisabledModule events -> 97,222 currently-enabled (Safe, module) pairs, 27,429 unique modules (both EnabledModule param layouts parsed); 39 family-fingerprint modules enabled today, all on Safes with zero aEthrsETH and zero rsETH; only 2 are whitelisted in the flawed Router (0xeA18B13d, 0x0763fea1)",
+    "Other constructor-whitelisted modules (0xd479bcc8, 0xf73a5695) are disabled on their target Safes (0xb8e12daf, 0x6a1fac6b)"
+  ],
+  "poc": {
+    "tests_passed": 7,
+    "tests_total": 7,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Router 0x4f0055926c839D1d960a82CBF84E2eE933958ebC: multicall(address,bytes[]) selector 0x00c25829; authorization returns true when target == address(this) (disasm 0x6b4-0x6b7) -> self-reference bypass; direct multicall(module,...) reverts 0x7899fd73",
+    "Router whitelist is owner-mutable and larger than the 3 constructor entries: 0x0763fea16901fc8479490e0f4a1e4efc79056e95 was whitelisted between blocks 23,568,785 and 23,600,000; among all 27,429 currently-enabled modules exactly 2 are whitelisted (0xeA18B13d, 0x0763fea1)",
+    "Module 0xeA18B13d11f705a68F0954f637949e1eaA7AC4ca: slot0/slot2 = whale Safe; 7-member caller set still contains the Router; paused()=false; slot5 allowlist root 0x20ec13db... unchanged since before the hack (still validates the public payload, which reaches GS104 today)",
+    "Incident: 2026-09-15 block 25,980,525 tx 0x0e7680b06cb8a6f86c149d9ba90d98e3d334e7b072dde03909d43fcfd98a8705 drained 2,900 aEthrsETH (~$7.8M) via modules 0xeA18B13d + 0xdcdc4ef8; MEV bot Yoink front-ran and took 2,882.37 rsETH",
+    "Whale Safe holds 50,278.791748538196099080 aEthrsETH (Aave collateral $133,086,612.94, debt $122,747,699.09, HF 1.0300 at block 26,149,821); pre-hack HF 1.0587",
+    "Fork proof: public payload extracts 2,899.999999999997756821 aEthrsETH at block 25,980,524; amount is Aave-HF-bounded (5,000 reverts HealthFactorLowerThanLiquidationThreshold); re-arming both modules at latest executes the recipe's delegatecall inside the Safe (ExecutionFromModuleFailure for 0xdcdc4ef8 observed) but the stale attacker capture environment blocks extraction of this exact payload",
+    "Re-arm condition: two Safe txs (enableModule(0xeA18B13d) + enableModule(0xdcdc4ef8)) restore the full delegatecall attack surface; today's same-recipe HF cap ~1,474 aEthrsETH (~$3.9M); dormant collateral in scope $133.09M",
+    "aEthrsETH: 96 holders; 3 holders are module-enabled Safes (6,411.88 + 1,615.30 + 780.36 aEthrsETH; Roles/other modules, none family). rsETH: 22,975 holders; 13 module-enabled Safes holding 0.0339 rsETH combined, none family"
+  ],
+  "caveats": [
+    "Router/module/RecipeExecutor are unverified bytecode; mechanism analysis is disassembly + live/fork behaviour",
+    "Recipe skeleton opaque; amount freedom bounded by Aave health factor (proven); full-balance extraction via other root-valid recipes not excluded but not demonstrated",
+    "The attacker's capture environment (v4 pool/PAT helper) is stale; re-staging is plausible (attacker-owned, permissionless v4) but was not demonstrated",
+    "Census parses both EnabledModule layouts (data + indexed topic1); the initial single-layout pass undercounted (15,800 vs 27,429 modules). A 200-pair live spot-check plus critical pairs is included in CI artifacts",
+    "Whitelist entries that are not currently enabled cannot be enumerated from storage; the live question is answered by the enabled-whitelisted intersection (2 modules)",
+    "Operational: an early CI state dump wrote the RPC endpoint (with key path) into analysis/state_latest.json; it is now redacted and the public branch was force-pushed clean, old runs deleted. NODEREAL_ETH_RPC_URL key rotation recommended"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live: the whale Safe's modules are disabled and the public payload stops at GS104; the dormant weapon (up to $133.09M Aave collateral, proven 2,900 aEthrsETH ~$7.63M payload) re-arms with two Safe enableModule transactions."
+}
