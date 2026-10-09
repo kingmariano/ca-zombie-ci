@@ -1,0 +1,471 @@
+--- AAVE/interfaces/IAToken.sol
++++ YEI/interfaces/IAToken.sol
+@@ -137,2 +137,11 @@
+   function rescueTokens(address token, address to, uint256 amount) external;
++
++  /**
++   * @notice Approves `spender` to transfer up to `amount` tokens from `owner`'s balance.
++   * @param owner The address of the token holder granting the allowance.
++   * @param spender The address which will be allowed to spend the tokens.
++   * @param amount The maximum number of tokens `spender` is allowed to transfer.
++   * @return bool True if the operation succeeded.
++   */
++  function approveOnBehalf(address owner, address spender, uint256 amount) external returns (bool);
+ }
+
+--- AAVE/interfaces/IPool.sol
++++ YEI/interfaces/IPool.sol
+@@ -178,2 +178,22 @@
+   event LiquidationCall(
++    address indexed collateralAsset,
++    address indexed debtAsset,
++    address indexed user,
++    uint256 debtToCover,
++    uint256 liquidatedCollateralAmount,
++    address liquidator,
++    bool receiveAToken
++  );
++
++  /**
++   * @dev Emitted when a forced liquidation is executed
++   * @param collateralAsset The address of the underlying asset used as collateral
++   * @param debtAsset The address of the underlying borrowed asset to be repaid
++   * @param user The address of the borrower getting liquidated
++   * @param debtToCover The debt amount of borrowed asset the liquidator wants to cover
++   * @param liquidatedCollateralAmount The amount of collateral received by the liquidator
++   * @param liquidator The address of the liquidator
++   * @param receiveAToken True if the liquidator received aTokens, false if underlying
++   */
++  event ForcedLiquidationCall(
+     address indexed collateralAsset,
+@@ -736,2 +756,16 @@
+   function deposit(address asset, uint256 amount, address onBehalfOf, uint16 referralCode) external;
++
++  /**
++   * @notice Checks if an address is in the forced liquidation whitelist
++   * @param user The address to check
++   * @return True if the address is whitelisted, false otherwise
++   */
++  function isInForcedLiquidationWhitelist(address user) external view returns (bool);
++
++  /**
++   * @dev Internal function to update the forced liquidation whitelist
++   * @param user The address to update
++   * @param whitelisted True if the user should be whitelisted, false otherwise
++   */
++  function updateForcedLiquidationWhitelist(address user, bool whitelisted) external;
+ }
+
+--- AAVE/interfaces/IVariableDebtToken.sol
++++ YEI/interfaces/IVariableDebtToken.sol
+@@ -36,5 +36,6 @@
+    * @param index The variable debt index of the reserve
++   * @return True if the user has no more variable debt after the burn
+    * @return The scaled total debt of the reserve
+    */
+-  function burn(address from, uint256 amount, uint256 index) external returns (uint256);
++  function burn(address from, uint256 amount, uint256 index) external returns (bool, uint256);
+ 
+
+--- AAVE/protocol/libraries/configuration/ReserveConfiguration.sol
++++ YEI/protocol/libraries/configuration/ReserveConfiguration.sol
+@@ -31,2 +31,3 @@
+   uint256 internal constant DEBT_CEILING_MASK =              0xF0000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF; // prettier-ignore
++  uint256 internal constant IS_FORCED_LIQUIDATION_ENABLED_MASK = 0xEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF; // prettier-ignore
+ 
+@@ -51,2 +52,3 @@
+   uint256 internal constant DEBT_CEILING_START_BIT_POSITION = 212;
++  uint256 internal constant IS_FORCED_LIQUIDATION_ENABLED_START_BIT_POSITION = 252;
+ 
+@@ -610,2 +612,27 @@
+   }
++
++  /**
++   * @notice Sets the forced liquidation enabled state of the reserve
++   * @param self The reserve configuration
++   * @param enabled The forced liquidation enabled state
++   */
++  function setIsForcedLiquidationEnabled(
++    DataTypes.ReserveConfigurationMap memory self,
++    bool enabled
++  ) internal pure {
++    self.data =
++      (self.data & IS_FORCED_LIQUIDATION_ENABLED_MASK) |
++      (uint256(enabled ? 1 : 0) << IS_FORCED_LIQUIDATION_ENABLED_START_BIT_POSITION);
++  }
++
++  /**
++   * @notice Gets the forced liquidation enabled state of the reserve
++   * @param self The reserve configuration
++   * @return The forced liquidation enabled state
++   */
++  function getIsForcedLiquidationEnabled(
++    DataTypes.ReserveConfigurationMap memory self
++  ) internal pure returns (bool) {
++    return (self.data & ~IS_FORCED_LIQUIDATION_ENABLED_MASK) != 0;
++  }
+ }
+
+--- AAVE/protocol/libraries/helpers/Errors.sol
++++ YEI/protocol/libraries/helpers/Errors.sol
+@@ -99,2 +99,5 @@
+   string public constant FLASHLOAN_DISABLED = '91'; // FlashLoaning for this asset is disabled
++  string public constant FORCED_LIQUIDATION_CALLER_NOT_AUTHORIZED = '128'; // Caller not authorized for forced liquidation
++  string public constant INSUFFICIENT_ALLOWANCE = '129'; // 'Insufficient allowance for the operation'
++  string public constant SELF_LIQUIDATION_NOT_ALLOWED = '130'; // 'Self-liquidation is not allowed'
+ }
+
+--- AAVE/protocol/libraries/logic/BorrowLogic.sol
++++ YEI/protocol/libraries/logic/BorrowLogic.sol
+@@ -216,2 +216,3 @@
+ 
++    bool noMoreVariableDebt;
+     if (params.interestRateMode == DataTypes.InterestRateMode.STABLE) {
+@@ -221,3 +222,3 @@
+     } else {
+-      reserveCache.nextScaledVariableDebt = IVariableDebtToken(
++      (noMoreVariableDebt, reserveCache.nextScaledVariableDebt) = IVariableDebtToken(
+         reserveCache.variableDebtTokenAddress
+@@ -233,3 +234,7 @@
+ 
+-    if (stableDebt + variableDebt - paybackAmount == 0) {
++    if (
++      params.interestRateMode == DataTypes.InterestRateMode.VARIABLE
++        ? noMoreVariableDebt && stableDebt == 0
++        : stableDebt + variableDebt - paybackAmount == 0
++    ) {
+       userConfig.setBorrowing(reserve.id, false);
+@@ -339,3 +344,3 @@
+     } else {
+-      reserveCache.nextScaledVariableDebt = IVariableDebtToken(
++      (, reserveCache.nextScaledVariableDebt) = IVariableDebtToken(
+         reserveCache.variableDebtTokenAddress
+
+--- AAVE/protocol/libraries/logic/FlashLoanLogic.sol
++++ YEI/protocol/libraries/logic/FlashLoanLogic.sol
+@@ -15,2 +15,3 @@
+ import {PercentageMath} from '../math/PercentageMath.sol';
++import {TokenMath} from '../helpers/TokenMath.sol';
+ import {DataTypes} from '../types/DataTypes.sol';
+@@ -237,3 +238,3 @@
+       IERC20(reserveCache.aTokenAddress).totalSupply() +
+-        uint256(reserve.accruedToTreasury).rayMul(reserveCache.nextLiquidityIndex),
++        TokenMath.getATokenBalance(reserve.accruedToTreasury, reserveCache.nextLiquidityIndex),
+       premiumToLP
+@@ -241,4 +242,4 @@
+ 
+-    reserve.accruedToTreasury += premiumToProtocol
+-      .rayDiv(reserveCache.nextLiquidityIndex)
++    reserve.accruedToTreasury += TokenMath
++      .getATokenMintScaledAmount(premiumToProtocol, reserveCache.nextLiquidityIndex)
+       .toUint128();
+
+--- AAVE/protocol/libraries/logic/LiquidationLogic.sol
++++ YEI/protocol/libraries/logic/LiquidationLogic.sol
+@@ -7,2 +7,3 @@
+ import {WadRayMath} from '../../libraries/math/WadRayMath.sol';
++import {Errors} from '../../libraries/helpers/Errors.sol';
+ import {Helpers} from '../../libraries/helpers/Helpers.sol';
+@@ -20,2 +21,3 @@
+ import {IPriceOracleGetter} from '../../../interfaces/IPriceOracleGetter.sol';
++import {TokenMath} from '../helpers/TokenMath.sol';
+ 
+@@ -47,2 +49,11 @@
+   );
++  event ForcedLiquidationCall(
++    address indexed collateralAsset,
++    address indexed debtAsset,
++    address indexed user,
++    uint256 debtToCover,
++    uint256 liquidatedCollateralAmount,
++    address liquidator,
++    bool receiveAToken
++  );
+ 
+@@ -102,2 +113,4 @@
+   ) external {
++    require(msg.sender != params.user, Errors.SELF_LIQUIDATION_NOT_ALLOWED);
++
+     LiquidationCallLocalVars memory vars;
+@@ -204,9 +217,15 @@
+       uint256 liquidityIndex = collateralReserve.getNormalizedIncome();
+-      uint256 scaledDownLiquidationProtocolFee = vars.liquidationProtocolFeeAmount.rayDiv(
++      uint256 scaledDownUserBalance = vars.collateralAToken.scaledBalanceOf(params.user);
++      // Use rayDivCeil to match the ceil rounding applied by transferOnLiquidation, so the
++      // guard never misses an overshoot by 1 scaled unit. Cap using rayMulFloor so the
++      // resulting fee amount ceil-divides back to exactly scaledDownUserBalance.
++      uint256 scaledDownLiquidationProtocolFee = TokenMath.getATokenBurnScaledAmount(
++        vars.liquidationProtocolFeeAmount,
+         liquidityIndex
+       );
+-      uint256 scaledDownUserBalance = vars.collateralAToken.scaledBalanceOf(params.user);
+-      // To avoid trying to send more aTokens than available on balance, due to 1 wei imprecision
+       if (scaledDownLiquidationProtocolFee > scaledDownUserBalance) {
+-        vars.liquidationProtocolFeeAmount = scaledDownUserBalance.rayMul(liquidityIndex);
++        vars.liquidationProtocolFeeAmount = TokenMath.getATokenBalance(
++          scaledDownUserBalance,
++          liquidityIndex
++        );
+       }
+@@ -231,2 +250,21 @@
+     );
++
++    // Determine if this is a forced liquidation
++    // A forced liquidation occurs when forced liquidation is enabled
++    bool isForcedLiquidation = vars
++      .debtReserveCache
++      .reserveConfiguration
++      .getIsForcedLiquidationEnabled();
++
++    if (isForcedLiquidation) {
++      emit ForcedLiquidationCall(
++        params.collateralAsset,
++        params.debtAsset,
++        params.user,
++        vars.actualDebtToLiquidate,
++        vars.actualCollateralToLiquidate,
++        msg.sender,
++        params.receiveAToken
++      );
++    }
+ 
+@@ -327,3 +365,3 @@
+     if (vars.userVariableDebt >= vars.actualDebtToLiquidate) {
+-      vars.debtReserveCache.nextScaledVariableDebt = IVariableDebtToken(
++      (, vars.debtReserveCache.nextScaledVariableDebt) = IVariableDebtToken(
+         vars.debtReserveCache.variableDebtTokenAddress
+@@ -337,3 +375,3 @@
+       if (vars.userVariableDebt != 0) {
+-        vars.debtReserveCache.nextScaledVariableDebt = IVariableDebtToken(
++        (, vars.debtReserveCache.nextScaledVariableDebt) = IVariableDebtToken(
+           vars.debtReserveCache.variableDebtTokenAddress
+@@ -374,5 +412,14 @@
+ 
+-    uint256 closeFactor = healthFactor > CLOSE_FACTOR_HF_THRESHOLD
+-      ? DEFAULT_LIQUIDATION_CLOSE_FACTOR
+-      : MAX_LIQUIDATION_CLOSE_FACTOR;
++    // Forced liquidations always allow the maximum close factor, while standard liquidations
++    // only reach the max when the health factor falls below the threshold (otherwise default applies)
++    bool isForcedLiquidationEnabled = debtReserveCache
++      .reserveConfiguration
++      .getIsForcedLiquidationEnabled();
++    uint256 closeFactor = isForcedLiquidationEnabled
++      ? MAX_LIQUIDATION_CLOSE_FACTOR
++      : (
++        healthFactor > CLOSE_FACTOR_HF_THRESHOLD
++          ? DEFAULT_LIQUIDATION_CLOSE_FACTOR
++          : MAX_LIQUIDATION_CLOSE_FACTOR
++      );
+ 
+
+--- AAVE/protocol/libraries/logic/SupplyLogic.sol
++++ YEI/protocol/libraries/logic/SupplyLogic.sol
+@@ -14,2 +14,3 @@
+ import {ReserveConfiguration} from '../configuration/ReserveConfiguration.sol';
++import {TokenMath} from '../helpers/TokenMath.sol';
+ 
+@@ -21,2 +22,3 @@
+ library SupplyLogic {
++  using TokenMath for uint256;
+   using ReserveLogic for DataTypes.ReserveCache;
+@@ -117,5 +119,5 @@
+ 
+-    uint256 userBalance = IAToken(reserveCache.aTokenAddress).scaledBalanceOf(msg.sender).rayMul(
+-      reserveCache.nextLiquidityIndex
+-    );
++    uint256 userBalance = IAToken(reserveCache.aTokenAddress)
++      .scaledBalanceOf(msg.sender)
++      .getATokenBalance(reserveCache.nextLiquidityIndex);
+ 
+
+--- AAVE/protocol/libraries/logic/ValidationLogic.sol
++++ YEI/protocol/libraries/logic/ValidationLogic.sol
+@@ -511,2 +511,7 @@
+ 
++    bool isForcedLiquidationEnabled = params
++      .debtReserveCache
++      .reserveConfiguration
++      .getIsForcedLiquidationEnabled();
++
+     require(vars.collateralReserveActive && vars.principalReserveActive, Errors.RESERVE_INACTIVE);
+@@ -516,2 +521,3 @@
+       params.priceOracleSentinel == address(0) ||
++        isForcedLiquidationEnabled ||
+         params.healthFactor < MINIMUM_HEALTH_FACTOR_LIQUIDATION_THRESHOLD ||
+@@ -522,3 +528,3 @@
+     require(
+-      params.healthFactor < HEALTH_FACTOR_LIQUIDATION_THRESHOLD,
++      isForcedLiquidationEnabled || params.healthFactor < HEALTH_FACTOR_LIQUIDATION_THRESHOLD,
+       Errors.HEALTH_FACTOR_NOT_BELOW_THRESHOLD
+
+--- AAVE/protocol/libraries/math/WadRayMath.sol
++++ YEI/protocol/libraries/math/WadRayMath.sol
+@@ -94,2 +94,74 @@
+   /**
++   * @notice Multiplies two ray, rounding down to the nearest ray
++   * @param a Ray
++   * @param b Ray
++   * @return c = a raymul b, rounded down
++   */
++  function rayMulFloor(uint256 a, uint256 b) internal pure returns (uint256 c) {
++    // to avoid overflow, a <= type(uint256).max / b
++    assembly {
++      if iszero(or(iszero(b), iszero(gt(a, div(not(0), b))))) {
++        revert(0, 0)
++      }
++
++      c := div(mul(a, b), RAY)
++    }
++  }
++
++  /**
++   * @notice Multiplies two ray, rounding up to the nearest ray
++   * @param a Ray
++   * @param b Ray
++   * @return c = a*b/RAY, rounded up
++   */
++  function rayMulCeil(uint256 a, uint256 b) internal pure returns (uint256 c) {
++    // to avoid overflow, a <= type(uint256).max / b
++    // Uses modulo-based ceiling so a*b up to type(uint256).max is accepted (matches Aave v3.6)
++    assembly {
++      if iszero(or(iszero(b), iszero(gt(a, div(not(0), b))))) {
++        revert(0, 0)
++      }
++      let product := mul(a, b)
++      c := div(product, RAY)
++      if gt(mod(product, RAY), 0) {
++        c := add(c, 1)
++      }
++    }
++  }
++
++  /**
++   * @notice Divides two ray, rounding down to the nearest ray
++   * @param a Ray
++   * @param b Ray
++   * @return c = a raydiv b, rounded down
++   */
++  function rayDivFloor(uint256 a, uint256 b) internal pure returns (uint256 c) {
++    // to avoid overflow, a <= type(uint256).max / RAY
++    assembly {
++      if or(iszero(b), iszero(iszero(gt(a, div(not(0), RAY))))) {
++        revert(0, 0)
++      }
++
++      c := div(mul(a, RAY), b)
++    }
++  }
++
++  /**
++   * @notice Divides two ray, rounding up to the nearest ray
++   * @param a Ray
++   * @param b Ray
++   * @return c = a raydiv b, rounded up
++   */
++  function rayDivCeil(uint256 a, uint256 b) internal pure returns (uint256 c) {
++    // to avoid overflow, a <= (type(uint256).max - b + 1) / RAY
++    assembly {
++      if or(iszero(b), iszero(iszero(gt(a, div(sub(not(0), sub(b, 1)), RAY))))) {
++        revert(0, 0)
++      }
++
++      c := div(add(mul(a, RAY), sub(b, 1)), b)
++    }
++  }
++
++  /**
+    * @dev Casts ray down to wad
+
+--- AAVE/protocol/libraries/types/DataTypes.sol
++++ YEI/protocol/libraries/types/DataTypes.sol
+@@ -57,3 +57,4 @@
+     //bit 212-251 debt ceiling for isolation mode with (ReserveConfiguration::DEBT_CEILING_DECIMALS) decimals
+-    //bit 252-255 unused
++    //bit 252: isForcedLiquidationEnabled
++    //bit 253-255 unused
+ 
+
+--- AAVE/protocol/pool/Pool.sol
++++ YEI/protocol/pool/Pool.sol
+@@ -41,3 +41,3 @@
+ 
+-  uint256 public constant POOL_REVISION = 0x1;
++  uint256 public constant POOL_REVISION = 0x2;
+   IPoolAddressesProvider public immutable ADDRESSES_PROVIDER;
+@@ -365,2 +365,13 @@
+   ) public virtual override {
++    DataTypes.ReserveCache memory debtCache = _reserves[debtAsset].cache();
++    bool isForcedLiquidationEnabled = ReserveConfiguration.getIsForcedLiquidationEnabled(
++      debtCache.reserveConfiguration
++    );
++    if (isForcedLiquidationEnabled && msg.sender != user) {
++      require(
++        _forcedLiquidationWhitelist[msg.sender],
++        Errors.FORCED_LIQUIDATION_CALLER_NOT_AUTHORIZED
++      );
++    }
++
+     LiquidationLogic.executeLiquidationCall(
+@@ -736,2 +747,21 @@
+   }
++
++  /**
++   * @dev Internal function to update the forced liquidation whitelist
++   * @param user The address to update
++   * @param whitelisted True if the user should be whitelisted, false otherwise
++   */
++  function updateForcedLiquidationWhitelist(
++    address user,
++    bool whitelisted
++  ) external virtual override onlyPoolConfigurator {
++    _forcedLiquidationWhitelist[user] = whitelisted;
++  }
++
++  /// @inheritdoc IPool
++  function isInForcedLiquidationWhitelist(
++    address user
++  ) external view virtual override returns (bool) {
++    return _forcedLiquidationWhitelist[user];
++  }
+ }
+
+--- AAVE/protocol/pool/PoolStorage.sol
++++ YEI/protocol/pool/PoolStorage.sol
+@@ -50,2 +50,5 @@
+   uint16 internal _reservesCount;
++
++  // Mapping of addresses allowed to perform forced liquidations
++  mapping(address => bool) internal _forcedLiquidationWhitelist;
+ }
+
+--- AAVE/protocol/tokenization/base/IncentivizedERC20.sol
++++ YEI/protocol/tokenization/base/IncentivizedERC20.sol
+@@ -212,2 +212,27 @@
+   /**
++   * @notice Spends allowance for scaled-balance tokens with backward compatibility.
++   * @dev Requires `currentAllowance >= amount` (the raw input). The actual consumption is
++   * `correctedAmount`, capped at `currentAllowance`. This ensures that integrations which
++   * approve exactly `amount` still work, even when rounding makes the real cost slightly higher.
++   * @param owner The address owning the tokens
++   * @param spender The address spending the tokens
++   * @param amount The raw transfer amount (used for the minimum-allowance check)
++   * @param correctedAmount The actual balance decrease to consume from the allowance
++   */
++  function _spendAllowance(
++    address owner,
++    address spender,
++    uint256 amount,
++    uint256 correctedAmount
++  ) internal virtual {
++    uint256 currentAllowance = _allowances[owner][spender];
++    require(currentAllowance >= amount, Errors.INSUFFICIENT_ALLOWANCE);
++    if (currentAllowance == type(uint256).max) {
++      return;
++    }
++    uint256 consumption = currentAllowance >= correctedAmount ? correctedAmount : currentAllowance;
++    _approve(owner, spender, currentAllowance - consumption);
++  }
++
++  /**
+    * @notice Update the name of the token
+

@@ -1,0 +1,58 @@
+{
+  "finding": "C2-14",
+  "title": "YeiLend (Yei Finance) on Sei \u2014 live extractable \u2248$39.9 (fork-executed $36.43 across 3 HF<1 liquidations); forced-liquidation backdoor and credit-delegation paths are closed",
+  "chains": [
+    "sei"
+  ],
+  "headline_extractable_usd": 39.9,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 39.9,
+    "H-O": 287.0,
+    "P": 0,
+    "S": 3700.0
+  },
+  "latest_block": 236462331,
+  "block_numbers": {
+    "sei": 236462331
+  },
+  "targets_checked": 22,
+  "live_targets": 3,
+  "closed_reasons": [
+    "Forced-liquidation path requires _forcedLiquidationWhitelist[msg.sender] (revert '128') and self-liquidation is blocked ('130'); only privileged keeper 0x419D4C44... is whitelisted",
+    "Borrow-on-behalf requires a debt-token delegation allowance (revert '129'); no public path",
+    "Oracle is Pyth/Redstone/API3 multi-source with heartbeat checks; collateral-eligible reserves are priced within ~1% of market",
+    "USDT.kava feed is 5.2x over market but the reserve is frozen + LTV 0 + forced-liquidation (tripwire only)",
+    "fastUSD/sfastUSD priced at 1e-8 via temporaryOracle but frozen + LTV 0 (borrow/supply revert '28')",
+    "TokenMath rounding is protocol-favored in every path; approveOnBehalf onlyPoolAdmin; configurator modifiers intact",
+    "All other HF<1 accounts (9,970 of 9,976 in the scanned half) are zero-collateral bad-debt dust"
+  ],
+  "poc": {
+    "tests_passed": 10,
+    "tests_total": 10,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37836700034",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37869492160"
+    ]
+  },
+  "key_facts": [
+    "E-U total ~$39.9 gross: fork-executed $36.43 (0x11611a3c +$31.69, 0xc718a19b +$4.62, 0x884d763d +$0.12) + ~$3.5 scan-only positions (largest: 0x722ba61d coll $60.95/debt $50.06 HF 0.974; 0x72f8ba77 coll $19.98/debt $17.99 HF 0.888)",
+    "Only open surface: normal liquidations; frozen reserves block supply/borrow but not liquidation or flash loans (validateFlashloanSimple checks paused/active/flashLoanEnabled only)",
+    "Pool1 0x4a4d9abD36F923cBA0Af62A39C01dEC2944fb638: 19 reserves, $8.16M supply / $2.73M debt at block 236,462,331 (114.08M WSEI = $7.38M); pool2 (Yei SOLVBTC) $63k; third pool 0x5bF647639123CB773a00cB15b180844dC2ce9627 is empty",
+    "Custom Yei fork: PoolV3 0x9f7d12d56aBB24129DD6fF31279eb5Bde333D6A0 (POOL_REVISION=2), forced-liquidation config bit 252, 5-arg borrow with onBehalfOf, TokenMath helper library",
+    "Forced liquidations: 1,237 events 2025-12-19..24 by whitelisted Liquidator 0x419D4C44bB5cefdE526CCE6Ea47B0C25818facfC after the xUSD/Stream/Elixir collapse",
+    "All-time: 274,901 Borrow, 19,634 LiquidationCall events; 101,398 unique borrowers; bots active (last liquidation 2026-10-08)",
+    "Oracle owner / ACL admin = YeiTimeLockController 0x02135EA9bc6481f7296852c9C3c24E8f9Ef10bE7 (minDelay 86400)",
+    "Locked supplier principal in wounded reserves ~= $3.7k (USDT.kava $1.9k, frxUSD $1.39k, USDC.n $230, sfrxUSD $185, dust)",
+    "USDT.kava real price ~$0.19-0.195 vs oracle $0.99946 (5.2x); fastUSD/sfastUSD oracle = 1e-8 (temporaryOracle)"
+  ],
+  "caveats": [
+    "Net E-U depends on acquiring the frozen frxUSD debt asset; ~$5-32 net after swap/sourcing costs (Balancer V2 vault holds ~1,813 frxUSD; a small V3 pool 151 frxUSD); the fork test used a deal() for the frxUSD leg",
+    "Numbers are a snapshot; the two positions can be repaid or taken by bots at any time",
+    "Public Sei RPC rate limits: CI runs 1-3 classified 70,948/101,398 borrowers (54,118 + 11,629 + 5,181); the ~30k unclassified remainder is the main coverage caveat",
+    "Forced-liquidation whitelist is not enumerable (no event); only the known keeper verified true",
+    "iSEI feed depends on a Sei precompile not emulated by Foundry forks (fork-only limitation)",
+    "USDT.kava market price from DefiLlama; thin market"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$39.9 live from YeiLend (91% fork-executed), all from liquidating HF<1 positions; the forced-liquidation backdoor is whitelist-gated with self-liquidation blocked, borrow-on-behalf is allowance-gated, and oracles are fresh multi-source feeds."
+}
