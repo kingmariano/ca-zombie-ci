@@ -1,0 +1,127 @@
+{
+  "generated_at": "2026-10-09",
+  "read_blocks": {"hyperevm": 48051824, "megaeth": 28723846},
+  "exploit_date": "2026-04-25",
+  "chains": {
+    "hyperevm": {
+      "chain_id": 999,
+      "acl_manager": "0x507Bc877A27baEB12BE4Df42EfAA949A9A67703d",
+      "addresses_provider": "0xf33e33B35163Ce2f46bf7150E1592839aC199124",
+      "pool": "0xb61218d3efE306f7579eE50D1a606d56bc222048",
+      "pool_impl": "0x2a49c5a37afe1113a580297b87201300a33fa300",
+      "pool_configurator": "0x8cFaFcAc64a9a5CB52FC3482c3b8C855e9308767",
+      "price_oracle": "0xa55d6358c22CdFe8d469C5703621052e8Ff9EF1B",
+      "provider_owner": "0x4c2444d88AD61B0842Fba7CCdCb226260eBfA1bc",
+      "provider_acl_admin": "0x4c2444d88AD61B0842Fba7CCdCb226260eBfA1bc",
+      "live_role_holders": {
+        "DEFAULT_ADMIN": ["0x6056BE985DD4c50fECA34130FeDD0a35857099FD"],
+        "RISK_ADMIN": ["0x6056BE985DD4c50fECA34130FeDD0a35857099FD"],
+        "POOL_ADMIN": [],
+        "EMERGENCY_ADMIN": [],
+        "BRIDGE": [],
+        "ASSET_LISTING_ADMIN": [],
+        "FLASH_BORROWER": []
+      },
+      "role_admin_BRIDGE": "DEFAULT_ADMIN_ROLE (0x00)",
+      "role_history": [
+        {"block": 17530841, "date": "2025-10-26", "event": "ACLManager deployed by EOA 0xD730Ad413aDd59F72769B62c20Dc3aD308de5568 (nonce 43)"},
+        {"block": 17530963, "event": "deployer addPoolAdmin(self)"},
+        {"block": 17531024, "event": "deployer addEmergencyAdmin(self)"},
+        {"block": 17531085, "event": "deployer addRiskAdmin(self)"},
+        {"block": 17531146, "event": "deployer addAssetListingAdmin(self)"},
+        {"block": 19904875, "event": "addEmergencyAdmin(Safe 0x4c2444d8...)"},
+        {"block": 19906248, "event": "addAssetListingAdmin(Safe)"},
+        {"block": 19906300, "event": "addPoolAdmin(Safe)"},
+        {"block": 19906314, "event": "addRiskAdmin(Safe)"},
+        {"block": 22095403, "event": "deployer renounceRole(ASSET_LISTING_ADMIN, self)"},
+        {"block": 23852551, "event": "deployer renounceRole(RISK_ADMIN, self)"},
+        {"block": 23852767, "event": "deployer renounceRole(EMERGENCY_ADMIN, self)"},
+        {"block": 23853025, "event": "deployer renounceRole(POOL_ADMIN, self)"},
+        {"block": 23855175, "event": "deployer grantRole(DEFAULT_ADMIN, Safe)"},
+        {"block": 23855229, "event": "deployer renounceRole(DEFAULT_ADMIN, self)"},
+        {"block": 29722946, "event": "Safe grants ASSET_LISTING_ADMIN to deployer"},
+        {"block": 29821589, "event": "Safe grants POOL_ADMIN to deployer"},
+        {"block": 29822838, "event": "Safe revokes ASSET_LISTING_ADMIN+POOL_ADMIN from deployer"},
+        {"block": 29824647, "event": "Safe grants ASSET_LISTING_ADMIN+POOL_ADMIN to deployer"},
+        {"block": 29825936, "event": "Safe revokes ASSET_LISTING_ADMIN+POOL_ADMIN from deployer"},
+        {"block": 30596930, "event": "Safe grants ASSET_LISTING_ADMIN+POOL_ADMIN to deployer"},
+        {"block": 30599027, "event": "Safe revokes ASSET_LISTING_ADMIN+POOL_ADMIN from deployer"},
+        {"block": 33372289, "date": "2026-04-25T01:20:04Z", "event": "EXPLOIT: Safe grants ASSET_LISTING_ADMIN+BRIDGE+POOL_ADMIN+RISK_ADMIN+EMERGENCY_ADMIN to attacker 0xd8010aca201f6113160200b8a521f35be9f94c24"},
+        {"block": 33394150, "date": "2026-04-25T07:18:27Z", "event": "Safe revokes the five roles from attacker"},
+        {"block": 33394833, "date": "2026-04-25T07:29:39Z", "event": "Safe grants DEFAULT_ADMIN to EOA 0x6056BE985DD4c50fECA34130FeDD0a35857099FD"},
+        {"block": 33394981, "event": "EOA removeAssetListingAdmin(Safe)"},
+        {"block": 33395002, "event": "EOA removeEmergencyAdmin(Safe)"},
+        {"block": 33395018, "event": "EOA removePoolAdmin(Safe)"},
+        {"block": 33395051, "event": "EOA addRiskAdmin(self)"},
+        {"block": 33395093, "event": "EOA removeRiskAdmin(Safe)"},
+        {"block": 33395154, "event": "EOA revokeRole(DEFAULT_ADMIN, Safe) -> Safe stripped of all ACL roles"}
+      ],
+      "notes": "After 2026-04-25 the old 2-of-3 Safe holds no ACL role on HyperEVM, but it still owns the AddressesProvider (owner()=Safe) and getACLAdmin()=Safe."
+    },
+    "megaeth": {
+      "chain_id": 4326,
+      "acl_manager": "0x217214BbF25F02A8019d42EA315aB192540aDa13",
+      "addresses_provider": "0x402D38C3415Ad92a0E766e1491Dc222871B1Df7a",
+      "pool": "0x81D5D25ea81b72E546fC71B5bAa8B059eF0dA702",
+      "pool_impl": "0xd8c76f8704cda9fc03a8c4dd1c1460c00916197a",
+      "pool_configurator": "0xB54407684B028ee75F012EF264644186e93e4E0E",
+      "price_oracle": "0x514353F18A54159ff51f477F201FbD11B5d19464",
+      "provider_owner": "0x4c2444d88AD61B0842Fba7CCdCb226260eBfA1bc",
+      "provider_acl_admin": "0x4c2444d88AD61B0842Fba7CCdCb226260eBfA1bc",
+      "live_role_holders": {
+        "DEFAULT_ADMIN": ["0x4c2444d88AD61B0842Fba7CCdCb226260eBfA1bc", "0x6056BE985DD4c50fECA34130FeDD0a35857099FD"],
+        "RISK_ADMIN": ["0x6056BE985DD4c50fECA34130FeDD0a35857099FD"],
+        "POOL_ADMIN": [],
+        "EMERGENCY_ADMIN": [],
+        "BRIDGE": [],
+        "ASSET_LISTING_ADMIN": [],
+        "FLASH_BORROWER": []
+      },
+      "role_admin_BRIDGE": "DEFAULT_ADMIN_ROLE (0x00)",
+      "role_history": [
+        {"block": 10506825, "date": "2026-03-12", "event": "ACLManager deployed by EOA 0xD730Ad413aDd59F72769B62c20Dc3aD308de5568 (nonce 22)"},
+        {"block": 12782644, "event": "deployer grants POOL_ADMIN to Safe 0x4c2444d8..."},
+        {"block": 12782660, "event": "deployer grants RISK_ADMIN to Safe"},
+        {"block": 12782796, "event": "deployer grants DEFAULT_ADMIN to Safe"},
+        {"block": 12783131, "event": "deployer renounces DEFAULT_ADMIN"},
+        {"block": 14284168, "date": "2026-04-25T01:39:39Z", "event": "EXPLOIT: Safe grants RISK_ADMIN+EMERGENCY_ADMIN+POOL_ADMIN+BRIDGE+ASSET_LISTING_ADMIN to attacker 0xd8010aca201f6113160200b8a521f35be9f94c24"},
+        {"block": 14304738, "date": "2026-04-25T07:22:29Z", "event": "Safe revokes the five roles from attacker"},
+        {"block": 14306189, "date": "2026-04-25T07:46:40Z", "event": "Safe grants RISK_ADMIN+DEFAULT_ADMIN to EOA 0x6056BE985DD4c50fECA34130FeDD0a35857099FD"},
+        {"block": 14306444, "event": "EOA revoke ASSET_LISTING_ADMIN from Safe"},
+        {"block": 14306457, "event": "EOA revoke EMERGENCY_ADMIN from Safe"},
+        {"block": 14306468, "event": "EOA revoke POOL_ADMIN from Safe"},
+        {"block": 14306478, "event": "EOA revoke RISK_ADMIN from Safe (Safe keeps DEFAULT_ADMIN)"}
+      ],
+      "notes": "On MegaETH the Safe kept DEFAULT_ADMIN (only its other roles were stripped) and still owns the AddressesProvider."
+    }
+  },
+  "safe": {
+    "address": "0x4c2444d88AD61B0842Fba7CCdCb226260eBfA1bc",
+    "threshold": 2,
+    "owners": [
+      "0x7312F0b280f4Bbaa47fC6485809f1C5Cc629d7bB",
+      "0x2BceF069eAEA664397A28F99b0DE5D4A4f78E23E",
+      "0xB4837962855A1594E7ADe6B87dAA3E8F4a34baeD"
+    ],
+    "nonce": {"hyperevm": 30, "megaeth": 4},
+    "notes": "Same Safe address and same owner set on both chains; single-signer compromise is insufficient (2-of-3), two keys or a Safe UI/exec bug needed."
+  },
+  "fresh_admin_eoa": {
+    "address": "0x6056BE985DD4c50fECA34130FeDD0a35857099FD",
+    "type": "EOA (no code)",
+    "nonce": {"hyperevm": 8, "megaeth": 4},
+    "roles": {"hyperevm": ["DEFAULT_ADMIN", "RISK_ADMIN"], "megaeth": ["DEFAULT_ADMIN", "RISK_ADMIN"]},
+    "notes": "Single key. Can grant itself POOL_ADMIN/BRIDGE on both chains (eth_call-verified and fork-verified)."
+  },
+  "deployer": {
+    "address": "0xD730Ad413aDd59F72769B62c20Dc3aD308de5568",
+    "type": "EOA",
+    "roles_now": "none",
+    "notes": "Original deployment EOA; renounced all roles in 2026. Not a live privilege."
+  },
+  "attacker_2026_04_25": {
+    "address": "0xd8010aca201f6113160200b8a521f35be9f94c24",
+    "roles_now": "none (revoked 2026-04-25 ~6h after grant)",
+    "residual": "Holds unbacked aTokens (aUSDC 5.495M nominal, aUSDm 2.100M nominal) that are unredeemable (zero idle liquidity); owes large debts in the pools."
+  }
+}

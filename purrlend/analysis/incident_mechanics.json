@@ -1,0 +1,66 @@
+{
+  "incident": "Purrlend Apr-25-2026 exploit (access control / caller impersonation)",
+  "loss_reported_usd": 1520000,
+  "method": "Compromised Safe signer(s) granted BRIDGE (+POOL_ADMIN etc.) to attacker EOA 0xd8010aca201f6113160200b8a521f35be9f94c24; attacker called Pool.mintUnbacked (onlyBridge -> ACLManager.isBridge) to mint unbacked aTokens, then borrowed/drained the available liquidity.",
+  "hyperevm": {
+    "role_grant_block": 33372289,
+    "role_revoke_block": 33394150,
+    "mint_unbacked": {
+      "method_selector": "0x69a933a5",
+      "signature": "mintUnbacked(address,uint256,address,uint16)",
+      "calls": 16,
+      "reserve": "0xb88339CB7199b77E23DB6E890353E22632Ba630f (USDC, 6 decimals)",
+      "total_minted_raw": "4850000000000",
+      "total_minted_tokens": 4850000,
+      "onBehalfOf": "0xd8010aca201f6113160200b8a521f35be9f94c24",
+      "matches_live_unbacked_counter": "4850000000000 (read at block 48,051,486)"
+    },
+    "borrows": {
+      "method_selector": "0xa415bcad",
+      "signature": "borrow(address,uint256,uint256,uint16,address)",
+      "calls": 7,
+      "attacker_live_debt_tokens": {
+        "WHYPE": 2325.647061625845349486,
+        "wstHYPE": 5487.79599561651009629,
+        "kHYPE": 2147.658021611032123762,
+        "UBTC": 7.76395427,
+        "UETH": 74.431743297817133164,
+        "USDC": 807621.738182,
+        "USDT0": 384253.892565,
+        "USDH": 349756.059633
+      }
+    },
+    "attacker_phantom_atokens_live": {"aUSDC": 5495291.153336, "aUSDC_note": "read at fork block 48,051,8xx; ~5.495M USDC nominal, unredeemable"}
+  },
+  "megaeth": {
+    "role_grant_block": 14284168,
+    "role_revoke_block": 14304738,
+    "mint_unbacked": {
+      "method_selector": "0x69a933a5",
+      "calls": 4,
+      "reserve": "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7 (USDm, 18 decimals)",
+      "total_minted_raw": "2000000000000000000000000",
+      "total_minted_tokens": 2000000,
+      "onBehalfOf": "0xd8010aca201f6113160200b8a521f35be9f94c24",
+      "matches_live_unbacked_counter": "2000000000000000000000000 (read at block 28,723,353)"
+    },
+    "borrows": {
+      "method_selector": "0xa415bcad",
+      "calls": 4,
+      "attacker_live_debt_tokens": {
+        "WETH": 83.881298360729105013,
+        "USDm": 124194.036770225809299052,
+        "USDT0": 268393.749538
+      }
+    },
+    "attacker_phantom_atokens_live": {"aUSDm": 2100054.246184921600358294}
+  },
+  "evidence": {
+    "hyperevm_receipts": "analysis/hyper_acl_receipts.json (all 35 txs touching the ACL incl. deploy, grants, revokes)",
+    "live_state": "analysis/live_state_raw.json (all reserves, both chains)",
+    "value_table": "analysis/value_table.json",
+    "role_graph": "analysis/role_graph.json",
+    "poc": "poc/test/PurrlendForkTest.t.sol (11 fork tests)"
+  },
+  "rpc_calls_only": true
+}

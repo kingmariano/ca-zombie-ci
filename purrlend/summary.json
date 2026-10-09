@@ -1,0 +1,47 @@
+{
+  "finding": "C2-21",
+  "title": "Purrlend (HyperEVM + MegaETH): fresh unprivileged extractable $0; privileged keys cap at $595.54 idle",
+  "chains": ["hyperevm", "megaeth"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 595.54, "S": 0},
+  "latest_block": 48051824,
+  "block_numbers": {"hyperevm": 48051824, "megaeth": 28723846},
+  "targets_checked": 27,
+  "live_targets": 0,
+  "closed_reasons": [
+    "All 13 reserves across both chains are paused (config bit 60); every value function (supply/withdraw/borrow/repay/flashLoan/liquidationCall) requires !isPaused and reverts RESERVE_PAUSED ('29') — fork-proven",
+    "No BRIDGE holder exists on either chain; the Apr-2026 attacker's roles were revoked 2026-04-25 (HyperEVM block 33,394,150; MegaETH block 14,304,738)",
+    "grantRole is standard OZ AccessControl: getRoleAdmin(BRIDGE)=DEFAULT_ADMIN_ROLE; a fresh address calling grantRole reverts 'missing role 0x00..00' (eth_call + fork verified)",
+    "mintUnbacked is onlyBridge (ACLManager.isBridge -> hasRole(BRIDGE)); a fresh caller reverts CALLER_NOT_BRIDGE ('6'); even a BRIDGE holder needs the reserve unpaused because executeMintUnbacked calls validateSupply",
+    "No unprotected initializer / proxy takeover from outside: Pool proxy initialized, ACLManager non-upgradeable (3,639 bytes), AddressesProvider Ownable with owner = Safe (fresh setACLManager reverts 'Ownable: caller is not the owner')",
+    "Zero idle liquidity for a fresh attacker: the only underlying held by aToken contracts is 420.05 sUSDp ($420.06) + 175.48 GLV ($175.48) + dust; all other reserves hold 0",
+    "The incident attacker's 5.495M aUSDC / 2.100M aUSDm are phantom claims: the aToken contracts hold 0 underlying; withdraw reverts even after an admin unpause (fork-proven)"
+  ],
+  "poc": {
+    "tests_passed": 11,
+    "tests_total": 11,
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37886852494"]
+  },
+  "key_facts": [
+    "Chains: HyperEVM 999 (ACL 0x507Bc877A27baEB12BE4Df42EfAA949A9A67703d, provider 0xf33e33B35163Ce2f46bf7150E1592839aC199124, pool 0xb61218d3efE306f7579eE50D1a606d56bc222048); MegaETH 4326 (ACL 0x217214BbF25F02A8019d42EA315aB192540aDa13, provider 0x402D38C3415Ad92a0E766e1491Dc222871B1Df7a, pool 0x81D5D25ea81b72E546fC71B5bAa8B059eF0dA702)",
+    "Live ACL roles (block 48,051,824 H / 28,723,846 M): HyperEVM DEFAULT_ADMIN+RISK_ADMIN = EOA 0x6056BE985DD4c50fECA34130FeDD0a35857099FD only; MegaETH DEFAULT_ADMIN = same EOA AND the old 2-of-3 Safe 0x4c2444d88AD61B0842Fba7CCdCb226260eBfA1bc, RISK_ADMIN = EOA; BRIDGE = nobody on both chains",
+    "The 2-of-3 Safe (owners 0x7312F0b2.., 0x2BceF069.., 0xB4837962..) still owns the AddressesProvider on BOTH chains and is getACLAdmin() on both; fork-proven it can execute setACLManager (full takeover primitive). On MegaETH it also kept DEFAULT_ADMIN and can grant BRIDGE",
+    "Apr-2026 exploit lineage verified on-chain: Safe granted BRIDGE+POOL_ADMIN+ASSET_LISTING_ADMIN+RISK_ADMIN+EMERGENCY_ADMIN to 0xd8010aca201f6113160200b8a521f35be9f94c24 (H block 33,372,289 = 2026-04-25 01:20Z; M block 14,284,168 = 01:39Z); attacker minted unbacked USDC 4,850,000 (16 calls) and USDm 2,000,000 (4 calls) and borrowed the other reserves; roles revoked same day (H 33,394,150; M 14,304,738)",
+    "The live unbacked counters (H USDC 4.85e12 raw; M USDm 2e24 raw, read at blocks 48,051,486 / 28,723,353) exactly match the minted amounts — the bad-debt footprint",
+    "Nominal claims $14,538,706 vs outstanding debts $10,258,665 vs idle cash $595.54 vs unbacked $6,858,916 (DefiLlama prices 2026-10-09; sUSDp/GLV at $1.00)",
+    "Privileged cash ceiling = idle only: fork-proven that DEFAULT_ADMIN EOA can self-grant POOL_ADMIN+BRIDGE, unpause, mintUnbacked 1,000,000 USDC, yet withdraw reverts because the aUSDC contract holds 0 USDC; reachable cash is 420.054151257482857455 sUSDp + 175.478672274128016422 GLV + dust = $595.54",
+    "Attacker residual: holds 5,495,291 aUSDC + 2,100,054 aUSDm (nominal ~$7.60M) that are unredeemable, and owes the largest debts (e.g. 807,621 vUSDC, 384,254 vUSDT0, 349,756 vUSDH H; 124,194 vUSDm, 268,394 vUSDT0 M)",
+    "Oracle prices are fresh and match market (WHYPE $85.37 vs $85.29; WETH $2,488.8 vs $2,491.7); no stale-price path; liquidations are pause-blocked anyway",
+    "No keyed RPC URLs or secrets were written to this folder; all scripts use public endpoints"
+  ],
+  "caveats": [
+    "Snapshot at HyperEVM block 48,051,486 / MegaETH 28,723,353 (roles re-read at 48,051,824 / 28,723,846); the pause is admin-reversible — if the team unpauses or recapitalizes, the primitive re-arms for the current admin keys (tripwire: config bit 60 / hasRole(BRIDGE,*))",
+    "live_targets=0 means zero targets extractable by an external unprivileged attacker; the pool/ACL contracts themselves are deployed and frozen, and $595.54 is reachable only with DEFAULT_ADMIN/POOL_ADMIN/BRIDGE or provider ownership",
+    "sUSDp and GLV have no DefiLlama price and are valued at $1.00; USDT0-MegaETH uses the HyperEVM USDT0 price. Impact on the idle total <$1",
+    "unbacked counters (4.85M USDC + 2M USDm) differ from the attacker's aToken balances (5.495M aUSDC + 2.100M aUSDm) by ~$0.75M; both are reported; the delta is aTokens held by the attacker outside the unbacked mint",
+    "P is the cash ceiling of the privileged path. Privileged authority additionally covers the frozen $14.54M nominal claims (unpause/reconfigure/upgrade/destroy) but cannot convert them to cash because the assets are lent out/dead",
+    "All work read-only; exploit simulations executed only on local forks in GitHub Actions"
+  ],
+  "one_liner": "External unprivileged attacker can extract $0 live from Purrlend: all 13 reserves on HyperEVM+MegaETH are paused (even repay), no BRIDGE/POOL_ADMIN holder exists, grantRole/mintUnbacked are properly gated, and zero idle liquidity exists; the privileged exposure is real but capped at $595.54 (420.05 sUSDp + 175.48 GLV) behind a single-key DEFAULT_ADMIN EOA (both chains) and the old 2-of-3 Safe (provider owner both chains, DEFAULT_ADMIN MegaETH), with ~$14.5M nominal claims and ~$6.9M unbacked phantom having no cash behind them."
+}
