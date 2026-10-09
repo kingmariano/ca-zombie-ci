@@ -1,0 +1,49 @@
+{
+  "finding": "C2-27",
+  "title": "Regen governance capture — '$547.1k Toucan NCT bridge' is Toucan's global multi-chain TVL (not gov-controlled); corrected capital-capture is negative EV ($102k vs $6.9k CP); live residual is a ~$0.38-deposit community-pool spend proposal (nominal $6.9k / dump-realizable ~$3.5k), gated by validators who have passed every CP spend with 0 no votes",
+  "chains": ["regen-1", "polygon", "osmosis-1"],
+  "headline_extractable_usd": 3484.87,
+  "headline_confidence": "medium",
+  "categories": {"E-U": 0, "H-O": 10200.8, "P": 0, "S": 0, "capture": 3484.87},
+  "latest_block": 29202472,
+  "block_numbers": {"regen-1": 29202472, "polygon": 95235089, "osmosis-1": 72208563},
+  "targets_checked": 295,
+  "live_targets": 180,
+  "closed_reasons": [
+    "Asset claim misattributed: $547.1k = DefiLlama Toucan Protocol GLOBAL TVL (Polygon $325,904.94 + Celo $159,791.24 + Base $34,735.34 + Regen $29,363.14 = $549,794.66). Regen governance controls none of the Polygon/Celo/Base contracts; the Polygon ToucanRegenBridge (0xdC1Dfa22...11DCC) roles are held by three operator EOAs (admin 0xCDe1E9f9..., pauser 0xd4b3e6b9..., issuer 0x87A13b0A...), all live at Polygon block 95,235,089, paused=false.",
+    "Regen-side Toucan value = NCT basket eco.uC.NCT: 44,331.178755 NCT fully backed by 44,331.178755 C03 credits ($10.2k market / $29.4k DefiLlama). Holder-owned: MsgTake is signed by the NCT owner; gov's only basket message (MsgUpdateBasketFee) changes fees, not custody; curator update is curator-signed.",
+    "Capital capture negative EV: correct quorum cost q/(1-q)*bonded = 53,971,628 REGEN = $102.1k (CG $0.00189) / $131.4k (DL $0.00243) vs ≈$6.9k proceeds (14.7x). The finding's $25.9k used q*B (32.38M) instead of q/(1-q)*B and the 2026-10-04 price ($0.0008052); same-price corrected cost is $43.5k.",
+    "Float unfillable: total public REGEN float across ALL markets = ~4,544,476 REGEN (~$8.6k) [Osmosis gamm 1,371,941 + Osmosis CL 52,535 + Base ~2.22M + Celo ~0.90M]; required stake is 1,188% of the entire float; CoinGecko 24h volume $3,359.",
+    "Veto gate: top-2 validators (ecoBridge.earth 16.86M + Regenerator 10.66M = 27,530,309.72 REGEN, 34.0% of bonded) can veto a self-sufficient attacker (33.8% > 33.4% veto threshold), burning the deposit (burn_vote_veto=true).",
+    "No normal gov message moves NCT basket backing, Polygon bridge funds, x/distribution rewards (16.28M REGEN = unclaimed staking rewards, not CP), or any other module account (all zero except bonded/not-bonded pools, distribution, protocolpool). Only a malicious MsgSoftwareUpgrade could rewrite state (needs >=2/3 validator adoption of a hostile binary; nominal chain assets $476.4k; realizable bounded by ~$8.6k float).",
+    "Expedited proposals are inert on Regen: expedited_min_deposit = 50,000,000 'stake' (not a denom on this chain)."
+  ],
+  "poc": {
+    "tests_passed": 0,
+    "tests_total": 0,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37947388433",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37949300856"
+    ]
+  },
+  "key_facts": [
+    "regen-1 v7.3.0 / cosmos-sdk v0.53.6; gov params (ABCI /cosmos.gov.v1.Query/Params, h 29,202,472): quorum 0.40, threshold 0.50, veto_threshold 0.334, voting_period 7d, max_deposit 14d, min_deposit 2,000 REGEN, min_initial_deposit_ratio 0.10 (200 REGEN), burn_vote_veto=true, expedited inert.",
+    "bonded 80,959,415.153681 REGEN; not-bonded 42,081,171.963265; uregen supply 239,826,669.588209; 11 bonded validators.",
+    "Community pool (x/protocolpool account regen1purnwdrhg477r0evks8t5ah7c8thvrssaxmfm8) = 3,672,761.676841 REGEN (CI run 2) ≈ $6,868.14 (CG) / $6,899.88 (DL); was 5,035,750 REGEN on 2026-09-07.",
+    "CP spend precedent (ABCI-decoded): #78 passed 53.68M yes / 0 no with 11x MsgCommunityPoolSpend of 36,000 REGEN to validators; #77 passed 53.64M-0 with 100,000 REGEN to the PROPOSER'S OWN address (regen1jfheyvsah5wqfyawmedme43te056z8gzdnpf3j); #63 passed 43.68M-0 but failed execution due to wrong (x/distribution) message type. 12-proposal window: no material No votes (only 5,000 REGEN dust on #72), 0 veto; #80/#81 failed on quorum only (28.5M yes < 32.38M needed).",
+    "Attack path: 200-REGEN initial deposit (~$0.38, refundable unless vetoed) -> MsgSubmitProposal{/cosmos.protocolpool.v1.MsgCommunityPoolSpend(attacker, balance)} -> validators vote yes -> up to 3,672,761.68 REGEN in 1-7 days. Nominal ≈$6.9k ($6,868–6,945 depending on snapshot price); single-shot dump across the $7.8k counterpart liquidity = $3,484.87 (proportional-split estimate).",
+    "REGEN price: $0.0008052 on 2026-10-04 (finding date), $0.00188211 (CoinGecko) / $0.0018787 (DefiLlama) at measurement; NCT $0.2301-0.2308. REGEN total mcap ~$280k-584k depending on source/price; DEX float ~$8.6k.",
+    "Toucan bridge live state: Polygon 0xdC1Dfa22824Af4e423a558bbb6C53a31c3c11DCC, paused=false, totalTransferred=127,379.19 TCO2 lifetime; NCT pool 0xD838290e877E0188a4A44700463419ED96c16107; NCT markets on Polygon ~$98.5k liquidity / $56/day volume.",
+    "Regen IBC assets: ~12,472.36 USDC (channel-48) + ~$250 dust; not gov-movable (upgrade-only).",
+    "NCT holders: 74; top holder regen1kq2rzz6fq2q7fsu75a9g7cpzjeanmk68h8wrds = 38,415.74 NCT (86.7%) + 11,335,836.22 REGEN (plain BaseAccount, not a module)."
+  ],
+  "caveats": [
+    "Headline is conditional on validators approving a self-serving CP-spend proposal. Precedent is strong (every CP spend in the window passed with 0 no votes, including a self-addressed one) but passage is a judgment, not a measurement; a hostile proposal to an anonymous address could attract scrutiny or a veto.",
+    "The $3,484.87 realization is a proportional-split dump estimate over pool counterpart liquidity (~$7.8k); actual proceeds depend on execution and price impact. Nominal CP value is $6,945.23 (CG) / $8,941.34 (DL).",
+    "USD figures move with REGEN/NCT prices; REGEN traded $0.0008-0.0024 during the campaign. Values recorded at regen-1 h 29,202,472 / Polygon blk 95,235,089 / Osmosis h 72,208,563.",
+    "No fork PoC is possible for Cosmos governance; verification is live ABCI/LCD reads at explicit heights + exact-version SDK v0.53.6 source (tally.go, distribution grpc_query.go) + ABCI-decoded proposals + a reproducible keyless CI run.",
+    "targets_checked/live_targets count distinct on-chain objects read (module accounts, validators, proposals, NCT holders, credit batches, DEX pools, bridge+roles) and are approximate.",
+    "Regen node build_deps not independently hash-verified; v7.3.0 / SDK v0.53.6 from node_info application_version."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$3.5k dump-realizable (nominal $6.9k) live from Regen's community pool via a ~$0.38 refundable deposit CP-spend proposal to their own address, gated only by validators who have passed every CP spend with 0 no votes; the finding's $547.1k 'Toucan NCT bridge' is Toucan's global multi-chain TVL (Regen gov controls none of it) and the corrected capital-capture route (53.97M REGEN = $102k, 11.9x the entire public float) is negative EV vs the $6.9k prize."
+}
