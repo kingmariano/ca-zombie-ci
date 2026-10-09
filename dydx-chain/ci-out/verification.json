@@ -1,0 +1,438 @@
+{
+ "generated_at": "2026-10-09T07:04:38Z",
+ "checks": {
+  "live_nodes": [
+   {
+    "endpoint": "https://dydx-dao-api.polkachu.com",
+    "app_version": "9.7.0",
+    "git_commit": "67a3c71670c460ef92ffb15930dda7047a901f64",
+    "go_version": "go version go1.23.1 linux/amd64",
+    "ibc_go_v8": {
+     "version": "v8.5.1",
+     "sum": ""
+    },
+    "cosmos_sdk": {
+     "version": "v0.50.11",
+     "sum": ""
+    },
+    "cometbft": {
+     "version": "v0.38.15",
+     "sum": ""
+    },
+    "has_ibc_hooks": false,
+    "has_wasm": false
+   },
+   {
+    "endpoint": "https://dydx-rest.publicnode.com",
+    "app_version": "9.7.1",
+    "git_commit": "5935cb7c5dd684b17836e75093fc5c3ca5019ea3",
+    "go_version": "go version go1.23.12 linux/amd64",
+    "ibc_go_v8": {
+     "version": "v8.5.1",
+     "sum": ""
+    },
+    "cosmos_sdk": {
+     "version": "v0.50.11",
+     "sum": ""
+    },
+    "cometbft": {
+     "version": "v0.38.15",
+     "sum": ""
+    },
+    "has_ibc_hooks": false,
+    "has_wasm": false
+   },
+   {
+    "endpoint": "https://rest-dydx.cosmostation.io",
+    "error": "GET failed: https://rest-dydx.cosmostation.io/cosmos/base/tendermint/v1beta1/node_info: <urlopen error [Errno -2] Name or service not known>"
+   }
+  ],
+  "latest_block": {
+   "height": "108686057",
+   "time": "2026-10-09T07:04:51.431727983Z"
+  },
+  "fix_markers": {
+   "dydx_fork_transfer": {
+    "repo": "dydxprotocol/ibc-go",
+    "ref": "8733b3edf43a",
+    "path": "modules/apps/transfer/ibc_module.go",
+    "marker": "acknowledgement did not marshal to expected bytes",
+    "marker_lines": [
+     247
+    ],
+    "present": true,
+    "sha256": "e7012c72d1e6e5e174c16164ad8722152fc9c35b13584fb48c4996095d5f8d1a",
+    "bytes": 10473
+   },
+   "dydx_fork_core": {
+    "repo": "dydxprotocol/ibc-go",
+    "ref": "8733b3edf43a",
+    "path": "modules/core/04-channel/keeper/packet.go",
+    "marker": "acknowledgement marshalling error",
+    "marker_lines": [
+     435
+    ],
+    "present": true,
+    "sha256": "cb8403ab9de7e53c194c3fdb5feccafa251043015aae083036bddbe9a6f68712",
+    "bytes": 18547
+   },
+   "upstream_v8.5.1_transfer": {
+    "repo": "cosmos/ibc-go",
+    "ref": "v8.5.1",
+    "path": "modules/apps/transfer/ibc_module.go",
+    "marker": "acknowledgement did not marshal to expected bytes",
+    "marker_lines": [],
+    "present": false,
+    "sha256": "86e48d6ffec6dd921733e969026dd8198aed15239448bbefef9cef4284917855",
+    "bytes": 12062
+   },
+   "upstream_v8.5.1_core": {
+    "repo": "cosmos/ibc-go",
+    "ref": "v8.5.1",
+    "path": "modules/core/04-channel/keeper/packet.go",
+    "marker": "acknowledgement marshalling error",
+    "marker_lines": [],
+    "present": false,
+    "sha256": "5dc07f53b270162ebf29a7e88697db3b333ffef6c2ca0989369323aa6c1306c9",
+    "bytes": 21250
+   },
+   "upstream_v8.6.1_transfer": {
+    "repo": "cosmos/ibc-go",
+    "ref": "v8.6.1",
+    "path": "modules/apps/transfer/ibc_module.go",
+    "marker": "acknowledgement did not marshal to expected bytes",
+    "marker_lines": [
+     250
+    ],
+    "present": true,
+    "sha256": "6c24f7f33fa2c80cde7a5ff45ac5e7793b96d0e6f24b8d48a5bc7bf9f26b1acf",
+    "bytes": 12296
+   },
+   "upstream_v8.6.1_core": {
+    "repo": "cosmos/ibc-go",
+    "ref": "v8.6.1",
+    "path": "modules/core/04-channel/keeper/packet.go",
+    "marker": "acknowledgement marshalling error",
+    "marker_lines": [],
+    "present": false,
+    "sha256": "5dc07f53b270162ebf29a7e88697db3b333ffef6c2ca0989369323aa6c1306c9",
+    "bytes": 21250
+   },
+   "upstream_v8.7.0_transfer": {
+    "repo": "cosmos/ibc-go",
+    "ref": "v8.7.0",
+    "path": "modules/apps/transfer/ibc_module.go",
+    "marker": "acknowledgement did not marshal to expected bytes",
+    "marker_lines": [
+     250
+    ],
+    "present": true,
+    "sha256": "6c24f7f33fa2c80cde7a5ff45ac5e7793b96d0e6f24b8d48a5bc7bf9f26b1acf",
+    "bytes": 12296
+   },
+   "upstream_v8.7.0_core": {
+    "repo": "cosmos/ibc-go",
+    "ref": "v8.7.0",
+    "path": "modules/core/04-channel/keeper/packet.go",
+    "marker": "acknowledgement marshalling error",
+    "marker_lines": [
+     438
+    ],
+    "present": true,
+    "sha256": "85714b5aac3dfbb19f68576c45d9ab2c99a35d7d305bf2bbe40d88efda7df331",
+    "bytes": 21542
+   }
+  },
+  "go_mod": {
+   "protocol/v9.7.1": {
+    "ibc_go_replace": [
+     "github.com/cosmos/ibc-go/v8 => github.com/dydxprotocol/ibc-go/v8 v8.0.0-rc.0.0.20250312180215-8733b3edf43a"
+    ],
+    "ibc_go_require": [
+     "github.com/cosmos/ibc-go/v8 v8.5.1",
+     "github.com/cosmos/ibc-go/v8 => github.com/dydxprotocol/ibc-go/v8 v8.0.0-rc.0.0.20250312180215-8733b3edf43a"
+    ],
+    "sha256": "326863eac913829b795c9f6e9e323281816bcb03e42c73408426c1abb8caaa08"
+   },
+   "main": {
+    "ibc_go_replace": [
+     "github.com/cosmos/ibc-go/v8 => github.com/dydxprotocol/ibc-go/v8 v8.0.0-rc.0.0.20250312180215-8733b3edf43a"
+    ],
+    "ibc_go_require": [
+     "github.com/cosmos/ibc-go/v8 v8.5.1",
+     "github.com/cosmos/ibc-go/v8 => github.com/dydxprotocol/ibc-go/v8 v8.0.0-rc.0.0.20250312180215-8733b3edf43a"
+    ],
+    "sha256": "26500ea72d6cd9546317efa10e3debf6daf0c5125ae5d9b223ca738c2636ecf7"
+   }
+  },
+  "gov": {
+   "gov_tally_params": {
+    "voting_params": null,
+    "deposit_params": null,
+    "tally_params": {
+     "quorum": "0.5",
+     "threshold": "0.5",
+     "veto_threshold": "0.334"
+    },
+    "params": {
+     "min_deposit": [
+      {
+       "denom": "adydx",
+       "amount": "2000000000000000000000"
+      }
+     ],
+     "max_deposit_period": "86400s",
+     "voting_period": "259200s",
+     "quorum": "0.5",
+     "threshold": "0.5",
+     "veto_threshold": "0.334",
+     "min_initial_deposit_ratio": "0.2",
+     "proposal_cancel_ratio": "1",
+     "proposal_cancel_dest": "",
+     "expedited_voting_period": "129600s",
+     "expedited_threshold": "0.75",
+     "expedited_min_deposit": [
+      {
+       "denom": "adydx",
+       "amount": "2100000000000000000000"
+      }
+     ],
+     "burn_vote_quorum": false,
+     "burn_proposal_deposit_prevote": false,
+     "burn_vote_veto": true,
+     "min_deposit_ratio": "0.01"
+    }
+   },
+   "gov_voting_params": {
+    "voting_params": {
+     "voting_period": "259200s"
+    },
+    "deposit_params": null,
+    "tally_params": null,
+    "params": {
+     "min_deposit": [
+      {
+       "denom": "adydx",
+       "amount": "2000000000000000000000"
+      }
+     ],
+     "max_deposit_period": "86400s",
+     "voting_period": "259200s",
+     "quorum": "0.5",
+     "threshold": "0.5",
+     "veto_threshold": "0.334",
+     "min_initial_deposit_ratio": "0.2",
+     "proposal_cancel_ratio": "1",
+     "proposal_cancel_dest": "",
+     "expedited_voting_period": "129600s",
+     "expedited_threshold": "0.75",
+     "expedited_min_deposit": [
+      {
+       "denom": "adydx",
+       "amount": "2100000000000000000000"
+      }
+     ],
+     "burn_vote_quorum": false,
+     "burn_proposal_deposit_prevote": false,
+     "burn_vote_veto": true,
+     "min_deposit_ratio": "0.01"
+    }
+   },
+   "staking_pool": {
+    "pool": {
+     "not_bonded_tokens": "32082310203722005625744279",
+     "bonded_tokens": "285934158724945069931989699"
+    }
+   },
+   "staking_params": {
+    "params": {
+     "unbonding_time": "1814400s",
+     "max_validators": 21,
+     "max_entries": 7,
+     "historical_entries": 10000,
+     "bond_denom": "adydx",
+     "min_commission_rate": "0.050000000000000000"
+    }
+   },
+   "supply_adydx": {
+    "amount": {
+     "denom": "adydx",
+     "amount": "1000000000000000000000000000"
+    }
+   },
+   "community_pool": {
+    "pool": [
+     {
+      "denom": "adydx",
+      "amount": "1061666225.006824874757855099"
+     },
+     {
+      "denom": "ibc/15781DDDCD499274C978F31A0DBD6DA93D8EE0F7200891898549AFC7C5B5948A",
+      "amount": "980170470908197867.000000000000000000"
+     },
+     {
+      "denom": "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5",
+      "amount": "648706.673048890139898119"
+     }
+    ]
+   },
+   "current_plan": {
+    "plan": null
+   },
+   "module_balances": {
+    "community_treasury": {
+     "balances": [
+      {
+       "denom": "adydx",
+       "amount": "79763439055322605835057932"
+      },
+      {
+       "denom": "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5",
+       "amount": "6425"
+      },
+      {
+       "denom": "ibc/AD9B9B572C8099DF19DC6233FAC79C0AFD20972864F258439C2A96ED7FC1B903",
+       "amount": "10000000000000000"
+      },
+      {
+       "denom": "ibc/E5DA7F807E9588AA76C33C1E0A91B5D34076F7D6FA170297DFD076EB14D36C0A",
+       "amount": "70000000000000000"
+      }
+     ],
+     "pagination": {
+      "next_key": null,
+      "total": "4"
+     }
+    },
+    "insurance_fund": {
+     "balances": [
+      {
+       "denom": "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5",
+       "amount": "8080668512695"
+      }
+     ],
+     "pagination": {
+      "next_key": null,
+      "total": "1"
+     }
+    },
+    "rewards_treasury": {
+     "balances": [
+      {
+       "denom": "adydx",
+       "amount": "32485306829033053298279867"
+      }
+     ],
+     "pagination": {
+      "next_key": null,
+      "total": "1"
+     }
+    },
+    "distribution": {
+     "balances": [
+      {
+       "denom": "adydx",
+       "amount": "1278705668725976812349"
+      },
+      {
+       "denom": "ibc/15781DDDCD499274C978F31A0DBD6DA93D8EE0F7200891898549AFC7C5B5948A",
+       "amount": "980170470908197867"
+      },
+      {
+       "denom": "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5",
+       "amount": "1770630523119"
+      }
+     ],
+     "pagination": {
+      "next_key": null,
+      "total": "3"
+     }
+    },
+    "bridge": {
+     "balances": [
+      {
+       "denom": "adydx",
+       "amount": "41657037682068991002951945"
+      }
+     ],
+     "pagination": {
+      "next_key": null,
+      "total": "1"
+     }
+    },
+    "gov": {
+     "balances": [
+      {
+       "denom": "adydx",
+       "amount": "2000000000000000000000"
+      },
+      {
+       "denom": "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5",
+       "amount": "99860"
+      }
+     ],
+     "pagination": {
+      "next_key": null,
+      "total": "2"
+     }
+    },
+    "megavault": {
+     "balances": [],
+     "pagination": {
+      "next_key": null,
+      "total": "0"
+     }
+    }
+   }
+  },
+  "prices": {
+   "defillama_dydx": {
+    "coins": {
+     "coingecko:dydx": {
+      "price": 0.13582079886551185,
+      "symbol": "ETHDYDX",
+      "timestamp": 1791528781,
+      "confidence": 0.99
+     }
+    }
+   },
+   "coingecko_dydx": {
+    "dydx": {
+     "usd": 0.135575,
+     "usd_market_cap": 6598469.016838122,
+     "usd_24h_vol": 5971503.888794739
+    }
+   }
+  },
+  "ibc": {
+   "channels": {
+    "count": 123,
+    "pagination_total": "0"
+   },
+   "channel_ports": {
+    "icahost": 83,
+    "transfer": 40
+   },
+   "connections": {
+    "count": 47,
+    "pagination_total": "0"
+   }
+  },
+  "derived": {
+   "quorum": 0.5,
+   "bonded_dydx": 285934158.72494507,
+   "supply_dydx": 1000000000.0,
+   "quorum_dydx": 142967079.36247253,
+   "dydx_price_usd": 0.13582079886551185,
+   "quorum_cost_usd_at_spot": 19417902.93048005,
+   "community_treasury_dydx": 79763439.0553226,
+   "rewards_treasury_dydx": 32485306.82903305,
+   "insurance_fund_usdc": 8080668.512695,
+   "bridge_dydx_escrow": 41657037.68206899,
+   "community_treasury_usd_at_spot": 10833534.012754483,
+   "rewards_treasury_usd_at_spot": 4412180.324910536,
+   "insurance_fund_usd": 8080668.512695,
+   "gov_spendable_nominal_usd": 23326382.85036002
+  }
+ }
+}

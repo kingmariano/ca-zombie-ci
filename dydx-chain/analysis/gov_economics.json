@@ -1,0 +1,64 @@
+{
+  "finding": "C2-34",
+  "generated": "2026-10-09",
+  "chain": "dydx-mainnet-1",
+  "read_window": {"start_height": 108685672, "end_height": 108685774, "time_utc": "2026-10-09T07:00:53Z..07:01:58Z"},
+  "prices": {
+    "dydx_usd_defillama": 0.13582079886551185,
+    "dydx_usd_coingecko": 0.135437,
+    "usdc_usd": 0.9995972807748702,
+    "dydx_24h_volume_usd": 5890359.87,
+    "dydx_adv_tokens": 43500000,
+    "note": "CoinGecko market-cap field inconsistent with 1B on-chain supply; ignored"
+  },
+  "params": {
+    "quorum": 0.5,
+    "threshold": 0.5,
+    "veto_threshold": 0.334,
+    "voting_period_s": 259200,
+    "expedited_voting_period_s": 129600,
+    "expedited_threshold": 0.75,
+    "min_deposit_dydx": 2000,
+    "unbonding_time_s": 1814400,
+    "bonded_dydx": 285934158.72494507,
+    "not_bonded_dydx": 32082310.20372201,
+    "supply_dydx": 1000000000,
+    "bonded_validators": 21
+  },
+  "balances_by_account": {
+    "community_treasury": {"address": "dydx15ztc7xy42tn2ukkc0qjthkucw9ac63pgp70urn", "dydx": 79763439.0553226, "usdc": 0.006425, "usd": 10833534.01},
+    "rewards_treasury": {"address": "dydx16wrau2x4tsg033xfrrdpae6kxfn9kyuerr5jjp", "dydx": 32485306.82903305, "usd": 4412180.32},
+    "insurance_fund": {"address": "dydx1c7ptc87hkd54e3r7zjy92q29xkq7t79w64slrq", "usdc": 8080668.512695, "usd": 8080668.51, "subaccount_positions": "empty"},
+    "distribution_community_pool": {"address": "dydx1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8wx2cfg", "dydx": 1278.72, "usdc": 1.770630702295, "usd": 175.5},
+    "bridge_escrow": {"address": "dydx1zlefkpe3g0vvm9a4h0jf9000lmqutlh9jwjnsv", "dydx": 41657037.68206899, "usd": 5657606, "note": "user-backed bridge escrow; flagged, not counted in headline capture assets"},
+    "megavault": {"dydx": 0, "usd": 0},
+    "community_vester": {"dydx": 0, "usd": 0},
+    "rewards_vester": {"dydx": 0, "usd": 0},
+    "gov": {"dydx": 2000, "usdc": 0.09986, "usd": 271.7}
+  },
+  "spendability": {
+    "mechanism_1": "dydxprotocol.sending.MsgSendFromModuleToAccount (gov-only internal msg; blocked senders: bonded_tokens_pool, not_bonded_tokens_pool, subaccounts)",
+    "mechanism_2": "cosmos.distribution.v1beta1.MsgCommunityPoolSpend (gov-only internal msg)",
+    "community_treasury": {"spendable": true, "confidence": "high", "evidence": "prop 390 sent 357142.71 DYDX from community_treasury (2026-07-07)"},
+    "rewards_treasury": {"spendable": true, "confidence": "medium-high", "evidence": "not a protected module name; same message type"},
+    "insurance_fund": {"spendable": true, "confidence": "medium", "evidence": "not a protected module name; no precedent"},
+    "bridge_escrow": {"spendable": true, "confidence": "medium", "evidence": "not a protected module name; escrow of bridged DYDX; flagged for review"},
+    "community_pool": {"spendable": true, "confidence": "high", "evidence": "MsgCommunityPoolSpend"}
+  },
+  "capture": {
+    "quorum_dydx": 142967079.36,
+    "capture_cost_usd_at_spot": 19417902.93,
+    "adv_multiple": 3.29,
+    "assets_usd_nominal_core": 23326382.85,
+    "assets_usd_incl_bridge": 28983988.85,
+    "unbonding_days": 21,
+    "verdict": "negative EV",
+    "confidence": "high on parameters; medium on slippage/realizable value"
+  },
+  "dos": {
+    "realized_usd": 0,
+    "patched": true,
+    "hypothetical_halt_frozen_usd": {"usdc_onchain": 70772323.76, "perp_open_interest": 38954051.94},
+    "attacker_gain_usd": 0
+  }
+}
