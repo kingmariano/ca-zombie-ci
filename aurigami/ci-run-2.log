@@ -1,0 +1,348 @@
+[ci] pushed branch aurigami
+[ci] dispatching workflow...
+[ci] run: https://github.com/kingmariano/ca-zombie-ci/actions/runs/37873265852
+[ci] conclusion: success
+=== artifact contents ===
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/fetch_auUSDCNative.log
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/fetch_borrows.log
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/scan_health.log
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/fetch_auDAI.log
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/fetch_auUSDT.log
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/fetch_auETH.log
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/fetch_auSTNEAR.log
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/fetch_auWNEAR.log
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/fetch_auUSDTNative.log
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/fetch_auWBTC.log
+/home/heisenberg/CA/aurigami/ci-artifacts/result-aurigami/analysis/fetch_auNEARX.log
+=== tail of full log (/home/heisenberg/CA/aurigami/ci-log.txt) ===
+shCommand' && git config --local --unset-all 'core.sshCommand' || :"
+run	Run actions/checkout@v4	2026-10-09T02:10:09.2485314Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+run	Run actions/checkout@v4	2026-10-09T02:10:09.2551722Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+run	Run actions/checkout@v4	2026-10-09T02:10:09.2790323Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+run	Run actions/checkout@v4	2026-10-09T02:10:09.2828422Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+run	Run actions/checkout@v4	2026-10-09T02:10:09.3059835Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+run	Run actions/checkout@v4	2026-10-09T02:10:09.3104442Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-09T02:10:09.3106568Z ##[group]Fetching the repository
+run	Run actions/checkout@v4	2026-10-09T02:10:09.3116945Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ee1adea8cf4800e0728fdde9d8b50c94d630d39d:refs/remotes/origin/aurigami
+run	Run actions/checkout@v4	2026-10-09T02:10:10.4844678Z From https://github.com/kingmariano/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-09T02:10:10.4847407Z  * [new ref]         ee1adea8cf4800e0728fdde9d8b50c94d630d39d -> origin/aurigami
+run	Run actions/checkout@v4	2026-10-09T02:10:10.4851231Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-09T02:10:10.4852059Z ##[group]Determining the checkout info
+run	Run actions/checkout@v4	2026-10-09T02:10:10.4853061Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-09T02:10:10.4858477Z [command]/usr/bin/git sparse-checkout disable
+run	Run actions/checkout@v4	2026-10-09T02:10:10.4938962Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+run	Run actions/checkout@v4	2026-10-09T02:10:10.4973697Z ##[group]Checking out the ref
+run	Run actions/checkout@v4	2026-10-09T02:10:10.4977267Z [command]/usr/bin/git checkout --progress --force -B aurigami refs/remotes/origin/aurigami
+run	Run actions/checkout@v4	2026-10-09T02:10:10.5782575Z Switched to a new branch 'aurigami'
+run	Run actions/checkout@v4	2026-10-09T02:10:10.5786724Z branch 'aurigami' set up to track 'origin/aurigami'.
+run	Run actions/checkout@v4	2026-10-09T02:10:10.5796613Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-09T02:10:10.5843628Z [command]/usr/bin/git log -1 --format=%H
+run	Run actions/checkout@v4	2026-10-09T02:10:10.5872383Z ee1adea8cf4800e0728fdde9d8b50c94d630d39d
+run	Run foundry-rs/foundry-toolchain@v1	﻿2026-10-09T02:10:10.6140477Z ##[group]Run foundry-rs/foundry-toolchain@v1
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6141054Z with:
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6141441Z   version: stable
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6141824Z   network: ethereum
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6142201Z   cache: true
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6142690Z   cache-key: run-ee1adea8cf4800e0728fdde9d8b50c94d630d39d
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6143211Z   cache-restore-keys: run-
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6143606Z env:
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6144302Z   RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6145003Z   BLOCKPI_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6145654Z   NODEREAL_ETH_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6146179Z   ETHERSCANV2_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6146675Z   GOLD_RUSH_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6147134Z   ALCHEMY_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6147703Z   ANKR_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6148226Z   DRPC_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6148723Z   INFURA_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6149215Z   DUNE_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6149992Z   ARB_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6150533Z   BSC_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6151069Z   BASE_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6151537Z   OP_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6152029Z   POLYGON_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6152505Z   FANTOM_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6152995Z   CRONOS_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6153483Z   MOONRIVER_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6154022Z   GNOSIS_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6154903Z   SONIC_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6155466Z   FOUNDRY_FUZZ_RUNS: 256
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.6155872Z ##[endgroup]
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.7396936Z Installing Foundry (version: stable)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.7400247Z Downloading foundryup installer from foundry-rs/foundryup@a27902ef04dcb43061fabf343365cb5afc95fc48...
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:10.8645157Z Running foundryup installer...
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:11.7664882Z Running: foundryup 
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.4602921Z Added /home/runner/.foundry/bin to PATH
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.4604654Z Primary key: linux-foundry-chain-fork-run-ee1adea8cf4800e0728fdde9d8b50c94d630d39d
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.4612365Z Restore keys: linux-foundry-chain-fork-run-
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7114558Z Cache not found
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7115203Z Running: forge --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7177717Z forge Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7178376Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7179257Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7179984Z Build Profile: dist
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7183490Z Running: cast --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7265999Z cast Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7266706Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7267526Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7268245Z Build Profile: dist
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7273547Z Running: anvil --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7316419Z anvil Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7317128Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7338935Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7340136Z Build Profile: dist
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7341001Z Running: chisel --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7365392Z chisel Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7366135Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7367012Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:10:14.7367784Z Build Profile: dist
+run	env info	﻿2026-10-09T02:10:14.7503800Z ##[group]Run df -h /
+run	env info	2026-10-09T02:10:14.7504198Z [36;1mdf -h /[0m
+run	env info	2026-10-09T02:10:14.7504501Z [36;1mnproc[0m
+run	env info	2026-10-09T02:10:14.7504803Z [36;1mforge --version[0m
+run	env info	2026-10-09T02:10:14.7505126Z [36;1mpython3 --version[0m
+run	env info	2026-10-09T02:10:14.7505458Z [36;1mnode --version || true[0m
+run	env info	2026-10-09T02:10:14.7791701Z shell: /usr/bin/bash -e {0}
+run	env info	2026-10-09T02:10:14.7792161Z env:
+run	env info	2026-10-09T02:10:14.7792694Z   RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7793439Z   BLOCKPI_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7794117Z   NODEREAL_ETH_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7794656Z   ETHERSCANV2_API_KEY: ***
+run	env info	2026-10-09T02:10:14.7795170Z   GOLD_RUSH_API_KEY: ***
+run	env info	2026-10-09T02:10:14.7795647Z   ALCHEMY_API_KEY: ***
+run	env info	2026-10-09T02:10:14.7796259Z   ANKR_API_KEY: ***
+run	env info	2026-10-09T02:10:14.7796772Z   DRPC_API_KEY: ***
+run	env info	2026-10-09T02:10:14.7797233Z   INFURA_API_KEY: ***
+run	env info	2026-10-09T02:10:14.7797729Z   DUNE_API_KEY: ***
+run	env info	2026-10-09T02:10:14.7798169Z   ARB_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7798610Z   BSC_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7799048Z   BASE_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7799825Z   OP_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7800332Z   POLYGON_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7800823Z   FANTOM_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7801329Z   CRONOS_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7801837Z   MOONRIVER_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7802303Z   GNOSIS_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7802662Z   SONIC_RPC_URL: ***
+run	env info	2026-10-09T02:10:14.7802966Z   FOUNDRY_FUZZ_RUNS: 256
+run	env info	2026-10-09T02:10:14.7803273Z ##[endgroup]
+run	env info	2026-10-09T02:10:14.8268177Z Filesystem      Size  Used Avail Use% Mounted on
+run	env info	2026-10-09T02:10:14.8268831Z /dev/root       145G   59G   86G  41% /
+run	env info	2026-10-09T02:10:14.8513833Z 4
+run	env info	2026-10-09T02:10:14.8559773Z forge Version: 1.8.5
+run	env info	2026-10-09T02:10:14.8560477Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	env info	2026-10-09T02:10:14.8561339Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	env info	2026-10-09T02:10:14.8562055Z Build Profile: dist
+run	env info	2026-10-09T02:10:14.8575651Z Python 3.12.3
+run	env info	2026-10-09T02:10:17.8223210Z v22.23.3
+run	select ETH fork RPC	﻿2026-10-09T02:10:17.8370069Z ##[group]Run pick() {
+run	select ETH fork RPC	2026-10-09T02:10:17.8370496Z [36;1mpick() {[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8370807Z [36;1m  for u in "$@"; do[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8371159Z [36;1m    [ -z "$u" ] && continue[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8371623Z [36;1m    r=$(curl -s -m 12 -X POST -H 'Content-Type: application/json' \[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8372272Z [36;1m          --data '{"jsonrpc":"2.0","id":1,"method":"eth_blockNumber","params":[]}' "$u" 2>/dev/null)[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8372869Z [36;1m    case "$r" in *result*) echo "$u"; return 0;; esac[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8373258Z [36;1m  done[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8373555Z [36;1m  echo ""; return 1[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8373856Z [36;1m}[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8374463Z [36;1mPICK=$(pick "https://ethereum-rpc.publicnode.com" "https://eth.drpc.org" "https://1rpc.io/eth" "$RPC_URL" || true)[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8375132Z [36;1mif [ -z "$PICK" ]; then[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8375581Z [36;1m  echo "WARNING: no working ETH RPC found; FORK_RPC_URL left unset"[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8376058Z [36;1melse[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8376369Z [36;1m  echo "ETH fork RPC selected"[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8376771Z [36;1m  echo "FORK_RPC_URL=$PICK" >> "$GITHUB_ENV"[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8377137Z [36;1mfi[0m
+run	select ETH fork RPC	2026-10-09T02:10:17.8441329Z shell: /usr/bin/bash -e {0}
+run	select ETH fork RPC	2026-10-09T02:10:17.8441684Z env:
+run	select ETH fork RPC	2026-10-09T02:10:17.8442108Z   RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8442674Z   BLOCKPI_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8443198Z   NODEREAL_ETH_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8443612Z   ETHERSCANV2_API_KEY: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8444002Z   GOLD_RUSH_API_KEY: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8444363Z   ALCHEMY_API_KEY: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8444822Z   ANKR_API_KEY: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8445217Z   DRPC_API_KEY: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8445800Z   INFURA_API_KEY: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8446177Z   DUNE_API_KEY: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8446513Z   ARB_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8446868Z   BSC_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8447227Z   BASE_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8447593Z   OP_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8447988Z   POLYGON_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8448374Z   FANTOM_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8448759Z   CRONOS_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8449142Z   MOONRIVER_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8449769Z   GNOSIS_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8450167Z   SONIC_RPC_URL: ***
+run	select ETH fork RPC	2026-10-09T02:10:17.8450466Z   FOUNDRY_FUZZ_RUNS: 256
+run	select ETH fork RPC	2026-10-09T02:10:17.8450764Z ##[endgroup]
+run	select ETH fork RPC	2026-10-09T02:10:18.0104660Z ETH fork RPC selected
+run	foundry tests	﻿2026-10-09T02:10:18.1240400Z ##[group]Run forge test -vvv
+run	foundry tests	2026-10-09T02:10:18.1240820Z [36;1mforge test -vvv[0m
+run	foundry tests	2026-10-09T02:10:18.1304642Z shell: /usr/bin/bash -e {0}
+run	foundry tests	2026-10-09T02:10:18.1305000Z env:
+run	foundry tests	2026-10-09T02:10:18.1305368Z   RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1305966Z   BLOCKPI_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1306517Z   NODEREAL_ETH_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1306969Z   ETHERSCANV2_API_KEY: ***
+run	foundry tests	2026-10-09T02:10:18.1307375Z   GOLD_RUSH_API_KEY: ***
+run	foundry tests	2026-10-09T02:10:18.1307751Z   ALCHEMY_API_KEY: ***
+run	foundry tests	2026-10-09T02:10:18.1308222Z   ANKR_API_KEY: ***
+run	foundry tests	2026-10-09T02:10:18.1308638Z   DRPC_API_KEY: ***
+run	foundry tests	2026-10-09T02:10:18.1308997Z   INFURA_API_KEY: ***
+run	foundry tests	2026-10-09T02:10:18.1309371Z   DUNE_API_KEY: ***
+run	foundry tests	2026-10-09T02:10:18.1309997Z   ARB_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1310359Z   BSC_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1310714Z   BASE_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1311078Z   OP_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1311465Z   POLYGON_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1311850Z   FANTOM_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1312236Z   CRONOS_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1312664Z   MOONRIVER_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1313047Z   GNOSIS_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1313404Z   SONIC_RPC_URL: ***
+run	foundry tests	2026-10-09T02:10:18.1313708Z   FOUNDRY_FUZZ_RUNS: 256
+run	foundry tests	2026-10-09T02:10:18.1314090Z   FORK_RPC_URL: https://ethereum-rpc.publicnode.com
+run	foundry tests	2026-10-09T02:10:18.1314502Z ##[endgroup]
+run	foundry tests	2026-10-09T02:10:18.5220408Z Compiling 19 files with Solc 0.8.24
+run	foundry tests	2026-10-09T02:10:19.7714986Z Solc 0.8.24 finished in 1.25s
+run	foundry tests	2026-10-09T02:10:19.7776842Z Compiler run successful!
+run	foundry tests	2026-10-09T02:12:32.8265466Z 
+run	foundry tests	2026-10-09T02:12:32.8266211Z Ran 10 tests for test/Aurigami.t.sol:AurigamiTest
+run	foundry tests	2026-10-09T02:12:32.8267443Z [PASS] test_01_market_state_live_unpaused_borrow_capped() (gas: 790999)
+run	foundry tests	2026-10-09T02:12:32.8268117Z Logs:
+run	foundry tests	2026-10-09T02:12:32.8268481Z   fork block: 219167386
+run	foundry tests	2026-10-09T02:12:32.8269058Z   PASS: 14 markets, all supplied, mint open, borrow caps = 1 wei
+run	foundry tests	2026-10-09T02:12:32.8272108Z 
+run	foundry tests	2026-10-09T02:12:32.8272556Z [PASS] test_02_borrow_disabled_on_all_debt_markets() (gas: 1180116)
+run	foundry tests	2026-10-09T02:12:32.8273331Z Logs:
+run	foundry tests	2026-10-09T02:12:32.8273768Z   fork block: 219167386
+run	foundry tests	2026-10-09T02:12:32.8274563Z   PASS: borrow(1) reverts 'market borrow cap reached' on all 7 debt markets
+run	foundry tests	2026-10-09T02:12:32.8275215Z 
+run	foundry tests	2026-10-09T02:12:32.8275527Z [PASS] test_03_oracle_push_is_keeper_gated() (gas: 71880)
+run	foundry tests	2026-10-09T02:12:32.8276184Z Logs:
+run	foundry tests	2026-10-09T02:12:32.8276654Z   fork block: 219167386
+run	foundry tests	2026-10-09T02:12:32.8277361Z   PASS: oracle setPrices reverts 'not price setter' for external caller
+run	foundry tests	2026-10-09T02:12:32.8278268Z   oracle owner: 0xeBD8251539A66d25202263D59a573A9DD3425f45
+run	foundry tests	2026-10-09T02:12:32.8278831Z 
+run	foundry tests	2026-10-09T02:12:32.8279208Z [PASS] test_04_seize_without_liquidation_reverts() (gas: 53165)
+run	foundry tests	2026-10-09T02:12:32.8280227Z Logs:
+run	foundry tests	2026-10-09T02:12:32.8280681Z   fork block: 219167386
+run	foundry tests	2026-10-09T02:12:32.8281345Z   PASS: external seize() from non-market address reverts
+run	foundry tests	2026-10-09T02:12:32.8281871Z 
+run	foundry tests	2026-10-09T02:12:32.8282218Z [PASS] test_05_mint_redeem_roundtrip_open() (gas: 638512)
+run	foundry tests	2026-10-09T02:12:32.8282949Z Logs:
+run	foundry tests	2026-10-09T02:12:32.8283430Z   fork block: 219167386
+run	foundry tests	2026-10-09T02:12:32.8284073Z   mint 50000e6 USDC -> redeemed (units): 49999999999
+run	foundry tests	2026-10-09T02:12:32.8284933Z   PASS: mint/redeem open, value preserved (H-O path), no profit
+run	foundry tests	2026-10-09T02:12:32.8285821Z 
+run	foundry tests	2026-10-09T02:12:32.8286187Z [PASS] test_06_no_retroactive_reward_capture() (gas: 1931626)
+run	foundry tests	2026-10-09T02:12:32.8286905Z Logs:
+run	foundry tests	2026-10-09T02:12:32.8287374Z   fork block: 219167386
+run	foundry tests	2026-10-09T02:12:32.8287981Z   PLY gained by fresh minter+claim (wei): 0
+run	foundry tests	2026-10-09T02:12:32.8288702Z   Unitroller PLY before: 167372294980437551793130559
+run	foundry tests	2026-10-09T02:12:32.8289440Z   Unitroller PLY after: 167372294980437551793130559
+run	foundry tests	2026-10-09T02:12:32.8290522Z   PASS: no retroactive reward capture; pool not drained
+run	foundry tests	2026-10-09T02:12:32.8291026Z 
+run	foundry tests	2026-10-09T02:12:32.8291366Z [PASS] test_07_liquidation_surface_is_dust() (gas: 5129837)
+run	foundry tests	2026-10-09T02:12:32.8292068Z Logs:
+run	foundry tests	2026-10-09T02:12:32.8292530Z   fork block: 219167386
+run	foundry tests	2026-10-09T02:12:32.8293090Z   shortfall accounts: 30
+run	foundry tests	2026-10-09T02:12:32.8294031Z   sum shortfall USD (1e18): 10361921362568091681
+run	foundry tests	2026-10-09T02:12:32.8294706Z   repay USD (1e18): 916065548863173035
+run	foundry tests	2026-10-09T02:12:32.8295325Z   seized USD (1e18): 977441940641127564
+run	foundry tests	2026-10-09T02:12:32.8296625Z   PASS: live liquidation possible but only dust-sized profit (top-30 shortfall accounts); full 140-account scan total $11.18 (analysis/health_scan.json)
+run	foundry tests	2026-10-09T02:12:32.8297550Z 
+run	foundry tests	2026-10-09T02:12:32.8297758Z [PASS] test_08_top_holder_can_withdraw() (gas: 198989)
+run	foundry tests	2026-10-09T02:12:32.8298160Z Logs:
+run	foundry tests	2026-10-09T02:12:32.8298426Z   fork block: 219167386
+run	foundry tests	2026-10-09T02:12:32.8298765Z   top holder auUSDC shares: 46301471239713
+run	foundry tests	2026-10-09T02:12:32.8299137Z   USDC received (6d): 10684739903
+run	foundry tests	2026-10-09T02:12:32.8299942Z   PASS: holder withdrawal works (value is H-O, not E-U)
+run	foundry tests	2026-10-09T02:12:32.8300475Z 
+run	foundry tests	2026-10-09T02:12:32.8300830Z [PASS] test_09_utilisation_spike_interest_bounded() (gas: 26135)
+run	foundry tests	2026-10-09T02:12:32.8301271Z Logs:
+run	foundry tests	2026-10-09T02:12:32.8301559Z   fork block: 219167386
+run	foundry tests	2026-10-09T02:12:32.8301922Z   auETH borrow rate per second (wei): 12524967051
+run	foundry tests	2026-10-09T02:12:32.8302363Z   auETH annualised rate (1e18): 394987360920336000
+run	foundry tests	2026-10-09T02:12:32.8302930Z   PASS: drained-cash utilisation spike yields <200%/yr; no fast forced-liquidation weapon
+run	foundry tests	2026-10-09T02:12:32.8303351Z 
+run	foundry tests	2026-10-09T02:12:32.8303557Z [PASS] test_10_donation_roundtrip_no_profit() (gas: 653597)
+run	foundry tests	2026-10-09T02:12:32.8303959Z Logs:
+run	foundry tests	2026-10-09T02:12:32.8304232Z   fork block: 219167386
+run	foundry tests	2026-10-09T02:12:32.8304550Z   in 15000e6, out (1e6): 10608949102
+run	foundry tests	2026-10-09T02:12:32.8305050Z   PASS: donation+redeem round-trip returns less than contributed (no free money)
+run	foundry tests	2026-10-09T02:12:32.8305428Z 
+run	foundry tests	2026-10-09T02:12:32.8305702Z Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 133.04s (218.43s CPU time)
+run	foundry tests	2026-10-09T02:12:32.8319686Z 
+run	foundry tests	2026-10-09T02:12:32.8320299Z Ran 1 test suite in 133.04s (133.04s CPU time): 10 tests passed, 0 failed, 0 skipped (10 total tests)
+run	upload results	﻿2026-10-09T02:12:32.8446743Z ##[group]Run actions/upload-artifact@v4
+run	upload results	2026-10-09T02:12:32.8447125Z with:
+run	upload results	2026-10-09T02:12:32.8447404Z   name: result-aurigami
+run	upload results	2026-10-09T02:12:32.8447761Z   path: aurigami/ci-out/**
+run	upload results	aurigami/**/*.log
+run	upload results	
+run	upload results	2026-10-09T02:12:32.8448154Z   if-no-files-found: ignore
+run	upload results	2026-10-09T02:12:32.8448479Z   retention-days: 7
+run	upload results	2026-10-09T02:12:32.8448778Z   compression-level: 6
+run	upload results	2026-10-09T02:12:32.8449076Z   overwrite: false
+run	upload results	2026-10-09T02:12:32.8449447Z   include-hidden-files: false
+run	upload results	2026-10-09T02:12:32.8450182Z env:
+run	upload results	2026-10-09T02:12:32.8450539Z   RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8451084Z   BLOCKPI_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8451613Z   NODEREAL_ETH_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8452050Z   ETHERSCANV2_API_KEY: ***
+run	upload results	2026-10-09T02:12:32.8452443Z   GOLD_RUSH_API_KEY: ***
+run	upload results	2026-10-09T02:12:32.8452808Z   ALCHEMY_API_KEY: ***
+run	upload results	2026-10-09T02:12:32.8453265Z   ANKR_API_KEY: ***
+run	upload results	2026-10-09T02:12:32.8453664Z   DRPC_API_KEY: ***
+run	upload results	2026-10-09T02:12:32.8454021Z   INFURA_API_KEY: ***
+run	upload results	2026-10-09T02:12:32.8454390Z   DUNE_API_KEY: ***
+run	upload results	2026-10-09T02:12:32.8454778Z   ARB_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8455130Z   BSC_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8455481Z   BASE_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8455847Z   OP_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8456231Z   POLYGON_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8456786Z   FANTOM_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8457168Z   CRONOS_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8457552Z   MOONRIVER_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8457925Z   GNOSIS_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8458289Z   SONIC_RPC_URL: ***
+run	upload results	2026-10-09T02:12:32.8458594Z   FOUNDRY_FUZZ_RUNS: 256
+run	upload results	2026-10-09T02:12:32.8458965Z   FORK_RPC_URL: https://ethereum-rpc.publicnode.com
+run	upload results	2026-10-09T02:12:32.8459373Z ##[endgroup]
+run	upload results	2026-10-09T02:12:33.0129373Z (node:2514) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+run	upload results	2026-10-09T02:12:33.0130527Z (Use `node --trace-deprecation ...` to show where the warning was created)
+run	upload results	2026-10-09T02:12:33.0530463Z With the provided path, there will be 12 files uploaded
+run	upload results	2026-10-09T02:12:33.0533039Z Artifact name is valid!
+run	upload results	2026-10-09T02:12:33.0538207Z Root directory input is valid!
+run	upload results	2026-10-09T02:12:33.4038647Z Beginning upload of artifact content to blob storage
+run	upload results	2026-10-09T02:12:33.4496114Z (node:2514) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+run	upload results	2026-10-09T02:12:33.6498211Z Uploaded bytes 2504
+run	upload results	2026-10-09T02:12:33.7259830Z Finished uploading artifact content to blob storage!
+run	upload results	2026-10-09T02:12:33.7261246Z SHA256 digest of uploaded artifact zip is c3a4ea2ea1221b29503b4a734156829ad9f252b8088208b40c1a3d20cc8b386a
+run	upload results	2026-10-09T02:12:33.7263668Z Finalizing artifact upload
+run	upload results	2026-10-09T02:12:33.9951714Z Artifact result-aurigami.zip successfully finalized. Artifact ID 11591610959
+run	upload results	2026-10-09T02:12:33.9953468Z Artifact result-aurigami has been successfully uploaded! Final size is 2504 bytes. Artifact ID is 11591610959
+run	upload results	2026-10-09T02:12:33.9960675Z Artifact download URL: https://github.com/kingmariano/ca-zombie-ci/actions/runs/37873265852/artifacts/11591610959
+run	Post Run foundry-rs/foundry-toolchain@v1	﻿2026-10-09T02:12:34.0129379Z Post job cleanup.
+run	Post Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:12:34.1608675Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/ca-zombie-ci/ca-zombie-ci --files-from manifest.txt --use-compress-program zstdmt
+run	Post Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:12:34.7493350Z Sent 56355 of 56355 (100.0%), 0.2 MBs/sec
+run	Post Run foundry-rs/foundry-toolchain@v1	2026-10-09T02:12:35.0042815Z Cache saved with the key: linux-foundry-chain-fork-run-ee1adea8cf4800e0728fdde9d8b50c94d630d39d
+run	Post Run actions/checkout@v4	﻿2026-10-09T02:12:35.0183524Z Post job cleanup.
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1043335Z [command]/usr/bin/git version
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1088068Z git version 2.55.0
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1134518Z Temporarily overriding HOME='/home/runner/work/_temp/3cd6dc93-f4ac-449d-9683-24d26eb990d2' before making global git config changes
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1136235Z Adding repository directory to the temporary git global config as a safe directory
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1143254Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ca-zombie-ci/ca-zombie-ci
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1193446Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1242961Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1545628Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1578888Z http.https://github.com/.extraheader
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1593152Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1630297Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1898767Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+run	Post Run actions/checkout@v4	2026-10-09T02:12:35.1971558Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+run	Complete job	﻿2026-10-09T02:12:35.2367944Z Cleaning up orphan processes
+run	Complete job	2026-10-09T02:12:35.2763387Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+CI_EXIT=0

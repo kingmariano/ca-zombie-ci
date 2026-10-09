@@ -1,0 +1,59 @@
+{
+  "finding": "C2-18",
+  "title": "Aurigami (Aurora) \u2014 live Compound fork with all borrowing disabled by 1-wei caps; $0 unprivileged extraction",
+  "chains": [
+    "aurora"
+  ],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 1120401,
+    "P": 117853,
+    "S": 0
+  },
+  "latest_block": 219162280,
+  "block_numbers": {
+    "aurora": 219162280
+  },
+  "targets_checked": 21,
+  "live_targets": 14,
+  "closed_reasons": [
+    "All 14 markets have borrowCaps == 1 wei; borrowAllowed reverts 'market borrow cap reached' for every borrow (kills the donation/borrow + Tectonic-class path)",
+    "Oracle price push (selector 0xec3115f9) reverts 'not price setter' for any non-keeper; setPriceSetter is Ownable; prices are fresh (keeper every ~30-90 min) and accurate vs CoinGecko (ETH 0.0%, BTC 0.03%, stNEAR +0.3%, stables ~0.04%)",
+    "Liquidation surface is dust: 140 accounts, total shortfall $11.18, total debt $30.73; best live liquidation nets $0.061 (fork-proven repay $0.916 -> seize $0.977)",
+    "No empty markets (all totalSupply > 0); exchange-rate math share-proportional, protocol-favouring rounding; donation+redeem round-trip returns less than contributed",
+    "Reward flywheel updates on mint/redeem/transfer with pre-action balances; fresh minter + claimReward gained 0 wei PLY (fork-proven); claims restricted to holder/whitelisted",
+    "seize() requires caller to be a listed auToken (fork-proven revert); all admin paths gated by 2-of-6 Gnosis Safe or adminOrInitializing()",
+    "Utilisation/interest manipulation cannot force liquidations: max auETH rate at drained cash = 1.2525e10/timestamp = ~39.5%/yr (fork-measured), stale-window accrual < 1% of debt"
+  ],
+  "poc": {
+    "tests_passed": 10,
+    "tests_total": 10,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37872704801",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37873265852"
+    ]
+  },
+  "key_facts": [
+    "Unitroller 0x817af6cfAF35BdC1A634d6cC94eE9e4c68369Aeb; impl 0xa200b567579a577f582d292f7a1b5c4ecce195f8 (verified)",
+    "14 markets; cash $980,843; borrows $257,411; reserves $117,853; supplier claims (cash+borrows-reserves) $1,120,401 at 2026-10-09 prices",
+    "Balances: auETH cash 109.3176 ETH ($271k), auSTNEAR 48,820.58 ($329k), auUSDT 116,328.19 ($116k), auWBTC 1.1880 ($97k), auUSDC 80,846.48 ($81k), auWNEAR 13,235.56 ($62k)",
+    "admin/pauseGuardian/cToken admin = Gnosis Safe 2-of-6 0x2D05FfFE70CE64c5954710D4C308dB31C8dBd8dE (v1.3.0); pendingAdmin=0, pendingImplementation=0",
+    "oracle 0x5A7B8E3CDc6ee2E0E6Ad0d4fab8dCD70990157EE unverified; owner EOA 0xeBD8251539A66d25202263D59a573A9DD3425f45; keeper EOA 0xf9D72FED253bF10924cb501f254eFf112B6Fa203",
+    "closeFactor 0.50, liquidationIncentive 1.10, protocolSeizeShare 3%; mint open on all markets (mintCaps have headroom)",
+    "Theoretical liquidation-bonus ceiling $0.84 gross over the entire underwater book (max repayable $15.37 under the 50% close factor x 6.7% net incentive, capped per-account by collateral; best single account +$0.061); Aurora gas 0.07 gwei (~$0.05 per liquidation) makes even the best position net ~+$0.01",
+    "Unitroller holds 167,372,294.98 PLY (~$6.2k) + 0.1 AURORA reward pool; Pulp holds 672.1M locked PLY (~$24.8k); not attacker-reachable without genuine accrual",
+    "Custom Exp/Double math (1e18/1e36) verified consistent for 6/8/18/24-decimal markets; no scale or rounding bug found; independent child agent recompiled the app sources (solc 0.8.11) and byte-matched deployed code (0 differing bytes, cTokens modulo immutables)",
+    "One latent non-profitable defect found (by the independent child agent): AuErc20.sweepToken lacks upstream's admin check (any EOA can forward stray non-underlying balances to the admin Safe); all stray balances are zero across 14 markets -> $0 impact, grief-only",
+    "Griefing-only edge: redeeming cash below reserves-borrows makes accrueInterest underflow (panic 0x11) and bricks the market for others; no profit; anyone can un-brick by donating cash"
+  ],
+  "caveats": [
+    "Point-in-time reads at block 219,162,280; fork tests run at blocks ~219,165k-219,168k. State drifts slowly (deposit/redeem-only protocol).",
+    "Bridged assets (USDC.e/USDT.e/WBTC.e) marked at par for H-O valuation; a bridge discount would lower holder recovery, not attacker extraction.",
+    "Oracle contract is unverified; its non-keeper functions were probed live (all setter paths gated), not source-reviewed.",
+    "Borrow caps are one admin transaction away from being raised; the entire class would re-open if that happened (watch _setMarketBorrowCaps).",
+    "The oracle owner being a single EOA is a privileged-key risk (P), not E-U."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Aurigami: all 14 markets are supply/redeem-only because every borrowCap is 1 wei (borrow(1) reverts 'market borrow cap reached'), the oracle is keeper-gated with accurate fresh prices, the whole liquidatable book is $30.73 of dust ($0.84 max bonus), and the $1.12M of cToken cash is holder-recoverable (H-O) rather than attacker-takeable."
+}
