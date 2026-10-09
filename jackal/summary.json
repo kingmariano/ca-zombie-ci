@@ -1,0 +1,42 @@
+{
+  "finding": "C2-35",
+  "title": "Jackal (jackal-1): confirmed minimal-DeFi watch — capture uneconomic ($402 realizable CP vs >=$14,169 nominal cost, infeasible depth); only live E-U surface is the unpatched CWA-2026-006 wasmvm sandbox escape, bounded by ~$2.8k of JKL pool liquidity",
+  "chains": ["jackal-1", "osmosis-1"],
+  "headline_extractable_usd": 2814.56,
+  "headline_confidence": "medium",
+  "categories": {"E-U": 2814.56, "capture": 401.79, "P": 4610.68, "H-O": 118.28, "S": 53.53},
+  "latest_block": 20153736,
+  "block_numbers": {"jackal-1": 20153736, "osmosis-1": 0},
+  "targets_checked": 18,
+  "live_targets": 18,
+  "closed_reasons": [
+    "Governance capture is not net-extractable: solo-quorum needs 23,378,807 JKL = $14,169 nominal vs a $401.79 realizable prize (CP 775,391.96 JKL dumped into Osmosis pool 832). The entire Osmosis JKL supply is 16.89M JKL and all JKL pools hold only 4.64M JKL with $2,813.68 total priced counterpart, so the required stake cannot be acquired on-chain at any measurable price.",
+    "Governance can move only the CP accounting: SDK v0.45.17 DistributeFromFeePool SafeSub caps MsgCommunityPoolSpend at the fee-pool CommunityPool (775,391.96 JKL); the other 7,607,529 JKL in the distribution module is the stakers' fee pool (software-upgrade-only, P).",
+    "POL account (88,314.23 JKL) is a keyless 32-byte GetAccount address with no spend path in canine-chain v5.1.x (receive-only destinations) -> S.",
+    "Provider collateral (80,000 JKL) is provider-owned via MsgShutdownProvider (H-O); x/storage has no slashing path (no MissesToBurn/slash code).",
+    "Gauge escrow (43,795 gauges, 115,157 JKL planned) is spendable only by the storage module to proving providers (H-O); expired gauges are removed without a sweep (residual S dust).",
+    "No permissionless claim path found in x/storage / x/rns / x/oracle: RNS module holds 13.01 JKL, oracle empty, wasm contracts 1,452.40 JKL ($0.88) under non-gov admins.",
+    "Bonded/unbonded stake and module balances are not reachable without a validator-adopted software upgrade (P)."
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": ["<CI_RUN_URL>"]},
+  "key_facts": [
+    "Chain live: jackal-1, canined v5.1.0-3-g76c55bd6 (Cosmos SDK v0.45.17, wasmd v0.32.0, wasmvm v1.2.6, ibc-go v4.6.0, tendermint v0.34.27), latest block 20,153,736 @ 2026-10-09T15:01:42Z; no pending upgrade plan.",
+    "Gov params (x/params route): min_deposit 1,000 JKL; max_deposit_period 2d; voting 5d; quorum 0.334; threshold 0.50; veto 0.334; community tax 1%. SDK v0.45 tally burns deposits on quorum failure and veto, refunds on normal reject/pass.",
+    "State: bonded 46,617,621.13 JKL; not-bonded 82,811,211.38; supply 191,843,904.66; CP 775,391.96 JKL ($469.94 nominal / $401.79 realizable); distribution module 8,382,921.13 JKL; POL 88,314.23 JKL (S); collateral collector 80,000 JKL; storage/rns/jklmint modules 432.51/13.01/3.67 JKL.",
+    "Capture cost: solo quorum 23,378,807 JKL = $14,169.19; 74.4% turnout 34,664,863 JKL = $21,009.33; full turnout 46,617,621 JKL = $28,253.54; min deposit 1,000 JKL = $0.61 (burned only on veto/quorum failure). 25 bonded validators (top 22.64%); 22 retained proposals (ids 1-26 with gaps; missing ids are deleted min-deposit failures) — all retained proposals passed, no CP spend in retained history.",
+    "Market: JKL $0.00060607 (CoinGecko; $0.00060783 DefiLlama), mcap $80.4k, 24h vol $780; single venue = Osmosis pool 832 (4,636,598.38 JKL + 82,231.84 OSMO = $2,812.79); all other 13 JKL pools are dust (total priced counterpart $0.89); Osmosis JKL supply 16,887,673.40 JKL, of which 4,641,801.46 in pools.",
+    "CWA-2026-006 (disclosed 2026-09-28): affected wasmvm <=2.2.8 / wasmd <=v0.54.9 lines and unmaintained lines will not be patched; Jackal runs wasmvm v1.2.6 whose libwasmvm lock embeds cosmwasm-vm v1.2.8 + Wasmer 2.3.0 with wasmer-compiler-singlepass; upload/instantiate = Everybody (all 5 codes instantiate Everybody); no config-only mitigation; trigger not public; no exploitation reports.",
+    "E-U bound (advisory-based): drain all JKL-pool counterpart ($2,813.68) + wasm-held JKL ($0.88) = $2,814.56; minted JKL cannot reach module accounts, POL, collateral or gauges (no spend paths).",
+    "Wasm census: 5 codes / 27 contracts (bindings factory + instances), holding 1,452.40 JKL ($0.88); last instantiation h~10.04M (2024).",
+    "Storage: 199 registered providers, 58.94 GB used, 43 active users, CollateralPrice 10,000 JKL, PricePerTbPerMonth 15 JKL, CheckWindow 300; 43,795 gauges (planned 115,157.01 JKL; 400-balance sample 19.49 JKL)."
+  ],
+  "caveats": [
+    "The $2,814.56 E-U headline is an advisory-based capability bound for CWA-2026-006, not a demonstrated extraction (trigger not public; no exploitation reports). Without it, live unprivileged net extraction is $0 — the capture path is net-negative.",
+    "Capture prize is reported gross-realizable ($401.79); acquiring 23.38M JKL is infeasible at depth (all pools hold 4.64M JKL), so capture is classified not net-extractable.",
+    "USD values are point-in-time at JKL $0.00060607 / OSMO $0.03420557; JKL 24h volume is ~$780 so prices move with any trade.",
+    "Gauge escrow total uses a sampled balance sweep locally (full sweep in CI; planned ceiling $69.81); CL-pool extractability approximated by pool bank balances (upper bound).",
+    "OTC acquisition of JKL and unlisted CEX markets are not measurable from on-chain data.",
+    "No fork PoC is possible for Cosmos governance; verification is live state + exact-version SDK/chain source analysis + a reproducible CI evidence run."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 net live from Jackal's governance (CP $402 realizable vs >=$14.2k nominal capture cost, infeasible depth) and ~$2.8k only via the unpatched CWA-2026-006 wasmvm sandbox-escape capability bound (drain the sole JKL pool's $2,813 OSMO + $0.88 of wasm-held JKL); everything else (distribution fee pool $4.6k, POL $54, collateral $48, gauges $70) is privileged/stuck/provider-owned."
+}
