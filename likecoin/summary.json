@@ -1,0 +1,39 @@
+{
+  "finding": "C2-29",
+  "title": "LikeCoin governance capture — CP realizable ~$2.6k (nominal $118-135k) vs solo-quorum stake 408.16M LIKE (impossible); deposit path gated by 3 bonded validators",
+  "chains": ["likecoin-mainnet-2", "osmosis-1", "base"],
+  "headline_extractable_usd": 2577.16,
+  "headline_confidence": "medium",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 0, "capture": 2577.16},
+  "latest_block": 27049046,
+  "block_numbers": {"likecoin-mainnet-2": 27049046, "base": 52384354},
+  "targets_checked": 43,
+  "live_targets": 6,
+  "closed_reasons": [
+    "Solo-quorum capture is arithmetically impossible, not merely expensive: q/(1-q) x 612,235,423 bonded = 408,156,948.77 LIKE needed, vs total liquid float 241,454,975.96 LIKE and total AMM inventory 2,673,595.45 LIKE (153x short); no CEX/OTC market for v2 LIKE. Veto-proof stake = 1,224,470,846 LIKE > total supply.",
+    "v2->v3 token migration closed 2026-02-02 (official: 'v2 tokens will lose all value' from 2026-02-03); v2 LIKE has no conversion and only ~$2.6k of exit liquidity left in 3 Osmosis pools -> CP realizable ~$2.6k, not the $135k nominal mark.",
+    "CommunityPoolSpendProposal is capped at the fee-pool DecCoins accounting by SDK v0.46.16 DistributeFromFeePool SafeSub (likecoin/cosmos-sdk v0.46.16-dual-prefix); the distribution module's extra 26,712,763.38 LIKE is unreachable via any standard proposal (software-upgrade-only, P).",
+    "IBC escrow balances (11,163,090.31 LIKE total; Osmosis 10.91M, cosmoshub-4 255k) unlock only via counterparty IBC burns; no gov spend path (upgrade-only, P).",
+    "No other module accounts hold funds (gov, fee_collector, likenft, mint, nft, transfer all empty); no bridge contracts exist on this chain (no CosmWasm).",
+    "E-U = $0: no unprivileged direct path; the only live route is governance (capture), gated by the 3 bonded validators who hold 100% of the 612.24M bonded power."
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/37948694975", "https://github.com/kingmariano/ca-zombie-ci/actions/runs/37947704314"]},
+  "key_facts": [
+    "Gov params (genesis tally_params + props 8 & 18; live /cosmos/gov/*/params returns HTTP 501 on the public LCD, so reconstructed from genesis + all ParameterChangeProposals): quorum 0.40, threshold 0.50, veto_threshold 0.334, min_deposit 100,000 LIKE, max_deposit_period 14d, voting_period 7d, burn_vote_veto true (refund on pass/reject, burn only on veto); unbonding 21d; community tax 2%; inflation 0% (prop 90).",
+    "Live state h 27,049,046 (2026-10-08T17:50:42Z): bonded 612,235,423.15 LIKE; not-bonded 496,147,229.92; supply 1,467,694,529.01; community pool 79,981,046.28 LIKE (only nanolike); distribution module 106,693,809.66 (extra 26,712,763.38 unreachable); IBC escrows 11,163,090.31; liquid float 241,454,975.96 LIKE.",
+    "Only 3 bonded validators of 131: Civic Liker 212,397,484.82 (34.7%), Oldcat 203,589,620.28 (33.3%), Yasu 196,248,318.05 (32.0%) — 100% of bonded power; quorum = 244.9M LIKE of votes.",
+    "Solo-quorum stake 408,156,948.77 LIKE = $602,785 notional at v3 price $0.001477; not executable (AMM inventory 2,673,595.45 LIKE = 152.7x short; liquid float 241.45M < requirement).",
+    "Deposit path: min_deposit 100,000 LIKE, acquisition cost ~$111 (buy from Osmosis pool 553, fee-aware), refundable on pass/reject, burned only on veto; then the 3 validators decide. Historical precedent: ~25 CP spends passed (largest 20M LIKE prop 47, 15M prop 53); hostile spam proposals 79/82/83 vetoed; no proposal since prop 99 (Oct-2025), v2 governance obsoleted in favour of Snapshot.",
+    "CP realizable via dump into the 3 live Osmosis pools (555: $1,503.59; 553: $749.33; 1242: $371.33; dust ~$0.12) = $2,577.16 fee-aware (second CI run; $2,587.26 first run — price drift), vs nominal $118,119.78 at $0.001477 (corpus $135k at ~$0.001688). v2 LIKE inventory across all 3,656 Osmosis pools: 2,673,595.45 LIKE.",
+    "v3 context (not v2-gov-controlled): Base token 0x1ee5dd1794c28f559f94d2cc642bae62dc3be5cf, 1.5B supply, 2-of-3 treasury multisig 0x3aFaEA57802E0b8380d6461a62efbd5346752e83 holds 262,852,138 v3 LIKE (~$382k); CoinGecko likecoin-2 price $0.001454-0.001477, 24h vol $59.92 (Uniswap V4 Base only).",
+    "Corpus corrections: 'CP $135k' is a nominal mark (realizable ~$2.6k); '> CP' understates it — solo capture is impossible (408.16M LIKE vs 241.45M total liquid supply); the extra 26.71M LIKE in the distribution module is not proposal-spendable."
+  ],
+  "caveats": [
+    "Capture-class headline (~$2.6k) is conditional on the 3 bonded validators passing a hostile CommunityPoolSpendProposal to an anonymous address; pass probability is a judgment (no precedent of a hostile spend passing; routine CP spends historically passed with automated Yes votes).",
+    "'v2 LIKE unconvertible' rests on the official LikeCoin announcement ('v2 tokens will lose all value' after 2026-02-02) and the migration app's own copy; the migration URL still resolves. If the operator honoured late migrations for a captured address, the nominal $118k would apply — but that is an off-chain courtesy, not an unprivileged on-chain path (the CP is module-held and has no key to attest with).",
+    "USD values move with LIKE v3 ($0.00145-0.00148), OSMO ($0.0340-0.0343), ATOM ($1.879); exact per-run values in ci-out/model.json. The realizable-dump figure drifted $2,577.16 -> $2,587.26 -> $2,577.16 across three runs on 2026-10-09; the headline uses the latest run. Dump model assumes single-block sale; a patient seller cannot do better (CP amount is ~30x the pools' combined inventory).",
+    "Gov params reconstructed (LCD returns HTTP 501 for /cosmos/gov/*/params); per-validator delegation breakdown not available from the public LCD (404) — irrelevant to the arithmetic since validators vote their full bonded stake.",
+    "No fork PoC is possible for Cosmos governance; verification is live LCD state + exact-version SDK v0.46.16 source analysis + a reproducible CI evidence run."
+  ],
+  "one_liner": "LikeCoin's $135k-nominal community pool is realizable for only ~$2.6k (v2->v3 migration closed 2026-02-02, exit liquidity dead) and cannot be captured solo (408.16M LIKE needed vs 241.45M total liquid supply / 2.67M AMM inventory); the only live route is a ~$111 refundable deposit plus the 3 bonded validators' votes — the corpus's 'uneconomic' verdict is confirmed and stronger than stated."
+}
