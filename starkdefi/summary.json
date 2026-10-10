@@ -1,0 +1,40 @@
+{
+  "finding": "C2-48",
+  "title": "StarkDeFi (Starknet) — abandoned Cairo-1 AMM: live pre-fix skim bug on 96/312 pairs, $0 economically extractable",
+  "chains": ["starknet"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 82187.07, "P": 4419.19, "S": 0},
+  "latest_block": 16156138,
+  "block_numbers": {"starknet": 16156138},
+  "targets_checked": 312,
+  "live_targets": 96,
+  "closed_reasons": [
+    "buggy skim is live on 96 pairs but token1 assets are meme/dust (nominal $114.59 total, SPIST $62.09 of it)",
+    "full-drain donation d = r1 + b1 - b0 is in raw token0 units: ≈$100k-$36M+ (priced cases; 3 pairs unpriced token0) for every pair with nominally meaningful token1 (SPIST), steal <= $43 nominal",
+    "capital-feasible drains (JEDI-P nested meme LPs, donation 1.9-90.5 STRK returned) are worth ~$0",
+    "swap-then-skim variant best case $4.30 nominal for $67 capital -> negative after slippage (SPIST exit liquidity ~$40-80 total)",
+    "fixed classes (192+22+2 pairs, $71.6k of TVL) behaviorally proven correct skim (309-pair probe)",
+    "fee vaults pair/handler-gated; router has no arbitrary-call path; no pair self-LP balances; upgrades/pause/fees fee_handler-gated"
+  ],
+  "poc": {"tests_passed": 1, "tests_total": 1, "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/38021322075"]},
+  "key_facts": [
+    "factory 0x02721f5ab785ae5E13b276ca9d41e859B7b150440A288A7826Ba5E27Dd05E08e: 312 pairs, not paused, fee_handler 0x283b6df5..., fee_to 0x1335ab82..., get_fees (4,30), protocol_fee_on=1",
+    "pair classes: 0x30ca5759 (192, fixed), 0x4a56a2e3 (22, fixed), 0x63c46cdc (2, fixed), 0xaef408ec (96, BUGGY pre-fix skim; also factory's current pair class)",
+    "skim probe on 309 quiet pairs: fixed classes all OK (transfer 0); buggy class 95/95 REVERT (50x u256_sub Overflow, 44x ERC20 insufficient balance)",
+    "full-drain simulateTransaction (SKIP_VALIDATE, read-only) on pair 0x46632b...: both balanceOf reads hit token0 (pre-fix bug), donation 47,811,138,131,899,003,674 STRK returned, full token1 balance 24,577,169,190,437,310,013 JEDI-P transferred out; reproduced in CI",
+    "free steal across all 96 buggy pairs = 217 wei STRK on one pair (already desynced by exactly that amount)",
+    "priced TVL $71,875.62 (DefiLlama $71,533.68): $68,788.60 in fixed class 0x4a56a2e3 (LP-owned), buggy class only $168.55",
+    "fee vaults (312, class 0x288f1781...): $14,730.64 accumulated fees; claim_lp_fees pair-only, claim_protocol_fees fee_handler-or-pair (~70% H-O LP / ~30% P protocol)",
+    "SPIST: 359,930,678 held by 10 buggy pairs, implied price $1.725e-7 (median of 5 JediSwap pools), total SPIST pool depth ~$40-80",
+    "fee_handler = ArgentX account 0x61dac032 class holding 58.22 STRK (nonce 291); fee_to = Braavos account holding 168.09 STRK (nonce 277) -> privileged upgrade risk live, not E-U"
+  ],
+  "caveats": [
+    "prices are spot DefiLlama/implied-pool values at stated blocks; token valuations approximate",
+    "LP holder distribution not enumerable without events; H-O assumes live holders (dead holders would move value to S)",
+    "vault 70/30 LP/protocol split is by design; exact claimability depends on live claims",
+    "fee_handler/fee_to liveness inferred from funded balances/nonces, not tx history",
+    "stable-curve rounding of fixed classes not exhaustively fuzzed (residual low uncertainty; k-check + fees make extraction implausible)"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live: the pre-fix skim bug is real and proven on 96 StarkDeFi pairs (incl. the factory's current class) but all reachable token1 value is meme/dust or requires ≈$100k-$36M+ capital to steal <=$43 nominal, while the $71.9k TVL sits in fixed-class pairs as LP-owned value (H-O)."
+}
