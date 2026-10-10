@@ -1,0 +1,195 @@
+{
+ "rpc": "https://sui-rpc.publicnode.com",
+ "timestamp": "2026-10-10T02:53:45.381Z",
+ "objects": {
+  "package": "0xbfac5e1c6bf6ef29b12f7723857695fd2f4da9a11a7d88162c15e9124c243a4a",
+  "locker": "0xb604843d501173f9ea0762fbaa7cadaea3454c942deb527cb8905861ce39798b",
+  "sui_vault": "0xd781268befec0270299d5089f182d8c1f1caed15f8b7db3fa1a267b73e89ce9f",
+  "victory_vault": "0xb70212065c2af0107a799517517e9170fcd38211aaa66f0ebc5a764d0506e2cc",
+  "locked_vault": "0x3632b8acce355fc8237998d44f1a68e58baac95f199714cdef5736d580dc6bf1",
+  "config": "0xfbd4d5f644cc82e7486ceb048b8951a6efffe39254a6646d99f0ea6b81b5c5f4"
+ },
+ "candidate": {
+  "user": "0xcf74d26635282cb2a1c6e04409a50ff63233e2e26bdde31afe8576224910dfb3",
+  "lock": 69,
+  "epoch": 4,
+  "period": 90,
+  "expectedShare": "3995211614",
+  "poolSui": "260400000000",
+  "totalStaked": "7739890393951"
+ },
+ "replay_candidate": {
+  "user": "0x6d57f4c02229e89583428ed7c55d5d87d44011b12a1a34269bc10d85e5179adb",
+  "epoch": 5,
+  "lock": 138
+ },
+ "removed_candidate": {
+  "user": "0x6d57f4c02229e89583428ed7c55d5d87d44011b12a1a34269bc10d85e5179adb",
+  "lock": 123,
+  "epoch": 34
+ },
+ "results": [
+  {
+   "name": "T1_attacker_claim_sui_nonexistent_lock",
+   "sender": "0x0000000000000000000000000000000000000000000000000000000000c0ffee",
+   "status": "failure",
+   "abortCode": 4,
+   "abortFunction": "find_user_lock_any_pool",
+   "error": "MoveAbort(MoveLocation { module: ModuleId { address: bfac5e1c6bf6ef29b12f7723857695fd2f4da9a11a7d88162c15e9124c243a4a, name: Identifier(\"victory_token_locker\") }, function: 40, instruction: 28, function_name: Some(\"find_user_lock_any_pool\") }, 4) in command 0",
+   "returnValuesHex": null,
+   "events": []
+  },
+  {
+   "name": "T2_attacker_claim_sui_foreign_lock",
+   "sender": "0x0000000000000000000000000000000000000000000000000000000000c0ffee",
+   "status": "failure",
+   "abortCode": 4,
+   "abortFunction": "find_user_lock_any_pool",
+   "error": "MoveAbort(MoveLocation { module: ModuleId { address: bfac5e1c6bf6ef29b12f7723857695fd2f4da9a11a7d88162c15e9124c243a4a, name: Identifier(\"victory_token_locker\") }, function: 40, instruction: 28, function_name: Some(\"find_user_lock_any_pool\") }, 4) in command 0",
+   "returnValuesHex": null,
+   "events": []
+  },
+  {
+   "name": "T3_attacker_claim_victory_foreign_lock",
+   "sender": "0x0000000000000000000000000000000000000000000000000000000000c0ffee",
+   "status": "failure",
+   "abortCode": 4,
+   "abortFunction": "find_user_lock_any_pool",
+   "error": "MoveAbort(MoveLocation { module: ModuleId { address: bfac5e1c6bf6ef29b12f7723857695fd2f4da9a11a7d88162c15e9124c243a4a, name: Identifier(\"victory_token_locker\") }, function: 40, instruction: 28, function_name: Some(\"find_user_lock_any_pool\") }, 4) in command 0",
+   "returnValuesHex": null,
+   "events": []
+  },
+  {
+   "name": "T4_attacker_unlock_foreign_lock",
+   "sender": "0x0000000000000000000000000000000000000000000000000000000000c0ffee",
+   "status": "failure",
+   "abortCode": 4,
+   "abortFunction": "find_and_prepare_unlock",
+   "error": "MoveAbort(MoveLocation { module: ModuleId { address: bfac5e1c6bf6ef29b12f7723857695fd2f4da9a11a7d88162c15e9124c243a4a, name: Identifier(\"victory_token_locker\") }, function: 50, instruction: 14, function_name: Some(\"find_and_prepare_unlock\") }, 4) in command 0",
+   "returnValuesHex": null,
+   "events": []
+  },
+  {
+   "name": "T5_attacker_batch_claim_foreign_lock",
+   "sender": "0x0000000000000000000000000000000000000000000000000000000000c0ffee",
+   "status": "failure",
+   "abortCode": 4,
+   "abortFunction": "find_user_lock_any_pool",
+   "error": "MoveAbort(MoveLocation { module: ModuleId { address: bfac5e1c6bf6ef29b12f7723857695fd2f4da9a11a7d88162c15e9124c243a4a, name: Identifier(\"victory_token_locker\") }, function: 40, instruction: 28, function_name: Some(\"find_user_lock_any_pool\") }, 4) in command 0",
+   "returnValuesHex": null,
+   "events": []
+  },
+  {
+   "name": "T6_holder_claim_sui_positive",
+   "sender": "0xcf74d26635282cb2a1c6e04409a50ff63233e2e26bdde31afe8576224910dfb3",
+   "status": "success",
+   "abortCode": null,
+   "abortFunction": null,
+   "error": null,
+   "returnValuesHex": [
+    []
+   ],
+   "events": [
+    {
+     "type": "PoolSUIClaimed",
+     "json": {
+      "amount_staked": "118750000000",
+      "epoch_id": "4",
+      "lock_id": "69",
+      "lock_period": "90",
+      "pool_type": 1,
+      "sui_claimed": "3995211614",
+      "timestamp": "1791600828",
+      "user": "0xcf74d26635282cb2a1c6e04409a50ff63233e2e26bdde31afe8576224910dfb3"
+     }
+    }
+   ]
+  },
+  {
+   "name": "T7_double_claim_replay_already_claimed",
+   "sender": "0x6d57f4c02229e89583428ed7c55d5d87d44011b12a1a34269bc10d85e5179adb",
+   "status": "failure",
+   "abortCode": 9,
+   "abortFunction": "claim_pool_sui_rewards",
+   "error": "MoveAbort(MoveLocation { module: ModuleId { address: bfac5e1c6bf6ef29b12f7723857695fd2f4da9a11a7d88162c15e9124c243a4a, name: Identifier(\"victory_token_locker\") }, function: 33, instruction: 106, function_name: Some(\"claim_pool_sui_rewards\") }, 9) in command 0",
+   "returnValuesHex": null,
+   "events": []
+  },
+  {
+   "name": "T8_holder_can_user_claim_epoch_view",
+   "sender": "0xcf74d26635282cb2a1c6e04409a50ff63233e2e26bdde31afe8576224910dfb3",
+   "status": "success",
+   "abortCode": null,
+   "abortFunction": null,
+   "error": null,
+   "returnValuesHex": [
+    [
+     "01",
+     "0943616e20636c61696d"
+    ]
+   ],
+   "events": [],
+   "decoded": {
+    "canClaim": true,
+    "message": "Can claim"
+   }
+  },
+  {
+   "name": "T9_holder_claim_victory_positive",
+   "sender": "0xcf74d26635282cb2a1c6e04409a50ff63233e2e26bdde31afe8576224910dfb3",
+   "status": "success",
+   "abortCode": null,
+   "abortFunction": null,
+   "error": null,
+   "returnValuesHex": [
+    []
+   ],
+   "events": [
+    {
+     "type": "VictoryRewardsClaimed",
+     "json": {
+      "amount": "101876989551",
+      "lock_id": "69",
+      "timestamp": "1769525911",
+      "total_claimed_for_lock": "101876989551",
+      "user": "0xcf74d26635282cb2a1c6e04409a50ff63233e2e26bdde31afe8576224910dfb3"
+     }
+    }
+   ]
+  },
+  {
+   "name": "T10_holder_unlock_matured_lock",
+   "sender": "0xcf74d26635282cb2a1c6e04409a50ff63233e2e26bdde31afe8576224910dfb3",
+   "status": "success",
+   "abortCode": null,
+   "abortFunction": null,
+   "error": null,
+   "returnValuesHex": [
+    []
+   ],
+   "events": [
+    {
+     "type": "TokensUnlocked",
+     "json": {
+      "amount": "118750000000",
+      "lock_id": "69",
+      "sui_rewards": "0",
+      "timestamp": "1791600831",
+      "user": "0xcf74d26635282cb2a1c6e04409a50ff63233e2e26bdde31afe8576224910dfb3",
+      "victory_rewards": "101876989551"
+     }
+    }
+   ]
+  },
+  {
+   "name": "T11_removed_lock_claim_forfeited",
+   "sender": "0x6d57f4c02229e89583428ed7c55d5d87d44011b12a1a34269bc10d85e5179adb",
+   "status": "failure",
+   "abortCode": 4,
+   "abortFunction": "find_user_lock_any_pool",
+   "error": "MoveAbort(MoveLocation { module: ModuleId { address: bfac5e1c6bf6ef29b12f7723857695fd2f4da9a11a7d88162c15e9124c243a4a, name: Identifier(\"victory_token_locker\") }, function: 40, instruction: 9, function_name: Some(\"find_user_lock_any_pool\") }, 4) in command 0",
+   "returnValuesHex": null,
+   "events": []
+  }
+ ]
+}
