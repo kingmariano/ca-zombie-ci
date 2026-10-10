@@ -1,0 +1,51 @@
+{
+ "protocol": "Universe XYZ (DefiLlama slug universe-xyz)",
+ "chains": [
+  "ethereum"
+ ],
+ "read_block_ethereum": 26161752,
+ "headline_tvl_defillama_usd": 3240536,
+ "report_usd": 3330000,
+ "contracts": {
+  "staking": "0x2d615795a8bdb804541C69798F13331126BA0c09 (BarnBridge-style Staking, epoch1Start 1622419200, epochDuration 604800)",
+  "pool2_lp": "0xbbbdb106a806173d1eea1640961533ff3114d69a (Sushi XYZ/USDC pair; staked in YieldFarmLP)",
+  "xyz_token": "0x618679dF9EfCd19694BB1daa8D00718Eacfa2883 (XYZ Governance Token, 1.135e27 supply)"
+ },
+ "balances_staking_contract": {
+  "AAVE": "18428.366929795747343728",
+  "BOND": "2480.020230822773753434",
+  "COMP": "46.466235802851653127",
+  "ILV": "23.518645457876769893",
+  "LINK": "1271.417381890440749859",
+  "SNX": "1881.188849286379221670",
+  "SUSHI": "3634.913670243558032396",
+  "XYZ": "0"
+ },
+ "balances_usd_approx": {
+  "AAVE": 3178000,
+  "LINK": 16400,
+  "SUSHI": 860,
+  "COMP": 1160,
+  "SNX": 460,
+  "ILV": 94,
+  "BOND": 22,
+  "total": 3200000
+ },
+ "xyz_price": {
+  "usd": 0.000126,
+  "source": "Sushi XYZ/USDC pair reserves 32,248,011 XYZ / 4,069 USDC",
+  "note": "no DefiLlama price"
+ },
+ "checks": {
+  "outsider_withdraw": "revert 'Staking: balance too small' (balances[msg.sender] scoped)",
+  "outsider_emergencyWithdraw": "revert (requires caller balance > 0 and 10 epochs)",
+  "manualEpochInit": "public but no token transfers; only sets pool sizes",
+  "reward_farms": "YieldFarm/YieldFarmLP pay only per caller's epoch stake (massHarvest); no unguarded claim found"
+ },
+ "verdict": {
+  "class_EU_usd": 0,
+  "class_HO_usd": 3240000,
+  "confidence": "high",
+  "note": "users' deposits (mostly 18,428 AAVE) remain withdrawable by stakers; XYZ rewards token near-worthless (~$0.000126)"
+ }
+}

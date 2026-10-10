@@ -1,0 +1,669 @@
+{
+ "summary": {
+  "protocol": "Mangrove (DefiLlama slug mangrove)",
+  "chains": [
+   "blast",
+   "arbitrum"
+  ],
+  "read_block_blast": 41414903,
+  "read_block_arbitrum": 513528345,
+  "headline_tvl_defillama_usd": 4243161,
+  "report_usd": 4190000,
+  "mgv_blast": "0xb1a49C54192Ea59B233200eA38aB56650Dfb448C",
+  "mgv_reader_blast": "0x26fD9643Baf1f8A44b752B28f0D90AEBd04AB3F8",
+  "mgv_reader_arbitrum": "0x7E108d7C9CADb03E026075Bf242aC2353d0D1875",
+  "mgv_native_eth_balance_blast": "5.61444657211964 ETH (provisions/fees; not user funds)",
+  "key_finding": "DefiLlama 'TVL' = sum of offer 'gives' (promises). Main maker 0xac1ce7f65c2312b828260d959d2b95b7f5ff480e holds only ~$17 (0.0064 WETH, 0.397 USDB, 0.197 USDe, 6773 BLAST). Offers last repriced 2024-10 (USDB/USDe) / 2025-04 (BLAST/WETH); no OfferFail events; no takes on the main USDB/USDe lists since 2024-11; last WETH/BLAST take 2025-04-01.",
+  "pool_prices": {
+   "USDB/USDe_thruster_0x8c1bb76510d6873a4a156a9cb394e74a3783bdb5": "1 USDB = 0.99595 USDe (1 USDe = 1.00407 USDB); balances 699,171 USDe + 349,760 USDB",
+   "WETH/BLAST_thruster_0x9a0aa28d999a21d3cf6f2703cdbba9feaf4a32f7": "71.06M BLAST per WETH; balances 2.54 WETH + 68.5M BLAST",
+   "USDB/BLAST_thruster_0x5d49456a119ef9afb5bec2a644338a078bef2b4b": "27,832 BLAST per USDB"
+  },
+  "mispricing_analysis": {
+   "(USDe,USDB)_offers_2.091M_USDe": {
+    "prices": "1.0026-1.0052 USDB per USDe (ticks 26..52)",
+    "vs_pool": "pool 1.00407 -> only offers 29-31 (598,043 USDe) are below pool price; edge 0.05-0.15% < round-trip slippage (~0.5%) -> net ~$0",
+    "deliverability": "maker sources USDe from the USDB/USDe pool which holds only 699k USDe -> larger takes would fail"
+   },
+   "(WETH,BLAST)_offers_14.86_WETH": {
+    "prices": "602k-648k BLAST per WETH",
+    "vs_pool": "pool 71.06M BLAST per WETH -> nominal taker profit ~$35k",
+    "deliverability": "maker cannot source WETH at that price (needs ~180M BLAST for 2.54 WETH); takes FAIL -> only provision bounty 0.00000225 ETH/offer"
+   },
+   "(USDB,USDe)_offers_2.096M_USDB": {
+    "prices": "1.0-1.0027 USDe per USDB",
+    "vs_pool": "taker would pay 1.0+ for USDB worth 0.99595 USDe -> loss; untakeable"
+   },
+   "(BLAST,WETH)_and_(BLAST,USDB)_offers": {
+    "prices": "3.84e-6..5.25e-6 WETH/BLAST and 0.018-0.0205 USDB/BLAST",
+    "vs_market": "BLAST ~$0.000035 -> asks ~10x+ above market; untakeable"
+   },
+   "morpho_vault_offers": {
+    "note": "mwstETH-WPUNKS:20/:40 offers priced near fair value vs vault share price"
+   }
+  },
+  "arbitrum": {
+   "USDT0/USDC": "10 offers ~38,728 USDT0 at 1.0003-1.0012 USDC per USDT0 (fair; maker 0xd77ab27179671551f1295c28d7fd9e9cf1563618)"
+  },
+  "verdict": {
+   "class_EU_usd": 0,
+   "class_S_stuck_usd": 0,
+   "confidence": "high",
+   "note": "No extractable value: the $4.19M 'TVL' is unbacked offer notional by zombie MM bots; offer provisions (bounties) are sub-cent; mgv ETH is maker provisions/fees"
+  }
+ },
+ "offers": {
+  "blast": {
+   "reader": "0x26fD9643Baf1f8A44b752B28f0D90AEBd04AB3F8",
+   "block": "0x277f085",
+   "offers": [
+    {
+     "outbound": "0x4300000000000000000000000000000000000004",
+     "inbound": "0x9a50953716ba58e3d6719ea5c437452ac578705f",
+     "spacing": 1,
+     "id": 156,
+     "tick": -1194,
+     "gives": 1000000000000000000,
+     "maker": "0x67270aee9a7f2393f4ca6fbd49519e5fc05a0843",
+     "gasreq": 1000000,
+     "kgb": 300,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000004",
+     "inbound": "0x9a50953716ba58e3d6719ea5c437452ac578705f",
+     "spacing": 1,
+     "id": 157,
+     "tick": -1179,
+     "gives": 2000000000000000000,
+     "maker": "0x67270aee9a7f2393f4ca6fbd49519e5fc05a0843",
+     "gasreq": 1000000,
+     "kgb": 300,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0x9a50953716ba58e3d6719ea5c437452ac578705f",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 127,
+     "tick": 1223,
+     "gives": 884865918812475541,
+     "maker": "0x67270aee9a7f2393f4ca6fbd49519e5fc05a0843",
+     "gasreq": 1000000,
+     "kgb": 300,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0x9a50953716ba58e3d6719ea5c437452ac578705f",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 128,
+     "tick": 1238,
+     "gives": 1767085179841862921,
+     "maker": "0x67270aee9a7f2393f4ca6fbd49519e5fc05a0843",
+     "gasreq": 1000000,
+     "kgb": 300,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000004",
+     "inbound": "0x999f220296b5843b2909cc5f8b4204aaca5341d8",
+     "spacing": 1,
+     "id": 169,
+     "tick": 8135,
+     "gives": 1000000000000000000,
+     "maker": "0x26e47dc22c7ffaa1e2e9278584b496a0923c69e0",
+     "gasreq": 1000000,
+     "kgb": 300,
+     "gasprice": 51
+    },
+    {
+     "outbound": "0x999f220296b5843b2909cc5f8b4204aaca5341d8",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 289,
+     "tick": -8076,
+     "gives": 2242321799818490523,
+     "maker": "0x26e47dc22c7ffaa1e2e9278584b496a0923c69e0",
+     "gasreq": 1000000,
+     "kgb": 300,
+     "gasprice": 51
+    },
+    {
+     "outbound": "0x999f220296b5843b2909cc5f8b4204aaca5341d8",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 244,
+     "tick": 1267,
+     "gives": 1658000000000000000,
+     "maker": "0xf9f77bb34fedaac86fce6789187c737d6f846a27",
+     "gasreq": 128000,
+     "kgb": 300,
+     "gasprice": 50
+    },
+    {
+     "outbound": "0x999f220296b5843b2909cc5f8b4204aaca5341d8",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 245,
+     "tick": 1295,
+     "gives": 1658000000000000000,
+     "maker": "0xf9f77bb34fedaac86fce6789187c737d6f846a27",
+     "gasreq": 128000,
+     "kgb": 300,
+     "gasprice": 50
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000003",
+     "inbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "spacing": 1,
+     "id": 37,
+     "tick": 0,
+     "gives": 100000000000000000000000,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 4
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000003",
+     "inbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "spacing": 1,
+     "id": 38,
+     "tick": 5,
+     "gives": 199900029993001399748041,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 4
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000003",
+     "inbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "spacing": 1,
+     "id": 39,
+     "tick": 10,
+     "gives": 299700164934021443995501,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 4
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000003",
+     "inbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "spacing": 1,
+     "id": 40,
+     "tick": 16,
+     "gives": 399360543673754978005698,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 4
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000003",
+     "inbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "spacing": 1,
+     "id": 41,
+     "tick": 21,
+     "gives": 498951154115031034465070,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 4
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000003",
+     "inbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "spacing": 1,
+     "id": 42,
+     "tick": 27,
+     "gives": 598382265809243281077458,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 4
+    },
+    {
+     "outbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "inbound": "0x4300000000000000000000000000000000000003",
+     "spacing": 1,
+     "id": 29,
+     "tick": 26,
+     "gives": 99740350672637367567594,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 3
+    },
+    {
+     "outbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "inbound": "0x4300000000000000000000000000000000000003",
+     "spacing": 1,
+     "id": 30,
+     "tick": 31,
+     "gives": 199380990909726871125352,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 3
+    },
+    {
+     "outbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "inbound": "0x4300000000000000000000000000000000000003",
+     "spacing": 1,
+     "id": 31,
+     "tick": 36,
+     "gives": 298921995471665557324107,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 3
+    },
+    {
+     "outbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "inbound": "0x4300000000000000000000000000000000000003",
+     "spacing": 1,
+     "id": 32,
+     "tick": 41,
+     "gives": 398363439069025156708213,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 3
+    },
+    {
+     "outbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "inbound": "0x4300000000000000000000000000000000000003",
+     "spacing": 1,
+     "id": 33,
+     "tick": 46,
+     "gives": 497705396362583215198045,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 3
+    },
+    {
+     "outbound": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34",
+     "inbound": "0x4300000000000000000000000000000000000003",
+     "spacing": 1,
+     "id": 34,
+     "tick": 52,
+     "gives": 596888253138040402858924,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 3
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000003",
+     "spacing": 1,
+     "id": 3,
+     "tick": -40109,
+     "gives": 110370915097336639925429,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000003",
+     "spacing": 1,
+     "id": 4,
+     "tick": -38881,
+     "gives": 195234220602835104982422,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000004",
+     "inbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "spacing": 1,
+     "id": 1,
+     "tick": 133069,
+     "gives": 832042862592642046,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000004",
+     "inbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "spacing": 1,
+     "id": 2,
+     "tick": 133562,
+     "gives": 1584039648102859000,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000004",
+     "inbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "spacing": 1,
+     "id": 3,
+     "tick": 134056,
+     "gives": 2261539783424716984,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000004",
+     "inbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "spacing": 1,
+     "id": 4,
+     "tick": 134550,
+     "gives": 2870052848396943765,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000004",
+     "inbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "spacing": 1,
+     "id": 5,
+     "tick": 135044,
+     "gives": 3414655006139321651,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0x4300000000000000000000000000000000000004",
+     "inbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "spacing": 1,
+     "id": 6,
+     "tick": 135538,
+     "gives": 3900093360568710966,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 8,
+     "tick": -124700,
+     "gives": 520488838042120937866721,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 6
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 9,
+     "tick": -124627,
+     "gives": 775054939272892345390898,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 6
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 10,
+     "tick": -124554,
+     "gives": 1025890560285079858252939,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 6
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 11,
+     "tick": -124481,
+     "gives": 1273036499196485944810452,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 6
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 12,
+     "tick": -124408,
+     "gives": 1516533158003377786713673,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 6
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 14,
+     "tick": -122147,
+     "gives": 24319437987800678400000,
+     "maker": "0xe1c3a806983edc1fb8035ee2d3c712c8ef6355fc",
+     "gasreq": 350000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 1,
+     "tick": -121753,
+     "gives": 581463548831431430120814,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 2,
+     "tick": -121719,
+     "gives": 1158980056651415461826993,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 3,
+     "tick": -121685,
+     "gives": 1732569618184003186264960,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 4,
+     "tick": -121651,
+     "gives": 2302252237216390348820041,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 5,
+     "tick": -121617,
+     "gives": 2868047826984723452335579,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    },
+    {
+     "outbound": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+     "inbound": "0x4300000000000000000000000000000000000004",
+     "spacing": 1,
+     "id": 6,
+     "tick": -121582,
+     "gives": 3429633247233611161667792,
+     "maker": "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e",
+     "gasreq": 2000000,
+     "kgb": 250,
+     "gasprice": 1
+    }
+   ]
+  },
+  "arbitrum": {
+   "reader": "0x7E108d7C9CADb03E026075Bf242aC2353d0D1875",
+   "block": "0x1e9bcef1",
+   "offers": [
+    {
+     "outbound": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+     "inbound": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+     "spacing": 1,
+     "id": 17,
+     "tick": 3,
+     "gives": 2762037428,
+     "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618",
+     "gasreq": 1000000,
+     "kgb": 250,
+     "gasprice": 20
+    },
+    {
+     "outbound": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+     "inbound": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+     "spacing": 1,
+     "id": 16,
+     "tick": 4,
+     "gives": 3998955384,
+     "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618",
+     "gasreq": 1000000,
+     "kgb": 250,
+     "gasprice": 20
+    },
+    {
+     "outbound": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+     "inbound": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+     "spacing": 1,
+     "id": 15,
+     "tick": 5,
+     "gives": 3965543096,
+     "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618",
+     "gasreq": 1000000,
+     "kgb": 250,
+     "gasprice": 20
+    },
+    {
+     "outbound": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+     "inbound": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+     "spacing": 1,
+     "id": 14,
+     "tick": 6,
+     "gives": 4004001816,
+     "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618",
+     "gasreq": 1000000,
+     "kgb": 250,
+     "gasprice": 20
+    },
+    {
+     "outbound": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+     "inbound": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+     "spacing": 1,
+     "id": 13,
+     "tick": 7,
+     "gives": 4000420510,
+     "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618",
+     "gasreq": 1000000,
+     "kgb": 250,
+     "gasprice": 20
+    },
+    {
+     "outbound": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+     "inbound": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+     "spacing": 1,
+     "id": 12,
+     "tick": 8,
+     "gives": 3997702179,
+     "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618",
+     "gasreq": 1000000,
+     "kgb": 250,
+     "gasprice": 20
+    },
+    {
+     "outbound": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+     "inbound": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+     "spacing": 1,
+     "id": 11,
+     "tick": 9,
+     "gives": 4000000000,
+     "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618",
+     "gasreq": 1000000,
+     "kgb": 250,
+     "gasprice": 20
+    },
+    {
+     "outbound": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+     "inbound": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+     "spacing": 1,
+     "id": 10,
+     "tick": 10,
+     "gives": 4000000000,
+     "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618",
+     "gasreq": 1000000,
+     "kgb": 250,
+     "gasprice": 20
+    },
+    {
+     "outbound": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+     "inbound": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+     "spacing": 1,
+     "id": 9,
+     "tick": 11,
+     "gives": 4000000000,
+     "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618",
+     "gasreq": 1000000,
+     "kgb": 250,
+     "gasprice": 20
+    },
+    {
+     "outbound": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+     "inbound": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+     "spacing": 1,
+     "id": 8,
+     "tick": 12,
+     "gives": 4000000000,
+     "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618",
+     "gasreq": 1000000,
+     "kgb": 250,
+     "gasprice": 20
+    }
+   ]
+  }
+ }
+}

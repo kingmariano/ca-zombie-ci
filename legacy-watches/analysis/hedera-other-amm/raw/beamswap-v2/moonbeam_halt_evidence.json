@@ -1,0 +1,46 @@
+{
+  "protocol": "Beamswap V2 (Moonbeam)",
+  "chain": {"name": "Moonbeam", "chain_id": 1284},
+  "verdict": "S — chain halted, all custody frozen; no tx can execute",
+  "contracts": {
+    "v2_factory": "0x985BcA32293A7A496300a48081947321177a86FD",
+    "note_factory_readable_at_halt_block": true,
+    "allPairsLength_at_halt_block": 246
+  },
+  "halt_evidence": {
+    "primary_rpc": "https://moonbeam.drpc.org",
+    "latest_block_hex": "0x1004c1b",
+    "latest_block_dec": 16796699,
+    "latest_block_timestamp_unix": 1786361772,
+    "latest_block_timestamp_utc": "2026-08-10T11:36:12Z",
+    "observations_unchanged": [
+      "2026-10-10T11:29Z (eth_blockNumber)",
+      "2026-10-10T11:37Z (eth_blockNumber)",
+      "2026-10-10T11:41Z (eth_getBlockByNumber latest)",
+      "2026-10-10T12:50Z (eth_blockNumber)",
+      "2026-10-10T13:59Z (eth_blockNumber)"
+    ],
+    "goldrush": {
+      "chain": "moonbeam-mainnet",
+      "latest_indexed_height": 16796698,
+      "signed_at": "2026-08-10T11:36:06Z"
+    },
+    "other_public_rpcs": {
+      "https://rpc.api.moonbeam.network": "no response (timeout/empty)",
+      "https://1rpc.io/glmr": "no response",
+      "https://moonbeam-rpc.dwellir.com": "no response",
+      "https://moonbeam.public.curie.radiumblock.co/http": "Cloudflare error 1016 (origin down)",
+      "https://moonbeam.publicnode.com": "no response",
+      "https://moonbeam.public.blastapi.io": "retired ('Blast API is no longer available')",
+      "https://rpc.ankr.com/moonbeam": "requires API key (free key not permitted for this chain)"
+    },
+    "campaign_note": "H2-04: Moonbeam/Moonriver wound down 2026-07-31 (MOVR->Base); Moonriver last block 17,381,654 (~2026-08-10). Moonbeam last block matches the same halt date."
+  },
+  "assessment": {
+    "skim_excess_check": "not executable (no new blocks); moot — no tx can execute",
+    "nominal_campaign_value": "$96.5k (frozen)",
+    "class": "S",
+    "confidence": "high",
+    "next_check": "chain resume; then re-run other_amm_chain_enum.py --name beamswap-v2 --rpc https://moonbeam.drpc.org --factory 0x985BcA32293A7A496300a48081947321177a86FD"
+  }
+}

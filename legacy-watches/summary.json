@@ -1,0 +1,101 @@
+{
+  "finding": "H2-09",
+  "title": "Legacy-custody watches (multi-chain) \u2014 live-state re-verification of 17 protocols",
+  "chains": [
+    "hedera",
+    "stacks",
+    "wanchain",
+    "astar",
+    "moonbeam",
+    "bsc",
+    "cronos",
+    "ethereum",
+    "blast",
+    "arbitrum",
+    "flare",
+    "flow-evm",
+    "polygon",
+    "xdai",
+    "avalanche",
+    "fantom",
+    "kava"
+  ],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 49160000,
+    "P": 360000,
+    "S": 10950000
+  },
+  "latest_block": 126837245,
+  "block_numbers": {
+    "ethereum": 26162391,
+    "bsc": 126837245,
+    "hedera": 100953291,
+    "stacks": 9164737,
+    "wanchain": 46766791,
+    "astar": 15020315,
+    "moonbeam": 16796699,
+    "flow-evm": 81320327,
+    "flare": 71779062,
+    "blast": 41414903,
+    "arbitrum": 513528345,
+    "polygon": 95289147
+  },
+  "targets_checked": 17,
+  "live_targets": 16,
+  "closed_reasons": [
+    "SaucerSwap V1: full 2798-pair sweep \u2014 real skim excess only $0.008 (8 dust entries); USDC excess = 0.000000 on all 81 USDC sides; corpus $314.6k = measurement artifact (total USDC custody / token0-token1 index mix-up)",
+    "WanSwap: 222 pairs, 0 excess; '$168k wanUSDT' is total liquidity (167,528.99) not excess; pools live and balanced",
+    "ArthSwap V2: 313 pairs, only $0.00004 dust excess",
+    "Beamswap V2: Moonbeam chain frozen at block 16,796,699 (2026-08-10T11:36:12Z) \u2014 no tx executes (S)",
+    "FstSwap: full 4,842-pair scan, 0 priced excess; FIST fixed-supply (no mint); FIST 0.39% vs PancakeSwap (fee level)",
+    "BakerySwap/BabySwap: full scans 0/dust excess; farms depositor-scoped; feeTo LP privileged-only",
+    "BSCSwap: $2.76M WBNB permanently locked (99.41% LP burned to 0x0, S)",
+    "EmpireDEX: ~$1.40M phantom via sweptAmount virtual-reserve accounting (P+S)",
+    "KaoyaSwap: 8/8 pairs real balances 0; bricked router accounting (S)",
+    "Universe XYZ: caller-balance-scoped withdraw/emergencyWithdraw (H-O)",
+    "Unslashed: vault redeems holder-scoped; new $2.64M pot gated by empty registry (S)",
+    "JPEG'd: all vaults zero debt; liquidate requires LIQUIDATOR_ROLE",
+    "Mangrove: $4.28M 'TVL' is unfunded promises; 5-test fork PoC \u2014 every taker-profitable direction delivers 0 (makers self-guard by reverting); the only deliverable offer is a taker loss at market",
+    "Sceptre Liquid: exchange rate = internal accounting; mint requires deposit; redeem user-scoped",
+    "MORE Markets: all 9 reserves ReservePaused(true) since 2026-08-31; every action reverts error 29 (S)",
+    "Arkadiko Swap v2: cross-referenced to H2-06 full audit \u2014 E-U $0; custody spot-verified via fresh Hiro reads"
+  ],
+  "poc": {
+    "tests_passed": 5,
+    "tests_total": 5,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38048907250",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38054849715",
+      "FINAL_RUN_URL_PENDING"
+    ]
+  },
+  "key_facts": [
+    "Headline: external unprivileged attacker can extract $0.00 live across all 17 H2-09 targets (high confidence).",
+    "SaucerSwap V1 (Hedera): two independent full sweeps (2798 pairs) \u2014 USDC excess exactly 0; 8 dust excess entries totaling ~$0.008; 'LIZ' transfer additionally blocked by an HTS custom fee; corpus figure was a measurement artifact.",
+    "WanSwap (Wanchain): 222 pairs, 0 positive/0 negative excess; the corpus's $168k is total wanUSDT liquidity, 98.5% in two live balanced par pools; 7 pairs swapped <24h \u2014 'abandoned' is wrong.",
+    "Beamswap V2 (Moonbeam): chain halted since 2026-08-10T11:36:12Z (block 16,796,699) \u2014 ~$96.5k frozen (S).",
+    "Mangrove (Blast+Arbitrum): $4.24M+$38.7k nominal = sum of live offers' promised gives, not custody. Makers are semi-live arbitrage strategies holding dust outbound balances (0xac1ce7f6: 0.0064 WETH/0.197 USDe vs 14.86 WETH/2,091,000 USDe promised). 5-test fork PoC (block 41,411,145): WETH/BLAST asks deliver 0 (makerRevert \u2014 the maker's on-the-fly V3 swap fails); the mwstETH40 ask delivers but is a taker LOSS at market (pays 0.446 WETH per mwstETH40 vs on-chain 0.05); both nominally-profitable directions \u2014 WETH for mwstETH40 (tick 8135) and mwstETH20 for WETH (ticks 1223/1238) \u2014 deliver 0 (makers self-guard). Market refs: mwstETH20 = 1.3925 WETH, mwstETH40 = 0.05 WETH (live Thruster V3 pools). E-U = $0.00 exactly.",
+    "FstSwap (BSC): full 4,842/4,842-pair skim-excess scan = 0 priced hits; top blue-chip counterparties (FIST, Tomato, Tomatos, OSK) have no public mint (constructor/fixed supply); FIST $0.20847 on FstSwap vs $0.20928 on PancakeSwap (0.39% = fee level).",
+    "BakerySwap 3,087/3,087 and BabySwap 1,769/1,769 pairs scanned: 0 / dust-only excess; farms depositor-scoped; feeTo LP privileged-only.",
+    "BSCSwap: 728/728 pairs; $2.76M WBNB in the THUGS pair permanently locked (99.41% LP burned to 0x0) \u2014 S; feeTo LP ~$5.3k (P).",
+    "EmpireDEX: ~$1.40M of DefiLlama TVL is phantom (custom sweptAmount virtual reserves; owner-only sweep already removed assets). KaoyaSwap: all 8 pairs real balances 0, bricked pair accounting \u2014 $0 real (S).",
+    "Unslashed (Ethereum): Enzyme vault 0x86fb84e9\u2026 holds 1,483.75 stETH + 1.09 WETH ($3.70M, H-O); NEW frozen pot: withdrawal contract 0x6be7741d\u2026 holds 1,059.525 stETH ($2.64M) gated by an empty registry mapping (S).",
+    "Universe XYZ: farm 0x2d615795\u2026 holds the $3.24M index basket; withdraw functions caller-balance-scoped (H-O).",
+    "JPEG'd: all vaults zero debt; open positions (1 BAYC + 3 Pudgy, debt 0) are not liquidatable and liquidate is LIQUIDATOR_ROLE-gated; the $529k 'TVL' is third-party Curve pool ETH.",
+    "Sceptre Liquid (Flare): E-U $0; rate is internal accounting; P-risk: single-EOA ProxyAdmin over $15.2M + 34 ROLE_WITHDRAW EOAs over 48.62M WFLR (~$341k).",
+    "MORE Markets (Flow EVM): market 1 fully frozen since 2026-08-31 (all 9 reserves paused, error 29 on every action); ~$5.45M supplier equity frozen; latent P-conditional ~$0.29M bad debt/cycle if unpaused without fixing the ankrFLOW oracle (+40% overvaluation).",
+    "Arkadiko Swap v2 (Stacks): own full Clarity audit (tip 9,166,481) + H2-06 cross-reference both give E-U $0 (high). Custody: 684,665,047,263 uSTX/wstx, 191,168,486,354 USDA, 13,551,588,659,971 DIKO, 33,558,053 sat xBTC, 6,120,598,113,910 WELSH; all 8 pairs enabled. LP mint/burn gated to the swap contract (u21401), admin gated to multisig (u20401), swaps floor in the pool's favour, collect-fees pays the hard-wired payout. Note: collected-fee double-counting \u2248$33k LP haircut (H-O/S, not E-U)."
+  ],
+  "caveats": [
+    "H-O/P/S totals are nominal approximations (mix of verified on-chain reads and DefiLlama TVL) and should not be summed with the E-U headline; only E-U is a proof-standard number.",
+    "Mangrove: fork-proven E-U $0.00 (5/5 tests); the makers' dust is either non-deliverable or deliverable only at a taker loss.",
+    "Arkadiko's primary coverage is the H2-06 agent's audit (cross-referenced); this finding's own independent pass did not complete within budget (coverage: screened via fresh reads + adopted audit).",
+    "Hedera: 41 of 5,596 pair token sides unmeasurable (dissociated/deleted HTS tokens); BSC dust tokens unpriced (1473 FstSwap sides) \u2014 all sub-$1 by construction.",
+    "Sceptre/MORE are state-flip risks (P-conditional), not E-U today.",
+    "Beamswap/MORE classifications (S) change if the Moonbeam chain resumes or reserves are unpaused."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0.00 live across all 17 H2-09 targets (high confidence): the V2-fork 'excess' claims were artifacts/total-liquidity (SaucerSwap $314.6k = artifact, WanSwap $168k = total), Mangrove's $4.28M is unfunded promises (fork-proven takes deliver 0), EmpireDEX/KaoyaSwap TVL is phantom/bricked, Beamswap/MORE are frozen (S), and the rest is holder-only or privileged custody."
+}

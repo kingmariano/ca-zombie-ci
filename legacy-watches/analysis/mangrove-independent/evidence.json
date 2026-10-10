@@ -1,0 +1,43 @@
+{
+  "protocol": "Mangrove",
+  "chains": ["blast", "arbitrum"],
+  "checked_utc": "2026-10-10T12:30:00Z",
+  "contracts": {
+    "blast_mgv": "0xb1a49c54192ea59b233200ea38ab56650dfb448c",
+    "blast_mgvreader": "0x26fD9643Baf1f8A44b752B28f0D90AEBd04AB3F8",
+    "arbitrum_mgvreader": "0x7E108d7C9CADb03E026075Bf242aC2353d0D1875"
+  },
+  "blast": {
+    "block": 41411145,
+    "global_decoded": {"dead": false, "monitor": "0x4ee4ab300e75c8516db11f6c40820f852a1acb36", "gasprice": 1, "gasmax": 2000000, "maxGasreqForFailingOffers": 6000000},
+    "markets": [
+      {"idx": 0, "tkn0": "0x4300000000000000000000000000000000000003", "tkn1": "0x4300000000000000000000000000000000000004", "active": true, "offers": 0},
+      {"idx": 1, "tkn0": "0x4300000000000000000000000000000000000004", "tkn1": "0x9a50953716ba58e3d6719ea5c437452ac578705f", "active": true, "offers": 4},
+      {"idx": 2, "tkn0": "0x4300000000000000000000000000000000000004", "tkn1": "0x999f220296b5843b2909cc5f8b4204aaca5341d8", "active": true, "offers": 4},
+      {"idx": 3, "tkn0": "0x4300000000000000000000000000000000000003", "tkn1": "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34", "active": true, "offers": 12},
+      {"idx": 4, "tkn0": "0x4300000000000000000000000000000000000003", "tkn1": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad", "active": true, "offers": 2},
+      {"idx": 5, "tkn0": "0x4300000000000000000000000000000000000004", "tkn1": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad", "active": true, "offers": 18}
+    ],
+    "makers": {
+      "0xac1ce7f65c2312b828260d959d2b95b7f5ff480e": {"tokens_held": {"WETH": "0.006406e18", "USDB": "0.397069e18", "USDe": "0.196952e18", "BLAST": "6773.09e18"}, "allowance_to_mgv": "max", "promised": {"WETH_mkt5dir0": "14.862e18", "USDe_mkt3dir1": "2091000.4e18", "USDB_mkt3dir0": "2096294.2e18"}, "deliverable_max": {"WETH": "0.006406e18", "USDe": "0.196952e18", "USDB": "0.397069e18"}},
+      "0x67270aee9a7f2393f4ca6fbd49519e5fc05a0843": {"tokens_held": {"WETH": "0.006316e18", "mwstETH20": "0.006434e18"}, "allowance_to_mgv": "max", "promised": {"WETH_mkt1dir0": "3.0e18", "mwstETH20_mkt1dir1": "2.652e18"}},
+      "0x26e47dc22c7ffaa1e2e9278584b496a0923c69e0": {"tokens_held": {"WETH": "0.001911e18", "mwstETH40": "0.007287e18"}, "allowance_to_mgv": "max", "promised": {"WETH_mkt2dir0": "1.0e18", "mwstETH40_mkt2dir1": "2.242e18"}},
+      "0xe1c3a806983edc1fb8035ee2d3c712c8ef6355fc": {"name": "BlastKandel", "tokens_held": {"WETH": "0.048025e18", "BLAST": "33973.04e18"}, "promised": {"BLAST_mkt4dir1": "305605.14e18", "BLAST_mkt5dir1": "17208269.97e18"}},
+      "0xf9f77bb34fedaac86fce6789187c737d6f846a27": {"name": "BlastSmartKandel", "tokens_held": {"WETH": "0.117413e18", "mwstETH40": "0.064331e18"}, "promised": {"mwstETH40_mkt2dir1": "3.316e18"}}
+    },
+    "offers_total_gives_usd_nominal": 4243161,
+    "deliverable_total_usd_upper_bound": "~30 (dust balances; realistically $0 after gas/exit)",
+    "example_stale_offer": {"market": "5:0 WETH<-BLAST", "offer_id": 1, "gives": "0.832042e18 WETH", "tick": 133069, "wants_approx": "500864e18 BLAST (~$31.15 at $0.0000622)", "maker_weth_balance": "0.006406e18", "verdict": "unfunded: maker can deliver at most 0.0064 WETH"}
+  },
+  "arbitrum": {
+    "markets": 7,
+    "markets_with_offers": 1,
+    "offer": {"pair": "USDT0 -> USDC", "gives": "38728.66e6 USDT0", "maker": "0xd77ab27179671551f1295c28d7fd9e9cf1563618", "maker_usdt0_balance": "0", "verdict": "unfunded"}
+  },
+  "verdict": {
+    "class": "E-U $0.00 (dust upper bound <$30, below gas/exit costs)",
+    "confidence": "high",
+    "reason": "Every live offer is an unfunded promise: makers hold dust balances of the outbound token while retaining unlimited Mgv allowance. Mangrove pulls the outbound from the maker during the take; takes fail with mgv/makerTransferFail and deliver nothing (offers deleted, bounty is native-token dust from provisions). DefiLlama TVL ($4.24M Blast + $38.7k Arbitrum) is the sum of promised gives, not custody.",
+    "residual": "If makers re-fund, offers revive; monitor maker balances of the outbound tokens."
+  }
+}

@@ -1,0 +1,94 @@
+{
+ "protocol": "Unslashed (DefiLlama slug unslashed)",
+ "chains": [
+  "ethereum"
+ ],
+ "read_block_ethereum": 26161752,
+ "headline_tvl_defillama_usd": 3702174,
+ "report_usd": 4030000,
+ "contracts": {
+  "vault_USF_Fund_I": {
+   "address": "0x86fb84e92c1eedc245987d28a42e123202bd6701",
+   "type": "Enzyme VaultProxy",
+   "vaultlib": "0x891dee0483ebaa922e274ddd2ebbaa2d33468a38",
+   "comptroller_proxy": "0xba4f4c8b685098f8f207c647c9e326288c86e87d",
+   "comptroller_lib": "0x03f7f3b8da875881206655d8099b9dacf721f1ef",
+   "fund_deployer": "0x4f1c53f096533c04d8157efb6bca3eb22ddc6360",
+   "owner_safe": "0xf5be8b4c82b8a681bacf357cfb712ab9e9296cb2",
+   "name": "USF Fund I",
+   "share_symbol": "ENZF",
+   "shares_total_supply": "1270.187212261734421149",
+   "sharesAreFreelyTransferable": false,
+   "shares_action_timelock_s": 86400,
+   "calcGav_eth": "1484.4460788603776",
+   "calcGrossShareValue": "1.1686829032211143",
+   "tracked_assets": [
+    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
+   ],
+   "stETH_balance": "1483.749352763855437473",
+   "WETH_balance": "1.089453830156349509",
+   "activeExternalPositions": []
+  },
+  "bridge_EnzymeBridge_proxy": {
+   "address": "0xf465f01baa66e758ddc785497b52e42d42dd970a",
+   "impl": "0xf7583e622fcf8c6e3ad8a15ed2d657c7da909ac3",
+   "proxy_admin": "0x631c8209684e5184e1d3f7ef2bef669c3ae67eaa",
+   "dispatcher_functions": [
+    "2c15377c",
+    "309166fc",
+    "3f3309ca",
+    "4c5d8bd2",
+    "7ade9454",
+    "d296cb1d"
+   ],
+   "guards": {
+    "309166fc": "only investor (0x3b6c03b2...)",
+    "4c5d8bd2": "only investor",
+    "2c15377c": "only registry (0x10a6354f) + Invalid address arg check",
+    "d296cb1d": "only registry (0x10a6354f)"
+   },
+   "getBalanceInEth_eth": "2540.472386730503",
+   "totalWithdrawnBalance_eth": "1010.3899284062729",
+   "storage": {
+    "0x33": "WETH",
+    "0x34": "vault 0x86fb",
+    "0x35": "comptroller 0xba4f",
+    "0x36": "investor 0x3b6c03b2",
+    "0x37": "withdrawal contract 0x6be7741d",
+    "0x38": "totalWithdrawnBalance"
+   }
+  },
+  "withdrawal_contract": {
+   "address": "0x6be7741d288066e9b38eebe0536340962486c8f8",
+   "impl": "0xd4f70e2dcaa042db0be01c204f3be94a6296a8ab",
+   "proxy_admin": "0x631c8209684e5184e1d3f7ef2bef669c3ae67eaa",
+   "admin": "0xbe91e4074ffbbc208faa4d3a3b260ebbea162282 (Timelock, delay 172800s, admin Safe 0x659839c92ac4230b69edf25943766c33d44b63de)",
+   "stETH_balance": "1059.5254843932412",
+   "stETH_usd_approx": 2640000,
+   "userWithdrawal_selector": "0xbd68b8ca",
+   "userWithdrawal_status": "reverts 'Address not in registry' for everyone (registry mapping slot5 empty)",
+   "sbToken": "0x08ff7e2be3c23ab3938b6d275193d6a49ccef73e (Spartan Bucket Token)",
+   "other_guards": "transferAdmin/899a57b9/d69fc80e = Caller is not the admin"
+  },
+  "usf_token": "0xe0e05c43c097b0982db6c9d626c4eb9e95c3b9ce (Unslashed Finance Governance Token)",
+  "investor_basket": "0x3b6c03b232f87aee2ea6561ec7bf080a7710d667 (AdminUpgradeabilityProxy, impl 0x73fcd4fd...; holds 0.0905 ETH; no stETH/WETH/shares)",
+  "protocol_fee_reserve": "0xb7460593bd222e24a2bf4393aa6416bd373995e0 (holds 2.7864 ENZF + 0.0798 stETH - Enzyme protocol, not Unslashed)"
+ },
+ "checks": {
+  "outsider_redeem_shares": "revert 'ERC20: burn amount exceeds balance' (redeemSharesInKind(1 wei) from random on comptroller 0xba4f)",
+  "holder_redeem_shares": "bridge 0xf465 redeemSharesInKind(1 wei) -> OK (payout WETH+stETH to recipient)",
+  "outsider_transferFrom_shares": "revert 'Rule evaluated to false: ALLOWED_SHARES_TRANSFER_RECIPIENTS'",
+  "bridge_mutating_functions_outsider": "all revert: only investor / only registry",
+  "withdrawal_contract_outsider": "all mutating fns revert (registry empty or admin-gated)",
+  "leftover_steth": "bridge 0, USF 0, timelock 0, investor 0.0905 ETH dust; value sits in vault + withdrawal contract"
+ },
+ "verdict": {
+  "class_EU_usd": 0,
+  "class_HO_usd": 3700000,
+  "class_S_stuck_usd": 2640000,
+  "total_custody_usd": 6340000,
+  "confidence": "high",
+  "note": "DefiLlama undercounts by ~$2.6M: the withdrawal contract 0x6be7741d holds 1059.5 stETH outside the vault; registry empty -> user withdrawals frozen"
+ }
+}

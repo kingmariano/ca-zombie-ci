@@ -1,0 +1,48 @@
+{
+ "protocol": "JPEG'd (DefiLlama slug jpegd)",
+ "chains": [
+  "ethereum"
+ ],
+ "read_block_ethereum": 26161752,
+ "headline_tvl_defillama_usd": 566986,
+ "report_usd": 572000,
+ "contracts": {
+  "pusd_token": "0x466a756e9a7401b5e2444a3fcb3c2c12fbea0a54 (PUSd, supply 7000e18)",
+  "peth_token": "0x821a278dfff762c76410264303f25bf42e195c0c (pETH, price ~$2500)",
+  "nftvault_impl": "0xddcdf3808a358cdaf66a1fe703b777deac9dfb54 (NFTVault v0.8.4)",
+  "pusd_vaults": "16 vaults (CRYPTO_PUNK, BAYC, MAYC, DOODLES, PUDGY, AZUKI, CLONEX, AUTOGLYPH, FIDENZA, RINGERS, SQUIGGLES, OTHERDEED, MEEBITS, BAKC, MILADY, ETHER_ROCKS) - all totalPositions=0, totalDebtAmount=0",
+  "peth_vaults_with_positions": {
+   "BAYC_PETH": "0xaf5e4c1bfac63e355cf093eea3d4aba138ea4089 (1 BAYC id 6582, debt 0)",
+   "PUDGY_PETH": "0x4b94b38bec611a2c93188949f017806c22097e9f (3 Pudgy ids 6322/1808/215, debt 0)"
+  },
+  "peth_curve_pool": "0x1c5f80b6b68a9e1ef25926eee00b5255791b996b (212.156 WETH + 174.059 pETH)",
+  "pusd_curve_pool": "0x8ee017541375f6bcd802ba119bddc94dad6911a1 (599.97 PUSd + 583.44 3Crv)",
+  "nft_value_providers": {
+   "BAYC_PETH": "0x5b9caa47a52e4bfbbce2f2a9f858c2a501b48c42",
+   "PUDGY_PETH": "0xd0bf9a40febdfca596fde589a343c6cda37a7b90"
+  },
+  "liquidator_role_holders": [
+   "0xdca7634856a43d899709c6ccd507971a0dee947b",
+   "0xbaa11401e61cc134ea2b2f3f28fe1344e64c51c3"
+  ]
+ },
+ "where_is_the_money": {
+  "curve_peth_eth_pool_eth_side_usd": 529000,
+  "note": "DefiLlama counts balances(0) of the pETH/ETH Curve pool as JPEG'd TVL; that ETH is LP-owned market liquidity, not protocol custody",
+  "nft_collateral_floor_usd": 35000,
+  "pusd_total_supply_usd_approx": 6800
+ },
+ "checks": {
+  "liquidate": "external but _liquidate requires LIQUIDATOR_ROLE; role granted only to 2 ops addresses -> NOT permissionless (P)",
+  "positions": "all open positions have debtPrincipal=0 -> isLiquidatable=false, liquidation impossible",
+  "repurchase": "owner-scoped (Unauthorized if not positionOwner)",
+  "closePosition": "owner-scoped",
+  "oracle": "nftValueProvider set; irrelevant since no debt"
+ },
+ "verdict": {
+  "class_EU_usd": 0,
+  "class_HO_usd": 35000,
+  "confidence": "high",
+  "note": "protocol is fully deleveraged (0 debt); $572k headline is mostly third-party Curve LP liquidity; no extractable value for outsiders"
+ }
+}

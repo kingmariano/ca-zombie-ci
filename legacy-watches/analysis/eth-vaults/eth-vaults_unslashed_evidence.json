@@ -1,0 +1,71 @@
+{
+ "protocol": "Unslashed - raw evidence",
+ "block_ethereum": 26161752,
+ "share_transfer_history": {
+  "ENZF_totalSupply": "1270.187212261734421149",
+  "holders": {
+   "0xf465f01baa66e758ddc785497b52e42d42dd970a (bridge)": "1267.4007934043798",
+   "0xb7460593bd222e24a2bf4393aa6416bd373995e0 (Enzyme ProtocolFeeReserve)": "2.7864188573547133"
+  },
+  "first_mint": {
+   "block": "0xbe1ab0",
+   "to": "0xea09bdeb7d0ce27c39e73251fccdb0a081fece05",
+   "value": "1.0"
+  },
+  "bridge_mint": {
+   "block": "0xcf6499",
+   "to": "0xf465f01baa66e758ddc785497b52e42d42dd970a",
+   "value": "21441.931199426203"
+  },
+  "last_events": "bridge burned ENZF monthly 2022-2026; last 2.7864 minted/burned to fee reserve at block 0x18de4b9 (2026-09-28)"
+ },
+ "simulations": {
+  "outsider_redeemSharesInKind": {
+   "from": "0xdead...",
+   "to": "0xba4f4c8b (comptroller)",
+   "result": "revert ERC20: burn amount exceeds balance"
+  },
+  "bridge_redeemSharesInKind": {
+   "from": "0xf465... (holder)",
+   "to": "0xba4f4c8b",
+   "result": "OK: payout arrays [WETH, stETH]"
+  },
+  "outsider_transferFrom": {
+   "result": "revert Rule evaluated to false: ALLOWED_SHARES_TRANSFER_RECIPIENTS"
+  },
+  "bridge_functions_from_random": {
+   "309166fc": "only investor",
+   "4c5d8bd2": "only investor",
+   "2c15377c": "only registry",
+   "d296cb1d": "only registry"
+  },
+  "bridge_d296cb1d_from_0x10a6354f": {
+   "result": "OK (registry impersonation)"
+  },
+  "withdrawal_userWithdrawal_from_random_and_prev_user": {
+   "result": "revert Address not in registry"
+  },
+  "withdrawal_registry_mapping_slot5": {
+   "0x551f6dd1": "0x0",
+   "deadbeef": "0x0",
+   "timelock": "0x0",
+   "bridge": "0x0"
+  }
+ },
+ "decoded_ops_tx": {
+  "tx": "0xcc1c2495f9cab003c812b52a2efb3579d7da15520c142fb8bb773361da33bc48 (2024-12-27)",
+  "flow": "Safe 0x659839c9 -> MultiSendCallOnly -> Timelock 0xbe91e407.executeTransaction -> ProxyAdmin 0x10a6354f.upgrade(0xf465, temp impl) + 0xf465.d296cb1d(shares) + upgrade back",
+  "note": "same pattern on 2026-09-28 tx 0x4b8d18a2..."
+ },
+ "withdrawal_contract_events": {
+  "last_user_withdrawal": "2024-12-24 block 0x147a5dc: user 0x551f6dd1 got 0.1858 stETH, timelock got 0.0333 stETH; sbToken held 0.047",
+  "stETH_inflows": "2024-12-14..19: 10.002 + 500.114 + 500.274 = 1010.390 stETH from bridge 0xf465"
+ },
+ "leftover_steth_balances": {
+  "0xf465": "0",
+  "0xe0e0 (USF)": "0",
+  "0xbe91e407 (timelock)": "0",
+  "0x3b6c03b2 (investor)": "0 stETH, 0.0905 ETH",
+  "0xb746 (fee reserve)": "0.0798 stETH"
+ }
+}
