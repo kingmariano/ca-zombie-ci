@@ -50,8 +50,8 @@ reads (§3); the classification stands: **S, closed.**
 | Probe (UTC) | Endpoint | `eth_blockNumber` | Head hash | Head timestamp |
 |---|---|---|---|---|
 | 2026-10-10 02:51:51Z | `https://moonriver.api.onfinality.io/public` | `0x1093916` = **17,381,654** | `0xef04725d4d6d61c761bb000f7f3632ed0e504d455bcd68daafcd930074df5997` | **2026-08-10T08:27:48Z** |
-| 2026-10-10 02:51:51Z | `https://moonriver.drpc.org` | `0x1093916` | (same via second probe) | 2026-08-10T08:27:48Z |
-| 2026-10-10 03:23:59Z | onfinality + drpc | `0x1093916` | `0xef04725d…df5997` | 2026-08-10T08:27:48Z |
+| 2026-10-10 02:51:51Z | `https://moonriver.drpc.org` | `0x1093916` | (block number only in probe 1 — getBlock rate-limited; full block returned in probe 2) | 2026-08-10T08:27:48Z |
+| 2026-10-10 03:23:59Z | onfinality + drpc | `0x1093916` | `0xef04725d…df5997` (both endpoints) | 2026-08-10T08:27:48Z |
 
 - `eth_syncing` = `false` on both endpoints in both probes; the head did not move across the 32-minute gap.
 - The head block is an **empty block** (`gasUsed: 0x0`, 1 transaction-free, size `0x203`), consistent with the wind-down
@@ -65,7 +65,7 @@ reads (§3); the classification stands: **S, closed.**
 
 | Event | Block | UTC | Evidence |
 |---|---|---|---|
-| **Last transaction-bearing block** | **17,268,165** | **2026-07-31T21:06:48Z** | 1 tx, `gasUsed 0x4dc28` (318,504); hash `0x…`; found by coarse scan + binary refinement |
+| **Last transaction-bearing block** | **17,268,165** | **2026-07-31T21:06:48Z** | 1 tx (`0x0d57acf9…e6683999`, a Gnosis Safe `execTransaction` 0x6a761202 to `0x9dcc6e75…`), `gasUsed 0x4dc28` (318,504); hash `0x2a95cab8…d92583`; found by coarse scan + binary refinement |
 | First empty block after it | 17,268,166 | 2026-07-31T21:06:54Z | `gasUsed 0` |
 | **Maintenance Mode begins** | **17,269,716** | **2026-08-01T00:00:00Z** (exact) | `gasUsed 0`, 0 txs; binary search on timestamp |
 | **Head (block production stops)** | **17,381,654** | **2026-08-10T08:27:48Z** | unchanged across probes |
@@ -105,9 +105,10 @@ Raw evidence: `analysis/moonswap_pairs.json`, `analysis/huckleberry_amm_pairs.js
 - **Excluded** from the totals: a 9-decimal token named "DAI" at `0xe7a534f34f6ba18a03e0e09ade4a9d6628aa69da`
   (pair `0x42668e7d…` holds 11,339,893.42 units but only 0.0000025 WMOVR on the other side; `totalSupply` = 1e21 raw =
   1e12 units). It is not real DAI (real DAI is 18 decimals, `0x80a16016…`). Evidence: `analysis/fake_dai_check.json`.
-- Also present but not counted in the stable total: **372.878 WMOVR** across Moonswap pairs (≈ $673.63) and minor amounts
-  of hundreds of dead Moonriver tokens (meme tokens; no live market). The report's "$358.7k Moonswap stables" is
-  consistent with the USDC+USDT+DAI total here ($360,163.58 nominal) within ~0.4%.
+- Also present but not counted in the stable total: **372.8781 WMOVR** across Moonswap pairs (≈ $673.64) and
+  **3,565.3127 WMOVR** across Huckleberry AMM pairs (≈ $6,441.12), plus minor amounts of hundreds of dead Moonriver
+  tokens (meme tokens; no live market). The report's "$358.7k Moonswap stables" is consistent with the USDC+USDT+DAI
+  total here ($360,163.58 nominal) within ~0.4%.
 
 ### 3.2 Huckleberry AMM stablecoin balances (all 113 pairs)
 
@@ -183,7 +184,11 @@ run locally and re-run independently on CI:
   `analysis/read_cohort.py`, `analysis/aggregate_cohort.py`, `analysis/valuation.py`.
 - **CI (GitHub Actions, public repo `kingmariano/ca-zombie-ci`):** `ci/run.sh` → `ci/verify.py` re-probes liveness twice
   (keyed `MOONRIVER_RPC_URL` env + public fallbacks; URLs never printed), re-enumerates the cohort at the frozen head and
-  writes `ci-out/moonriver_verify.json` (uploaded artifact). Run URL: **TODO-RUN-URL** (filled after the run).
+  writes `ci-out/moonriver_verify.json` (uploaded artifact). **Run: [actions/runs/38021830565](https://github.com/kingmariano/ca-zombie-ci/actions/runs/38021830565)
+  — conclusion: success** (2026-10-10T03:48Z). CI results (downloaded): both public endpoints returned head `0x1093916`
+  in both probes (`heads_agree: true`), 816 Moonswap pairs / 113 Huckleberry AMM pairs / 11 lending markets reproduced,
+  `verdict.chain_frozen: true`. Note: the injected keyed `MOONRIVER_RPC_URL` secret was present but failed to answer in
+  CI (`all endpoints failed`); the verification rests on the two independent public endpoints, which both responded.
 
 | Check | Result |
 |---|---|
@@ -252,6 +257,7 @@ huckleberry-moonriver/
 │   ├── mr.py, read_cohort.py, moonswap_pairs.json, huckleberry_amm_pairs.json, huckleberry_lending.json
 │   ├── aggregate_cohort.py, moonswap_stables.json, huckleberry_amm_stables.json
 │   ├── valuation.py, cohort_summary.json, prices.json, fake_dai_check.json
+│   ├── ci-local/ (local verify.py outputs), probe_p1.json, rpc_probe.sh
 │   ├── defillama_moonriver_protocols.json, uniswapV2_registry.js, compound_registry.js, sources.json
 ├── ci/run.sh, ci/verify.py         # CI re-verification job
 ├── ci-out/                         # CI artifacts (moonriver_verify.json, verify.log)

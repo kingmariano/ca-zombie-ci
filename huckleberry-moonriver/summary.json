@@ -15,7 +15,7 @@
     "Last transaction-bearing block 17,268,165 (2026-07-31T21:06:48Z) — no tx has executed since; no mempool/no block production means no call path can execute for anyone (E-U=H-O=P=$0)",
     "MOVR migrated 1:1 to Base 2026-07-31 (bridge deadline); chain wound down by Moonbeam Foundation"
   ],
-  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": []},
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/38021830565"]},
   "key_facts": [
     "Huckleberry Lending comptroller 0xcffef313b69d83cb9ba35d9c0f882b027b846ddc — 11 markets, cash $8,447.60 at frozen head",
     "Huckleberry oracle 0xef502fb85311065aeb1ebe6b179400b03de2d9a5 returns anomalous prices: BTC.m ~$8.116e9/BTC (~1e5x high), ETH.m ~6.1e20, USDT.m ~$3.68M, USDC.m ~$5.62M, DOT.m ~$2.58e9, USDC ~$0.0306, KSM ~2.59e11 — latent drain if the chain ever restarts",
@@ -23,6 +23,7 @@
     "Excluded fake 9-dec 'DAI' 0xe7a534f34f6ba18a03e0e09ade4a9d6628aa69da (11,339,893.42 units; pair holds 0.0000025 WMOVR; totalSupply 1e12 units)",
     "Huckleberry AMM factory 0x017603c8f29f7f6394737628a93c57ffba1b7256 — 113/113 pairs; stables $4,216.94 (USDT.m 2,619.71, USDC.m 1,410.88, MIM 1,065.94, USDC 135.63, FRAX 18.10)",
     "Wave-2 report figures reproduced: Moonswap $358.7k ≈ USDC+USDT+DAI $360,163.58 nominal (within 0.4%); Huckleberry ~$8.6k ≈ $8,447.60 cash at current prices",
+    "Not counted in the S headline: WMOVR in DEX pairs (Moonswap 372.8781 ≈ $673.64; Huckleberry AMM 3,565.3127 ≈ $6,441.12) — would add ~$7.1k if included",
     "Bridged-asset caveat: Moonriver USDC/USDT/DAI are Multichain-era bridged tokens (2023 collapse), BTC.m/ETH.m/USDC.m/USDT.m are '@moonriver' bridge-wrapped — nominal marks overstate real value",
     "Re-arm condition: any Moonriver restart above block 17,381,654 — would instantly re-arm the Huckleberry oracle anomaly and every stale Moonriver protocol"
   ],
