@@ -1,0 +1,38 @@
+{
+  "finding": "C2-49",
+  "title": "Haiko (Starknet) — live cross-market collect_order drain in MarketManager; $53.5k holder-recoverable vaults; position-backed markets stuck",
+  "chains": ["starknet"],
+  "headline_extractable_usd": 348.54,
+  "headline_confidence": "medium",
+  "categories": {"E-U": 348.54, "H-O": 55503.49, "P": 0, "S": 60220.31},
+  "latest_block": 16170720,
+  "block_numbers": {"starknet": 16170720},
+  "targets_checked": 19,
+  "live_targets": 3,
+  "closed_reasons": [
+    "strategy admin fns: OnlyOwner / OnlyStrategyOwner (caller-0 probes, block 16153020)",
+    "strategy update_positions: OnlyMarketManager",
+    "strategy withdraw: InsuffShares for non-holders",
+    "MarketManager sweep/whitelist_markets/set_flash_loan_fee_rate/transfer_owner/upgrade: OnlyOwner",
+    "M2-M6 withdrawals revert ModifyPosBaseReserves (positions unbacked: MM holds 284444837 wei wstETH / 3 raw USDC / 4 raw USDT / 0 WBTC)"
+  ],
+  "poc": {"tests_passed": 15, "tests_total": 15, "ci_run_urls": []},
+  "key_facts": [
+    "MarketManager 0x38925b0bcf4dce081042ca26a96300d9e181b910328db54a6c89e5451503f5 class 0x337f32bd... unchanged at the 2026-03-29 drain, the 2026-10-06 drain and today (blocks 8252395 / 15980930 / 16170720)",
+    "cross-market collect_order: order created on market A, collected under market B, pays B's tokens to caller; 2026-03-29 paid 1.959030093873659156 wstETH (tx 0x294992a8...), 2026-10-06 paid 92936.06 STRK (txs 0x63f5e591... -> 0x7718f335...)",
+    "MarketManager remaining balances: 4911.398717456573909641 STRK + dust -> E-U upper bound $348.54 at STRK $0.070966",
+    "ReplicatingStrategy 0x2ffce9d4... M1 (ETH/USDC, paused) holds 14.529646992026151633 ETH + 17297.743432 USDC in its wallet; withdraw sim OK for holder 0x170499c0... (1131787790826304 shares -> 1.3280014562346565 ETH + 1577.693055 USDC net, 0.5% fee)",
+    "ReplicatingSolver 0x073cc79b... vault-token holder 0x7fe401f6... withdraw_public sim OK (1e18 STRK/ETH shares -> 3.1413 STRK + 0.000388 ETH + fees); wallet $1989.68 first-come",
+    "M2 (wstETH/ETH) holder 0x4304a18f... withdraw sim REVERTS ModifyPosBaseReserves -> M2-M6 recorded claims $60212.58 stuck",
+    "wave-1 'manager 97.8k STRK' was accurate; 92936.06 STRK left MM on 2026-10-06 (after wave-1) via the cross-market collect_order path",
+    "'44 unnamed externals' not reproducible; enumerated instead: strategy 50 external entry points (21 state-changing, all gated), call targets = MM + Pragma oracle + oracle summary + 6 ERC-20s, ~31 MM markets, depositors M1 5590 / M2 123 / M4 927"
+  ],
+  "caveats": [
+    "E-U is an upper bound: a fresh 2-step exploit could not be simulated end-to-end via RPC (order ids only known at execution time; simulations do not persist state); net is reduced by the attacker's order-collateral cost",
+    "flash-loan reentrancy (TOB-SPH-2) not proven live; bounded by MM's balance ($348.54) even if live",
+    "M3/M5/M6 withdrawals not individually simulated (M2 proven; same unbacked-position structure)",
+    "Solver virtual-reserve shortfall (~$4.2k) is approximate and counted qualitatively, not in S",
+    "point-in-time reads (blocks 16150223-16170720); prices 2026-10-10"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$348.54 live (MarketManager's remaining 4,911.40 STRK) via a cross-market collect_order flaw that is unchanged since 2024 and was used to drain 1.959 wstETH (2026-03-29) and 92,936 STRK (2026-10-06); the ETH/USDC strategy vault ($53.5k) and Solver ($2.0k) remain holder-withdrawable, while the position-backed strategy markets ($60.2k recorded) are unbacked and stuck."
+}
