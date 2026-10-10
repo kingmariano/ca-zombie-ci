@@ -1,0 +1,141 @@
+{
+ "sender": "0x5bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611",
+ "block": 16168390,
+ "cases": [
+  {
+   "name": "set_trade_fee(1,0) non-owner",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x05bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x0032ebb8e68553620b97b308684babf606d9556d5c0a652450c32e85f40d000d, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x00ba535c56f128bd7d83bba68520647f8aefca16ccc1e7375966602657829f49):\nError at pc=0:30:\nCairo traceback (most recent call last):\nUnknown location (pc=0:9927)\nUnknown location (pc=0:9916)\nError message: SithSwapV1Pair::set_trade_fee: caller not owner\nUnknown location (pc=0:6290)\n\nAssertion failed, 0 % 0x800000000000011000000000000000000000000000000000000000000000001 is equal to 0"
+   }
+  },
+  {
+   "name": "transfer_ownership(sender,1) non-owner",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x05bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x0032ebb8e68553620b97b308684babf606d9556d5c0a652450c32e85f40d000d, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x014a390f291e2e1f29874769efdef47ddad94d76f77ff516fad206a385e8995f):\nError message: SafeOwnable: caller not owner\nError at pc=0:3609:\nCairo traceback (most recent call last):\nUnknown location (pc=0:10353)\nUnknown location (pc=0:10342)\nUnknown location (pc=0:3632)\n\nAn ASSERT_EQ instruction failed: 569818338459516135037179304810325089137770489657421915225175780032672072621 != 2595026704782550699161813153831099078975852134873708338824870812304887727633.\n"
+   }
+  },
+  {
+   "name": "clawback_ownership non-factory-owner",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x05bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x0032ebb8e68553620b97b308684babf606d9556d5c0a652450c32e85f40d000d, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x02d5d3677f880035881f83e6ea93c301754e848242918870d914ad5104a9b5d6):\nError message: SithSwapV1Pair::clawback_ownership: caller not factory owner\nError at pc=0:7237:\nCairo traceback (most recent call last):\nUnknown location (pc=0:10419)\nUnknown location (pc=0:10412)\n\nAn ASSERT_EQ instruction failed: 1603004938018749961868640149418893319174427450086723338765440320677499411812 != 2595026704782550699161813153831099078975852134873708338824870812304887727633.\n"
+   }
+  },
+  {
+   "name": "initialize live pair",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x05bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x0032ebb8e68553620b97b308684babf606d9556d5c0a652450c32e85f40d000d, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x0079dc0da7c54b95f10aa182ad0a46400db63156920adb65eca2654c0945a463):\nError message: Initializable: contract already initialized\nError at pc=0:3381:\nCairo traceback (most recent call last):\nUnknown location (pc=0:8458)\nUnknown location (pc=0:8442)\nUnknown location (pc=0:5316)\n\nAn ASSERT_EQ instruction failed: 1 != 0.\n"
+   }
+  },
+  {
+   "name": "claim_fees non-LP",
+   "result": {
+    "status": "OK",
+    "result": "['0x1', '0x4', '0x0', '0x0', '0x0', '0x0']",
+    "trace_keys": [
+     "execute_invocation",
+     "execution_resources",
+     "state_diff",
+     "type"
+    ]
+   }
+  },
+  {
+   "name": "swap(0,0,to,0) insufficient output",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x05bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x0032ebb8e68553620b97b308684babf606d9556d5c0a652450c32e85f40d000d, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x015543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29):\nError at pc=0:30:\nCairo traceback (most recent call last):\nUnknown location (pc=0:10080)\nUnknown location (pc=0:10065)\nError message: SithSwapV1Pair::swap: insufficient output amount\nUnknown location (pc=0:6825)\n\nAssertion failed, 0 % 0x800000000000011000000000000000000000000000000000000000000000001 is equal to 0"
+   }
+  },
+  {
+   "name": "swap(reserve0-1,0,to,0) insufficient input",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x05bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x0032ebb8e68553620b97b308684babf606d9556d5c0a652450c32e85f40d000d, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x015543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29):\nError at pc=0:30:\nCairo traceback (most recent call last):\nUnknown location (pc=0:10080)\nUnknown location (pc=0:10065)\nError message: SithSwapV1Pair::swap: insufficient input amount\nUnknown location (pc=0:6967)\n\nAssertion failed, 0 % 0x800000000000011000000000000000000000000000000000000000000000001 is equal to 0"
+   }
+  },
+  {
+   "name": "burn no LP",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x05bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x0032ebb8e68553620b97b308684babf606d9556d5c0a652450c32e85f40d000d, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x003e8cfd4725c1e28fa4a6e3e468b4fcf75367166b850ac5f04e33ec843e82c1):\nError message: SithSwapV1Pair::burn_amounts: insufficient liquidity burned\nError at pc=0:6731:\nCairo traceback (most recent call last):\nUnknown location (pc=0:10035)\nUnknown location (pc=0:10013)\n\nAn ASSERT_EQ instruction failed: 1 != 0.\n"
+   }
+  },
+  {
+   "name": "sync permissionless",
+   "result": {
+    "status": "OK",
+    "result": "['0x1', '0x0']",
+    "trace_keys": [
+     "execute_invocation",
+     "execution_resources",
+     "state_diff",
+     "type"
+    ]
+   }
+  },
+  {
+   "name": "skim no excess",
+   "result": {
+    "status": "OK",
+    "result": "['0x1', '0x0']",
+    "trace_keys": [
+     "execute_invocation",
+     "execution_resources",
+     "state_diff",
+     "type"
+    ]
+   }
+  },
+  {
+   "name": "renounce_ownership non-owner",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x05bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x0032ebb8e68553620b97b308684babf606d9556d5c0a652450c32e85f40d000d, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x00d5d33d590e6660853069b37a2aea67c6fdaa0268626bc760350b590490feb5):\nError message: SafeOwnable: caller not owner\nError at pc=0:3609:\nCairo traceback (most recent call last):\nUnknown location (pc=0:10397)\nUnknown location (pc=0:10390)\nUnknown location (pc=0:3672)\n\nAn ASSERT_EQ instruction failed: 569818338459516135037179304810325089137770489657421915225175780032672072621 != 2595026704782550699161813153831099078975852134873708338824870812304887727633.\n"
+   }
+  },
+  {
+   "name": "claim_ownership non-pending",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x05bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x0032ebb8e68553620b97b308684babf606d9556d5c0a652450c32e85f40d000d, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x035f49ebdb118f06ba73464cc15b97be39da445ec6545e559bf65c867b028686):\nError message: SafeOwnable: caller not pending owner\nError at pc=0:3661:\nCairo traceback (most recent call last):\nUnknown location (pc=0:10375)\nUnknown location (pc=0:10368)\n\nAn ASSERT_EQ instruction failed: 0 != 2595026704782550699161813153831099078975852134873708338824870812304887727633.\n"
+   }
+  },
+  {
+   "name": "set_trade_fee(1,0) pid2 non-owner",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x05bcbbaa25518ac4e0ccff36b2b64779f6424eb9f63354aadec18c6a17ff4611, class hash: 0x036078334509b514626504edc9fb252328d1a240e4e948bef8d0c08dff45927f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:29965:\nCairo traceback (most recent call last):\nUnknown location (pc=0:351)\nUnknown location (pc=0:9587)\n\n1: Error in the called contract (contract address: 0x030615bec9c1506bfac97d9dbd3c546307987d467a7f95d5533c2e861eb81f3f, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x00ba535c56f128bd7d83bba68520647f8aefca16ccc1e7375966602657829f49):\nError at pc=0:30:\nCairo traceback (most recent call last):\nUnknown location (pc=0:9927)\nUnknown location (pc=0:9916)\nError message: SithSwapV1Pair::set_trade_fee: caller not owner\nUnknown location (pc=0:6290)\n\nAssertion failed, 0 % 0x800000000000011000000000000000000000000000000000000000000000001 is equal to 0"
+   }
+  },
+  {
+   "name": "swap fair amount passes",
+   "sender": "0x17dd33c2dcbdac44429ded27be81638e77fe729e243630106790c516020cc07",
+   "result": {
+    "status": "OK",
+    "result": "['0x2', '0x1', '0x1', '0x0']",
+    "trace_keys": [
+     "execute_invocation",
+     "execution_resources",
+     "state_diff",
+     "type"
+    ]
+   },
+   "amount_in": 100000000000000,
+   "amount_out": 230147702450943403
+  },
+  {
+   "name": "swap out+1 reverts K",
+   "sender": "0x17dd33c2dcbdac44429ded27be81638e77fe729e243630106790c516020cc07",
+   "result": {
+    "status": "REVERT",
+    "reason": "Transaction execution has failed:\n0: Error in the called contract (contract address: 0x017dd33c2dcbdac44429ded27be81638e77fe729e243630106790c516020cc07, class hash: 0x061dac032f228abef9c6626f995015233097ae253a7f72d68552db02f2971b8f, selector: 0x015d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad):\nError at pc=0:4835:\nCairo traceback (most recent call last):\nUnknown location (pc=0:67)\nUnknown location (pc=0:1835)\nUnknown location (pc=0:2554)\nUnknown location (pc=0:3436)\nUnknown location (pc=0:4054)\nUnknown location (pc=0:4040)\n\n1: Error in the called contract (contract address: 0x0032ebb8e68553620b97b308684babf606d9556d5c0a652450c32e85f40d000d, class hash: 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005, selector: 0x015543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29):\nError message: SithSwapV1Pair::swap: K\nError at pc=0:7022:\nCairo traceback (most recent call last):\nUnknown location (pc=0:10080)\nUnknown location (pc=0:10065)\n\nAn ASSERT_EQ instruction failed: 0 != 1.\n"
+   },
+   "amount_in": 100000000000000,
+   "amount_out": 230147702450943404
+  }
+ ]
+}

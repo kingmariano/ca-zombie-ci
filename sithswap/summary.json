@@ -1,0 +1,54 @@
+{
+  "finding": "C2-46",
+  "title": "SithSwap (Starknet) — immutable Cairo-0 Solidly/Velodrome fork; 202 pairs; $173.9k TVL + $48.7k unclaimed fees",
+  "chains": ["starknet"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 222664.11,
+    "P": 0,
+    "S": 0
+  },
+  "latest_block": 16168054,
+  "block_numbers": {
+    "starknet": 16168054,
+    "tvl_snapshot_block": 16152604,
+    "simulation_block": 16168054
+  },
+  "targets_checked": 202,
+  "live_targets": 202,
+  "closed_reasons": [
+    "Deployed pair bytecode is a faithful Cairo-0 port of Velodrome v2 Pool.sol (audited upstream): swap invariant x*y / x*y*(x^2+y^2) binds exactly at the getAmountOut quote (live sim: fair amount OK, +1 wei reverts 'SithSwapV1Pair::swap: K')",
+    "All privileged functions revert for unprivileged callers (live sims): set_trade_fee -> 'caller not owner'; initialize -> 'Initializable: contract already initialized'; clawback/transfer/renounce/claim ownership -> owner/pending-owner/factory-owner asserts",
+    "claimFees() from a non-LP address executes and returns (0,0); the per-pair Fees contract's claimFeesFor is gated caller==pair; fee indexes are synced before _mint/transfer/_burn so no historical-fee sniping",
+    "Every pair is initialized (202/202 with reserves and totalSupply>0); owner set on all (no renounced pairs); fees contracts are live instances of the pair-fees class with a single external entry point",
+    "Swap fee (0.15%/0.01%, max settable 1% with 7-day cooldown) is physically moved to the per-pair Fees contract before the K check, so no fee-bypass extraction"
+  ],
+  "poc": {
+    "tests_passed": 15,
+    "tests_total": 15,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Factory 0xeaf728d8e09bfbe5f11881f848ca647ba41593502347ed2ec5881e46b57a32: allPairsLength=203 (202 real pairs); 75 pools >= $1 (matches the finding's 75/202); 125 dust pools < $1",
+    "Total TVL $173,924.76 at block 16152604 (DefiLlama prices); 19 stable pools $69,225.11, 181 volatile $104,699.40",
+    "Per-pair Fees contracts hold $48,739.35 of unclaimed swap fees (28% of TVL); e.g. pool 2: 5.792 SITH + 11,170.21 USDC ($25.6k), pool 5: 5,209.72 USDC + 5,213.61 USDT ($10.4k)",
+    "Pair class 0x07eb597ad7d9ba28ea1db162cdb99e265fe22bcb00e9b690e188c2203de9e005 has exactly 57 external entry points matching its ABI (no hidden entry points); pair-fees class 0x06f6b4f1d8c8baeeb0b009108fc44c7988d82aa0801e6bb3fc6b64ab29478668 has exactly 1 (claimFeesFor)",
+    "Decoded from bytecode: _k stable = x*y*(x^2+y^2)/1e18^3 (Velodrome x3y+y3x), volatile = x*y; get_y/f/d = Velodrome v2 Newton iteration; fee = amount*fee/1e6; _update0/1 transfer fee to Fees contract + index += fee*1e18/totalSupply; claim_fees pays only claimable[caller]",
+    "Live swap proof (read-only simulation, sender 0x17dd33c2dcbdac44429ded27be81638e77fe729e243630106790c516020cc07): 0.0001 ETH in -> 230,147,702,450,943,403 DAI out executes OK; same with +1 wei reverts 'SithSwapV1Pair::swap: K' (pc 0:7022)",
+    "Independent math verification (block 16169041, top 40 pools by TVL ~99% of value): all 29 volatile pools match getAmountOut exactly and their K check binds at +1 wei (gap 0); stable pools quote 1 wei conservative vs the K limit (max observed gap 2,881,587 wei of an 18-decimal token ~ $1e-11; biggest stable pool $60k USDC/USDT gap = 1 wei) - dust-level, gas-negative",
+    "Live gate proofs: setTradeFee -> 'caller not owner' (pools 1,2); initialize -> 'already initialized'; claimFees non-LP -> (0,0); burn no LP -> 'insufficient liquidity burned'; transfer/renounce/claim/clawback ownership -> owner asserts; sync/skim permissionless (skim moves 0 excess)",
+    "Owners are contract accounts: 0x38b44c5c1be995a78ab204f8b3e4ca80917ffcb93ab9c940a261cd409b09d64 (class 0x4d07e40e..., factory owner, 197 pairs) and 0x1428178db9e5dfd365c815ffd7eac2090191ded7fe11fd4556f7ad467ca83ad (class 0x36078334..., factory pendingOwner, 3 pairs)",
+    "Deviations from Velodrome v2: directional fee0/fee1 with 7-day freeze; owner-or-factory-owner fee control (<=1%); clawback_ownership; first-mint of a brand-new pool lacks stable equal-deposit / MINIMUM_K checks (no existing-pool funds at risk); no pause mechanism",
+    "Permissionless skim(to) can only move balance-reserve excess: 0 excess on the top 12 pools (~$170k of $173.9k TVL) -> no skimmable value; sync() is a no-op refresh",
+    "Protocol is inactive: no LP transfer events for pool 1 in the last 200k blocks; sithswap.com is a squatted domain; source unverified on explorers (audited here from on-chain bytecode); the SITH token (0x6fedc8e5246e38e06c08c2e784e6a46eb2ae69433be04fe911f5726cb96b67e) only trades in one $9.82 pool"
+  ],
+  "caveats": [
+    "LP-holder distribution was not exhaustively enumerated (no keyless event indexer); H-O is the aggregate holder-recoverable value ($173.9k principal via burn + $48.7k fees via claim_fees). Any LP held by lost keys would be S rather than H-O",
+    "Math verification covered the top pools by TVL (~99% of value) plus the live swap binding proof on pool 1; the pair source was reconstructed from Cairo-0 bytecode, so a semantic mismatch in an unexercised path cannot be fully excluded (though the K guard bounds any swap regardless of quote errors)",
+    "Privileged paths (P) cannot move LP principal or Fees-contract balances; they can only set fees (<=1%, 7-day cooldown) or claw back ownership if renounced — hence P=0 in USD",
+    "Minimum-liquidity dust (1000 wei LP/pool locked to the factory) and any unclaimed fees of lost LP are negligible/unquantified (S~0)"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from SithSwap: the deployed Cairo-0 pair is a faithful port of Velodrome v2's audited Pool.sol (invariant binds exactly at the quote, +1 wei reverts swap: K), every privileged path reverts for strangers, and fee claims are caller-share-only; the $222.7k present is holder-recoverable ($173.9k LP principal + $48.7k unclaimed fees)."
+}

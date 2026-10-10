@@ -1,0 +1,1174 @@
+[
+ {
+  "members": [
+   {
+    "name": "low",
+    "offset": 0,
+    "type": "felt"
+   },
+   {
+    "name": "high",
+    "offset": 1,
+    "type": "felt"
+   }
+  ],
+  "name": "Uint256",
+  "size": 2,
+  "type": "struct"
+ },
+ {
+  "members": [
+   {
+    "name": "timestamp",
+    "offset": 0,
+    "type": "felt"
+   },
+   {
+    "name": "reserve0_cumulative",
+    "offset": 1,
+    "type": "Uint256"
+   },
+   {
+    "name": "reserve1_cumulative",
+    "offset": 3,
+    "type": "Uint256"
+   }
+  ],
+  "name": "Observation",
+  "size": 5,
+  "type": "struct"
+ },
+ {
+  "data": [
+   {
+    "name": "from_",
+    "type": "felt"
+   },
+   {
+    "name": "to",
+    "type": "felt"
+   },
+   {
+    "name": "value",
+    "type": "Uint256"
+   }
+  ],
+  "keys": [],
+  "name": "Transfer",
+  "type": "event"
+ },
+ {
+  "data": [
+   {
+    "name": "owner",
+    "type": "felt"
+   },
+   {
+    "name": "spender",
+    "type": "felt"
+   },
+   {
+    "name": "value",
+    "type": "Uint256"
+   }
+  ],
+  "keys": [],
+  "name": "Approval",
+  "type": "event"
+ },
+ {
+  "data": [],
+  "keys": [],
+  "name": "Initialized",
+  "type": "event"
+ },
+ {
+  "data": [
+   {
+    "name": "previousOwner",
+    "type": "felt"
+   },
+   {
+    "name": "newOwner",
+    "type": "felt"
+   }
+  ],
+  "keys": [],
+  "name": "OwnershipTransferred",
+  "type": "event"
+ },
+ {
+  "data": [
+   {
+    "name": "sender",
+    "type": "felt"
+   },
+   {
+    "name": "amount0",
+    "type": "Uint256"
+   },
+   {
+    "name": "amount1",
+    "type": "Uint256"
+   },
+   {
+    "name": "to",
+    "type": "felt"
+   }
+  ],
+  "keys": [],
+  "name": "Mint",
+  "type": "event"
+ },
+ {
+  "data": [
+   {
+    "name": "sender",
+    "type": "felt"
+   },
+   {
+    "name": "amount0",
+    "type": "Uint256"
+   },
+   {
+    "name": "amount1",
+    "type": "Uint256"
+   },
+   {
+    "name": "to",
+    "type": "felt"
+   }
+  ],
+  "keys": [],
+  "name": "Burn",
+  "type": "event"
+ },
+ {
+  "data": [
+   {
+    "name": "sender",
+    "type": "felt"
+   },
+   {
+    "name": "amount0_in",
+    "type": "Uint256"
+   },
+   {
+    "name": "amount1_in",
+    "type": "Uint256"
+   },
+   {
+    "name": "amount0_out",
+    "type": "Uint256"
+   },
+   {
+    "name": "amount1_out",
+    "type": "Uint256"
+   },
+   {
+    "name": "to",
+    "type": "felt"
+   }
+  ],
+  "keys": [],
+  "name": "Swap",
+  "type": "event"
+ },
+ {
+  "data": [
+   {
+    "name": "reserve0",
+    "type": "Uint256"
+   },
+   {
+    "name": "reserve1",
+    "type": "Uint256"
+   }
+  ],
+  "keys": [],
+  "name": "Sync",
+  "type": "event"
+ },
+ {
+  "data": [
+   {
+    "name": "sender",
+    "type": "felt"
+   },
+   {
+    "name": "amount0",
+    "type": "Uint256"
+   },
+   {
+    "name": "amount1",
+    "type": "Uint256"
+   }
+  ],
+  "keys": [],
+  "name": "Fees",
+  "type": "event"
+ },
+ {
+  "data": [
+   {
+    "name": "sender",
+    "type": "felt"
+   },
+   {
+    "name": "amount0",
+    "type": "Uint256"
+   },
+   {
+    "name": "amount1",
+    "type": "Uint256"
+   }
+  ],
+  "keys": [],
+  "name": "Claim",
+  "type": "event"
+ },
+ {
+  "data": [
+   {
+    "name": "sender",
+    "type": "felt"
+   },
+   {
+    "name": "prev",
+    "type": "felt"
+   },
+   {
+    "name": "fee",
+    "type": "felt"
+   }
+  ],
+  "keys": [],
+  "name": "Fee",
+  "type": "event"
+ },
+ {
+  "inputs": [],
+  "name": "constructor",
+  "outputs": [],
+  "type": "constructor"
+ },
+ {
+  "inputs": [
+   {
+    "name": "pid",
+    "type": "felt"
+   },
+   {
+    "name": "token0",
+    "type": "felt"
+   },
+   {
+    "name": "token1",
+    "type": "felt"
+   },
+   {
+    "name": "stable",
+    "type": "felt"
+   },
+   {
+    "name": "fee",
+    "type": "felt"
+   },
+   {
+    "name": "fees",
+    "type": "felt"
+   }
+  ],
+  "name": "initialize",
+  "outputs": [],
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getPid",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getToken0",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getToken1",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getStable",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getFee0",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getFee1",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getFees",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getLastFeeUpdate",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getReserve0",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getReserve1",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getBlockTimestampLast",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getReserve0CumulativeLast",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getReserve1CumulativeLast",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getIndex0",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getIndex1",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "account",
+    "type": "felt"
+   }
+  ],
+  "name": "getSupplyIndex0",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "account",
+    "type": "felt"
+   }
+  ],
+  "name": "getSupplyIndex1",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "account",
+    "type": "felt"
+   }
+  ],
+  "name": "getClaimable0",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "account",
+    "type": "felt"
+   }
+  ],
+  "name": "getClaimable1",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getMetadata",
+  "outputs": [
+   {
+    "name": "pid",
+    "type": "felt"
+   },
+   {
+    "name": "stable",
+    "type": "felt"
+   },
+   {
+    "name": "token0",
+    "type": "felt"
+   },
+   {
+    "name": "token1",
+    "type": "felt"
+   },
+   {
+    "name": "decimals0",
+    "type": "felt"
+   },
+   {
+    "name": "decimals1",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getTokens",
+  "outputs": [
+   {
+    "name": "token0",
+    "type": "felt"
+   },
+   {
+    "name": "token1",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getReserves",
+  "outputs": [
+   {
+    "name": "reserve0",
+    "type": "Uint256"
+   },
+   {
+    "name": "reserve1",
+    "type": "Uint256"
+   },
+   {
+    "name": "block_timestamp",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "amount_in",
+    "type": "Uint256"
+   },
+   {
+    "name": "token_in",
+    "type": "felt"
+   }
+  ],
+  "name": "getAmountOut",
+  "outputs": [
+   {
+    "name": "_amount_out",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "amount_in",
+    "type": "Uint256"
+   },
+   {
+    "name": "token_in",
+    "type": "felt"
+   }
+  ],
+  "name": "getTradeFee",
+  "outputs": [
+   {
+    "name": "amount_fee",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "amount_in",
+    "type": "Uint256"
+   },
+   {
+    "name": "token_in",
+    "type": "felt"
+   }
+  ],
+  "name": "getTradeDiff",
+  "outputs": [
+   {
+    "name": "rate_a",
+    "type": "Uint256"
+   },
+   {
+    "name": "rate_b",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "getObservationsLength",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "lastObservation",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Observation"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "currentCumulativePrices",
+  "outputs": [
+   {
+    "name": "_reserve0_cumulative",
+    "type": "Uint256"
+   },
+   {
+    "name": "_reserve1_cumulative",
+    "type": "Uint256"
+   },
+   {
+    "name": "block_timestamp",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "token_in",
+    "type": "felt"
+   },
+   {
+    "name": "amount_in",
+    "type": "Uint256"
+   }
+  ],
+  "name": "current",
+  "outputs": [
+   {
+    "name": "_amount_out",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "token_in",
+    "type": "felt"
+   },
+   {
+    "name": "amount_in",
+    "type": "Uint256"
+   },
+   {
+    "name": "points",
+    "type": "felt"
+   },
+   {
+    "name": "window",
+    "type": "felt"
+   }
+  ],
+  "name": "sample",
+  "outputs": [
+   {
+    "name": "prices_len",
+    "type": "felt"
+   },
+   {
+    "name": "prices",
+    "type": "Uint256*"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "token_in",
+    "type": "felt"
+   },
+   {
+    "name": "amount_in",
+    "type": "Uint256"
+   },
+   {
+    "name": "granularity",
+    "type": "felt"
+   }
+  ],
+  "name": "quote",
+  "outputs": [
+   {
+    "name": "_amount_out",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "token_in",
+    "type": "felt"
+   },
+   {
+    "name": "amount_in",
+    "type": "Uint256"
+   },
+   {
+    "name": "points",
+    "type": "felt"
+   }
+  ],
+  "name": "prices",
+  "outputs": [
+   {
+    "name": "prices_len",
+    "type": "felt"
+   },
+   {
+    "name": "prices",
+    "type": "Uint256*"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "name",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "symbol",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "decimals",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "totalSupply",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "account",
+    "type": "felt"
+   }
+  ],
+  "name": "balanceOf",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "_owner",
+    "type": "felt"
+   },
+   {
+    "name": "spender",
+    "type": "felt"
+   }
+  ],
+  "name": "allowance",
+  "outputs": [
+   {
+    "name": "remaining",
+    "type": "Uint256"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "owner",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "pendingOwner",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "fee",
+    "type": "felt"
+   },
+   {
+    "name": "dir",
+    "type": "felt"
+   }
+  ],
+  "name": "setTradeFee",
+  "outputs": [],
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "claimFees",
+  "outputs": [
+   {
+    "name": "claimed0",
+    "type": "Uint256"
+   },
+   {
+    "name": "claimed1",
+    "type": "Uint256"
+   }
+  ],
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "to",
+    "type": "felt"
+   }
+  ],
+  "name": "mint",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "Uint256"
+   }
+  ],
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "to",
+    "type": "felt"
+   }
+  ],
+  "name": "burn",
+  "outputs": [
+   {
+    "name": "amount0",
+    "type": "Uint256"
+   },
+   {
+    "name": "amount1",
+    "type": "Uint256"
+   }
+  ],
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "amount0_out",
+    "type": "Uint256"
+   },
+   {
+    "name": "amount1_out",
+    "type": "Uint256"
+   },
+   {
+    "name": "to",
+    "type": "felt"
+   },
+   {
+    "name": "data",
+    "type": "felt"
+   }
+  ],
+  "name": "swap",
+  "outputs": [],
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "to",
+    "type": "felt"
+   }
+  ],
+  "name": "skim",
+  "outputs": [],
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "sync",
+  "outputs": [],
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "dst",
+    "type": "felt"
+   },
+   {
+    "name": "amount",
+    "type": "Uint256"
+   }
+  ],
+  "name": "transfer",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "src",
+    "type": "felt"
+   },
+   {
+    "name": "dst",
+    "type": "felt"
+   },
+   {
+    "name": "amount",
+    "type": "Uint256"
+   }
+  ],
+  "name": "transferFrom",
+  "outputs": [
+   {
+    "name": "res",
+    "type": "felt"
+   }
+  ],
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "spender",
+    "type": "felt"
+   },
+   {
+    "name": "amount",
+    "type": "Uint256"
+   }
+  ],
+  "name": "approve",
+  "outputs": [
+   {
+    "name": "success",
+    "type": "felt"
+   }
+  ],
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "spender",
+    "type": "felt"
+   },
+   {
+    "name": "added_value",
+    "type": "Uint256"
+   }
+  ],
+  "name": "increaseAllowance",
+  "outputs": [
+   {
+    "name": "success",
+    "type": "felt"
+   }
+  ],
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "spender",
+    "type": "felt"
+   },
+   {
+    "name": "subtracted_value",
+    "type": "Uint256"
+   }
+  ],
+  "name": "decreaseAllowance",
+  "outputs": [
+   {
+    "name": "success",
+    "type": "felt"
+   }
+  ],
+  "type": "function"
+ },
+ {
+  "inputs": [
+   {
+    "name": "new_owner",
+    "type": "felt"
+   },
+   {
+    "name": "directly",
+    "type": "felt"
+   }
+  ],
+  "name": "transferOwnership",
+  "outputs": [],
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "claimOwnership",
+  "outputs": [],
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "renounceOwnership",
+  "outputs": [],
+  "type": "function"
+ },
+ {
+  "inputs": [],
+  "name": "clawbackOwnership",
+  "outputs": [],
+  "type": "function"
+ }
+]
