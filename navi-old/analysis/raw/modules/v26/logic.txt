@@ -1,0 +1,1876 @@
+// Move bytecode v7
+module d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca.logic {
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::calculator;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::constants;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::error;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::event;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::storage;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::validation;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::ray_math;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::safe_math;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle;
+use 0000000000000000000000000000000000000000000000000000000000000001::vector;
+use 0000000000000000000000000000000000000000000000000000000000000002::address;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+
+struct StateUpdated has copy, drop {
+	user: address,
+	asset: u8,
+	user_supply_balance: u256,
+	user_borrow_balance: u256,
+	new_supply_index: u256,
+	new_borrow_index: u256
+}
+
+public(friend) execute_deposit<Ty0>(Arg0: &Clock, Arg1: &mut Storage, Arg2: u8, Arg3: address, Arg4: u256) {
+B0:
+	0: MoveLoc[0](Arg0: &Clock)
+	1: CopyLoc[1](Arg1: &mut Storage)
+	2: Call update_state_of_all(&Clock, &mut Storage)
+	3: CopyLoc[1](Arg1: &mut Storage)
+	4: CopyLoc[2](Arg2: u8)
+	5: CopyLoc[4](Arg4: u256)
+	6: Call validation::validate_deposit<Ty0>(&mut Storage, u8, u256)
+	7: CopyLoc[1](Arg1: &mut Storage)
+	8: CopyLoc[2](Arg2: u8)
+	9: CopyLoc[3](Arg3: address)
+	10: MoveLoc[4](Arg4: u256)
+	11: Call increase_supply_balance(&mut Storage, u8, address, u256)
+	12: CopyLoc[1](Arg1: &mut Storage)
+	13: CopyLoc[2](Arg2: u8)
+	14: CopyLoc[3](Arg3: address)
+	15: Call is_collateral(&mut Storage, u8, address): bool
+	16: Not
+	17: BrFalse(22)
+B1:
+	18: CopyLoc[1](Arg1: &mut Storage)
+	19: CopyLoc[2](Arg2: u8)
+	20: CopyLoc[3](Arg3: address)
+	21: Call storage::update_user_collaterals(&mut Storage, u8, address)
+B2:
+	22: CopyLoc[1](Arg1: &mut Storage)
+	23: CopyLoc[2](Arg2: u8)
+	24: Call update_interest_rate(&mut Storage, u8)
+	25: MoveLoc[1](Arg1: &mut Storage)
+	26: MoveLoc[2](Arg2: u8)
+	27: MoveLoc[3](Arg3: address)
+	28: Call emit_state_updated_event(&mut Storage, u8, address)
+	29: Ret
+}
+
+public(friend) execute_withdraw<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: u8, Arg4: address, Arg5: u256): u64 {
+L6:	loc0: u256
+L7:	loc1: u256
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: CopyLoc[3](Arg3: u8)
+	2: CopyLoc[4](Arg4: address)
+	3: Call user_collateral_balance(&mut Storage, u8, address): u256
+	4: LdU256(0)
+	5: Gt
+	6: BrFalse(8)
+B1:
+	7: Branch(16)
+B2:
+	8: MoveLoc[2](Arg2: &mut Storage)
+	9: Pop
+	10: MoveLoc[1](Arg1: &PriceOracle)
+	11: Pop
+	12: MoveLoc[0](Arg0: &Clock)
+	13: Pop
+	14: Call error::user_have_no_collateral(): u64
+	15: Abort
+B3:
+	16: CopyLoc[0](Arg0: &Clock)
+	17: CopyLoc[2](Arg2: &mut Storage)
+	18: CopyLoc[4](Arg4: address)
+	19: Call update_state_of_user(&Clock, &mut Storage, address)
+	20: CopyLoc[2](Arg2: &mut Storage)
+	21: CopyLoc[3](Arg3: u8)
+	22: CopyLoc[5](Arg5: u256)
+	23: Call validation::validate_withdraw<Ty0>(&mut Storage, u8, u256)
+	24: CopyLoc[2](Arg2: &mut Storage)
+	25: CopyLoc[3](Arg3: u8)
+	26: CopyLoc[4](Arg4: address)
+	27: Call user_collateral_balance(&mut Storage, u8, address): u256
+	28: StLoc[7](loc1: u256)
+	29: MoveLoc[5](Arg5: u256)
+	30: CopyLoc[7](loc1: u256)
+	31: Call safe_math::min(u256, u256): u256
+	32: StLoc[6](loc0: u256)
+	33: CopyLoc[2](Arg2: &mut Storage)
+	34: CopyLoc[3](Arg3: u8)
+	35: CopyLoc[4](Arg4: address)
+	36: CopyLoc[6](loc0: u256)
+	37: Call decrease_supply_balance(&mut Storage, u8, address, u256)
+	38: MoveLoc[0](Arg0: &Clock)
+	39: MoveLoc[1](Arg1: &PriceOracle)
+	40: CopyLoc[2](Arg2: &mut Storage)
+	41: CopyLoc[4](Arg4: address)
+	42: Call is_health(&Clock, &PriceOracle, &mut Storage, address): bool
+	43: BrFalse(45)
+B4:
+	44: Branch(49)
+B5:
+	45: MoveLoc[2](Arg2: &mut Storage)
+	46: Pop
+	47: Call error::user_is_unhealthy(): u64
+	48: Abort
+B6:
+	49: CopyLoc[6](loc0: u256)
+	50: CopyLoc[7](loc1: u256)
+	51: Eq
+	52: BrFalse(62)
+B7:
+	53: CopyLoc[2](Arg2: &mut Storage)
+	54: CopyLoc[3](Arg3: u8)
+	55: CopyLoc[4](Arg4: address)
+	56: Call is_collateral(&mut Storage, u8, address): bool
+	57: BrFalse(62)
+B8:
+	58: CopyLoc[2](Arg2: &mut Storage)
+	59: CopyLoc[3](Arg3: u8)
+	60: CopyLoc[4](Arg4: address)
+	61: Call storage::remove_user_collaterals(&mut Storage, u8, address)
+B9:
+	62: CopyLoc[7](loc1: u256)
+	63: CopyLoc[6](loc0: u256)
+	64: Gt
+	65: BrFalse(87)
+B10:
+	66: CopyLoc[7](loc1: u256)
+	67: CopyLoc[6](loc0: u256)
+	68: Sub
+	69: LdU256(1000)
+	70: Le
+	71: BrFalse(87)
+B11:
+	72: CopyLoc[2](Arg2: &mut Storage)
+	73: CopyLoc[3](Arg3: u8)
+	74: MoveLoc[7](loc1: u256)
+	75: CopyLoc[6](loc0: u256)
+	76: Sub
+	77: Call storage::increase_treasury_balance(&mut Storage, u8, u256)
+	78: CopyLoc[2](Arg2: &mut Storage)
+	79: CopyLoc[3](Arg3: u8)
+	80: CopyLoc[4](Arg4: address)
+	81: Call is_collateral(&mut Storage, u8, address): bool
+	82: BrFalse(87)
+B12:
+	83: CopyLoc[2](Arg2: &mut Storage)
+	84: CopyLoc[3](Arg3: u8)
+	85: CopyLoc[4](Arg4: address)
+	86: Call storage::remove_user_collaterals(&mut Storage, u8, address)
+B13:
+	87: CopyLoc[2](Arg2: &mut Storage)
+	88: CopyLoc[3](Arg3: u8)
+	89: Call update_interest_rate(&mut Storage, u8)
+	90: MoveLoc[2](Arg2: &mut Storage)
+	91: MoveLoc[3](Arg3: u8)
+	92: MoveLoc[4](Arg4: address)
+	93: Call emit_state_updated_event(&mut Storage, u8, address)
+	94: MoveLoc[6](loc0: u256)
+	95: CastU64
+	96: Ret
+}
+
+public(friend) execute_borrow<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: u8, Arg4: address, Arg5: u256) {
+L6:	loc0: bool
+L7:	loc1: u256
+L8:	loc2: u256
+L9:	loc3: u256
+B0:
+	0: CopyLoc[0](Arg0: &Clock)
+	1: CopyLoc[2](Arg2: &mut Storage)
+	2: CopyLoc[3](Arg3: u8)
+	3: Call update_state(&Clock, &mut Storage, u8)
+	4: CopyLoc[0](Arg0: &Clock)
+	5: CopyLoc[2](Arg2: &mut Storage)
+	6: CopyLoc[4](Arg4: address)
+	7: Call update_state_of_user(&Clock, &mut Storage, address)
+	8: CopyLoc[2](Arg2: &mut Storage)
+	9: CopyLoc[3](Arg3: u8)
+	10: CopyLoc[5](Arg5: u256)
+	11: Call validation::validate_borrow<Ty0>(&mut Storage, u8, u256)
+	12: CopyLoc[2](Arg2: &mut Storage)
+	13: CopyLoc[3](Arg3: u8)
+	14: CopyLoc[4](Arg4: address)
+	15: MoveLoc[5](Arg5: u256)
+	16: Call increase_borrow_balance(&mut Storage, u8, address, u256)
+	17: CopyLoc[2](Arg2: &mut Storage)
+	18: CopyLoc[3](Arg3: u8)
+	19: CopyLoc[4](Arg4: address)
+	20: Call is_loan(&mut Storage, u8, address): bool
+	21: Not
+	22: BrFalse(27)
+B1:
+	23: CopyLoc[2](Arg2: &mut Storage)
+	24: CopyLoc[3](Arg3: u8)
+	25: CopyLoc[4](Arg4: address)
+	26: Call storage::update_user_loans(&mut Storage, u8, address)
+B2:
+	27: CopyLoc[0](Arg0: &Clock)
+	28: CopyLoc[1](Arg1: &PriceOracle)
+	29: CopyLoc[2](Arg2: &mut Storage)
+	30: CopyLoc[4](Arg4: address)
+	31: Call calculate_avg_ltv(&Clock, &PriceOracle, &mut Storage, address): u256
+	32: StLoc[7](loc1: u256)
+	33: CopyLoc[0](Arg0: &Clock)
+	34: CopyLoc[2](Arg2: &mut Storage)
+	35: CopyLoc[1](Arg1: &PriceOracle)
+	36: CopyLoc[4](Arg4: address)
+	37: Call dynamic_liquidation_threshold(&Clock, &mut Storage, &PriceOracle, address): u256
+	38: StLoc[8](loc2: u256)
+	39: CopyLoc[7](loc1: u256)
+	40: LdU256(0)
+	41: Gt
+	42: BrFalse(48)
+B3:
+	43: CopyLoc[8](loc2: u256)
+	44: LdU256(0)
+	45: Gt
+	46: StLoc[6](loc0: bool)
+	47: Branch(50)
+B4:
+	48: LdFalse
+	49: StLoc[6](loc0: bool)
+B5:
+	50: MoveLoc[6](loc0: bool)
+	51: BrFalse(53)
+B6:
+	52: Branch(61)
+B7:
+	53: MoveLoc[2](Arg2: &mut Storage)
+	54: Pop
+	55: MoveLoc[1](Arg1: &PriceOracle)
+	56: Pop
+	57: MoveLoc[0](Arg0: &Clock)
+	58: Pop
+	59: Call error::ltv_is_not_enough(): u64
+	60: Abort
+B8:
+	61: MoveLoc[8](loc2: u256)
+	62: MoveLoc[7](loc1: u256)
+	63: Call ray_math::ray_div(u256, u256): u256
+	64: StLoc[9](loc3: u256)
+	65: MoveLoc[0](Arg0: &Clock)
+	66: CopyLoc[2](Arg2: &mut Storage)
+	67: MoveLoc[1](Arg1: &PriceOracle)
+	68: CopyLoc[4](Arg4: address)
+	69: Call user_health_factor(&Clock, &mut Storage, &PriceOracle, address): u256
+	70: MoveLoc[9](loc3: u256)
+	71: Ge
+	72: BrFalse(74)
+B9:
+	73: Branch(78)
+B10:
+	74: MoveLoc[2](Arg2: &mut Storage)
+	75: Pop
+	76: Call error::user_is_unhealthy(): u64
+	77: Abort
+B11:
+	78: CopyLoc[2](Arg2: &mut Storage)
+	79: CopyLoc[3](Arg3: u8)
+	80: Call update_interest_rate(&mut Storage, u8)
+	81: MoveLoc[2](Arg2: &mut Storage)
+	82: MoveLoc[3](Arg3: u8)
+	83: MoveLoc[4](Arg4: address)
+	84: Call emit_state_updated_event(&mut Storage, u8, address)
+	85: Ret
+}
+
+public(friend) execute_repay<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: u8, Arg4: address, Arg5: u256): u256 {
+L6:	loc0: u256
+L7:	loc1: u256
+L8:	loc2: u256
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: CopyLoc[3](Arg3: u8)
+	2: CopyLoc[4](Arg4: address)
+	3: Call user_loan_balance(&mut Storage, u8, address): u256
+	4: LdU256(0)
+	5: Gt
+	6: BrFalse(8)
+B1:
+	7: Branch(14)
+B2:
+	8: MoveLoc[2](Arg2: &mut Storage)
+	9: Pop
+	10: MoveLoc[0](Arg0: &Clock)
+	11: Pop
+	12: Call error::user_have_no_loan(): u64
+	13: Abort
+B3:
+	14: MoveLoc[0](Arg0: &Clock)
+	15: CopyLoc[2](Arg2: &mut Storage)
+	16: CopyLoc[4](Arg4: address)
+	17: Call update_state_of_user(&Clock, &mut Storage, address)
+	18: CopyLoc[2](Arg2: &mut Storage)
+	19: CopyLoc[3](Arg3: u8)
+	20: CopyLoc[5](Arg5: u256)
+	21: Call validation::validate_repay<Ty0>(&mut Storage, u8, u256)
+	22: CopyLoc[2](Arg2: &mut Storage)
+	23: CopyLoc[3](Arg3: u8)
+	24: CopyLoc[4](Arg4: address)
+	25: Call user_loan_balance(&mut Storage, u8, address): u256
+	26: StLoc[6](loc0: u256)
+	27: LdU256(0)
+	28: StLoc[7](loc1: u256)
+	29: CopyLoc[5](Arg5: u256)
+	30: StLoc[8](loc2: u256)
+	31: CopyLoc[6](loc0: u256)
+	32: CopyLoc[5](Arg5: u256)
+	33: Lt
+	34: BrFalse(41)
+B4:
+	35: CopyLoc[6](loc0: u256)
+	36: StLoc[8](loc2: u256)
+	37: MoveLoc[5](Arg5: u256)
+	38: CopyLoc[6](loc0: u256)
+	39: Sub
+	40: StLoc[7](loc1: u256)
+B5:
+	41: CopyLoc[2](Arg2: &mut Storage)
+	42: CopyLoc[3](Arg3: u8)
+	43: CopyLoc[4](Arg4: address)
+	44: CopyLoc[8](loc2: u256)
+	45: Call decrease_borrow_balance(&mut Storage, u8, address, u256)
+	46: MoveLoc[8](loc2: u256)
+	47: MoveLoc[6](loc0: u256)
+	48: Eq
+	49: BrFalse(54)
+B6:
+	50: CopyLoc[2](Arg2: &mut Storage)
+	51: CopyLoc[3](Arg3: u8)
+	52: CopyLoc[4](Arg4: address)
+	53: Call storage::remove_user_loans(&mut Storage, u8, address)
+B7:
+	54: CopyLoc[2](Arg2: &mut Storage)
+	55: CopyLoc[3](Arg3: u8)
+	56: Call update_interest_rate(&mut Storage, u8)
+	57: MoveLoc[2](Arg2: &mut Storage)
+	58: MoveLoc[3](Arg3: u8)
+	59: MoveLoc[4](Arg4: address)
+	60: Call emit_state_updated_event(&mut Storage, u8, address)
+	61: MoveLoc[7](loc1: u256)
+	62: Ret
+}
+
+public(friend) execute_liquidate<Ty0, Ty1>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: address, Arg4: u8, Arg5: u8, Arg6: u256): u256 * u256 * u256 {
+L7:	loc0: u256
+L8:	loc1: u256
+L9:	loc2: bool
+L10:	loc3: u256
+L11:	loc4: u256
+L12:	loc5: u256
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: CopyLoc[5](Arg5: u8)
+	2: CopyLoc[3](Arg3: address)
+	3: Call is_loan(&mut Storage, u8, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(14)
+B2:
+	6: MoveLoc[2](Arg2: &mut Storage)
+	7: Pop
+	8: MoveLoc[1](Arg1: &PriceOracle)
+	9: Pop
+	10: MoveLoc[0](Arg0: &Clock)
+	11: Pop
+	12: Call error::user_have_no_loan(): u64
+	13: Abort
+B3:
+	14: CopyLoc[2](Arg2: &mut Storage)
+	15: CopyLoc[4](Arg4: u8)
+	16: CopyLoc[3](Arg3: address)
+	17: Call is_collateral(&mut Storage, u8, address): bool
+	18: BrFalse(20)
+B4:
+	19: Branch(28)
+B5:
+	20: MoveLoc[2](Arg2: &mut Storage)
+	21: Pop
+	22: MoveLoc[1](Arg1: &PriceOracle)
+	23: Pop
+	24: MoveLoc[0](Arg0: &Clock)
+	25: Pop
+	26: Call error::user_have_no_collateral(): u64
+	27: Abort
+B6:
+	28: CopyLoc[0](Arg0: &Clock)
+	29: CopyLoc[2](Arg2: &mut Storage)
+	30: CopyLoc[5](Arg5: u8)
+	31: Call update_state(&Clock, &mut Storage, u8)
+	32: CopyLoc[0](Arg0: &Clock)
+	33: CopyLoc[2](Arg2: &mut Storage)
+	34: CopyLoc[4](Arg4: u8)
+	35: Call update_state(&Clock, &mut Storage, u8)
+	36: CopyLoc[0](Arg0: &Clock)
+	37: CopyLoc[2](Arg2: &mut Storage)
+	38: CopyLoc[3](Arg3: address)
+	39: Call update_state_of_user(&Clock, &mut Storage, address)
+	40: CopyLoc[2](Arg2: &mut Storage)
+	41: CopyLoc[5](Arg5: u8)
+	42: CopyLoc[4](Arg4: u8)
+	43: CopyLoc[6](Arg6: u256)
+	44: Call validation::validate_liquidate<Ty0, Ty1>(&mut Storage, u8, u8, u256)
+	45: CopyLoc[0](Arg0: &Clock)
+	46: CopyLoc[1](Arg1: &PriceOracle)
+	47: CopyLoc[2](Arg2: &mut Storage)
+	48: CopyLoc[3](Arg3: address)
+	49: Call is_health(&Clock, &PriceOracle, &mut Storage, address): bool
+	50: Not
+	51: BrFalse(53)
+B7:
+	52: Branch(61)
+B8:
+	53: MoveLoc[2](Arg2: &mut Storage)
+	54: Pop
+	55: MoveLoc[1](Arg1: &PriceOracle)
+	56: Pop
+	57: MoveLoc[0](Arg0: &Clock)
+	58: Pop
+	59: Call error::user_is_healthy(): u64
+	60: Abort
+B9:
+	61: MoveLoc[0](Arg0: &Clock)
+	62: CopyLoc[2](Arg2: &mut Storage)
+	63: MoveLoc[1](Arg1: &PriceOracle)
+	64: CopyLoc[3](Arg3: address)
+	65: CopyLoc[4](Arg4: u8)
+	66: CopyLoc[5](Arg5: u8)
+	67: MoveLoc[6](Arg6: u256)
+	68: Call calculate_liquidation(&Clock, &mut Storage, &PriceOracle, address, u8, u8, u256): u256 * u256 * u256 * u256 * u256 * bool
+	69: StLoc[9](loc2: bool)
+	70: StLoc[8](loc1: u256)
+	71: StLoc[12](loc5: u256)
+	72: StLoc[7](loc0: u256)
+	73: StLoc[11](loc4: u256)
+	74: StLoc[10](loc3: u256)
+	75: CopyLoc[2](Arg2: &mut Storage)
+	76: CopyLoc[5](Arg5: u8)
+	77: CopyLoc[3](Arg3: address)
+	78: MoveLoc[11](loc4: u256)
+	79: Call decrease_borrow_balance(&mut Storage, u8, address, u256)
+	80: CopyLoc[2](Arg2: &mut Storage)
+	81: CopyLoc[4](Arg4: u8)
+	82: CopyLoc[3](Arg3: address)
+	83: CopyLoc[10](loc3: u256)
+	84: CopyLoc[7](loc0: u256)
+	85: Add
+	86: CopyLoc[12](loc5: u256)
+	87: Add
+	88: Call decrease_supply_balance(&mut Storage, u8, address, u256)
+	89: MoveLoc[9](loc2: bool)
+	90: BrFalse(95)
+B10:
+	91: CopyLoc[2](Arg2: &mut Storage)
+	92: CopyLoc[5](Arg5: u8)
+	93: CopyLoc[3](Arg3: address)
+	94: Call storage::remove_user_loans(&mut Storage, u8, address)
+B11:
+	95: CopyLoc[2](Arg2: &mut Storage)
+	96: CopyLoc[4](Arg4: u8)
+	97: Call update_interest_rate(&mut Storage, u8)
+	98: CopyLoc[2](Arg2: &mut Storage)
+	99: CopyLoc[5](Arg5: u8)
+	100: Call update_interest_rate(&mut Storage, u8)
+	101: CopyLoc[2](Arg2: &mut Storage)
+	102: MoveLoc[4](Arg4: u8)
+	103: CopyLoc[3](Arg3: address)
+	104: Call emit_state_updated_event(&mut Storage, u8, address)
+	105: MoveLoc[2](Arg2: &mut Storage)
+	106: MoveLoc[5](Arg5: u8)
+	107: MoveLoc[3](Arg3: address)
+	108: Call emit_state_updated_event(&mut Storage, u8, address)
+	109: MoveLoc[10](loc3: u256)
+	110: MoveLoc[7](loc0: u256)
+	111: Add
+	112: MoveLoc[8](loc1: u256)
+	113: MoveLoc[12](loc5: u256)
+	114: Ret
+}
+
+public(friend) update_state_of_all(Arg0: &Clock, Arg1: &mut Storage) {
+L2:	loc0: u8
+L3:	loc1: u8
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call storage::get_reserves_count(&Storage): u8
+	3: StLoc[2](loc0: u8)
+	4: LdU8(0)
+	5: StLoc[3](loc1: u8)
+B1:
+	6: CopyLoc[3](loc1: u8)
+	7: CopyLoc[2](loc0: u8)
+	8: Lt
+	9: BrFalse(20)
+B2:
+	10: Branch(11)
+B3:
+	11: CopyLoc[0](Arg0: &Clock)
+	12: CopyLoc[1](Arg1: &mut Storage)
+	13: CopyLoc[3](loc1: u8)
+	14: Call update_state(&Clock, &mut Storage, u8)
+	15: MoveLoc[3](loc1: u8)
+	16: LdU8(1)
+	17: Add
+	18: StLoc[3](loc1: u8)
+	19: Branch(6)
+B4:
+	20: MoveLoc[1](Arg1: &mut Storage)
+	21: Pop
+	22: MoveLoc[0](Arg0: &Clock)
+	23: Pop
+	24: Ret
+}
+
+public(friend) update_state_of_user(Arg0: &Clock, Arg1: &mut Storage, Arg2: address) {
+L3:	loc0: address
+L4:	loc1: &u8
+L5:	loc2: &u8
+L6:	loc3: vector<u8>
+L7:	loc4: u64
+L8:	loc5: u64
+L9:	loc6: u64
+L10:	loc7: u64
+L11:	loc8: vector<u8>
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: address)
+	2: StLoc[3](loc0: address)
+	3: FreezeRef
+	4: MoveLoc[3](loc0: address)
+	5: Call storage::get_user_assets(&Storage, address): vector<u8> * vector<u8>
+	6: StLoc[11](loc8: vector<u8>)
+	7: StLoc[6](loc3: vector<u8>)
+	8: ImmBorrowLoc[6](loc3: vector<u8>)
+	9: VecLen(32)
+	10: StLoc[9](loc6: u64)
+	11: LdU64(0)
+	12: StLoc[7](loc4: u64)
+B1:
+	13: CopyLoc[7](loc4: u64)
+	14: CopyLoc[9](loc6: u64)
+	15: Lt
+	16: BrFalse(32)
+B2:
+	17: Branch(18)
+B3:
+	18: ImmBorrowLoc[6](loc3: vector<u8>)
+	19: CopyLoc[7](loc4: u64)
+	20: VecImmBorrow(32)
+	21: StLoc[4](loc1: &u8)
+	22: CopyLoc[0](Arg0: &Clock)
+	23: CopyLoc[1](Arg1: &mut Storage)
+	24: MoveLoc[4](loc1: &u8)
+	25: ReadRef
+	26: Call update_state(&Clock, &mut Storage, u8)
+	27: MoveLoc[7](loc4: u64)
+	28: LdU64(1)
+	29: Add
+	30: StLoc[7](loc4: u64)
+	31: Branch(13)
+B4:
+	32: ImmBorrowLoc[11](loc8: vector<u8>)
+	33: VecLen(32)
+	34: StLoc[10](loc7: u64)
+	35: LdU64(0)
+	36: StLoc[8](loc5: u64)
+B5:
+	37: CopyLoc[8](loc5: u64)
+	38: CopyLoc[10](loc7: u64)
+	39: Lt
+	40: BrFalse(56)
+B6:
+	41: Branch(42)
+B7:
+	42: ImmBorrowLoc[11](loc8: vector<u8>)
+	43: CopyLoc[8](loc5: u64)
+	44: VecImmBorrow(32)
+	45: StLoc[5](loc2: &u8)
+	46: CopyLoc[0](Arg0: &Clock)
+	47: CopyLoc[1](Arg1: &mut Storage)
+	48: MoveLoc[5](loc2: &u8)
+	49: ReadRef
+	50: Call update_state(&Clock, &mut Storage, u8)
+	51: MoveLoc[8](loc5: u64)
+	52: LdU64(1)
+	53: Add
+	54: StLoc[8](loc5: u64)
+	55: Branch(37)
+B8:
+	56: MoveLoc[1](Arg1: &mut Storage)
+	57: Pop
+	58: MoveLoc[0](Arg0: &Clock)
+	59: Pop
+	60: Ret
+}
+
+update_state(Arg0: &Clock, Arg1: &mut Storage, Arg2: u8) {
+L3:	loc0: u8
+L4:	loc1: u256
+L5:	loc2: u256
+L6:	loc3: u256
+L7:	loc4: u256
+L8:	loc5: u64
+L9:	loc6: u64
+L10:	loc7: u256
+L11:	loc8: u256
+L12:	loc9: u256
+L13:	loc10: u256
+L14:	loc11: u256
+L15:	loc12: u256
+B0:
+	0: MoveLoc[0](Arg0: &Clock)
+	1: Call clock::timestamp_ms(&Clock): u64
+	2: StLoc[8](loc5: u64)
+	3: CopyLoc[1](Arg1: &mut Storage)
+	4: CopyLoc[2](Arg2: u8)
+	5: StLoc[3](loc0: u8)
+	6: FreezeRef
+	7: MoveLoc[3](loc0: u8)
+	8: Call storage::get_last_update_timestamp(&Storage, u8): u64
+	9: StLoc[9](loc6: u64)
+	10: CopyLoc[8](loc5: u64)
+	11: MoveLoc[9](loc6: u64)
+	12: Sub
+	13: CastU256
+	14: LdU256(1000)
+	15: Div
+	16: StLoc[14](loc11: u256)
+	17: CopyLoc[1](Arg1: &mut Storage)
+	18: CopyLoc[2](Arg2: u8)
+	19: Call storage::get_index(&mut Storage, u8): u256 * u256
+	20: StLoc[4](loc1: u256)
+	21: StLoc[6](loc3: u256)
+	22: CopyLoc[1](Arg1: &mut Storage)
+	23: CopyLoc[2](Arg2: u8)
+	24: Call storage::get_current_rate(&mut Storage, u8): u256 * u256
+	25: StLoc[5](loc2: u256)
+	26: StLoc[7](loc4: u256)
+	27: CopyLoc[1](Arg1: &mut Storage)
+	28: CopyLoc[2](Arg2: u8)
+	29: Call storage::get_borrow_rate_factors(&mut Storage, u8): u256 * u256 * u256 * u256 * u256
+	30: Pop
+	31: StLoc[12](loc9: u256)
+	32: Pop
+	33: Pop
+	34: Pop
+	35: CopyLoc[1](Arg1: &mut Storage)
+	36: CopyLoc[2](Arg2: u8)
+	37: Call storage::get_total_supply(&mut Storage, u8): u256 * u256
+	38: StLoc[15](loc12: u256)
+	39: Pop
+	40: CopyLoc[14](loc11: u256)
+	41: MoveLoc[7](loc4: u256)
+	42: Call calculator::calculate_linear_interest(u256, u256): u256
+	43: MoveLoc[6](loc3: u256)
+	44: Call ray_math::ray_mul(u256, u256): u256
+	45: StLoc[11](loc8: u256)
+	46: MoveLoc[14](loc11: u256)
+	47: MoveLoc[5](loc2: u256)
+	48: Call calculator::calculate_compounded_interest(u256, u256): u256
+	49: CopyLoc[4](loc1: u256)
+	50: Call ray_math::ray_mul(u256, u256): u256
+	51: StLoc[10](loc7: u256)
+	52: MoveLoc[15](loc12: u256)
+	53: CopyLoc[10](loc7: u256)
+	54: MoveLoc[4](loc1: u256)
+	55: Sub
+	56: Call ray_math::ray_mul(u256, u256): u256
+	57: MoveLoc[12](loc9: u256)
+	58: Call ray_math::ray_mul(u256, u256): u256
+	59: CopyLoc[11](loc8: u256)
+	60: Call ray_math::ray_div(u256, u256): u256
+	61: StLoc[13](loc10: u256)
+	62: CopyLoc[1](Arg1: &mut Storage)
+	63: CopyLoc[2](Arg2: u8)
+	64: MoveLoc[10](loc7: u256)
+	65: MoveLoc[11](loc8: u256)
+	66: MoveLoc[8](loc5: u64)
+	67: CopyLoc[13](loc10: u256)
+	68: Call storage::update_state(&mut Storage, u8, u256, u256, u64, u256)
+	69: MoveLoc[1](Arg1: &mut Storage)
+	70: MoveLoc[2](Arg2: u8)
+	71: MoveLoc[13](loc10: u256)
+	72: Call storage::increase_total_supply_balance(&mut Storage, u8, u256)
+	73: Ret
+}
+
+public(friend) update_interest_rate(Arg0: &mut Storage, Arg1: u8) {
+L2:	loc0: u256
+L3:	loc1: u256
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[1](Arg1: u8)
+	2: Call calculator::calculate_borrow_rate(&mut Storage, u8): u256
+	3: StLoc[2](loc0: u256)
+	4: CopyLoc[0](Arg0: &mut Storage)
+	5: CopyLoc[1](Arg1: u8)
+	6: CopyLoc[2](loc0: u256)
+	7: Call calculator::calculate_supply_rate(&mut Storage, u8, u256): u256
+	8: StLoc[3](loc1: u256)
+	9: MoveLoc[0](Arg0: &mut Storage)
+	10: MoveLoc[1](Arg1: u8)
+	11: MoveLoc[2](loc0: u256)
+	12: MoveLoc[3](loc1: u256)
+	13: Call storage::update_interest_rate(&mut Storage, u8, u256, u256)
+	14: Ret
+}
+
+public(friend) cumulate_to_supply_index(Arg0: &mut Storage, Arg1: u8, Arg2: u256) {
+L3:	loc0: u8
+L4:	loc1: u256
+L5:	loc2: u64
+L6:	loc3: u256
+L7:	loc4: u256
+L8:	loc5: u256
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[1](Arg1: u8)
+	2: Call storage::get_total_supply(&mut Storage, u8): u256 * u256
+	3: Pop
+	4: StLoc[8](loc5: u256)
+	5: CopyLoc[0](Arg0: &mut Storage)
+	6: CopyLoc[1](Arg1: u8)
+	7: Call storage::get_index(&mut Storage, u8): u256 * u256
+	8: StLoc[4](loc1: u256)
+	9: StLoc[7](loc4: u256)
+	10: CopyLoc[0](Arg0: &mut Storage)
+	11: CopyLoc[1](Arg1: u8)
+	12: StLoc[3](loc0: u8)
+	13: FreezeRef
+	14: MoveLoc[3](loc0: u8)
+	15: Call storage::get_last_update_timestamp(&Storage, u8): u64
+	16: StLoc[5](loc2: u64)
+	17: MoveLoc[2](Arg2: u256)
+	18: MoveLoc[8](loc5: u256)
+	19: Call ray_math::ray_div(u256, u256): u256
+	20: Call ray_math::ray(): u256
+	21: Add
+	22: MoveLoc[7](loc4: u256)
+	23: Call ray_math::ray_mul(u256, u256): u256
+	24: StLoc[6](loc3: u256)
+	25: CopyLoc[0](Arg0: &mut Storage)
+	26: CopyLoc[1](Arg1: u8)
+	27: MoveLoc[4](loc1: u256)
+	28: MoveLoc[6](loc3: u256)
+	29: MoveLoc[5](loc2: u64)
+	30: LdU256(0)
+	31: Call storage::update_state(&mut Storage, u8, u256, u256, u64, u256)
+	32: MoveLoc[0](Arg0: &mut Storage)
+	33: MoveLoc[1](Arg1: u8)
+	34: LdConst[0](address: 0x00..)
+	35: Call emit_state_updated_event(&mut Storage, u8, address)
+	36: Ret
+}
+
+increase_supply_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address, Arg3: u256) {
+L4:	loc0: u256
+L5:	loc1: u256
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[1](Arg1: u8)
+	2: Call storage::get_index(&mut Storage, u8): u256 * u256
+	3: Pop
+	4: StLoc[5](loc1: u256)
+	5: MoveLoc[3](Arg3: u256)
+	6: MoveLoc[5](loc1: u256)
+	7: Call ray_math::ray_div(u256, u256): u256
+	8: StLoc[4](loc0: u256)
+	9: MoveLoc[0](Arg0: &mut Storage)
+	10: MoveLoc[1](Arg1: u8)
+	11: MoveLoc[2](Arg2: address)
+	12: MoveLoc[4](loc0: u256)
+	13: Call storage::increase_supply_balance(&mut Storage, u8, address, u256)
+	14: Ret
+}
+
+decrease_supply_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address, Arg3: u256) {
+L4:	loc0: u256
+L5:	loc1: u256
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[1](Arg1: u8)
+	2: Call storage::get_index(&mut Storage, u8): u256 * u256
+	3: Pop
+	4: StLoc[5](loc1: u256)
+	5: MoveLoc[3](Arg3: u256)
+	6: MoveLoc[5](loc1: u256)
+	7: Call ray_math::ray_div(u256, u256): u256
+	8: StLoc[4](loc0: u256)
+	9: MoveLoc[0](Arg0: &mut Storage)
+	10: MoveLoc[1](Arg1: u8)
+	11: MoveLoc[2](Arg2: address)
+	12: MoveLoc[4](loc0: u256)
+	13: Call storage::decrease_supply_balance(&mut Storage, u8, address, u256)
+	14: Ret
+}
+
+increase_borrow_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address, Arg3: u256) {
+L4:	loc0: u256
+L5:	loc1: u256
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[1](Arg1: u8)
+	2: Call storage::get_index(&mut Storage, u8): u256 * u256
+	3: StLoc[4](loc0: u256)
+	4: Pop
+	5: MoveLoc[3](Arg3: u256)
+	6: MoveLoc[4](loc0: u256)
+	7: Call ray_math::ray_div(u256, u256): u256
+	8: StLoc[5](loc1: u256)
+	9: MoveLoc[0](Arg0: &mut Storage)
+	10: MoveLoc[1](Arg1: u8)
+	11: MoveLoc[2](Arg2: address)
+	12: MoveLoc[5](loc1: u256)
+	13: Call storage::increase_borrow_balance(&mut Storage, u8, address, u256)
+	14: Ret
+}
+
+decrease_borrow_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address, Arg3: u256) {
+L4:	loc0: u256
+L5:	loc1: u256
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[1](Arg1: u8)
+	2: Call storage::get_index(&mut Storage, u8): u256 * u256
+	3: StLoc[4](loc0: u256)
+	4: Pop
+	5: MoveLoc[3](Arg3: u256)
+	6: MoveLoc[4](loc0: u256)
+	7: Call ray_math::ray_div(u256, u256): u256
+	8: StLoc[5](loc1: u256)
+	9: MoveLoc[0](Arg0: &mut Storage)
+	10: MoveLoc[1](Arg1: u8)
+	11: MoveLoc[2](Arg2: address)
+	12: MoveLoc[5](loc1: u256)
+	13: Call storage::decrease_borrow_balance(&mut Storage, u8, address, u256)
+	14: Ret
+}
+
+public is_health(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: address): bool {
+B0:
+	0: MoveLoc[0](Arg0: &Clock)
+	1: MoveLoc[2](Arg2: &mut Storage)
+	2: MoveLoc[1](Arg1: &PriceOracle)
+	3: MoveLoc[3](Arg3: address)
+	4: Call user_health_factor(&Clock, &mut Storage, &PriceOracle, address): u256
+	5: Call ray_math::ray(): u256
+	6: Ge
+	7: Ret
+}
+
+public user_health_factor_batch(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: vector<address>): vector<u256> {
+L4:	loc0: u256
+L5:	loc1: u64
+L6:	loc2: u64
+L7:	loc3: vector<u256>
+B0:
+	0: ImmBorrowLoc[3](Arg3: vector<address>)
+	1: VecLen(44)
+	2: StLoc[6](loc2: u64)
+	3: LdU64(0)
+	4: StLoc[5](loc1: u64)
+	5: VecPack(4, 0)
+	6: StLoc[7](loc3: vector<u256>)
+B1:
+	7: CopyLoc[5](loc1: u64)
+	8: CopyLoc[6](loc2: u64)
+	9: Lt
+	10: BrFalse(29)
+B2:
+	11: Branch(12)
+B3:
+	12: CopyLoc[0](Arg0: &Clock)
+	13: CopyLoc[2](Arg2: &mut Storage)
+	14: CopyLoc[1](Arg1: &PriceOracle)
+	15: ImmBorrowLoc[3](Arg3: vector<address>)
+	16: CopyLoc[5](loc1: u64)
+	17: VecImmBorrow(44)
+	18: ReadRef
+	19: Call user_health_factor(&Clock, &mut Storage, &PriceOracle, address): u256
+	20: StLoc[4](loc0: u256)
+	21: MutBorrowLoc[7](loc3: vector<u256>)
+	22: MoveLoc[4](loc0: u256)
+	23: VecPushBack(4)
+	24: MoveLoc[5](loc1: u64)
+	25: LdU64(1)
+	26: Add
+	27: StLoc[5](loc1: u64)
+	28: Branch(7)
+B4:
+	29: MoveLoc[2](Arg2: &mut Storage)
+	30: Pop
+	31: MoveLoc[1](Arg1: &PriceOracle)
+	32: Pop
+	33: MoveLoc[0](Arg0: &Clock)
+	34: Pop
+	35: MoveLoc[7](loc3: vector<u256>)
+	36: Ret
+}
+
+public user_health_factor(Arg0: &Clock, Arg1: &mut Storage, Arg2: &PriceOracle, Arg3: address): u256 {
+L4:	loc0: u256
+L5:	loc1: u256
+L6:	loc2: u256
+L7:	loc3: u256
+B0:
+	0: CopyLoc[0](Arg0: &Clock)
+	1: CopyLoc[2](Arg2: &PriceOracle)
+	2: CopyLoc[1](Arg1: &mut Storage)
+	3: CopyLoc[3](Arg3: address)
+	4: Call user_health_collateral_value(&Clock, &PriceOracle, &mut Storage, address): u256
+	5: StLoc[6](loc2: u256)
+	6: CopyLoc[0](Arg0: &Clock)
+	7: CopyLoc[1](Arg1: &mut Storage)
+	8: CopyLoc[2](Arg2: &PriceOracle)
+	9: CopyLoc[3](Arg3: address)
+	10: Call dynamic_liquidation_threshold(&Clock, &mut Storage, &PriceOracle, address): u256
+	11: StLoc[5](loc1: u256)
+	12: MoveLoc[0](Arg0: &Clock)
+	13: MoveLoc[2](Arg2: &PriceOracle)
+	14: MoveLoc[1](Arg1: &mut Storage)
+	15: MoveLoc[3](Arg3: address)
+	16: Call weighted_user_health_loan_value(&Clock, &PriceOracle, &mut Storage, address): u256
+	17: StLoc[7](loc3: u256)
+	18: CopyLoc[7](loc3: u256)
+	19: LdU256(0)
+	20: Gt
+	21: BrFalse(29)
+B1:
+	22: MoveLoc[6](loc2: u256)
+	23: MoveLoc[7](loc3: u256)
+	24: Call ray_math::ray_div(u256, u256): u256
+	25: MoveLoc[5](loc1: u256)
+	26: Call ray_math::ray_mul(u256, u256): u256
+	27: StLoc[4](loc0: u256)
+	28: Branch(31)
+B2:
+	29: Call address::max(): u256
+	30: StLoc[4](loc0: u256)
+B3:
+	31: MoveLoc[4](loc0: u256)
+	32: Ret
+}
+
+public dynamic_liquidation_threshold(Arg0: &Clock, Arg1: &mut Storage, Arg2: &PriceOracle, Arg3: address): u256 {
+L4:	loc0: address
+L5:	loc1: address
+L6:	loc2: address
+L7:	loc3: u64
+L8:	loc4: u8
+L9:	loc5: &u8
+L10:	loc6: u256
+L11:	loc7: u256
+L12:	loc8: vector<u8>
+L13:	loc9: u64
+L14:	loc10: u64
+L15:	loc11: bool
+L16:	loc12: u64
+L17:	loc13: u256
+L18:	loc14: u256
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: CopyLoc[3](Arg3: address)
+	2: StLoc[4](loc0: address)
+	3: FreezeRef
+	4: MoveLoc[4](loc0: address)
+	5: Call storage::get_user_assets(&Storage, address): vector<u8> * vector<u8>
+	6: Pop
+	7: StLoc[12](loc8: vector<u8>)
+	8: ImmBorrowLoc[12](loc8: vector<u8>)
+	9: VecLen(32)
+	10: StLoc[16](loc12: u64)
+	11: LdU64(0)
+	12: StLoc[14](loc10: u64)
+	13: CopyLoc[1](Arg1: &mut Storage)
+	14: CopyLoc[3](Arg3: address)
+	15: StLoc[5](loc1: address)
+	16: FreezeRef
+	17: MoveLoc[5](loc1: address)
+	18: Call storage::is_in_emode(&Storage, address): bool
+	19: StLoc[15](loc11: bool)
+	20: LdU256(0)
+	21: StLoc[11](loc7: u256)
+	22: LdU256(0)
+	23: StLoc[10](loc6: u256)
+B1:
+	24: CopyLoc[14](loc10: u64)
+	25: CopyLoc[16](loc12: u64)
+	26: Lt
+	27: BrFalse(85)
+B2:
+	28: Branch(29)
+B3:
+	29: ImmBorrowLoc[12](loc8: vector<u8>)
+	30: CopyLoc[14](loc10: u64)
+	31: VecImmBorrow(32)
+	32: StLoc[9](loc5: &u8)
+	33: CopyLoc[1](Arg1: &mut Storage)
+	34: CopyLoc[9](loc5: &u8)
+	35: ReadRef
+	36: Call storage::get_liquidation_factors(&mut Storage, u8): u256 * u256 * u256
+	37: StLoc[17](loc13: u256)
+	38: Pop
+	39: Pop
+	40: CopyLoc[15](loc11: bool)
+	41: BrFalse(62)
+B4:
+	42: CopyLoc[1](Arg1: &mut Storage)
+	43: CopyLoc[3](Arg3: address)
+	44: StLoc[6](loc2: address)
+	45: FreezeRef
+	46: MoveLoc[6](loc2: address)
+	47: Call storage::get_user_emode_id(&Storage, address): u64
+	48: StLoc[13](loc9: u64)
+	49: CopyLoc[1](Arg1: &mut Storage)
+	50: MoveLoc[13](loc9: u64)
+	51: CopyLoc[9](loc5: &u8)
+	52: ReadRef
+	53: StLoc[8](loc4: u8)
+	54: StLoc[7](loc3: u64)
+	55: FreezeRef
+	56: MoveLoc[7](loc3: u64)
+	57: MoveLoc[8](loc4: u8)
+	58: Call storage::get_emode_asset_info(&Storage, u64, u8): u256 * u256 * u256
+	59: Pop
+	60: StLoc[17](loc13: u256)
+	61: Pop
+B5:
+	62: CopyLoc[0](Arg0: &Clock)
+	63: CopyLoc[2](Arg2: &PriceOracle)
+	64: CopyLoc[1](Arg1: &mut Storage)
+	65: MoveLoc[9](loc5: &u8)
+	66: ReadRef
+	67: CopyLoc[3](Arg3: address)
+	68: Call user_collateral_value(&Clock, &PriceOracle, &mut Storage, u8, address): u256
+	69: StLoc[18](loc14: u256)
+	70: MoveLoc[10](loc6: u256)
+	71: CopyLoc[18](loc14: u256)
+	72: MoveLoc[17](loc13: u256)
+	73: Call ray_math::ray_mul(u256, u256): u256
+	74: Add
+	75: StLoc[10](loc6: u256)
+	76: MoveLoc[11](loc7: u256)
+	77: MoveLoc[18](loc14: u256)
+	78: Add
+	79: StLoc[11](loc7: u256)
+	80: MoveLoc[14](loc10: u64)
+	81: LdU64(1)
+	82: Add
+	83: StLoc[14](loc10: u64)
+	84: Branch(24)
+B6:
+	85: MoveLoc[1](Arg1: &mut Storage)
+	86: Pop
+	87: MoveLoc[2](Arg2: &PriceOracle)
+	88: Pop
+	89: MoveLoc[0](Arg0: &Clock)
+	90: Pop
+	91: CopyLoc[11](loc7: u256)
+	92: LdU256(0)
+	93: Gt
+	94: BrFalse(99)
+B7:
+	95: MoveLoc[10](loc6: u256)
+	96: MoveLoc[11](loc7: u256)
+	97: Call ray_math::ray_div(u256, u256): u256
+	98: Ret
+B8:
+	99: LdU256(0)
+	100: Ret
+}
+
+public user_health_collateral_value(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: address): u256 {
+L4:	loc0: address
+L5:	loc1: &u8
+L6:	loc2: u256
+L7:	loc3: vector<u8>
+L8:	loc4: u64
+L9:	loc5: u64
+L10:	loc6: u256
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: CopyLoc[3](Arg3: address)
+	2: StLoc[4](loc0: address)
+	3: FreezeRef
+	4: MoveLoc[4](loc0: address)
+	5: Call storage::get_user_assets(&Storage, address): vector<u8> * vector<u8>
+	6: Pop
+	7: StLoc[7](loc3: vector<u8>)
+	8: ImmBorrowLoc[7](loc3: vector<u8>)
+	9: VecLen(32)
+	10: StLoc[9](loc5: u64)
+	11: LdU256(0)
+	12: StLoc[10](loc6: u256)
+	13: LdU64(0)
+	14: StLoc[8](loc4: u64)
+B1:
+	15: CopyLoc[8](loc4: u64)
+	16: CopyLoc[9](loc5: u64)
+	17: Lt
+	18: BrFalse(41)
+B2:
+	19: Branch(20)
+B3:
+	20: ImmBorrowLoc[7](loc3: vector<u8>)
+	21: CopyLoc[8](loc4: u64)
+	22: VecImmBorrow(32)
+	23: StLoc[5](loc1: &u8)
+	24: CopyLoc[0](Arg0: &Clock)
+	25: CopyLoc[1](Arg1: &PriceOracle)
+	26: CopyLoc[2](Arg2: &mut Storage)
+	27: MoveLoc[5](loc1: &u8)
+	28: ReadRef
+	29: CopyLoc[3](Arg3: address)
+	30: Call user_collateral_value(&Clock, &PriceOracle, &mut Storage, u8, address): u256
+	31: StLoc[6](loc2: u256)
+	32: MoveLoc[10](loc6: u256)
+	33: MoveLoc[6](loc2: u256)
+	34: Add
+	35: StLoc[10](loc6: u256)
+	36: MoveLoc[8](loc4: u64)
+	37: LdU64(1)
+	38: Add
+	39: StLoc[8](loc4: u64)
+	40: Branch(15)
+B4:
+	41: MoveLoc[2](Arg2: &mut Storage)
+	42: Pop
+	43: MoveLoc[1](Arg1: &PriceOracle)
+	44: Pop
+	45: MoveLoc[0](Arg0: &Clock)
+	46: Pop
+	47: MoveLoc[10](loc6: u256)
+	48: Ret
+}
+
+public user_health_loan_value(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: address): u256 {
+L4:	loc0: address
+L5:	loc1: &u8
+L6:	loc2: u64
+L7:	loc3: u64
+L8:	loc4: u256
+L9:	loc5: vector<u8>
+L10:	loc6: u256
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: CopyLoc[3](Arg3: address)
+	2: StLoc[4](loc0: address)
+	3: FreezeRef
+	4: MoveLoc[4](loc0: address)
+	5: Call storage::get_user_assets(&Storage, address): vector<u8> * vector<u8>
+	6: StLoc[9](loc5: vector<u8>)
+	7: Pop
+	8: ImmBorrowLoc[9](loc5: vector<u8>)
+	9: VecLen(32)
+	10: StLoc[7](loc3: u64)
+	11: LdU256(0)
+	12: StLoc[10](loc6: u256)
+	13: LdU64(0)
+	14: StLoc[6](loc2: u64)
+B1:
+	15: CopyLoc[6](loc2: u64)
+	16: CopyLoc[7](loc3: u64)
+	17: Lt
+	18: BrFalse(41)
+B2:
+	19: Branch(20)
+B3:
+	20: ImmBorrowLoc[9](loc5: vector<u8>)
+	21: CopyLoc[6](loc2: u64)
+	22: VecImmBorrow(32)
+	23: StLoc[5](loc1: &u8)
+	24: CopyLoc[0](Arg0: &Clock)
+	25: CopyLoc[1](Arg1: &PriceOracle)
+	26: CopyLoc[2](Arg2: &mut Storage)
+	27: MoveLoc[5](loc1: &u8)
+	28: ReadRef
+	29: CopyLoc[3](Arg3: address)
+	30: Call user_loan_value(&Clock, &PriceOracle, &mut Storage, u8, address): u256
+	31: StLoc[8](loc4: u256)
+	32: MoveLoc[10](loc6: u256)
+	33: MoveLoc[8](loc4: u256)
+	34: Add
+	35: StLoc[10](loc6: u256)
+	36: MoveLoc[6](loc2: u64)
+	37: LdU64(1)
+	38: Add
+	39: StLoc[6](loc2: u64)
+	40: Branch(15)
+B4:
+	41: MoveLoc[2](Arg2: &mut Storage)
+	42: Pop
+	43: MoveLoc[1](Arg1: &PriceOracle)
+	44: Pop
+	45: MoveLoc[0](Arg0: &Clock)
+	46: Pop
+	47: MoveLoc[10](loc6: u256)
+	48: Ret
+}
+
+public weighted_user_health_loan_value(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: address): u256 {
+L4:	loc0: address
+L5:	loc1: u8
+L6:	loc2: &u8
+L7:	loc3: u64
+L8:	loc4: u64
+L9:	loc5: u64
+L10:	loc6: u256
+L11:	loc7: vector<u8>
+L12:	loc8: u256
+L13:	loc9: u256
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: CopyLoc[3](Arg3: address)
+	2: StLoc[4](loc0: address)
+	3: FreezeRef
+	4: MoveLoc[4](loc0: address)
+	5: Call storage::get_user_assets(&Storage, address): vector<u8> * vector<u8>
+	6: StLoc[11](loc7: vector<u8>)
+	7: Pop
+	8: ImmBorrowLoc[11](loc7: vector<u8>)
+	9: VecLen(32)
+	10: StLoc[9](loc5: u64)
+	11: LdU256(0)
+	12: StLoc[13](loc9: u256)
+	13: LdU64(0)
+	14: StLoc[8](loc4: u64)
+B1:
+	15: CopyLoc[8](loc4: u64)
+	16: CopyLoc[9](loc5: u64)
+	17: Lt
+	18: BrFalse(57)
+B2:
+	19: Branch(20)
+B3:
+	20: ImmBorrowLoc[11](loc7: vector<u8>)
+	21: CopyLoc[8](loc4: u64)
+	22: VecImmBorrow(32)
+	23: StLoc[6](loc2: &u8)
+	24: CopyLoc[0](Arg0: &Clock)
+	25: CopyLoc[1](Arg1: &PriceOracle)
+	26: CopyLoc[2](Arg2: &mut Storage)
+	27: CopyLoc[6](loc2: &u8)
+	28: ReadRef
+	29: CopyLoc[3](Arg3: address)
+	30: Call user_loan_value(&Clock, &PriceOracle, &mut Storage, u8, address): u256
+	31: StLoc[10](loc6: u256)
+	32: CopyLoc[2](Arg2: &mut Storage)
+	33: MoveLoc[6](loc2: &u8)
+	34: ReadRef
+	35: StLoc[5](loc1: u8)
+	36: FreezeRef
+	37: MoveLoc[5](loc1: u8)
+	38: Call storage::get_borrow_weight(&Storage, u8): u64
+	39: StLoc[7](loc3: u64)
+	40: MoveLoc[10](loc6: u256)
+	41: MoveLoc[7](loc3: u64)
+	42: CastU256
+	43: Mul
+	44: Call constants::percentage_benchmark(): u64
+	45: CastU256
+	46: Div
+	47: StLoc[12](loc8: u256)
+	48: MoveLoc[13](loc9: u256)
+	49: MoveLoc[12](loc8: u256)
+	50: Add
+	51: StLoc[13](loc9: u256)
+	52: MoveLoc[8](loc4: u64)
+	53: LdU64(1)
+	54: Add
+	55: StLoc[8](loc4: u64)
+	56: Branch(15)
+B4:
+	57: MoveLoc[2](Arg2: &mut Storage)
+	58: Pop
+	59: MoveLoc[1](Arg1: &PriceOracle)
+	60: Pop
+	61: MoveLoc[0](Arg0: &Clock)
+	62: Pop
+	63: MoveLoc[13](loc9: u256)
+	64: Ret
+}
+
+public user_loan_value(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: u8, Arg4: address): u256 {
+L5:	loc0: u8
+L6:	loc1: u256
+L7:	loc2: u8
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: CopyLoc[3](Arg3: u8)
+	2: MoveLoc[4](Arg4: address)
+	3: Call user_loan_balance(&mut Storage, u8, address): u256
+	4: StLoc[6](loc1: u256)
+	5: MoveLoc[2](Arg2: &mut Storage)
+	6: MoveLoc[3](Arg3: u8)
+	7: StLoc[5](loc0: u8)
+	8: FreezeRef
+	9: MoveLoc[5](loc0: u8)
+	10: Call storage::get_oracle_id(&Storage, u8): u8
+	11: StLoc[7](loc2: u8)
+	12: MoveLoc[0](Arg0: &Clock)
+	13: MoveLoc[1](Arg1: &PriceOracle)
+	14: MoveLoc[6](loc1: u256)
+	15: MoveLoc[7](loc2: u8)
+	16: Call calculator::calculate_value(&Clock, &PriceOracle, u256, u8): u256
+	17: Ret
+}
+
+public user_collateral_value(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: u8, Arg4: address): u256 {
+L5:	loc0: u8
+L6:	loc1: u256
+L7:	loc2: u8
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: CopyLoc[3](Arg3: u8)
+	2: MoveLoc[4](Arg4: address)
+	3: Call user_collateral_balance(&mut Storage, u8, address): u256
+	4: StLoc[6](loc1: u256)
+	5: MoveLoc[2](Arg2: &mut Storage)
+	6: MoveLoc[3](Arg3: u8)
+	7: StLoc[5](loc0: u8)
+	8: FreezeRef
+	9: MoveLoc[5](loc0: u8)
+	10: Call storage::get_oracle_id(&Storage, u8): u8
+	11: StLoc[7](loc2: u8)
+	12: MoveLoc[0](Arg0: &Clock)
+	13: MoveLoc[1](Arg1: &PriceOracle)
+	14: MoveLoc[6](loc1: u256)
+	15: MoveLoc[7](loc2: u8)
+	16: Call calculator::calculate_value(&Clock, &PriceOracle, u256, u8): u256
+	17: Ret
+}
+
+public user_collateral_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address): u256 {
+L3:	loc0: u256
+L4:	loc1: u256
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[1](Arg1: u8)
+	2: MoveLoc[2](Arg2: address)
+	3: Call storage::get_user_balance(&mut Storage, u8, address): u256 * u256
+	4: Pop
+	5: StLoc[3](loc0: u256)
+	6: MoveLoc[0](Arg0: &mut Storage)
+	7: MoveLoc[1](Arg1: u8)
+	8: Call storage::get_index(&mut Storage, u8): u256 * u256
+	9: Pop
+	10: StLoc[4](loc1: u256)
+	11: MoveLoc[3](loc0: u256)
+	12: MoveLoc[4](loc1: u256)
+	13: Call ray_math::ray_mul(u256, u256): u256
+	14: Ret
+}
+
+public user_loan_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address): u256 {
+L3:	loc0: u256
+L4:	loc1: u256
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[1](Arg1: u8)
+	2: MoveLoc[2](Arg2: address)
+	3: Call storage::get_user_balance(&mut Storage, u8, address): u256 * u256
+	4: StLoc[3](loc0: u256)
+	5: Pop
+	6: MoveLoc[0](Arg0: &mut Storage)
+	7: MoveLoc[1](Arg1: u8)
+	8: Call storage::get_index(&mut Storage, u8): u256 * u256
+	9: StLoc[4](loc1: u256)
+	10: Pop
+	11: MoveLoc[3](loc0: u256)
+	12: MoveLoc[4](loc1: u256)
+	13: Call ray_math::ray_mul(u256, u256): u256
+	14: Ret
+}
+
+public is_collateral(Arg0: &mut Storage, Arg1: u8, Arg2: address): bool {
+L3:	loc0: address
+L4:	loc1: vector<u8>
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: MoveLoc[2](Arg2: address)
+	2: StLoc[3](loc0: address)
+	3: FreezeRef
+	4: MoveLoc[3](loc0: address)
+	5: Call storage::get_user_assets(&Storage, address): vector<u8> * vector<u8>
+	6: Pop
+	7: StLoc[4](loc1: vector<u8>)
+	8: ImmBorrowLoc[4](loc1: vector<u8>)
+	9: ImmBorrowLoc[1](Arg1: u8)
+	10: Call vector::contains<u8>(&vector<u8>, &u8): bool
+	11: Ret
+}
+
+public is_loan(Arg0: &mut Storage, Arg1: u8, Arg2: address): bool {
+L3:	loc0: address
+L4:	loc1: vector<u8>
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: MoveLoc[2](Arg2: address)
+	2: StLoc[3](loc0: address)
+	3: FreezeRef
+	4: MoveLoc[3](loc0: address)
+	5: Call storage::get_user_assets(&Storage, address): vector<u8> * vector<u8>
+	6: StLoc[4](loc1: vector<u8>)
+	7: Pop
+	8: ImmBorrowLoc[4](loc1: vector<u8>)
+	9: ImmBorrowLoc[1](Arg1: u8)
+	10: Call vector::contains<u8>(&vector<u8>, &u8): bool
+	11: Ret
+}
+
+calculate_liquidation(Arg0: &Clock, Arg1: &mut Storage, Arg2: &PriceOracle, Arg3: address, Arg4: u8, Arg5: u8, Arg6: u256): u256 * u256 * u256 * u256 * u256 * bool {
+L7:	loc0: u8
+L8:	loc1: address
+L9:	loc2: address
+L10:	loc3: u64
+L11:	loc4: u8
+L12:	loc5: u8
+L13:	loc6: u8
+L14:	loc7: u256
+L15:	loc8: u8
+L16:	loc9: u64
+L17:	loc10: u256
+L18:	loc11: u256
+L19:	loc12: u256
+L20:	loc13: u256
+L21:	loc14: bool
+L22:	loc15: bool
+L23:	loc16: u256
+L24:	loc17: u256
+L25:	loc18: u256
+L26:	loc19: u256
+L27:	loc20: u256
+L28:	loc21: u256
+L29:	loc22: u256
+L30:	loc23: u256
+L31:	loc24: u256
+L32:	loc25: u256
+L33:	loc26: u256
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: CopyLoc[3](Arg3: address)
+	2: StLoc[8](loc1: address)
+	3: FreezeRef
+	4: MoveLoc[8](loc1: address)
+	5: Call storage::is_in_emode(&Storage, address): bool
+	6: StLoc[21](loc14: bool)
+	7: CopyLoc[1](Arg1: &mut Storage)
+	8: CopyLoc[4](Arg4: u8)
+	9: Call storage::get_liquidation_factors(&mut Storage, u8): u256 * u256 * u256
+	10: Pop
+	11: StLoc[24](loc17: u256)
+	12: StLoc[25](loc18: u256)
+	13: MoveLoc[21](loc14: bool)
+	14: BrFalse(34)
+B1:
+	15: CopyLoc[1](Arg1: &mut Storage)
+	16: CopyLoc[3](Arg3: address)
+	17: StLoc[9](loc2: address)
+	18: FreezeRef
+	19: MoveLoc[9](loc2: address)
+	20: Call storage::get_user_emode_id(&Storage, address): u64
+	21: StLoc[16](loc9: u64)
+	22: CopyLoc[1](Arg1: &mut Storage)
+	23: MoveLoc[16](loc9: u64)
+	24: CopyLoc[4](Arg4: u8)
+	25: StLoc[11](loc4: u8)
+	26: StLoc[10](loc3: u64)
+	27: FreezeRef
+	28: MoveLoc[10](loc3: u64)
+	29: MoveLoc[11](loc4: u8)
+	30: Call storage::get_emode_asset_info(&Storage, u64, u8): u256 * u256 * u256
+	31: StLoc[24](loc17: u256)
+	32: Pop
+	33: Pop
+B2:
+	34: CopyLoc[1](Arg1: &mut Storage)
+	35: CopyLoc[4](Arg4: u8)
+	36: Call storage::get_treasury_factor(&mut Storage, u8): u256
+	37: StLoc[32](loc25: u256)
+	38: CopyLoc[0](Arg0: &Clock)
+	39: CopyLoc[2](Arg2: &PriceOracle)
+	40: CopyLoc[1](Arg1: &mut Storage)
+	41: CopyLoc[4](Arg4: u8)
+	42: CopyLoc[3](Arg3: address)
+	43: Call user_collateral_value(&Clock, &PriceOracle, &mut Storage, u8, address): u256
+	44: StLoc[14](loc7: u256)
+	45: CopyLoc[0](Arg0: &Clock)
+	46: CopyLoc[2](Arg2: &PriceOracle)
+	47: CopyLoc[1](Arg1: &mut Storage)
+	48: CopyLoc[5](Arg5: u8)
+	49: MoveLoc[3](Arg3: address)
+	50: Call user_loan_value(&Clock, &PriceOracle, &mut Storage, u8, address): u256
+	51: StLoc[26](loc19: u256)
+	52: CopyLoc[1](Arg1: &mut Storage)
+	53: MoveLoc[4](Arg4: u8)
+	54: StLoc[12](loc5: u8)
+	55: FreezeRef
+	56: MoveLoc[12](loc5: u8)
+	57: Call storage::get_oracle_id(&Storage, u8): u8
+	58: StLoc[13](loc6: u8)
+	59: MoveLoc[1](Arg1: &mut Storage)
+	60: MoveLoc[5](Arg5: u8)
+	61: StLoc[7](loc0: u8)
+	62: FreezeRef
+	63: MoveLoc[7](loc0: u8)
+	64: Call storage::get_oracle_id(&Storage, u8): u8
+	65: StLoc[15](loc8: u8)
+	66: CopyLoc[0](Arg0: &Clock)
+	67: CopyLoc[2](Arg2: &PriceOracle)
+	68: MoveLoc[6](Arg6: u256)
+	69: CopyLoc[15](loc8: u8)
+	70: Call calculator::calculate_value(&Clock, &PriceOracle, u256, u8): u256
+	71: StLoc[27](loc20: u256)
+	72: MoveLoc[14](loc7: u256)
+	73: MoveLoc[25](loc18: u256)
+	74: Call ray_math::ray_mul(u256, u256): u256
+	75: StLoc[23](loc16: u256)
+	76: LdFalse
+	77: StLoc[22](loc15: bool)
+	78: CopyLoc[27](loc20: u256)
+	79: CopyLoc[23](loc16: u256)
+	80: Ge
+	81: BrFalse(87)
+B3:
+	82: CopyLoc[27](loc20: u256)
+	83: CopyLoc[23](loc16: u256)
+	84: Sub
+	85: StLoc[17](loc10: u256)
+	86: Branch(91)
+B4:
+	87: LdU256(0)
+	88: StLoc[17](loc10: u256)
+	89: CopyLoc[27](loc20: u256)
+	90: StLoc[23](loc16: u256)
+B5:
+	91: CopyLoc[23](loc16: u256)
+	92: CopyLoc[26](loc19: u256)
+	93: Ge
+	94: BrFalse(103)
+B6:
+	95: LdTrue
+	96: StLoc[22](loc15: bool)
+	97: CopyLoc[26](loc19: u256)
+	98: StLoc[23](loc16: u256)
+	99: MoveLoc[27](loc20: u256)
+	100: MoveLoc[26](loc19: u256)
+	101: Sub
+	102: StLoc[17](loc10: u256)
+B7:
+	103: CopyLoc[23](loc16: u256)
+	104: MoveLoc[24](loc17: u256)
+	105: Call ray_math::ray_mul(u256, u256): u256
+	106: StLoc[28](loc21: u256)
+	107: CopyLoc[28](loc21: u256)
+	108: MoveLoc[32](loc25: u256)
+	109: Call ray_math::ray_mul(u256, u256): u256
+	110: StLoc[33](loc26: u256)
+	111: MoveLoc[28](loc21: u256)
+	112: CopyLoc[33](loc26: u256)
+	113: Sub
+	114: StLoc[19](loc12: u256)
+	115: CopyLoc[0](Arg0: &Clock)
+	116: CopyLoc[2](Arg2: &PriceOracle)
+	117: CopyLoc[23](loc16: u256)
+	118: CopyLoc[13](loc6: u8)
+	119: Call calculator::calculate_amount(&Clock, &PriceOracle, u256, u8): u256
+	120: StLoc[29](loc22: u256)
+	121: CopyLoc[0](Arg0: &Clock)
+	122: CopyLoc[2](Arg2: &PriceOracle)
+	123: MoveLoc[23](loc16: u256)
+	124: CopyLoc[15](loc8: u8)
+	125: Call calculator::calculate_amount(&Clock, &PriceOracle, u256, u8): u256
+	126: StLoc[30](loc23: u256)
+	127: CopyLoc[0](Arg0: &Clock)
+	128: CopyLoc[2](Arg2: &PriceOracle)
+	129: MoveLoc[19](loc12: u256)
+	130: CopyLoc[13](loc6: u8)
+	131: Call calculator::calculate_amount(&Clock, &PriceOracle, u256, u8): u256
+	132: StLoc[18](loc11: u256)
+	133: CopyLoc[0](Arg0: &Clock)
+	134: CopyLoc[2](Arg2: &PriceOracle)
+	135: MoveLoc[33](loc26: u256)
+	136: MoveLoc[13](loc6: u8)
+	137: Call calculator::calculate_amount(&Clock, &PriceOracle, u256, u8): u256
+	138: StLoc[31](loc24: u256)
+	139: MoveLoc[0](Arg0: &Clock)
+	140: MoveLoc[2](Arg2: &PriceOracle)
+	141: MoveLoc[17](loc10: u256)
+	142: MoveLoc[15](loc8: u8)
+	143: Call calculator::calculate_amount(&Clock, &PriceOracle, u256, u8): u256
+	144: StLoc[20](loc13: u256)
+	145: MoveLoc[29](loc22: u256)
+	146: MoveLoc[30](loc23: u256)
+	147: MoveLoc[18](loc11: u256)
+	148: MoveLoc[31](loc24: u256)
+	149: MoveLoc[20](loc13: u256)
+	150: MoveLoc[22](loc15: bool)
+	151: Ret
+}
+
+public calculate_avg_ltv(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: address): u256 {
+L4:	loc0: u64
+L5:	loc1: u8
+L6:	loc2: address
+L7:	loc3: address
+L8:	loc4: u8
+L9:	loc5: address
+L10:	loc6: &u8
+L11:	loc7: vector<u8>
+L12:	loc8: u64
+L13:	loc9: u64
+L14:	loc10: bool
+L15:	loc11: u256
+L16:	loc12: u256
+L17:	loc13: u256
+L18:	loc14: u256
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: CopyLoc[3](Arg3: address)
+	2: StLoc[6](loc2: address)
+	3: FreezeRef
+	4: MoveLoc[6](loc2: address)
+	5: Call storage::get_user_assets(&Storage, address): vector<u8> * vector<u8>
+	6: Pop
+	7: StLoc[11](loc7: vector<u8>)
+	8: CopyLoc[2](Arg2: &mut Storage)
+	9: CopyLoc[3](Arg3: address)
+	10: StLoc[7](loc3: address)
+	11: FreezeRef
+	12: MoveLoc[7](loc3: address)
+	13: Call storage::is_in_emode(&Storage, address): bool
+	14: StLoc[14](loc10: bool)
+	15: LdU64(0)
+	16: StLoc[13](loc9: u64)
+	17: LdU256(0)
+	18: StLoc[16](loc12: u256)
+	19: LdU256(0)
+	20: StLoc[17](loc13: u256)
+B1:
+	21: CopyLoc[13](loc9: u64)
+	22: ImmBorrowLoc[11](loc7: vector<u8>)
+	23: VecLen(32)
+	24: Lt
+	25: BrFalse(84)
+B2:
+	26: Branch(27)
+B3:
+	27: ImmBorrowLoc[11](loc7: vector<u8>)
+	28: CopyLoc[13](loc9: u64)
+	29: VecImmBorrow(32)
+	30: StLoc[10](loc6: &u8)
+	31: CopyLoc[2](Arg2: &mut Storage)
+	32: CopyLoc[10](loc6: &u8)
+	33: ReadRef
+	34: StLoc[8](loc4: u8)
+	35: FreezeRef
+	36: MoveLoc[8](loc4: u8)
+	37: Call storage::get_asset_ltv(&Storage, u8): u256
+	38: StLoc[15](loc11: u256)
+	39: CopyLoc[14](loc10: bool)
+	40: BrFalse(61)
+B4:
+	41: CopyLoc[2](Arg2: &mut Storage)
+	42: CopyLoc[3](Arg3: address)
+	43: StLoc[9](loc5: address)
+	44: FreezeRef
+	45: MoveLoc[9](loc5: address)
+	46: Call storage::get_user_emode_id(&Storage, address): u64
+	47: StLoc[12](loc8: u64)
+	48: CopyLoc[2](Arg2: &mut Storage)
+	49: MoveLoc[12](loc8: u64)
+	50: CopyLoc[10](loc6: &u8)
+	51: ReadRef
+	52: StLoc[5](loc1: u8)
+	53: StLoc[4](loc0: u64)
+	54: FreezeRef
+	55: MoveLoc[4](loc0: u64)
+	56: MoveLoc[5](loc1: u8)
+	57: Call storage::get_emode_asset_info(&Storage, u64, u8): u256 * u256 * u256
+	58: Pop
+	59: Pop
+	60: StLoc[15](loc11: u256)
+B5:
+	61: CopyLoc[0](Arg0: &Clock)
+	62: CopyLoc[1](Arg1: &PriceOracle)
+	63: CopyLoc[2](Arg2: &mut Storage)
+	64: MoveLoc[10](loc6: &u8)
+	65: ReadRef
+	66: CopyLoc[3](Arg3: address)
+	67: Call user_collateral_value(&Clock, &PriceOracle, &mut Storage, u8, address): u256
+	68: StLoc[18](loc14: u256)
+	69: MoveLoc[16](loc12: u256)
+	70: CopyLoc[18](loc14: u256)
+	71: Add
+	72: StLoc[16](loc12: u256)
+	73: MoveLoc[17](loc13: u256)
+	74: MoveLoc[15](loc11: u256)
+	75: MoveLoc[18](loc14: u256)
+	76: Call ray_math::ray_mul(u256, u256): u256
+	77: Add
+	78: StLoc[17](loc13: u256)
+	79: MoveLoc[13](loc9: u64)
+	80: LdU64(1)
+	81: Add
+	82: StLoc[13](loc9: u64)
+	83: Branch(21)
+B6:
+	84: MoveLoc[2](Arg2: &mut Storage)
+	85: Pop
+	86: MoveLoc[1](Arg1: &PriceOracle)
+	87: Pop
+	88: MoveLoc[0](Arg0: &Clock)
+	89: Pop
+	90: CopyLoc[16](loc12: u256)
+	91: LdU256(0)
+	92: Gt
+	93: BrFalse(98)
+B7:
+	94: MoveLoc[17](loc13: u256)
+	95: MoveLoc[16](loc12: u256)
+	96: Call ray_math::ray_div(u256, u256): u256
+	97: Ret
+B8:
+	98: LdU256(0)
+	99: Ret
+}
+
+public calculate_avg_threshold(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: address): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &Clock)
+	1: MoveLoc[2](Arg2: &mut Storage)
+	2: MoveLoc[1](Arg1: &PriceOracle)
+	3: MoveLoc[3](Arg3: address)
+	4: Call dynamic_liquidation_threshold(&Clock, &mut Storage, &PriceOracle, address): u256
+	5: Ret
+}
+
+emit_state_updated_event(Arg0: &mut Storage, Arg1: u8, Arg2: address) {
+L3:	loc0: u64
+L4:	loc1: u256
+L5:	loc2: u256
+L6:	loc3: u256
+L7:	loc4: u256
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[1](Arg1: u8)
+	2: Call storage::get_index(&mut Storage, u8): u256 * u256
+	3: StLoc[4](loc1: u256)
+	4: StLoc[5](loc2: u256)
+	5: CopyLoc[0](Arg0: &mut Storage)
+	6: CopyLoc[1](Arg1: u8)
+	7: CopyLoc[2](Arg2: address)
+	8: Call storage::get_user_balance(&mut Storage, u8, address): u256 * u256
+	9: StLoc[6](loc3: u256)
+	10: StLoc[7](loc4: u256)
+	11: MoveLoc[0](Arg0: &mut Storage)
+	12: FreezeRef
+	13: Call storage::get_market_id(&Storage): u64
+	14: StLoc[3](loc0: u64)
+	15: MoveLoc[2](Arg2: address)
+	16: MoveLoc[1](Arg1: u8)
+	17: MoveLoc[7](loc4: u256)
+	18: MoveLoc[6](loc3: u256)
+	19: MoveLoc[5](loc2: u256)
+	20: MoveLoc[4](loc1: u256)
+	21: MoveLoc[3](loc0: u64)
+	22: Call event::emit_state_updated(address, u8, u256, u256, u256, u256, u64)
+	23: Ret
+}
+
+public(friend) enter_emode(Arg0: &mut Storage, Arg1: u64, Arg2: address) {
+L3:	loc0: address
+L4:	loc1: bool
+L5:	loc2: vector<u8>
+L6:	loc3: vector<u8>
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[2](Arg2: address)
+	2: StLoc[3](loc0: address)
+	3: FreezeRef
+	4: MoveLoc[3](loc0: address)
+	5: Call storage::get_user_assets(&Storage, address): vector<u8> * vector<u8>
+	6: StLoc[6](loc3: vector<u8>)
+	7: StLoc[5](loc2: vector<u8>)
+	8: ImmBorrowLoc[5](loc2: vector<u8>)
+	9: Call vector::is_empty<u8>(&vector<u8>): bool
+	10: BrFalse(15)
+B1:
+	11: ImmBorrowLoc[6](loc3: vector<u8>)
+	12: Call vector::is_empty<u8>(&vector<u8>): bool
+	13: StLoc[4](loc1: bool)
+	14: Branch(17)
+B2:
+	15: LdFalse
+	16: StLoc[4](loc1: bool)
+B3:
+	17: MoveLoc[4](loc1: bool)
+	18: BrFalse(20)
+B4:
+	19: Branch(24)
+B5:
+	20: MoveLoc[0](Arg0: &mut Storage)
+	21: Pop
+	22: Call error::ineligible_for_emode(): u64
+	23: Abort
+B6:
+	24: MoveLoc[0](Arg0: &mut Storage)
+	25: MoveLoc[1](Arg1: u64)
+	26: MoveLoc[2](Arg2: address)
+	27: Call storage::enter_emode(&mut Storage, u64, address)
+	28: Ret
+}
+
+public(friend) exit_emode(Arg0: &mut Storage, Arg1: address) {
+L2:	loc0: address
+L3:	loc1: bool
+L4:	loc2: vector<u8>
+L5:	loc3: vector<u8>
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: CopyLoc[1](Arg1: address)
+	2: StLoc[2](loc0: address)
+	3: FreezeRef
+	4: MoveLoc[2](loc0: address)
+	5: Call storage::get_user_assets(&Storage, address): vector<u8> * vector<u8>
+	6: StLoc[5](loc3: vector<u8>)
+	7: StLoc[4](loc2: vector<u8>)
+	8: ImmBorrowLoc[4](loc2: vector<u8>)
+	9: Call vector::is_empty<u8>(&vector<u8>): bool
+	10: BrFalse(15)
+B1:
+	11: ImmBorrowLoc[5](loc3: vector<u8>)
+	12: Call vector::is_empty<u8>(&vector<u8>): bool
+	13: StLoc[3](loc1: bool)
+	14: Branch(17)
+B2:
+	15: LdFalse
+	16: StLoc[3](loc1: bool)
+B3:
+	17: MoveLoc[3](loc1: bool)
+	18: BrFalse(20)
+B4:
+	19: Branch(24)
+B5:
+	20: MoveLoc[0](Arg0: &mut Storage)
+	21: Pop
+	22: Call error::ineligible_for_emode(): u64
+	23: Abort
+B6:
+	24: MoveLoc[0](Arg0: &mut Storage)
+	25: MoveLoc[1](Arg1: address)
+	26: Call storage::exit_emode(&mut Storage, address)
+	27: Ret
+}
+
+Constants [
+	0 => address: 0x0000000000000000000000000000000000000000000000000000000000000000
+]
+}
+

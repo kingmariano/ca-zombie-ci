@@ -1,0 +1,199 @@
+// Move bytecode v7
+module d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca.account {
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::error;
+use 0000000000000000000000000000000000000000000000000000000000000001::ascii;
+use 0000000000000000000000000000000000000000000000000000000000000002::dynamic_field;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct AccountCap has store, key {
+	id: UID,
+	owner: address
+}
+
+struct AccountField has store {
+	account_name: String,
+	account_description: String,
+	last_update_time: String,
+	market_balance: String
+}
+
+struct AccountFieldKey has copy, drop, store {
+	dummy_field: bool
+}
+
+public(friend) create_account_cap(Arg0: &mut TxContext): AccountCap {
+L1:	loc0: UID
+L2:	loc1: address
+B0:
+	0: MoveLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: StLoc[1](loc0: UID)
+	3: ImmBorrowLoc[1](loc0: UID)
+	4: Call object::uid_to_address(&UID): address
+	5: StLoc[2](loc1: address)
+	6: MoveLoc[1](loc0: UID)
+	7: MoveLoc[2](loc1: address)
+	8: Pack[0](AccountCap)
+	9: Ret
+}
+
+public(friend) create_child_account_cap(Arg0: &AccountCap, Arg1: &mut TxContext): AccountCap {
+L2:	loc0: address
+B0:
+	0: CopyLoc[0](Arg0: &AccountCap)
+	1: ImmBorrowField[0](AccountCap.owner: address)
+	2: ReadRef
+	3: StLoc[2](loc0: address)
+	4: MoveLoc[0](Arg0: &AccountCap)
+	5: ImmBorrowField[1](AccountCap.id: UID)
+	6: Call object::uid_to_address(&UID): address
+	7: CopyLoc[2](loc0: address)
+	8: Eq
+	9: BrFalse(11)
+B1:
+	10: Branch(15)
+B2:
+	11: MoveLoc[1](Arg1: &mut TxContext)
+	12: Pop
+	13: Call error::required_parent_account_cap(): u64
+	14: Abort
+B3:
+	15: MoveLoc[1](Arg1: &mut TxContext)
+	16: Call object::new(&mut TxContext): UID
+	17: MoveLoc[2](loc0: address)
+	18: Pack[0](AccountCap)
+	19: Ret
+}
+
+public(friend) delete_account_cap(Arg0: AccountCap) {
+B0:
+	0: MoveLoc[0](Arg0: AccountCap)
+	1: Unpack[0](AccountCap)
+	2: Pop
+	3: Call object::delete(UID)
+	4: Ret
+}
+
+public account_owner(Arg0: &AccountCap): address {
+B0:
+	0: MoveLoc[0](Arg0: &AccountCap)
+	1: ImmBorrowField[0](AccountCap.owner: address)
+	2: ReadRef
+	3: Ret
+}
+
+public set_account_name(Arg0: &mut AccountCap, Arg1: String) {
+L2:	loc0: &mut AccountField
+B0:
+	0: MoveLoc[0](Arg0: &mut AccountCap)
+	1: Call get_or_create_account_field(&mut AccountCap): &mut AccountField
+	2: StLoc[2](loc0: &mut AccountField)
+	3: MoveLoc[1](Arg1: String)
+	4: MoveLoc[2](loc0: &mut AccountField)
+	5: MutBorrowField[2](AccountField.account_name: String)
+	6: WriteRef
+	7: Ret
+}
+
+public set_account_description(Arg0: &mut AccountCap, Arg1: String) {
+L2:	loc0: &mut AccountField
+B0:
+	0: MoveLoc[0](Arg0: &mut AccountCap)
+	1: Call get_or_create_account_field(&mut AccountCap): &mut AccountField
+	2: StLoc[2](loc0: &mut AccountField)
+	3: MoveLoc[1](Arg1: String)
+	4: MoveLoc[2](loc0: &mut AccountField)
+	5: MutBorrowField[3](AccountField.account_description: String)
+	6: WriteRef
+	7: Ret
+}
+
+public set_last_update_time(Arg0: &mut AccountCap, Arg1: String) {
+L2:	loc0: &mut AccountField
+B0:
+	0: MoveLoc[0](Arg0: &mut AccountCap)
+	1: Call get_or_create_account_field(&mut AccountCap): &mut AccountField
+	2: StLoc[2](loc0: &mut AccountField)
+	3: MoveLoc[1](Arg1: String)
+	4: MoveLoc[2](loc0: &mut AccountField)
+	5: MutBorrowField[4](AccountField.last_update_time: String)
+	6: WriteRef
+	7: Ret
+}
+
+public set_market_balance(Arg0: &mut AccountCap, Arg1: String) {
+L2:	loc0: &mut AccountField
+B0:
+	0: MoveLoc[0](Arg0: &mut AccountCap)
+	1: Call get_or_create_account_field(&mut AccountCap): &mut AccountField
+	2: StLoc[2](loc0: &mut AccountField)
+	3: MoveLoc[1](Arg1: String)
+	4: MoveLoc[2](loc0: &mut AccountField)
+	5: MutBorrowField[5](AccountField.market_balance: String)
+	6: WriteRef
+	7: Ret
+}
+
+get_or_create_account_field(Arg0: &mut AccountCap): &mut AccountField {
+B0:
+	0: CopyLoc[0](Arg0: &mut AccountCap)
+	1: ImmBorrowField[1](AccountCap.id: UID)
+	2: LdFalse
+	3: Pack[2](AccountFieldKey)
+	4: Call dynamic_field::exists_<AccountFieldKey>(&UID, AccountFieldKey): bool
+	5: Not
+	6: BrFalse(21)
+B1:
+	7: CopyLoc[0](Arg0: &mut AccountCap)
+	8: MutBorrowField[1](AccountCap.id: UID)
+	9: LdFalse
+	10: Pack[2](AccountFieldKey)
+	11: LdConst[0](vector<u8>: "" /..)
+	12: Call ascii::string(vector<u8>): String
+	13: LdConst[0](vector<u8>: "" /..)
+	14: Call ascii::string(vector<u8>): String
+	15: LdConst[0](vector<u8>: "" /..)
+	16: Call ascii::string(vector<u8>): String
+	17: LdConst[0](vector<u8>: "" /..)
+	18: Call ascii::string(vector<u8>): String
+	19: Pack[1](AccountField)
+	20: Call dynamic_field::add<AccountFieldKey, AccountField>(&mut UID, AccountFieldKey, AccountField)
+B2:
+	21: MoveLoc[0](Arg0: &mut AccountCap)
+	22: MutBorrowField[1](AccountCap.id: UID)
+	23: LdFalse
+	24: Pack[2](AccountFieldKey)
+	25: Call dynamic_field::borrow_mut<AccountFieldKey, AccountField>(&mut UID, AccountFieldKey): &mut AccountField
+	26: Ret
+}
+
+public get_account_info(Arg0: &AccountCap): String * String * String * String {
+L1:	loc0: &AccountField
+B0:
+	0: MoveLoc[0](Arg0: &AccountCap)
+	1: ImmBorrowField[1](AccountCap.id: UID)
+	2: LdFalse
+	3: Pack[2](AccountFieldKey)
+	4: Call dynamic_field::borrow<AccountFieldKey, AccountField>(&UID, AccountFieldKey): &AccountField
+	5: StLoc[1](loc0: &AccountField)
+	6: CopyLoc[1](loc0: &AccountField)
+	7: ImmBorrowField[2](AccountField.account_name: String)
+	8: ReadRef
+	9: CopyLoc[1](loc0: &AccountField)
+	10: ImmBorrowField[3](AccountField.account_description: String)
+	11: ReadRef
+	12: CopyLoc[1](loc0: &AccountField)
+	13: ImmBorrowField[4](AccountField.last_update_time: String)
+	14: ReadRef
+	15: MoveLoc[1](loc0: &AccountField)
+	16: ImmBorrowField[5](AccountField.market_balance: String)
+	17: ReadRef
+	18: Ret
+}
+
+Constants [
+	0 => vector<u8>: "" // interpreted as UTF8 string
+]
+}
+

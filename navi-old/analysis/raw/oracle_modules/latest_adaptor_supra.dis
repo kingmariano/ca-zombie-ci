@@ -1,0 +1,54 @@
+// Move bytecode v7
+module ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f.adaptor_supra {
+use 5d8fbbf6f908a4af8c6d072669a462d53e03eb3c1d863bd0359dc818c69ea706::SupraSValueFeed;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_utils;
+use 0000000000000000000000000000000000000000000000000000000000000002::address;
+
+public get_price_native(Arg0: &OracleHolder, Arg1: u32): u128 * u16 * u128 {
+B0:
+	0: MoveLoc[0](Arg0: &OracleHolder)
+	1: MoveLoc[1](Arg1: u32)
+	2: Call SupraSValueFeed::get_price(&OracleHolder, u32): u128 * u16 * u128 * u64
+	3: Pop
+	4: Ret
+}
+
+public get_price_to_target_decimal(Arg0: &OracleHolder, Arg1: u32, Arg2: u8): u256 * u64 {
+L3:	loc0: u16
+L4:	loc1: u128
+B0:
+	0: MoveLoc[0](Arg0: &OracleHolder)
+	1: MoveLoc[1](Arg1: u32)
+	2: Call get_price_native(&OracleHolder, u32): u128 * u16 * u128
+	3: StLoc[4](loc1: u128)
+	4: StLoc[3](loc0: u16)
+	5: CastU256
+	6: MoveLoc[3](loc0: u16)
+	7: CastU64
+	8: MoveLoc[2](Arg2: u8)
+	9: CastU64
+	10: Call oracle_utils::to_target_decimal_value_safe(u256, u64, u64): u256
+	11: MoveLoc[4](loc1: u128)
+	12: CastU64
+	13: Ret
+}
+
+public pair_id_to_vector(Arg0: u32): vector<u8> {
+B0:
+	0: MoveLoc[0](Arg0: u32)
+	1: CastU256
+	2: Call address::from_u256(u256): address
+	3: Call address::to_bytes(address): vector<u8>
+	4: Ret
+}
+
+public vector_to_pair_id(Arg0: vector<u8>): u32 {
+B0:
+	0: MoveLoc[0](Arg0: vector<u8>)
+	1: Call address::from_bytes(vector<u8>): address
+	2: Call address::to_u256(address): u256
+	3: CastU32
+	4: Ret
+}
+
+}

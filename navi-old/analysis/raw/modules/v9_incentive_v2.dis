@@ -1,0 +1,1810 @@
+// Move bytecode v6
+module d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca.incentive_v2 {
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::incentive;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::lending;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::pool;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::storage;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::ray_math;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::safe_math;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle;
+use 0000000000000000000000000000000000000000000000000000000000000001::debug;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::utils;
+
+struct OwnerCap has store, key {
+	id: UID
+}
+
+struct Incentive has store, key {
+	id: UID,
+	version: u64,
+	pool_objs: vector<address>,
+	inactive_objs: vector<address>,
+	pools: Table<address, IncentivePool>,
+	funds: Table<address, IncentiveFundsPoolInfo>
+}
+
+struct IncentivePool has store, key {
+	id: UID,
+	phase: u64,
+	funds: address,
+	start_at: u64,
+	end_at: u64,
+	closed_at: u64,
+	total_supply: u64,
+	option: u8,
+	asset_id: u8,
+	factor: u256,
+	last_update_at: u64,
+	distributed: u64,
+	index_reward: u256,
+	index_rewards_paids: Table<address, u256>,
+	total_rewards_of_users: Table<address, u256>,
+	total_claimed_of_users: Table<address, u256>
+}
+
+struct IncentiveFundsPool<phantom Ty0> has store, key {
+	id: UID,
+	oracle_id: u8,
+	balance: Balance<Ty0>,
+	coin_type: TypeName
+}
+
+struct IncentiveFundsPoolInfo has store, key {
+	id: UID,
+	oracle_id: u8,
+	coin_type: TypeName
+}
+
+struct CreateFundsPool has copy, drop {
+	sender: address,
+	coin_type: TypeName,
+	oracle_id: u8,
+	force: bool
+}
+
+struct IncreasedFunds has copy, drop {
+	sender: address,
+	balance_before: u64,
+	balance_after: u64
+}
+
+struct WithdrawFunds has copy, drop {
+	sender: address,
+	value: u64
+}
+
+struct CreateIncentive has copy, drop {
+	sender: address,
+	incentive_pool_pro: address
+}
+
+struct CreateIncentivePool has copy, drop {
+	sender: address,
+	pool: address
+}
+
+struct RewardsClaimed has copy, drop {
+	sender: address,
+	pool: address,
+	amount: u64
+}
+
+public create_and_transfer_owner(Arg0: &OwnerCap, Arg1: &mut TxContext) {
+B0:
+	0: CopyLoc[1](Arg1: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: Pack[0](OwnerCap)
+	3: MoveLoc[1](Arg1: &mut TxContext)
+	4: FreezeRef
+	5: Call tx_context::sender(&TxContext): address
+	6: Call transfer::public_transfer<OwnerCap>(OwnerCap, address)
+	7: Ret
+}
+
+public version_verification(Arg0: &Incentive) {
+B0:
+	0: MoveLoc[0](Arg0: &Incentive)
+	1: ImmBorrowField[0](Incentive.version: u64)
+	2: ReadRef
+	3: LdConst[4](u64: 1)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: LdConst[7](u64: 7999)
+	8: Abort
+B3:
+	9: Ret
+}
+
+public version_migrate(Arg0: &OwnerCap, Arg1: &mut Incentive) {
+B0:
+	0: CopyLoc[1](Arg1: &mut Incentive)
+	1: ImmBorrowField[0](Incentive.version: u64)
+	2: ReadRef
+	3: LdConst[4](u64: 1)
+	4: Lt
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[1](Arg1: &mut Incentive)
+	8: Pop
+	9: LdConst[7](u64: 7999)
+	10: Abort
+B3:
+	11: LdConst[4](u64: 1)
+	12: MoveLoc[1](Arg1: &mut Incentive)
+	13: MutBorrowField[0](Incentive.version: u64)
+	14: WriteRef
+	15: Ret
+}
+
+public create_funds_pool<Ty0>(Arg0: &OwnerCap, Arg1: &mut Incentive, Arg2: u8, Arg3: bool, Arg4: &mut TxContext) {
+L5:	loc0: address
+L6:	loc1: TypeName
+L7:	loc2: bool
+L8:	loc3: u8
+L9:	loc4: UID
+L10:	loc5: address
+B0:
+	0: CopyLoc[1](Arg1: &mut Incentive)
+	1: FreezeRef
+	2: Call version_verification(&Incentive)
+	3: CopyLoc[4](Arg4: &mut TxContext)
+	4: Call object::new(&mut TxContext): UID
+	5: StLoc[9](loc4: UID)
+	6: ImmBorrowLoc[9](loc4: UID)
+	7: Call object::uid_to_address(&UID): address
+	8: StLoc[10](loc5: address)
+	9: MoveLoc[9](loc4: UID)
+	10: CopyLoc[2](Arg2: u8)
+	11: Call balance::zero<Ty0>(): Balance<Ty0>
+	12: Call type_name::get<Ty0>(): TypeName
+	13: PackGeneric[0](IncentiveFundsPool<Ty0>)
+	14: Call transfer::share_object<IncentiveFundsPool<Ty0>>(IncentiveFundsPool<Ty0>)
+	15: MoveLoc[1](Arg1: &mut Incentive)
+	16: MutBorrowField[1](Incentive.funds: Table<address, IncentiveFundsPoolInfo>)
+	17: MoveLoc[10](loc5: address)
+	18: CopyLoc[4](Arg4: &mut TxContext)
+	19: Call object::new(&mut TxContext): UID
+	20: CopyLoc[2](Arg2: u8)
+	21: Call type_name::get<Ty0>(): TypeName
+	22: Pack[4](IncentiveFundsPoolInfo)
+	23: Call table::add<address, IncentiveFundsPoolInfo>(&mut Table<address, IncentiveFundsPoolInfo>, address, IncentiveFundsPoolInfo)
+	24: MoveLoc[4](Arg4: &mut TxContext)
+	25: FreezeRef
+	26: Call tx_context::sender(&TxContext): address
+	27: StLoc[5](loc0: address)
+	28: Call type_name::get<Ty0>(): TypeName
+	29: StLoc[6](loc1: TypeName)
+	30: MoveLoc[3](Arg3: bool)
+	31: StLoc[7](loc2: bool)
+	32: MoveLoc[2](Arg2: u8)
+	33: StLoc[8](loc3: u8)
+	34: MoveLoc[5](loc0: address)
+	35: MoveLoc[6](loc1: TypeName)
+	36: MoveLoc[8](loc3: u8)
+	37: MoveLoc[7](loc2: bool)
+	38: Pack[5](CreateFundsPool)
+	39: Call event::emit<CreateFundsPool>(CreateFundsPool)
+	40: Ret
+}
+
+public add_funds<Ty0>(Arg0: &OwnerCap, Arg1: &mut IncentiveFundsPool<Ty0>, Arg2: Coin<Ty0>, Arg3: u64, Arg4: &mut TxContext) {
+L5:	loc0: u64
+L6:	loc1: u64
+L7:	loc2: Balance<Ty0>
+B0:
+	0: CopyLoc[1](Arg1: &mut IncentiveFundsPool<Ty0>)
+	1: ImmBorrowFieldGeneric[0](IncentiveFundsPool.balance: Balance<Ty0>)
+	2: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	3: StLoc[6](loc1: u64)
+	4: MoveLoc[2](Arg2: Coin<Ty0>)
+	5: MoveLoc[3](Arg3: u64)
+	6: CopyLoc[4](Arg4: &mut TxContext)
+	7: Call utils::split_coin_to_balance<Ty0>(Coin<Ty0>, u64, &mut TxContext): Balance<Ty0>
+	8: StLoc[7](loc2: Balance<Ty0>)
+	9: MoveLoc[1](Arg1: &mut IncentiveFundsPool<Ty0>)
+	10: MutBorrowFieldGeneric[0](IncentiveFundsPool.balance: Balance<Ty0>)
+	11: MoveLoc[7](loc2: Balance<Ty0>)
+	12: Call balance::join<Ty0>(&mut Balance<Ty0>, Balance<Ty0>): u64
+	13: StLoc[5](loc0: u64)
+	14: MoveLoc[4](Arg4: &mut TxContext)
+	15: FreezeRef
+	16: Call tx_context::sender(&TxContext): address
+	17: MoveLoc[6](loc1: u64)
+	18: MoveLoc[5](loc0: u64)
+	19: Pack[6](IncreasedFunds)
+	20: Call event::emit<IncreasedFunds>(IncreasedFunds)
+	21: Ret
+}
+
+public withdraw_funds<Ty0>(Arg0: &OwnerCap, Arg1: &mut IncentiveFundsPool<Ty0>, Arg2: u64, Arg3: &mut TxContext) {
+B0:
+	0: CopyLoc[1](Arg1: &mut IncentiveFundsPool<Ty0>)
+	1: ImmBorrowFieldGeneric[0](IncentiveFundsPool.balance: Balance<Ty0>)
+	2: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	3: CopyLoc[2](Arg2: u64)
+	4: Ge
+	5: BrFalse(7)
+B1:
+	6: Branch(13)
+B2:
+	7: MoveLoc[1](Arg1: &mut IncentiveFundsPool<Ty0>)
+	8: Pop
+	9: MoveLoc[3](Arg3: &mut TxContext)
+	10: Pop
+	11: LdConst[5](u64: 8000)
+	12: Abort
+B3:
+	13: MoveLoc[1](Arg1: &mut IncentiveFundsPool<Ty0>)
+	14: MutBorrowFieldGeneric[0](IncentiveFundsPool.balance: Balance<Ty0>)
+	15: CopyLoc[2](Arg2: u64)
+	16: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	17: CopyLoc[3](Arg3: &mut TxContext)
+	18: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	19: CopyLoc[3](Arg3: &mut TxContext)
+	20: FreezeRef
+	21: Call tx_context::sender(&TxContext): address
+	22: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	23: MoveLoc[3](Arg3: &mut TxContext)
+	24: FreezeRef
+	25: Call tx_context::sender(&TxContext): address
+	26: MoveLoc[2](Arg2: u64)
+	27: Pack[7](WithdrawFunds)
+	28: Call event::emit<WithdrawFunds>(WithdrawFunds)
+	29: Ret
+}
+
+public create_incentive(Arg0: &OwnerCap, Arg1: &mut TxContext) {
+L2:	loc0: UID
+L3:	loc1: address
+B0:
+	0: CopyLoc[1](Arg1: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: StLoc[2](loc0: UID)
+	3: ImmBorrowLoc[2](loc0: UID)
+	4: Call object::uid_to_address(&UID): address
+	5: StLoc[3](loc1: address)
+	6: MoveLoc[2](loc0: UID)
+	7: LdConst[4](u64: 1)
+	8: VecPack(40, 0)
+	9: VecPack(40, 0)
+	10: CopyLoc[1](Arg1: &mut TxContext)
+	11: Call table::new<address, IncentivePool>(&mut TxContext): Table<address, IncentivePool>
+	12: CopyLoc[1](Arg1: &mut TxContext)
+	13: Call table::new<address, IncentiveFundsPoolInfo>(&mut TxContext): Table<address, IncentiveFundsPoolInfo>
+	14: Pack[1](Incentive)
+	15: Call transfer::share_object<Incentive>(Incentive)
+	16: MoveLoc[1](Arg1: &mut TxContext)
+	17: FreezeRef
+	18: Call tx_context::sender(&TxContext): address
+	19: MoveLoc[3](loc1: address)
+	20: Pack[8](CreateIncentive)
+	21: Call event::emit<CreateIncentive>(CreateIncentive)
+	22: Ret
+}
+
+public create_incentive_pool<Ty0>(Arg0: &OwnerCap, Arg1: &mut Incentive, Arg2: &IncentiveFundsPool<Ty0>, Arg3: u64, Arg4: u64, Arg5: u64, Arg6: u64, Arg7: u64, Arg8: u8, Arg9: u8, Arg10: u256, Arg11: &mut TxContext) {
+L12:	loc0: bool
+L13:	loc1: u8
+L14:	loc2: u256
+L15:	loc3: u64
+L16:	loc4: Table<address, u256>
+L17:	loc5: Table<address, u256>
+L18:	loc6: Table<address, u256>
+L19:	loc7: UID
+L20:	loc8: address
+L21:	loc9: u64
+L22:	loc10: u64
+L23:	loc11: u64
+L24:	loc12: u64
+L25:	loc13: u64
+L26:	loc14: u8
+L27:	loc15: UID
+L28:	loc16: address
+L29:	loc17: IncentivePool
+B0:
+	0: CopyLoc[4](Arg4: u64)
+	1: CopyLoc[5](Arg5: u64)
+	2: Lt
+	3: BrFalse(5)
+B1:
+	4: Branch(13)
+B2:
+	5: MoveLoc[1](Arg1: &mut Incentive)
+	6: Pop
+	7: MoveLoc[2](Arg2: &IncentiveFundsPool<Ty0>)
+	8: Pop
+	9: MoveLoc[11](Arg11: &mut TxContext)
+	10: Pop
+	11: LdConst[6](u64: 8001)
+	12: Abort
+B3:
+	13: CopyLoc[6](Arg6: u64)
+	14: LdU64(0)
+	15: Eq
+	16: BrFalse(20)
+B4:
+	17: LdTrue
+	18: StLoc[12](loc0: bool)
+	19: Branch(24)
+B5:
+	20: CopyLoc[6](Arg6: u64)
+	21: CopyLoc[5](Arg5: u64)
+	22: Gt
+	23: StLoc[12](loc0: bool)
+B6:
+	24: MoveLoc[12](loc0: bool)
+	25: BrFalse(27)
+B7:
+	26: Branch(35)
+B8:
+	27: MoveLoc[1](Arg1: &mut Incentive)
+	28: Pop
+	29: MoveLoc[2](Arg2: &IncentiveFundsPool<Ty0>)
+	30: Pop
+	31: MoveLoc[11](Arg11: &mut TxContext)
+	32: Pop
+	33: LdConst[6](u64: 8001)
+	34: Abort
+B9:
+	35: CopyLoc[11](Arg11: &mut TxContext)
+	36: Call object::new(&mut TxContext): UID
+	37: StLoc[27](loc15: UID)
+	38: ImmBorrowLoc[27](loc15: UID)
+	39: Call object::uid_to_address(&UID): address
+	40: StLoc[28](loc16: address)
+	41: MoveLoc[27](loc15: UID)
+	42: StLoc[19](loc7: UID)
+	43: MoveLoc[2](Arg2: &IncentiveFundsPool<Ty0>)
+	44: ImmBorrowFieldGeneric[1](IncentiveFundsPool.id: UID)
+	45: Call object::uid_to_address(&UID): address
+	46: StLoc[20](loc8: address)
+	47: MoveLoc[3](Arg3: u64)
+	48: StLoc[21](loc9: u64)
+	49: CopyLoc[4](Arg4: u64)
+	50: StLoc[22](loc10: u64)
+	51: MoveLoc[5](Arg5: u64)
+	52: StLoc[23](loc11: u64)
+	53: MoveLoc[6](Arg6: u64)
+	54: StLoc[24](loc12: u64)
+	55: MoveLoc[7](Arg7: u64)
+	56: StLoc[25](loc13: u64)
+	57: MoveLoc[9](Arg9: u8)
+	58: StLoc[26](loc14: u8)
+	59: MoveLoc[8](Arg8: u8)
+	60: StLoc[13](loc1: u8)
+	61: MoveLoc[10](Arg10: u256)
+	62: StLoc[14](loc2: u256)
+	63: MoveLoc[4](Arg4: u64)
+	64: StLoc[15](loc3: u64)
+	65: CopyLoc[11](Arg11: &mut TxContext)
+	66: Call table::new<address, u256>(&mut TxContext): Table<address, u256>
+	67: StLoc[16](loc4: Table<address, u256>)
+	68: CopyLoc[11](Arg11: &mut TxContext)
+	69: Call table::new<address, u256>(&mut TxContext): Table<address, u256>
+	70: StLoc[17](loc5: Table<address, u256>)
+	71: CopyLoc[11](Arg11: &mut TxContext)
+	72: Call table::new<address, u256>(&mut TxContext): Table<address, u256>
+	73: StLoc[18](loc6: Table<address, u256>)
+	74: MoveLoc[19](loc7: UID)
+	75: MoveLoc[21](loc9: u64)
+	76: MoveLoc[20](loc8: address)
+	77: MoveLoc[22](loc10: u64)
+	78: MoveLoc[23](loc11: u64)
+	79: MoveLoc[24](loc12: u64)
+	80: MoveLoc[25](loc13: u64)
+	81: MoveLoc[13](loc1: u8)
+	82: MoveLoc[26](loc14: u8)
+	83: MoveLoc[14](loc2: u256)
+	84: MoveLoc[15](loc3: u64)
+	85: LdU64(0)
+	86: LdU256(0)
+	87: MoveLoc[16](loc4: Table<address, u256>)
+	88: MoveLoc[17](loc5: Table<address, u256>)
+	89: MoveLoc[18](loc6: Table<address, u256>)
+	90: Pack[2](IncentivePool)
+	91: StLoc[29](loc17: IncentivePool)
+	92: CopyLoc[1](Arg1: &mut Incentive)
+	93: MutBorrowField[4](Incentive.pools: Table<address, IncentivePool>)
+	94: CopyLoc[28](loc16: address)
+	95: MoveLoc[29](loc17: IncentivePool)
+	96: Call table::add<address, IncentivePool>(&mut Table<address, IncentivePool>, address, IncentivePool)
+	97: MoveLoc[1](Arg1: &mut Incentive)
+	98: MutBorrowField[5](Incentive.pool_objs: vector<address>)
+	99: CopyLoc[28](loc16: address)
+	100: VecPushBack(40)
+	101: MoveLoc[11](Arg11: &mut TxContext)
+	102: FreezeRef
+	103: Call tx_context::sender(&TxContext): address
+	104: MoveLoc[28](loc16: address)
+	105: Pack[9](CreateIncentivePool)
+	106: Call event::emit<CreateIncentivePool>(CreateIncentivePool)
+	107: Ret
+}
+
+entry public claim_reward<Ty0>(Arg0: &Clock, Arg1: &mut Incentive, Arg2: &mut IncentiveFundsPool<Ty0>, Arg3: &mut Storage, Arg4: u8, Arg5: u8, Arg6: &mut TxContext) {
+L7:	loc0: &mut IncentiveFundsPool<Ty0>
+L8:	loc1: u8
+L9:	loc2: u8
+L10:	loc3: bool
+L11:	loc4: u64
+L12:	loc5: u64
+L13:	loc6: vector<address>
+L14:	loc7: u64
+L15:	loc8: &mut IncentivePool
+L16:	loc9: address
+L17:	loc10: u64
+L18:	loc11: address
+L19:	loc12: u256
+L20:	loc13: u256
+B0:
+	0: CopyLoc[1](Arg1: &mut Incentive)
+	1: FreezeRef
+	2: Call version_verification(&Incentive)
+	3: CopyLoc[6](Arg6: &mut TxContext)
+	4: FreezeRef
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[18](loc11: address)
+	7: CopyLoc[0](Arg0: &Clock)
+	8: Call clock::timestamp_ms(&Clock): u64
+	9: StLoc[14](loc7: u64)
+	10: MoveLoc[0](Arg0: &Clock)
+	11: CopyLoc[1](Arg1: &mut Incentive)
+	12: MoveLoc[3](Arg3: &mut Storage)
+	13: CopyLoc[4](Arg4: u8)
+	14: CopyLoc[5](Arg5: u8)
+	15: CopyLoc[18](loc11: address)
+	16: Call update_reward(&Clock, &mut Incentive, &mut Storage, u8, u8, address)
+	17: CopyLoc[1](Arg1: &mut Incentive)
+	18: CopyLoc[2](Arg2: &mut IncentiveFundsPool<Ty0>)
+	19: MoveLoc[4](Arg4: u8)
+	20: MoveLoc[5](Arg5: u8)
+	21: StLoc[9](loc2: u8)
+	22: StLoc[8](loc1: u8)
+	23: StLoc[7](loc0: &mut IncentiveFundsPool<Ty0>)
+	24: FreezeRef
+	25: MoveLoc[7](loc0: &mut IncentiveFundsPool<Ty0>)
+	26: FreezeRef
+	27: MoveLoc[8](loc1: u8)
+	28: MoveLoc[9](loc2: u8)
+	29: Call get_pool_from_funds_pool<Ty0>(&Incentive, &IncentiveFundsPool<Ty0>, u8, u8): vector<address>
+	30: StLoc[13](loc6: vector<address>)
+	31: ImmBorrowLoc[13](loc6: vector<address>)
+	32: VecLen(40)
+	33: StLoc[12](loc5: u64)
+	34: LdU64(0)
+	35: StLoc[11](loc4: u64)
+B1:
+	36: CopyLoc[12](loc5: u64)
+	37: LdU64(0)
+	38: Gt
+	39: BrFalse(161)
+B2:
+	40: Branch(41)
+B3:
+	41: ImmBorrowLoc[13](loc6: vector<address>)
+	42: CopyLoc[12](loc5: u64)
+	43: LdU64(1)
+	44: Sub
+	45: VecImmBorrow(40)
+	46: ReadRef
+	47: StLoc[16](loc9: address)
+	48: CopyLoc[1](Arg1: &mut Incentive)
+	49: MutBorrowField[4](Incentive.pools: Table<address, IncentivePool>)
+	50: CopyLoc[16](loc9: address)
+	51: Call table::borrow_mut<address, IncentivePool>(&mut Table<address, IncentivePool>, address): &mut IncentivePool
+	52: StLoc[15](loc8: &mut IncentivePool)
+	53: CopyLoc[15](loc8: &mut IncentivePool)
+	54: ImmBorrowField[6](IncentivePool.closed_at: u64)
+	55: ReadRef
+	56: LdU64(0)
+	57: Gt
+	58: BrFalse(66)
+B4:
+	59: CopyLoc[14](loc7: u64)
+	60: CopyLoc[15](loc8: &mut IncentivePool)
+	61: ImmBorrowField[6](IncentivePool.closed_at: u64)
+	62: ReadRef
+	63: Gt
+	64: StLoc[10](loc3: bool)
+	65: Branch(68)
+B5:
+	66: LdFalse
+	67: StLoc[10](loc3: bool)
+B6:
+	68: MoveLoc[10](loc3: bool)
+	69: BrFalse(77)
+B7:
+	70: MoveLoc[15](loc8: &mut IncentivePool)
+	71: Pop
+	72: MoveLoc[12](loc5: u64)
+	73: LdU64(1)
+	74: Sub
+	75: StLoc[12](loc5: u64)
+	76: Branch(36)
+B8:
+	77: LdU256(0)
+	78: StLoc[20](loc13: u256)
+	79: CopyLoc[15](loc8: &mut IncentivePool)
+	80: ImmBorrowField[7](IncentivePool.total_rewards_of_users: Table<address, u256>)
+	81: CopyLoc[18](loc11: address)
+	82: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	83: BrFalse(90)
+B9:
+	84: CopyLoc[15](loc8: &mut IncentivePool)
+	85: ImmBorrowField[7](IncentivePool.total_rewards_of_users: Table<address, u256>)
+	86: CopyLoc[18](loc11: address)
+	87: Call table::borrow<address, u256>(&Table<address, u256>, address): &u256
+	88: ReadRef
+	89: StLoc[20](loc13: u256)
+B10:
+	90: LdU256(0)
+	91: StLoc[19](loc12: u256)
+	92: CopyLoc[15](loc8: &mut IncentivePool)
+	93: ImmBorrowField[8](IncentivePool.total_claimed_of_users: Table<address, u256>)
+	94: CopyLoc[18](loc11: address)
+	95: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	96: BrFalse(102)
+B11:
+	97: CopyLoc[15](loc8: &mut IncentivePool)
+	98: MutBorrowField[8](IncentivePool.total_claimed_of_users: Table<address, u256>)
+	99: CopyLoc[18](loc11: address)
+	100: Call table::remove<address, u256>(&mut Table<address, u256>, address): u256
+	101: StLoc[19](loc12: u256)
+B12:
+	102: CopyLoc[15](loc8: &mut IncentivePool)
+	103: MutBorrowField[8](IncentivePool.total_claimed_of_users: Table<address, u256>)
+	104: CopyLoc[18](loc11: address)
+	105: CopyLoc[20](loc13: u256)
+	106: Call table::add<address, u256>(&mut Table<address, u256>, address, u256)
+	107: MoveLoc[20](loc13: u256)
+	108: MoveLoc[19](loc12: u256)
+	109: Sub
+	110: Call ray_math::ray(): u256
+	111: Div
+	112: CastU64
+	113: StLoc[17](loc10: u64)
+	114: CopyLoc[15](loc8: &mut IncentivePool)
+	115: ImmBorrowField[9](IncentivePool.distributed: u64)
+	116: ReadRef
+	117: CopyLoc[17](loc10: u64)
+	118: Add
+	119: CopyLoc[15](loc8: &mut IncentivePool)
+	120: ImmBorrowField[10](IncentivePool.total_supply: u64)
+	121: ReadRef
+	122: Gt
+	123: BrFalse(132)
+B13:
+	124: CopyLoc[15](loc8: &mut IncentivePool)
+	125: ImmBorrowField[10](IncentivePool.total_supply: u64)
+	126: ReadRef
+	127: CopyLoc[15](loc8: &mut IncentivePool)
+	128: ImmBorrowField[9](IncentivePool.distributed: u64)
+	129: ReadRef
+	130: Sub
+	131: StLoc[17](loc10: u64)
+B14:
+	132: CopyLoc[17](loc10: u64)
+	133: LdU64(0)
+	134: Gt
+	135: BrFalse(154)
+B15:
+	136: MoveLoc[11](loc4: u64)
+	137: CopyLoc[17](loc10: u64)
+	138: Add
+	139: StLoc[11](loc4: u64)
+	140: CopyLoc[15](loc8: &mut IncentivePool)
+	141: ImmBorrowField[9](IncentivePool.distributed: u64)
+	142: ReadRef
+	143: CopyLoc[17](loc10: u64)
+	144: Add
+	145: MoveLoc[15](loc8: &mut IncentivePool)
+	146: MutBorrowField[9](IncentivePool.distributed: u64)
+	147: WriteRef
+	148: CopyLoc[18](loc11: address)
+	149: MoveLoc[16](loc9: address)
+	150: MoveLoc[17](loc10: u64)
+	151: Pack[10](RewardsClaimed)
+	152: Call event::emit<RewardsClaimed>(RewardsClaimed)
+	153: Branch(156)
+B16:
+	154: MoveLoc[15](loc8: &mut IncentivePool)
+	155: Pop
+B17:
+	156: MoveLoc[12](loc5: u64)
+	157: LdU64(1)
+	158: Sub
+	159: StLoc[12](loc5: u64)
+	160: Branch(36)
+B18:
+	161: MoveLoc[1](Arg1: &mut Incentive)
+	162: Pop
+	163: CopyLoc[11](loc4: u64)
+	164: LdU64(0)
+	165: Gt
+	166: BrFalse(175)
+B19:
+	167: MoveLoc[2](Arg2: &mut IncentiveFundsPool<Ty0>)
+	168: MoveLoc[11](loc4: u64)
+	169: Call decrease_balance<Ty0>(&mut IncentiveFundsPool<Ty0>, u64): Balance<Ty0>
+	170: MoveLoc[6](Arg6: &mut TxContext)
+	171: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	172: MoveLoc[18](loc11: address)
+	173: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	174: Branch(179)
+B20:
+	175: MoveLoc[2](Arg2: &mut IncentiveFundsPool<Ty0>)
+	176: Pop
+	177: MoveLoc[6](Arg6: &mut TxContext)
+	178: Pop
+B21:
+	179: Ret
+}
+
+public get_pool_from_funds_pool<Ty0>(Arg0: &Incentive, Arg1: &IncentiveFundsPool<Ty0>, Arg2: u8, Arg3: u8): vector<address> {
+L4:	loc0: bool
+L5:	loc1: bool
+L6:	loc2: address
+L7:	loc3: &IncentivePool
+L8:	loc4: address
+L9:	loc5: u64
+L10:	loc6: vector<address>
+L11:	loc7: vector<address>
+B0:
+	0: MoveLoc[1](Arg1: &IncentiveFundsPool<Ty0>)
+	1: ImmBorrowFieldGeneric[1](IncentiveFundsPool.id: UID)
+	2: Call object::uid_to_address(&UID): address
+	3: StLoc[6](loc2: address)
+	4: VecPack(40, 0)
+	5: StLoc[11](loc7: vector<address>)
+	6: CopyLoc[0](Arg0: &Incentive)
+	7: ImmBorrowField[5](Incentive.pool_objs: vector<address>)
+	8: ReadRef
+	9: StLoc[10](loc6: vector<address>)
+	10: ImmBorrowLoc[10](loc6: vector<address>)
+	11: VecLen(40)
+	12: StLoc[9](loc5: u64)
+B1:
+	13: CopyLoc[9](loc5: u64)
+	14: LdU64(0)
+	15: Gt
+	16: BrFalse(68)
+B2:
+	17: Branch(18)
+B3:
+	18: ImmBorrowLoc[10](loc6: vector<address>)
+	19: CopyLoc[9](loc5: u64)
+	20: LdU64(1)
+	21: Sub
+	22: VecImmBorrow(40)
+	23: ReadRef
+	24: StLoc[8](loc4: address)
+	25: CopyLoc[0](Arg0: &Incentive)
+	26: ImmBorrowField[4](Incentive.pools: Table<address, IncentivePool>)
+	27: CopyLoc[8](loc4: address)
+	28: Call table::borrow<address, IncentivePool>(&Table<address, IncentivePool>, address): &IncentivePool
+	29: StLoc[7](loc3: &IncentivePool)
+	30: CopyLoc[7](loc3: &IncentivePool)
+	31: ImmBorrowField[11](IncentivePool.asset_id: u8)
+	32: ReadRef
+	33: CopyLoc[2](Arg2: u8)
+	34: Eq
+	35: BrFalse(43)
+B4:
+	36: CopyLoc[7](loc3: &IncentivePool)
+	37: ImmBorrowField[12](IncentivePool.option: u8)
+	38: ReadRef
+	39: CopyLoc[3](Arg3: u8)
+	40: Eq
+	41: StLoc[4](loc0: bool)
+	42: Branch(45)
+B5:
+	43: LdFalse
+	44: StLoc[4](loc0: bool)
+B6:
+	45: MoveLoc[4](loc0: bool)
+	46: BrFalse(54)
+B7:
+	47: MoveLoc[7](loc3: &IncentivePool)
+	48: ImmBorrowField[13](IncentivePool.funds: address)
+	49: ReadRef
+	50: CopyLoc[6](loc2: address)
+	51: Eq
+	52: StLoc[5](loc1: bool)
+	53: Branch(58)
+B8:
+	54: MoveLoc[7](loc3: &IncentivePool)
+	55: Pop
+	56: LdFalse
+	57: StLoc[5](loc1: bool)
+B9:
+	58: MoveLoc[5](loc1: bool)
+	59: BrFalse(63)
+B10:
+	60: MutBorrowLoc[11](loc7: vector<address>)
+	61: MoveLoc[8](loc4: address)
+	62: VecPushBack(40)
+B11:
+	63: MoveLoc[9](loc5: u64)
+	64: LdU64(1)
+	65: Sub
+	66: StLoc[9](loc5: u64)
+	67: Branch(13)
+B12:
+	68: MoveLoc[0](Arg0: &Incentive)
+	69: Pop
+	70: MoveLoc[11](loc7: vector<address>)
+	71: Ret
+}
+
+update_reward_all(Arg0: &Clock, Arg1: &mut Incentive, Arg2: &mut Storage, Arg3: u8, Arg4: address) {
+B0:
+	0: CopyLoc[0](Arg0: &Clock)
+	1: CopyLoc[1](Arg1: &mut Incentive)
+	2: CopyLoc[2](Arg2: &mut Storage)
+	3: CopyLoc[3](Arg3: u8)
+	4: LdConst[0](u8: 1)
+	5: CopyLoc[4](Arg4: address)
+	6: Call update_reward(&Clock, &mut Incentive, &mut Storage, u8, u8, address)
+	7: CopyLoc[0](Arg0: &Clock)
+	8: CopyLoc[1](Arg1: &mut Incentive)
+	9: CopyLoc[2](Arg2: &mut Storage)
+	10: CopyLoc[3](Arg3: u8)
+	11: LdConst[1](u8: 2)
+	12: CopyLoc[4](Arg4: address)
+	13: Call update_reward(&Clock, &mut Incentive, &mut Storage, u8, u8, address)
+	14: CopyLoc[0](Arg0: &Clock)
+	15: CopyLoc[1](Arg1: &mut Incentive)
+	16: CopyLoc[2](Arg2: &mut Storage)
+	17: CopyLoc[3](Arg3: u8)
+	18: LdConst[3](u8: 4)
+	19: CopyLoc[4](Arg4: address)
+	20: Call update_reward(&Clock, &mut Incentive, &mut Storage, u8, u8, address)
+	21: MoveLoc[0](Arg0: &Clock)
+	22: MoveLoc[1](Arg1: &mut Incentive)
+	23: MoveLoc[2](Arg2: &mut Storage)
+	24: MoveLoc[3](Arg3: u8)
+	25: LdConst[2](u8: 3)
+	26: MoveLoc[4](Arg4: address)
+	27: Call update_reward(&Clock, &mut Incentive, &mut Storage, u8, u8, address)
+	28: Ret
+}
+
+update_reward(Arg0: &Clock, Arg1: &mut Incentive, Arg2: &mut Storage, Arg3: u8, Arg4: u8, Arg5: address) {
+L6:	loc0: u8
+L7:	loc1: u8
+L8:	loc2: u64
+L9:	loc3: u256
+L10:	loc4: address
+L11:	loc5: u256
+L12:	loc6: u256
+L13:	loc7: u64
+L14:	loc8: &mut IncentivePool
+L15:	loc9: u64
+L16:	loc10: vector<address>
+L17:	loc11: u256
+L18:	loc12: u256
+L19:	loc13: u256
+L20:	loc14: u256
+L21:	loc15: u256
+L22:	loc16: u256
+B0:
+	0: CopyLoc[1](Arg1: &mut Incentive)
+	1: FreezeRef
+	2: Call version_verification(&Incentive)
+	3: MoveLoc[0](Arg0: &Clock)
+	4: Call clock::timestamp_ms(&Clock): u64
+	5: StLoc[13](loc7: u64)
+	6: CopyLoc[1](Arg1: &mut Incentive)
+	7: CopyLoc[3](Arg3: u8)
+	8: CopyLoc[4](Arg4: u8)
+	9: StLoc[7](loc1: u8)
+	10: StLoc[6](loc0: u8)
+	11: FreezeRef
+	12: MoveLoc[6](loc0: u8)
+	13: MoveLoc[7](loc1: u8)
+	14: Call get_pool_from_asset_and_option(&Incentive, u8, u8): vector<address> * vector<address> * vector<address>
+	15: StLoc[16](loc10: vector<address>)
+	16: Pop
+	17: Pop
+	18: ImmBorrowLoc[16](loc10: vector<address>)
+	19: VecLen(40)
+	20: StLoc[15](loc9: u64)
+	21: CopyLoc[2](Arg2: &mut Storage)
+	22: CopyLoc[3](Arg3: u8)
+	23: CopyLoc[5](Arg5: address)
+	24: Call storage::get_user_balance(&mut Storage, u8, address): u256 * u256
+	25: StLoc[20](loc14: u256)
+	26: StLoc[22](loc16: u256)
+	27: MoveLoc[2](Arg2: &mut Storage)
+	28: MoveLoc[3](Arg3: u8)
+	29: Call storage::get_total_supply(&mut Storage, u8): u256 * u256
+	30: StLoc[17](loc11: u256)
+	31: StLoc[19](loc13: u256)
+	32: CopyLoc[4](Arg4: u8)
+	33: LdConst[2](u8: 3)
+	34: Eq
+	35: BrFalse(38)
+B1:
+	36: MoveLoc[17](loc11: u256)
+	37: StLoc[19](loc13: u256)
+B2:
+	38: CopyLoc[15](loc9: u64)
+	39: LdU64(0)
+	40: Gt
+	41: BrFalse(121)
+B3:
+	42: Branch(43)
+B4:
+	43: CopyLoc[1](Arg1: &mut Incentive)
+	44: MutBorrowField[4](Incentive.pools: Table<address, IncentivePool>)
+	45: ImmBorrowLoc[16](loc10: vector<address>)
+	46: CopyLoc[15](loc9: u64)
+	47: LdU64(1)
+	48: Sub
+	49: VecImmBorrow(40)
+	50: ReadRef
+	51: Call table::borrow_mut<address, IncentivePool>(&mut Table<address, IncentivePool>, address): &mut IncentivePool
+	52: StLoc[14](loc8: &mut IncentivePool)
+	53: CopyLoc[4](Arg4: u8)
+	54: CopyLoc[22](loc16: u256)
+	55: CopyLoc[20](loc14: u256)
+	56: CopyLoc[14](loc8: &mut IncentivePool)
+	57: ImmBorrowField[14](IncentivePool.factor: u256)
+	58: ReadRef
+	59: Call calculate_user_effective_amount(u8, u256, u256, u256): u256
+	60: StLoc[21](loc15: u256)
+	61: CopyLoc[14](loc8: &mut IncentivePool)
+	62: CopyLoc[13](loc7: u64)
+	63: CopyLoc[19](loc13: u256)
+	64: CopyLoc[5](Arg5: address)
+	65: MoveLoc[21](loc15: u256)
+	66: StLoc[11](loc5: u256)
+	67: StLoc[10](loc4: address)
+	68: StLoc[9](loc3: u256)
+	69: StLoc[8](loc2: u64)
+	70: FreezeRef
+	71: MoveLoc[8](loc2: u64)
+	72: MoveLoc[9](loc3: u256)
+	73: MoveLoc[10](loc4: address)
+	74: MoveLoc[11](loc5: u256)
+	75: Call calculate_one(&IncentivePool, u64, u256, address, u256): u256 * u256
+	76: StLoc[18](loc12: u256)
+	77: StLoc[12](loc6: u256)
+	78: CopyLoc[12](loc6: u256)
+	79: CopyLoc[14](loc8: &mut IncentivePool)
+	80: MutBorrowField[15](IncentivePool.index_reward: u256)
+	81: WriteRef
+	82: CopyLoc[13](loc7: u64)
+	83: CopyLoc[14](loc8: &mut IncentivePool)
+	84: MutBorrowField[16](IncentivePool.last_update_at: u64)
+	85: WriteRef
+	86: CopyLoc[14](loc8: &mut IncentivePool)
+	87: ImmBorrowField[17](IncentivePool.index_rewards_paids: Table<address, u256>)
+	88: CopyLoc[5](Arg5: address)
+	89: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	90: BrFalse(96)
+B5:
+	91: CopyLoc[14](loc8: &mut IncentivePool)
+	92: MutBorrowField[17](IncentivePool.index_rewards_paids: Table<address, u256>)
+	93: CopyLoc[5](Arg5: address)
+	94: Call table::remove<address, u256>(&mut Table<address, u256>, address): u256
+	95: Pop
+B6:
+	96: CopyLoc[14](loc8: &mut IncentivePool)
+	97: MutBorrowField[17](IncentivePool.index_rewards_paids: Table<address, u256>)
+	98: CopyLoc[5](Arg5: address)
+	99: MoveLoc[12](loc6: u256)
+	100: Call table::add<address, u256>(&mut Table<address, u256>, address, u256)
+	101: CopyLoc[14](loc8: &mut IncentivePool)
+	102: ImmBorrowField[7](IncentivePool.total_rewards_of_users: Table<address, u256>)
+	103: CopyLoc[5](Arg5: address)
+	104: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	105: BrFalse(111)
+B7:
+	106: CopyLoc[14](loc8: &mut IncentivePool)
+	107: MutBorrowField[7](IncentivePool.total_rewards_of_users: Table<address, u256>)
+	108: CopyLoc[5](Arg5: address)
+	109: Call table::remove<address, u256>(&mut Table<address, u256>, address): u256
+	110: Pop
+B8:
+	111: MoveLoc[14](loc8: &mut IncentivePool)
+	112: MutBorrowField[7](IncentivePool.total_rewards_of_users: Table<address, u256>)
+	113: CopyLoc[5](Arg5: address)
+	114: MoveLoc[18](loc12: u256)
+	115: Call table::add<address, u256>(&mut Table<address, u256>, address, u256)
+	116: MoveLoc[15](loc9: u64)
+	117: LdU64(1)
+	118: Sub
+	119: StLoc[15](loc9: u64)
+	120: Branch(38)
+B9:
+	121: MoveLoc[1](Arg1: &mut Incentive)
+	122: Pop
+	123: Ret
+}
+
+calculate_one(Arg0: &IncentivePool, Arg1: u64, Arg2: u256, Arg3: address, Arg4: u256): u256 * u256 {
+L5:	loc0: u64
+L6:	loc1: u256
+L7:	loc2: u256
+L8:	loc3: u256
+L9:	loc4: u256
+L10:	loc5: u256
+L11:	loc6: u64
+L12:	loc7: u64
+L13:	loc8: u256
+B0:
+	0: CopyLoc[0](Arg0: &IncentivePool)
+	1: ImmBorrowField[18](IncentivePool.start_at: u64)
+	2: ReadRef
+	3: StLoc[11](loc6: u64)
+	4: CopyLoc[11](loc6: u64)
+	5: CopyLoc[0](Arg0: &IncentivePool)
+	6: ImmBorrowField[16](IncentivePool.last_update_at: u64)
+	7: ReadRef
+	8: Lt
+	9: BrFalse(14)
+B1:
+	10: CopyLoc[0](Arg0: &IncentivePool)
+	11: ImmBorrowField[16](IncentivePool.last_update_at: u64)
+	12: ReadRef
+	13: StLoc[11](loc6: u64)
+B2:
+	14: CopyLoc[0](Arg0: &IncentivePool)
+	15: ImmBorrowField[19](IncentivePool.end_at: u64)
+	16: ReadRef
+	17: StLoc[5](loc0: u64)
+	18: CopyLoc[1](Arg1: u64)
+	19: CopyLoc[5](loc0: u64)
+	20: Lt
+	21: BrFalse(24)
+B3:
+	22: MoveLoc[1](Arg1: u64)
+	23: StLoc[5](loc0: u64)
+B4:
+	24: CopyLoc[0](Arg0: &IncentivePool)
+	25: ImmBorrowField[15](IncentivePool.index_reward: u256)
+	26: ReadRef
+	27: StLoc[7](loc2: u256)
+	28: CopyLoc[11](loc6: u64)
+	29: CopyLoc[5](loc0: u64)
+	30: Lt
+	31: BrFalse(58)
+B5:
+	32: MoveLoc[5](loc0: u64)
+	33: MoveLoc[11](loc6: u64)
+	34: Sub
+	35: StLoc[12](loc7: u64)
+	36: CopyLoc[0](Arg0: &IncentivePool)
+	37: Call calculate_release_rate(&IncentivePool): u256
+	38: StLoc[9](loc4: u256)
+	39: LdU256(0)
+	40: StLoc[6](loc1: u256)
+	41: CopyLoc[2](Arg2: u256)
+	42: LdU256(0)
+	43: Gt
+	44: BrFalse(52)
+B6:
+	45: MoveLoc[9](loc4: u256)
+	46: MoveLoc[12](loc7: u64)
+	47: CastU256
+	48: Call safe_math::mul(u256, u256): u256
+	49: MoveLoc[2](Arg2: u256)
+	50: Div
+	51: StLoc[6](loc1: u256)
+B7:
+	52: ImmBorrowLoc[6](loc1: u256)
+	53: Call debug::print<u256>(&u256)
+	54: MoveLoc[7](loc2: u256)
+	55: MoveLoc[6](loc1: u256)
+	56: Add
+	57: StLoc[7](loc2: u256)
+B8:
+	58: LdU256(0)
+	59: StLoc[13](loc8: u256)
+	60: CopyLoc[0](Arg0: &IncentivePool)
+	61: ImmBorrowField[7](IncentivePool.total_rewards_of_users: Table<address, u256>)
+	62: CopyLoc[3](Arg3: address)
+	63: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	64: BrFalse(71)
+B9:
+	65: CopyLoc[0](Arg0: &IncentivePool)
+	66: ImmBorrowField[7](IncentivePool.total_rewards_of_users: Table<address, u256>)
+	67: CopyLoc[3](Arg3: address)
+	68: Call table::borrow<address, u256>(&Table<address, u256>, address): &u256
+	69: ReadRef
+	70: StLoc[13](loc8: u256)
+B10:
+	71: LdU256(0)
+	72: StLoc[8](loc3: u256)
+	73: CopyLoc[0](Arg0: &IncentivePool)
+	74: ImmBorrowField[17](IncentivePool.index_rewards_paids: Table<address, u256>)
+	75: CopyLoc[3](Arg3: address)
+	76: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	77: BrFalse(85)
+B11:
+	78: MoveLoc[0](Arg0: &IncentivePool)
+	79: ImmBorrowField[17](IncentivePool.index_rewards_paids: Table<address, u256>)
+	80: MoveLoc[3](Arg3: address)
+	81: Call table::borrow<address, u256>(&Table<address, u256>, address): &u256
+	82: ReadRef
+	83: StLoc[8](loc3: u256)
+	84: Branch(87)
+B12:
+	85: MoveLoc[0](Arg0: &IncentivePool)
+	86: Pop
+B13:
+	87: CopyLoc[7](loc2: u256)
+	88: MoveLoc[8](loc3: u256)
+	89: Sub
+	90: MoveLoc[4](Arg4: u256)
+	91: Mul
+	92: StLoc[10](loc5: u256)
+	93: MoveLoc[13](loc8: u256)
+	94: MoveLoc[10](loc5: u256)
+	95: Add
+	96: StLoc[13](loc8: u256)
+	97: MoveLoc[7](loc2: u256)
+	98: MoveLoc[13](loc8: u256)
+	99: Ret
+}
+
+public calculate_release_rate(Arg0: &IncentivePool): u256 {
+B0:
+	0: CopyLoc[0](Arg0: &IncentivePool)
+	1: ImmBorrowField[10](IncentivePool.total_supply: u64)
+	2: ReadRef
+	3: CastU256
+	4: CopyLoc[0](Arg0: &IncentivePool)
+	5: ImmBorrowField[19](IncentivePool.end_at: u64)
+	6: ReadRef
+	7: MoveLoc[0](Arg0: &IncentivePool)
+	8: ImmBorrowField[18](IncentivePool.start_at: u64)
+	9: ReadRef
+	10: Sub
+	11: CastU256
+	12: Call ray_math::ray_div(u256, u256): u256
+	13: Ret
+}
+
+public calculate_user_effective_amount(Arg0: u8, Arg1: u256, Arg2: u256, Arg3: u256): u256 {
+L4:	loc0: u256
+L5:	loc1: u256
+B0:
+	0: CopyLoc[1](Arg1: u256)
+	1: StLoc[5](loc1: u256)
+	2: MoveLoc[0](Arg0: u8)
+	3: LdConst[2](u8: 3)
+	4: Eq
+	5: BrFalse(10)
+B1:
+	6: MoveLoc[2](Arg2: u256)
+	7: StLoc[1](Arg1: u256)
+	8: MoveLoc[5](loc1: u256)
+	9: StLoc[2](Arg2: u256)
+B2:
+	10: MoveLoc[3](Arg3: u256)
+	11: MoveLoc[2](Arg2: u256)
+	12: Call ray_math::ray_mul(u256, u256): u256
+	13: StLoc[4](loc0: u256)
+	14: CopyLoc[1](Arg1: u256)
+	15: CopyLoc[4](loc0: u256)
+	16: Gt
+	17: BrFalse(22)
+B3:
+	18: MoveLoc[1](Arg1: u256)
+	19: MoveLoc[4](loc0: u256)
+	20: Sub
+	21: Ret
+B4:
+	22: LdU256(0)
+	23: Ret
+}
+
+public get_pool_from_asset_and_option(Arg0: &Incentive, Arg1: u8, Arg2: u8): vector<address> * vector<address> * vector<address> {
+L3:	loc0: bool
+L4:	loc1: &IncentivePool
+L5:	loc2: address
+L6:	loc3: u64
+L7:	loc4: vector<address>
+L8:	loc5: vector<address>
+L9:	loc6: vector<address>
+L10:	loc7: vector<address>
+B0:
+	0: CopyLoc[0](Arg0: &Incentive)
+	1: ImmBorrowField[5](Incentive.pool_objs: vector<address>)
+	2: ReadRef
+	3: StLoc[7](loc4: vector<address>)
+	4: ImmBorrowLoc[7](loc4: vector<address>)
+	5: VecLen(40)
+	6: StLoc[6](loc3: u64)
+	7: VecPack(40, 0)
+	8: StLoc[8](loc5: vector<address>)
+	9: VecPack(40, 0)
+	10: StLoc[10](loc7: vector<address>)
+	11: VecPack(40, 0)
+	12: StLoc[9](loc6: vector<address>)
+B1:
+	13: CopyLoc[6](loc3: u64)
+	14: LdU64(0)
+	15: Gt
+	16: BrFalse(86)
+B2:
+	17: Branch(18)
+B3:
+	18: ImmBorrowLoc[7](loc4: vector<address>)
+	19: CopyLoc[6](loc3: u64)
+	20: LdU64(1)
+	21: Sub
+	22: VecImmBorrow(40)
+	23: ReadRef
+	24: StLoc[5](loc2: address)
+	25: CopyLoc[0](Arg0: &Incentive)
+	26: ImmBorrowField[4](Incentive.pools: Table<address, IncentivePool>)
+	27: CopyLoc[5](loc2: address)
+	28: Call table::borrow<address, IncentivePool>(&Table<address, IncentivePool>, address): &IncentivePool
+	29: StLoc[4](loc1: &IncentivePool)
+	30: CopyLoc[4](loc1: &IncentivePool)
+	31: ImmBorrowField[11](IncentivePool.asset_id: u8)
+	32: ReadRef
+	33: CopyLoc[1](Arg1: u8)
+	34: Eq
+	35: BrFalse(43)
+B4:
+	36: CopyLoc[4](loc1: &IncentivePool)
+	37: ImmBorrowField[12](IncentivePool.option: u8)
+	38: ReadRef
+	39: CopyLoc[2](Arg2: u8)
+	40: Eq
+	41: StLoc[3](loc0: bool)
+	42: Branch(45)
+B5:
+	43: LdFalse
+	44: StLoc[3](loc0: bool)
+B6:
+	45: MoveLoc[3](loc0: bool)
+	46: BrFalse(63)
+B7:
+	47: MoveLoc[4](loc1: &IncentivePool)
+	48: Pop
+	49: MutBorrowLoc[8](loc5: vector<address>)
+	50: CopyLoc[5](loc2: address)
+	51: VecPushBack(40)
+	52: MutBorrowLoc[10](loc7: vector<address>)
+	53: CopyLoc[5](loc2: address)
+	54: VecPushBack(40)
+	55: MutBorrowLoc[9](loc6: vector<address>)
+	56: MoveLoc[5](loc2: address)
+	57: VecPushBack(40)
+	58: MoveLoc[6](loc3: u64)
+	59: LdU64(1)
+	60: Sub
+	61: StLoc[6](loc3: u64)
+	62: Branch(13)
+B8:
+	63: CopyLoc[4](loc1: &IncentivePool)
+	64: ImmBorrowField[11](IncentivePool.asset_id: u8)
+	65: ReadRef
+	66: CopyLoc[1](Arg1: u8)
+	67: Eq
+	68: BrFalse(72)
+B9:
+	69: MutBorrowLoc[8](loc5: vector<address>)
+	70: CopyLoc[5](loc2: address)
+	71: VecPushBack(40)
+B10:
+	72: MoveLoc[4](loc1: &IncentivePool)
+	73: ImmBorrowField[12](IncentivePool.option: u8)
+	74: ReadRef
+	75: CopyLoc[2](Arg2: u8)
+	76: Eq
+	77: BrFalse(81)
+B11:
+	78: MutBorrowLoc[10](loc7: vector<address>)
+	79: MoveLoc[5](loc2: address)
+	80: VecPushBack(40)
+B12:
+	81: MoveLoc[6](loc3: u64)
+	82: LdU64(1)
+	83: Sub
+	84: StLoc[6](loc3: u64)
+	85: Branch(13)
+B13:
+	86: MoveLoc[0](Arg0: &Incentive)
+	87: Pop
+	88: MoveLoc[8](loc5: vector<address>)
+	89: MoveLoc[10](loc7: vector<address>)
+	90: MoveLoc[9](loc6: vector<address>)
+	91: Ret
+}
+
+public get_active_pools(Arg0: &Incentive, Arg1: u8, Arg2: u8, Arg3: u64): vector<address> {
+L4:	loc0: bool
+L5:	loc1: bool
+L6:	loc2: bool
+L7:	loc3: &IncentivePool
+L8:	loc4: address
+L9:	loc5: u64
+L10:	loc6: vector<address>
+L11:	loc7: vector<address>
+B0:
+	0: CopyLoc[0](Arg0: &Incentive)
+	1: ImmBorrowField[5](Incentive.pool_objs: vector<address>)
+	2: ReadRef
+	3: StLoc[10](loc6: vector<address>)
+	4: ImmBorrowLoc[10](loc6: vector<address>)
+	5: VecLen(40)
+	6: StLoc[9](loc5: u64)
+	7: VecPack(40, 0)
+	8: StLoc[11](loc7: vector<address>)
+B1:
+	9: CopyLoc[9](loc5: u64)
+	10: LdU64(0)
+	11: Gt
+	12: BrFalse(75)
+B2:
+	13: Branch(14)
+B3:
+	14: ImmBorrowLoc[10](loc6: vector<address>)
+	15: CopyLoc[9](loc5: u64)
+	16: LdU64(1)
+	17: Sub
+	18: VecImmBorrow(40)
+	19: ReadRef
+	20: StLoc[8](loc4: address)
+	21: CopyLoc[0](Arg0: &Incentive)
+	22: ImmBorrowField[4](Incentive.pools: Table<address, IncentivePool>)
+	23: CopyLoc[8](loc4: address)
+	24: Call table::borrow<address, IncentivePool>(&Table<address, IncentivePool>, address): &IncentivePool
+	25: StLoc[7](loc3: &IncentivePool)
+	26: CopyLoc[7](loc3: &IncentivePool)
+	27: ImmBorrowField[11](IncentivePool.asset_id: u8)
+	28: ReadRef
+	29: CopyLoc[1](Arg1: u8)
+	30: Eq
+	31: BrFalse(39)
+B4:
+	32: CopyLoc[7](loc3: &IncentivePool)
+	33: ImmBorrowField[12](IncentivePool.option: u8)
+	34: ReadRef
+	35: CopyLoc[2](Arg2: u8)
+	36: Eq
+	37: StLoc[4](loc0: bool)
+	38: Branch(41)
+B5:
+	39: LdFalse
+	40: StLoc[4](loc0: bool)
+B6:
+	41: MoveLoc[4](loc0: bool)
+	42: BrFalse(50)
+B7:
+	43: CopyLoc[7](loc3: &IncentivePool)
+	44: ImmBorrowField[18](IncentivePool.start_at: u64)
+	45: ReadRef
+	46: CopyLoc[3](Arg3: u64)
+	47: Le
+	48: StLoc[5](loc1: bool)
+	49: Branch(52)
+B8:
+	50: LdFalse
+	51: StLoc[5](loc1: bool)
+B9:
+	52: MoveLoc[5](loc1: bool)
+	53: BrFalse(61)
+B10:
+	54: MoveLoc[7](loc3: &IncentivePool)
+	55: ImmBorrowField[19](IncentivePool.end_at: u64)
+	56: ReadRef
+	57: CopyLoc[3](Arg3: u64)
+	58: Ge
+	59: StLoc[6](loc2: bool)
+	60: Branch(65)
+B11:
+	61: MoveLoc[7](loc3: &IncentivePool)
+	62: Pop
+	63: LdFalse
+	64: StLoc[6](loc2: bool)
+B12:
+	65: MoveLoc[6](loc2: bool)
+	66: BrFalse(70)
+B13:
+	67: MutBorrowLoc[11](loc7: vector<address>)
+	68: MoveLoc[8](loc4: address)
+	69: VecPushBack(40)
+B14:
+	70: MoveLoc[9](loc5: u64)
+	71: LdU64(1)
+	72: Sub
+	73: StLoc[9](loc5: u64)
+	74: Branch(9)
+B15:
+	75: MoveLoc[0](Arg0: &Incentive)
+	76: Pop
+	77: MoveLoc[11](loc7: vector<address>)
+	78: Ret
+}
+
+public get_pool_objects(Arg0: &Incentive): vector<address> {
+B0:
+	0: MoveLoc[0](Arg0: &Incentive)
+	1: ImmBorrowField[5](Incentive.pool_objs: vector<address>)
+	2: ReadRef
+	3: Ret
+}
+
+public option_supply(): u8 {
+B0:
+	0: LdConst[0](u8: 1)
+	1: Ret
+}
+
+public option_withdraw(): u8 {
+B0:
+	0: LdConst[1](u8: 2)
+	1: Ret
+}
+
+public option_borrow(): u8 {
+B0:
+	0: LdConst[2](u8: 3)
+	1: Ret
+}
+
+public option_repay(): u8 {
+B0:
+	0: LdConst[3](u8: 4)
+	1: Ret
+}
+
+public get_pool_info(Arg0: &Incentive, Arg1: address): address * u64 * address * u64 * u64 * u64 * u64 * u8 * u8 * u256 * u64 * u64 * u256 {
+L2:	loc0: &IncentivePool
+B0:
+	0: MoveLoc[0](Arg0: &Incentive)
+	1: ImmBorrowField[4](Incentive.pools: Table<address, IncentivePool>)
+	2: MoveLoc[1](Arg1: address)
+	3: Call table::borrow<address, IncentivePool>(&Table<address, IncentivePool>, address): &IncentivePool
+	4: StLoc[2](loc0: &IncentivePool)
+	5: CopyLoc[2](loc0: &IncentivePool)
+	6: ImmBorrowField[20](IncentivePool.id: UID)
+	7: Call object::uid_to_address(&UID): address
+	8: CopyLoc[2](loc0: &IncentivePool)
+	9: ImmBorrowField[21](IncentivePool.phase: u64)
+	10: ReadRef
+	11: CopyLoc[2](loc0: &IncentivePool)
+	12: ImmBorrowField[13](IncentivePool.funds: address)
+	13: ReadRef
+	14: CopyLoc[2](loc0: &IncentivePool)
+	15: ImmBorrowField[18](IncentivePool.start_at: u64)
+	16: ReadRef
+	17: CopyLoc[2](loc0: &IncentivePool)
+	18: ImmBorrowField[19](IncentivePool.end_at: u64)
+	19: ReadRef
+	20: CopyLoc[2](loc0: &IncentivePool)
+	21: ImmBorrowField[6](IncentivePool.closed_at: u64)
+	22: ReadRef
+	23: CopyLoc[2](loc0: &IncentivePool)
+	24: ImmBorrowField[10](IncentivePool.total_supply: u64)
+	25: ReadRef
+	26: CopyLoc[2](loc0: &IncentivePool)
+	27: ImmBorrowField[12](IncentivePool.option: u8)
+	28: ReadRef
+	29: CopyLoc[2](loc0: &IncentivePool)
+	30: ImmBorrowField[11](IncentivePool.asset_id: u8)
+	31: ReadRef
+	32: CopyLoc[2](loc0: &IncentivePool)
+	33: ImmBorrowField[14](IncentivePool.factor: u256)
+	34: ReadRef
+	35: CopyLoc[2](loc0: &IncentivePool)
+	36: ImmBorrowField[16](IncentivePool.last_update_at: u64)
+	37: ReadRef
+	38: CopyLoc[2](loc0: &IncentivePool)
+	39: ImmBorrowField[9](IncentivePool.distributed: u64)
+	40: ReadRef
+	41: MoveLoc[2](loc0: &IncentivePool)
+	42: ImmBorrowField[15](IncentivePool.index_reward: u256)
+	43: ReadRef
+	44: Ret
+}
+
+public get_pool_length(Arg0: &Incentive): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Incentive)
+	1: ImmBorrowField[5](Incentive.pool_objs: vector<address>)
+	2: VecLen(40)
+	3: Ret
+}
+
+public get_funds_value<Ty0>(Arg0: &IncentiveFundsPool<Ty0>): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &IncentiveFundsPool<Ty0>)
+	1: ImmBorrowFieldGeneric[0](IncentiveFundsPool.balance: Balance<Ty0>)
+	2: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	3: Ret
+}
+
+public calculate_one_from_pool(Arg0: &Incentive, Arg1: address, Arg2: u64, Arg3: u256, Arg4: address, Arg5: u256): u256 * u256 {
+B0:
+	0: MoveLoc[0](Arg0: &Incentive)
+	1: ImmBorrowField[4](Incentive.pools: Table<address, IncentivePool>)
+	2: MoveLoc[1](Arg1: address)
+	3: Call table::borrow<address, IncentivePool>(&Table<address, IncentivePool>, address): &IncentivePool
+	4: MoveLoc[2](Arg2: u64)
+	5: MoveLoc[3](Arg3: u256)
+	6: MoveLoc[4](Arg4: address)
+	7: MoveLoc[5](Arg5: u256)
+	8: Call calculate_one(&IncentivePool, u64, u256, address, u256): u256 * u256
+	9: Ret
+}
+
+public get_total_claimed_from_user(Arg0: &Incentive, Arg1: address, Arg2: address): u256 {
+L3:	loc0: &IncentivePool
+L4:	loc1: u256
+B0:
+	0: MoveLoc[0](Arg0: &Incentive)
+	1: ImmBorrowField[4](Incentive.pools: Table<address, IncentivePool>)
+	2: MoveLoc[1](Arg1: address)
+	3: Call table::borrow<address, IncentivePool>(&Table<address, IncentivePool>, address): &IncentivePool
+	4: StLoc[3](loc0: &IncentivePool)
+	5: LdU256(0)
+	6: StLoc[4](loc1: u256)
+	7: CopyLoc[3](loc0: &IncentivePool)
+	8: ImmBorrowField[8](IncentivePool.total_claimed_of_users: Table<address, u256>)
+	9: CopyLoc[2](Arg2: address)
+	10: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	11: BrFalse(19)
+B1:
+	12: MoveLoc[3](loc0: &IncentivePool)
+	13: ImmBorrowField[8](IncentivePool.total_claimed_of_users: Table<address, u256>)
+	14: MoveLoc[2](Arg2: address)
+	15: Call table::borrow<address, u256>(&Table<address, u256>, address): &u256
+	16: ReadRef
+	17: StLoc[4](loc1: u256)
+	18: Branch(21)
+B2:
+	19: MoveLoc[3](loc0: &IncentivePool)
+	20: Pop
+B3:
+	21: MoveLoc[4](loc1: u256)
+	22: Ret
+}
+
+public get_funds_info(Arg0: &Incentive, Arg1: address): address * u8 * TypeName {
+L2:	loc0: &IncentiveFundsPoolInfo
+B0:
+	0: MoveLoc[0](Arg0: &Incentive)
+	1: ImmBorrowField[1](Incentive.funds: Table<address, IncentiveFundsPoolInfo>)
+	2: MoveLoc[1](Arg1: address)
+	3: Call table::borrow<address, IncentiveFundsPoolInfo>(&Table<address, IncentiveFundsPoolInfo>, address): &IncentiveFundsPoolInfo
+	4: StLoc[2](loc0: &IncentiveFundsPoolInfo)
+	5: CopyLoc[2](loc0: &IncentiveFundsPoolInfo)
+	6: ImmBorrowField[22](IncentiveFundsPoolInfo.id: UID)
+	7: Call object::uid_to_address(&UID): address
+	8: CopyLoc[2](loc0: &IncentiveFundsPoolInfo)
+	9: ImmBorrowField[23](IncentiveFundsPoolInfo.oracle_id: u8)
+	10: ReadRef
+	11: MoveLoc[2](loc0: &IncentiveFundsPoolInfo)
+	12: ImmBorrowField[24](IncentiveFundsPoolInfo.coin_type: TypeName)
+	13: ReadRef
+	14: Ret
+}
+
+decrease_balance<Ty0>(Arg0: &mut IncentiveFundsPool<Ty0>, Arg1: u64): Balance<Ty0> {
+B0:
+	0: MoveLoc[0](Arg0: &mut IncentiveFundsPool<Ty0>)
+	1: MutBorrowFieldGeneric[0](IncentiveFundsPool.balance: Balance<Ty0>)
+	2: MoveLoc[1](Arg1: u64)
+	3: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	4: Ret
+}
+
+entry public entry_deposit<Ty0>(Arg0: &Clock, Arg1: &mut Storage, Arg2: &mut Pool<Ty0>, Arg3: u8, Arg4: Coin<Ty0>, Arg5: u64, Arg6: &mut Incentive, Arg7: &mut Incentive, Arg8: &mut TxContext) {
+B0:
+	0: MoveLoc[6](Arg6: &mut Incentive)
+	1: CopyLoc[0](Arg0: &Clock)
+	2: CopyLoc[1](Arg1: &mut Storage)
+	3: CopyLoc[3](Arg3: u8)
+	4: CopyLoc[8](Arg8: &mut TxContext)
+	5: FreezeRef
+	6: Call tx_context::sender(&TxContext): address
+	7: Call incentive::update_reward(&mut Incentive, &Clock, &mut Storage, u8, address)
+	8: CopyLoc[0](Arg0: &Clock)
+	9: MoveLoc[7](Arg7: &mut Incentive)
+	10: CopyLoc[1](Arg1: &mut Storage)
+	11: CopyLoc[3](Arg3: u8)
+	12: CopyLoc[8](Arg8: &mut TxContext)
+	13: FreezeRef
+	14: Call tx_context::sender(&TxContext): address
+	15: Call update_reward_all(&Clock, &mut Incentive, &mut Storage, u8, address)
+	16: MoveLoc[0](Arg0: &Clock)
+	17: MoveLoc[1](Arg1: &mut Storage)
+	18: MoveLoc[2](Arg2: &mut Pool<Ty0>)
+	19: MoveLoc[3](Arg3: u8)
+	20: MoveLoc[4](Arg4: Coin<Ty0>)
+	21: MoveLoc[5](Arg5: u64)
+	22: MoveLoc[8](Arg8: &mut TxContext)
+	23: Call lending::deposit_coin<Ty0>(&Clock, &mut Storage, &mut Pool<Ty0>, u8, Coin<Ty0>, u64, &mut TxContext)
+	24: Ret
+}
+
+entry public entry_withdraw<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: &mut Incentive, Arg7: &mut Incentive, Arg8: &mut TxContext) {
+B0:
+	0: MoveLoc[6](Arg6: &mut Incentive)
+	1: CopyLoc[0](Arg0: &Clock)
+	2: CopyLoc[2](Arg2: &mut Storage)
+	3: CopyLoc[4](Arg4: u8)
+	4: CopyLoc[8](Arg8: &mut TxContext)
+	5: FreezeRef
+	6: Call tx_context::sender(&TxContext): address
+	7: Call incentive::update_reward(&mut Incentive, &Clock, &mut Storage, u8, address)
+	8: CopyLoc[0](Arg0: &Clock)
+	9: MoveLoc[7](Arg7: &mut Incentive)
+	10: CopyLoc[2](Arg2: &mut Storage)
+	11: CopyLoc[4](Arg4: u8)
+	12: CopyLoc[8](Arg8: &mut TxContext)
+	13: FreezeRef
+	14: Call tx_context::sender(&TxContext): address
+	15: Call update_reward_all(&Clock, &mut Incentive, &mut Storage, u8, address)
+	16: MoveLoc[0](Arg0: &Clock)
+	17: MoveLoc[1](Arg1: &PriceOracle)
+	18: MoveLoc[2](Arg2: &mut Storage)
+	19: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	20: MoveLoc[4](Arg4: u8)
+	21: MoveLoc[5](Arg5: u64)
+	22: CopyLoc[8](Arg8: &mut TxContext)
+	23: Call lending::withdraw_coin<Ty0>(&Clock, &PriceOracle, &mut Storage, &mut Pool<Ty0>, u8, u64, &mut TxContext): Balance<Ty0>
+	24: CopyLoc[8](Arg8: &mut TxContext)
+	25: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	26: MoveLoc[8](Arg8: &mut TxContext)
+	27: FreezeRef
+	28: Call tx_context::sender(&TxContext): address
+	29: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	30: Ret
+}
+
+public withdraw<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: &mut Incentive, Arg7: &mut Incentive, Arg8: &mut TxContext): Balance<Ty0> {
+B0:
+	0: MoveLoc[6](Arg6: &mut Incentive)
+	1: CopyLoc[0](Arg0: &Clock)
+	2: CopyLoc[2](Arg2: &mut Storage)
+	3: CopyLoc[4](Arg4: u8)
+	4: CopyLoc[8](Arg8: &mut TxContext)
+	5: FreezeRef
+	6: Call tx_context::sender(&TxContext): address
+	7: Call incentive::update_reward(&mut Incentive, &Clock, &mut Storage, u8, address)
+	8: CopyLoc[0](Arg0: &Clock)
+	9: MoveLoc[7](Arg7: &mut Incentive)
+	10: CopyLoc[2](Arg2: &mut Storage)
+	11: CopyLoc[4](Arg4: u8)
+	12: CopyLoc[8](Arg8: &mut TxContext)
+	13: FreezeRef
+	14: Call tx_context::sender(&TxContext): address
+	15: Call update_reward_all(&Clock, &mut Incentive, &mut Storage, u8, address)
+	16: MoveLoc[0](Arg0: &Clock)
+	17: MoveLoc[1](Arg1: &PriceOracle)
+	18: MoveLoc[2](Arg2: &mut Storage)
+	19: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	20: MoveLoc[4](Arg4: u8)
+	21: MoveLoc[5](Arg5: u64)
+	22: MoveLoc[8](Arg8: &mut TxContext)
+	23: Call lending::withdraw_coin<Ty0>(&Clock, &PriceOracle, &mut Storage, &mut Pool<Ty0>, u8, u64, &mut TxContext): Balance<Ty0>
+	24: Ret
+}
+
+entry public entry_borrow<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: &mut Incentive, Arg7: &mut TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &Clock)
+	1: MoveLoc[6](Arg6: &mut Incentive)
+	2: CopyLoc[2](Arg2: &mut Storage)
+	3: CopyLoc[4](Arg4: u8)
+	4: CopyLoc[7](Arg7: &mut TxContext)
+	5: FreezeRef
+	6: Call tx_context::sender(&TxContext): address
+	7: Call update_reward_all(&Clock, &mut Incentive, &mut Storage, u8, address)
+	8: MoveLoc[0](Arg0: &Clock)
+	9: MoveLoc[1](Arg1: &PriceOracle)
+	10: MoveLoc[2](Arg2: &mut Storage)
+	11: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	12: MoveLoc[4](Arg4: u8)
+	13: MoveLoc[5](Arg5: u64)
+	14: CopyLoc[7](Arg7: &mut TxContext)
+	15: Call lending::borrow_coin<Ty0>(&Clock, &PriceOracle, &mut Storage, &mut Pool<Ty0>, u8, u64, &mut TxContext): Balance<Ty0>
+	16: CopyLoc[7](Arg7: &mut TxContext)
+	17: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	18: MoveLoc[7](Arg7: &mut TxContext)
+	19: FreezeRef
+	20: Call tx_context::sender(&TxContext): address
+	21: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	22: Ret
+}
+
+public borrow<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: &mut Incentive, Arg7: &mut TxContext): Balance<Ty0> {
+B0:
+	0: CopyLoc[0](Arg0: &Clock)
+	1: MoveLoc[6](Arg6: &mut Incentive)
+	2: CopyLoc[2](Arg2: &mut Storage)
+	3: CopyLoc[4](Arg4: u8)
+	4: CopyLoc[7](Arg7: &mut TxContext)
+	5: FreezeRef
+	6: Call tx_context::sender(&TxContext): address
+	7: Call update_reward_all(&Clock, &mut Incentive, &mut Storage, u8, address)
+	8: MoveLoc[0](Arg0: &Clock)
+	9: MoveLoc[1](Arg1: &PriceOracle)
+	10: MoveLoc[2](Arg2: &mut Storage)
+	11: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	12: MoveLoc[4](Arg4: u8)
+	13: MoveLoc[5](Arg5: u64)
+	14: MoveLoc[7](Arg7: &mut TxContext)
+	15: Call lending::borrow_coin<Ty0>(&Clock, &PriceOracle, &mut Storage, &mut Pool<Ty0>, u8, u64, &mut TxContext): Balance<Ty0>
+	16: Ret
+}
+
+entry public entry_repay<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: Coin<Ty0>, Arg6: u64, Arg7: &mut Incentive, Arg8: &mut TxContext) {
+L9:	loc0: Balance<Ty0>
+B0:
+	0: CopyLoc[0](Arg0: &Clock)
+	1: MoveLoc[7](Arg7: &mut Incentive)
+	2: CopyLoc[2](Arg2: &mut Storage)
+	3: CopyLoc[4](Arg4: u8)
+	4: CopyLoc[8](Arg8: &mut TxContext)
+	5: FreezeRef
+	6: Call tx_context::sender(&TxContext): address
+	7: Call update_reward_all(&Clock, &mut Incentive, &mut Storage, u8, address)
+	8: MoveLoc[0](Arg0: &Clock)
+	9: MoveLoc[1](Arg1: &PriceOracle)
+	10: MoveLoc[2](Arg2: &mut Storage)
+	11: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	12: MoveLoc[4](Arg4: u8)
+	13: MoveLoc[5](Arg5: Coin<Ty0>)
+	14: MoveLoc[6](Arg6: u64)
+	15: CopyLoc[8](Arg8: &mut TxContext)
+	16: Call lending::repay_coin<Ty0>(&Clock, &PriceOracle, &mut Storage, &mut Pool<Ty0>, u8, Coin<Ty0>, u64, &mut TxContext): Balance<Ty0>
+	17: StLoc[9](loc0: Balance<Ty0>)
+	18: ImmBorrowLoc[9](loc0: Balance<Ty0>)
+	19: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	20: LdU64(0)
+	21: Gt
+	22: BrFalse(31)
+B1:
+	23: MoveLoc[9](loc0: Balance<Ty0>)
+	24: CopyLoc[8](Arg8: &mut TxContext)
+	25: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	26: MoveLoc[8](Arg8: &mut TxContext)
+	27: FreezeRef
+	28: Call tx_context::sender(&TxContext): address
+	29: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	30: Branch(35)
+B2:
+	31: MoveLoc[8](Arg8: &mut TxContext)
+	32: Pop
+	33: MoveLoc[9](loc0: Balance<Ty0>)
+	34: Call balance::destroy_zero<Ty0>(Balance<Ty0>)
+B3:
+	35: Ret
+}
+
+public repay<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: Coin<Ty0>, Arg6: u64, Arg7: &mut Incentive, Arg8: &mut TxContext): Balance<Ty0> {
+B0:
+	0: CopyLoc[0](Arg0: &Clock)
+	1: MoveLoc[7](Arg7: &mut Incentive)
+	2: CopyLoc[2](Arg2: &mut Storage)
+	3: CopyLoc[4](Arg4: u8)
+	4: CopyLoc[8](Arg8: &mut TxContext)
+	5: FreezeRef
+	6: Call tx_context::sender(&TxContext): address
+	7: Call update_reward_all(&Clock, &mut Incentive, &mut Storage, u8, address)
+	8: MoveLoc[0](Arg0: &Clock)
+	9: MoveLoc[1](Arg1: &PriceOracle)
+	10: MoveLoc[2](Arg2: &mut Storage)
+	11: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	12: MoveLoc[4](Arg4: u8)
+	13: MoveLoc[5](Arg5: Coin<Ty0>)
+	14: MoveLoc[6](Arg6: u64)
+	15: MoveLoc[8](Arg8: &mut TxContext)
+	16: Call lending::repay_coin<Ty0>(&Clock, &PriceOracle, &mut Storage, &mut Pool<Ty0>, u8, Coin<Ty0>, u64, &mut TxContext): Balance<Ty0>
+	17: Ret
+}
+
+entry public entry_liquidation<Ty0, Ty1>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: u8, Arg4: &mut Pool<Ty0>, Arg5: Coin<Ty0>, Arg6: u8, Arg7: &mut Pool<Ty1>, Arg8: address, Arg9: u64, Arg10: &mut Incentive, Arg11: &mut Incentive, Arg12: &mut TxContext) {
+L13:	loc0: Balance<Ty0>
+L14:	loc1: Balance<Ty1>
+L15:	loc2: address
+B0:
+	0: MoveLoc[10](Arg10: &mut Incentive)
+	1: CopyLoc[0](Arg0: &Clock)
+	2: CopyLoc[2](Arg2: &mut Storage)
+	3: CopyLoc[6](Arg6: u8)
+	4: CopyLoc[8](Arg8: address)
+	5: Call incentive::update_reward(&mut Incentive, &Clock, &mut Storage, u8, address)
+	6: CopyLoc[0](Arg0: &Clock)
+	7: CopyLoc[11](Arg11: &mut Incentive)
+	8: CopyLoc[2](Arg2: &mut Storage)
+	9: CopyLoc[6](Arg6: u8)
+	10: LdConst[8](address: 0x00..)
+	11: Call update_reward_all(&Clock, &mut Incentive, &mut Storage, u8, address)
+	12: CopyLoc[0](Arg0: &Clock)
+	13: MoveLoc[11](Arg11: &mut Incentive)
+	14: CopyLoc[2](Arg2: &mut Storage)
+	15: CopyLoc[3](Arg3: u8)
+	16: LdConst[8](address: 0x00..)
+	17: Call update_reward_all(&Clock, &mut Incentive, &mut Storage, u8, address)
+	18: CopyLoc[12](Arg12: &mut TxContext)
+	19: FreezeRef
+	20: Call tx_context::sender(&TxContext): address
+	21: StLoc[15](loc2: address)
+	22: MoveLoc[0](Arg0: &Clock)
+	23: MoveLoc[1](Arg1: &PriceOracle)
+	24: MoveLoc[2](Arg2: &mut Storage)
+	25: MoveLoc[3](Arg3: u8)
+	26: MoveLoc[4](Arg4: &mut Pool<Ty0>)
+	27: MoveLoc[5](Arg5: Coin<Ty0>)
+	28: MoveLoc[6](Arg6: u8)
+	29: MoveLoc[7](Arg7: &mut Pool<Ty1>)
+	30: MoveLoc[8](Arg8: address)
+	31: MoveLoc[9](Arg9: u64)
+	32: CopyLoc[12](Arg12: &mut TxContext)
+	33: Call lending::liquidation<Ty0, Ty1>(&Clock, &PriceOracle, &mut Storage, u8, &mut Pool<Ty0>, Coin<Ty0>, u8, &mut Pool<Ty1>, address, u64, &mut TxContext): Balance<Ty1> * Balance<Ty0>
+	34: StLoc[13](loc0: Balance<Ty0>)
+	35: StLoc[14](loc1: Balance<Ty1>)
+	36: ImmBorrowLoc[14](loc1: Balance<Ty1>)
+	37: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	38: LdU64(0)
+	39: Gt
+	40: BrFalse(47)
+B1:
+	41: MoveLoc[14](loc1: Balance<Ty1>)
+	42: CopyLoc[12](Arg12: &mut TxContext)
+	43: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	44: CopyLoc[15](loc2: address)
+	45: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	46: Branch(49)
+B2:
+	47: MoveLoc[14](loc1: Balance<Ty1>)
+	48: Call balance::destroy_zero<Ty1>(Balance<Ty1>)
+B3:
+	49: ImmBorrowLoc[13](loc0: Balance<Ty0>)
+	50: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	51: LdU64(0)
+	52: Gt
+	53: BrFalse(60)
+B4:
+	54: MoveLoc[13](loc0: Balance<Ty0>)
+	55: MoveLoc[12](Arg12: &mut TxContext)
+	56: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	57: MoveLoc[15](loc2: address)
+	58: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	59: Branch(64)
+B5:
+	60: MoveLoc[12](Arg12: &mut TxContext)
+	61: Pop
+	62: MoveLoc[13](loc0: Balance<Ty0>)
+	63: Call balance::destroy_zero<Ty0>(Balance<Ty0>)
+B6:
+	64: Ret
+}
+
+Constants [
+	0 => u8: 1
+	1 => u8: 2
+	2 => u8: 3
+	3 => u8: 4
+	4 => u64: 1
+	5 => u64: 8000
+	6 => u64: 8001
+	7 => u64: 7999
+	8 => address: 0x0000000000000000000000000000000000000000000000000000000000000000
+]
+}

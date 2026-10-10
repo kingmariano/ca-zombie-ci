@@ -1,0 +1,328 @@
+// Move bytecode v6
+module f56370478288b5e1838769929823efaed88bf7ad89040d8a2ac391d6bd0aa2f2.getter {
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::storage;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle;
+use 0000000000000000000000000000000000000000000000000000000000000001::ascii;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+
+struct OracleInfo has copy, drop {
+	oracle_id: u8,
+	price: u256,
+	decimals: u8,
+	valid: bool
+}
+
+struct UserStateInfo has copy, drop {
+	asset_id: u8,
+	borrow_balance: u256,
+	supply_balance: u256
+}
+
+struct ReserveDataInfo has copy, drop {
+	id: u8,
+	oracle_id: u8,
+	coin_type: String,
+	supply_cap: u256,
+	borrow_cap: u256,
+	supply_rate: u256,
+	borrow_rate: u256,
+	supply_index: u256,
+	borrow_index: u256,
+	total_supply: u256,
+	total_borrow: u256,
+	last_update_at: u64,
+	ltv: u256,
+	treasury_factor: u256,
+	treasury_balance: u256,
+	base_rate: u256,
+	multiplier: u256,
+	jump_rate_multiplier: u256,
+	reserve_factor: u256,
+	optimal_utilization: u256,
+	liquidation_ratio: u256,
+	liquidation_bonus: u256,
+	liquidation_threshold: u256
+}
+
+public get_oracle_info(Arg0: &Clock, Arg1: &PriceOracle, Arg2: vector<u8>): vector<OracleInfo> {
+L3:	loc0: u8
+L4:	loc1: &u8
+L5:	loc2: vector<OracleInfo>
+L6:	loc3: u64
+L7:	loc4: u256
+L8:	loc5: bool
+B0:
+	0: VecPack(7, 0)
+	1: StLoc[5](loc2: vector<OracleInfo>)
+	2: ImmBorrowLoc[2](Arg2: vector<u8>)
+	3: VecLen(8)
+	4: StLoc[6](loc3: u64)
+B1:
+	5: CopyLoc[6](loc3: u64)
+	6: LdU64(0)
+	7: Gt
+	8: BrFalse(37)
+B2:
+	9: Branch(10)
+B3:
+	10: ImmBorrowLoc[2](Arg2: vector<u8>)
+	11: CopyLoc[6](loc3: u64)
+	12: LdU64(1)
+	13: Sub
+	14: VecImmBorrow(8)
+	15: StLoc[4](loc1: &u8)
+	16: CopyLoc[0](Arg0: &Clock)
+	17: CopyLoc[1](Arg1: &PriceOracle)
+	18: CopyLoc[4](loc1: &u8)
+	19: ReadRef
+	20: Call oracle::get_token_price(&Clock, &PriceOracle, u8): bool * u256 * u8
+	21: StLoc[3](loc0: u8)
+	22: StLoc[7](loc4: u256)
+	23: StLoc[8](loc5: bool)
+	24: MutBorrowLoc[5](loc2: vector<OracleInfo>)
+	25: MoveLoc[4](loc1: &u8)
+	26: ReadRef
+	27: MoveLoc[7](loc4: u256)
+	28: MoveLoc[3](loc0: u8)
+	29: MoveLoc[8](loc5: bool)
+	30: Pack[0](OracleInfo)
+	31: VecPushBack(7)
+	32: MoveLoc[6](loc3: u64)
+	33: LdU64(1)
+	34: Sub
+	35: StLoc[6](loc3: u64)
+	36: Branch(5)
+B4:
+	37: MoveLoc[1](Arg1: &PriceOracle)
+	38: Pop
+	39: MoveLoc[0](Arg0: &Clock)
+	40: Pop
+	41: MoveLoc[5](loc2: vector<OracleInfo>)
+	42: Ret
+}
+
+public get_user_state(Arg0: &mut Storage, Arg1: address): vector<UserStateInfo> {
+L2:	loc0: u8
+L3:	loc1: u256
+L4:	loc2: u256
+L5:	loc3: &mut vector<UserStateInfo>
+L6:	loc4: u256
+L7:	loc5: vector<UserStateInfo>
+L8:	loc6: u8
+L9:	loc7: u256
+B0:
+	0: VecPack(13, 0)
+	1: StLoc[7](loc5: vector<UserStateInfo>)
+	2: CopyLoc[0](Arg0: &mut Storage)
+	3: FreezeRef
+	4: Call storage::get_reserves_count(&Storage): u8
+	5: StLoc[8](loc6: u8)
+B1:
+	6: CopyLoc[8](loc6: u8)
+	7: LdU8(0)
+	8: Gt
+	9: BrFalse(40)
+B2:
+	10: Branch(11)
+B3:
+	11: CopyLoc[0](Arg0: &mut Storage)
+	12: CopyLoc[8](loc6: u8)
+	13: LdU8(1)
+	14: Sub
+	15: CopyLoc[1](Arg1: address)
+	16: Call storage::get_user_balance(&mut Storage, u8, address): u256 * u256
+	17: StLoc[6](loc4: u256)
+	18: StLoc[9](loc7: u256)
+	19: MutBorrowLoc[7](loc5: vector<UserStateInfo>)
+	20: StLoc[5](loc3: &mut vector<UserStateInfo>)
+	21: CopyLoc[8](loc6: u8)
+	22: LdU8(1)
+	23: Sub
+	24: StLoc[2](loc0: u8)
+	25: MoveLoc[9](loc7: u256)
+	26: StLoc[3](loc1: u256)
+	27: MoveLoc[6](loc4: u256)
+	28: StLoc[4](loc2: u256)
+	29: MoveLoc[5](loc3: &mut vector<UserStateInfo>)
+	30: MoveLoc[2](loc0: u8)
+	31: MoveLoc[4](loc2: u256)
+	32: MoveLoc[3](loc1: u256)
+	33: Pack[1](UserStateInfo)
+	34: VecPushBack(13)
+	35: MoveLoc[8](loc6: u8)
+	36: LdU8(1)
+	37: Sub
+	38: StLoc[8](loc6: u8)
+	39: Branch(6)
+B4:
+	40: MoveLoc[0](Arg0: &mut Storage)
+	41: Pop
+	42: MoveLoc[7](loc5: vector<UserStateInfo>)
+	43: Ret
+}
+
+public get_reserve_data(Arg0: &mut Storage): vector<ReserveDataInfo> {
+L1:	loc0: u8
+L2:	loc1: u8
+L3:	loc2: u8
+L4:	loc3: u8
+L5:	loc4: u8
+L6:	loc5: u256
+L7:	loc6: u256
+L8:	loc7: u256
+L9:	loc8: u256
+L10:	loc9: String
+L11:	loc10: vector<ReserveDataInfo>
+L12:	loc11: u256
+L13:	loc12: u64
+L14:	loc13: u8
+L15:	loc14: u256
+L16:	loc15: u256
+L17:	loc16: u256
+L18:	loc17: u256
+L19:	loc18: u256
+L20:	loc19: u256
+L21:	loc20: u8
+L22:	loc21: u256
+L23:	loc22: u8
+L24:	loc23: u256
+L25:	loc24: u256
+L26:	loc25: u256
+L27:	loc26: u256
+L28:	loc27: u256
+L29:	loc28: u256
+L30:	loc29: u256
+B0:
+	0: VecPack(18, 0)
+	1: StLoc[11](loc10: vector<ReserveDataInfo>)
+	2: CopyLoc[0](Arg0: &mut Storage)
+	3: FreezeRef
+	4: Call storage::get_reserves_count(&Storage): u8
+	5: StLoc[14](loc13: u8)
+B1:
+	6: CopyLoc[14](loc13: u8)
+	7: LdU8(0)
+	8: Gt
+	9: BrFalse(122)
+B2:
+	10: Branch(11)
+B3:
+	11: CopyLoc[14](loc13: u8)
+	12: LdU8(1)
+	13: Sub
+	14: StLoc[23](loc22: u8)
+	15: CopyLoc[0](Arg0: &mut Storage)
+	16: CopyLoc[23](loc22: u8)
+	17: StLoc[2](loc1: u8)
+	18: FreezeRef
+	19: MoveLoc[2](loc1: u8)
+	20: Call storage::get_oracle_id(&Storage, u8): u8
+	21: StLoc[21](loc20: u8)
+	22: CopyLoc[0](Arg0: &mut Storage)
+	23: CopyLoc[23](loc22: u8)
+	24: StLoc[3](loc2: u8)
+	25: FreezeRef
+	26: MoveLoc[3](loc2: u8)
+	27: Call storage::get_coin_type(&Storage, u8): String
+	28: StLoc[10](loc9: String)
+	29: CopyLoc[0](Arg0: &mut Storage)
+	30: CopyLoc[23](loc22: u8)
+	31: Call storage::get_supply_cap_ceiling(&mut Storage, u8): u256
+	32: StLoc[24](loc23: u256)
+	33: CopyLoc[0](Arg0: &mut Storage)
+	34: CopyLoc[23](loc22: u8)
+	35: Call storage::get_borrow_cap_ceiling_ratio(&mut Storage, u8): u256
+	36: StLoc[7](loc6: u256)
+	37: CopyLoc[0](Arg0: &mut Storage)
+	38: CopyLoc[23](loc22: u8)
+	39: Call storage::get_current_rate(&mut Storage, u8): u256 * u256
+	40: StLoc[9](loc8: u256)
+	41: StLoc[26](loc25: u256)
+	42: CopyLoc[0](Arg0: &mut Storage)
+	43: CopyLoc[23](loc22: u8)
+	44: Call storage::get_index(&mut Storage, u8): u256 * u256
+	45: StLoc[8](loc7: u256)
+	46: StLoc[25](loc24: u256)
+	47: CopyLoc[0](Arg0: &mut Storage)
+	48: CopyLoc[23](loc22: u8)
+	49: Call storage::get_total_supply(&mut Storage, u8): u256 * u256
+	50: StLoc[27](loc26: u256)
+	51: StLoc[28](loc27: u256)
+	52: CopyLoc[0](Arg0: &mut Storage)
+	53: CopyLoc[23](loc22: u8)
+	54: StLoc[4](loc3: u8)
+	55: FreezeRef
+	56: MoveLoc[4](loc3: u8)
+	57: Call storage::get_last_update_timestamp(&Storage, u8): u64
+	58: StLoc[13](loc12: u64)
+	59: CopyLoc[0](Arg0: &mut Storage)
+	60: CopyLoc[23](loc22: u8)
+	61: StLoc[5](loc4: u8)
+	62: FreezeRef
+	63: MoveLoc[5](loc4: u8)
+	64: Call storage::get_asset_ltv(&Storage, u8): u256
+	65: StLoc[18](loc17: u256)
+	66: CopyLoc[0](Arg0: &mut Storage)
+	67: CopyLoc[23](loc22: u8)
+	68: Call storage::get_treasury_factor(&mut Storage, u8): u256
+	69: StLoc[30](loc29: u256)
+	70: CopyLoc[0](Arg0: &mut Storage)
+	71: CopyLoc[23](loc22: u8)
+	72: StLoc[1](loc0: u8)
+	73: FreezeRef
+	74: MoveLoc[1](loc0: u8)
+	75: Call storage::get_treasury_balance(&Storage, u8): u256
+	76: StLoc[29](loc28: u256)
+	77: CopyLoc[0](Arg0: &mut Storage)
+	78: CopyLoc[23](loc22: u8)
+	79: Call storage::get_borrow_rate_factors(&mut Storage, u8): u256 * u256 * u256 * u256 * u256
+	80: StLoc[20](loc19: u256)
+	81: StLoc[22](loc21: u256)
+	82: StLoc[12](loc11: u256)
+	83: StLoc[19](loc18: u256)
+	84: StLoc[6](loc5: u256)
+	85: CopyLoc[0](Arg0: &mut Storage)
+	86: CopyLoc[23](loc22: u8)
+	87: Call storage::get_liquidation_factors(&mut Storage, u8): u256 * u256 * u256
+	88: StLoc[17](loc16: u256)
+	89: StLoc[15](loc14: u256)
+	90: StLoc[16](loc15: u256)
+	91: MutBorrowLoc[11](loc10: vector<ReserveDataInfo>)
+	92: MoveLoc[23](loc22: u8)
+	93: MoveLoc[21](loc20: u8)
+	94: MoveLoc[10](loc9: String)
+	95: MoveLoc[24](loc23: u256)
+	96: MoveLoc[7](loc6: u256)
+	97: MoveLoc[26](loc25: u256)
+	98: MoveLoc[9](loc8: u256)
+	99: MoveLoc[25](loc24: u256)
+	100: MoveLoc[8](loc7: u256)
+	101: MoveLoc[28](loc27: u256)
+	102: MoveLoc[27](loc26: u256)
+	103: MoveLoc[13](loc12: u64)
+	104: MoveLoc[18](loc17: u256)
+	105: MoveLoc[30](loc29: u256)
+	106: MoveLoc[29](loc28: u256)
+	107: MoveLoc[6](loc5: u256)
+	108: MoveLoc[19](loc18: u256)
+	109: MoveLoc[12](loc11: u256)
+	110: MoveLoc[22](loc21: u256)
+	111: MoveLoc[20](loc19: u256)
+	112: MoveLoc[16](loc15: u256)
+	113: MoveLoc[15](loc14: u256)
+	114: MoveLoc[17](loc16: u256)
+	115: Pack[2](ReserveDataInfo)
+	116: VecPushBack(18)
+	117: MoveLoc[14](loc13: u8)
+	118: LdU8(1)
+	119: Sub
+	120: StLoc[14](loc13: u8)
+	121: Branch(6)
+B4:
+	122: MoveLoc[0](Arg0: &mut Storage)
+	123: Pop
+	124: MoveLoc[11](loc10: vector<ReserveDataInfo>)
+	125: Ret
+}
+
+}

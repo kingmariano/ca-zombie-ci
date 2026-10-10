@@ -1,0 +1,307 @@
+// Move bytecode v7
+module ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f.oracle_dynamic_getter {
+use 5d8fbbf6f908a4af8c6d072669a462d53e03eb3c1d863bd0359dc818c69ea706::SupraSValueFeed;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::config;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_constants;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_error;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_pro;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_provider;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::strategy;
+use 55300367a2d40813727ccac4ecee977a39fb9cdb46f2e6b2c354b9798f5de2c0::price_info;
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::price_info as 0price_info;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use c3c7e6eb7202e9fb0389a2f7542b91cc40e4f7a33c02554fec11c4c92f938ea3::aggregator;
+
+public get_dynamic_single_price(Arg0: &Clock, Arg1: &OracleConfig, Arg2: &PriceOracle, Arg3: &OracleHolder, Arg4: &PriceInfoObject, Arg5: address): u64 * u256 {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public get_dynamic_single_price_v2(Arg0: &Clock, Arg1: &OracleConfig, Arg2: &PriceOracle, Arg3: &OracleHolder, Arg4: &PriceInfoObject, Arg5: &Aggregator, Arg6: address): u64 * u256 {
+L7:	loc0: bool
+L8:	loc1: u64
+L9:	loc2: u8
+L10:	loc3: u64
+L11:	loc4: u256
+L12:	loc5: u256
+L13:	loc6: u64
+L14:	loc7: u64
+L15:	loc8: bool
+L16:	loc9: bool
+L17:	loc10: bool
+L18:	loc11: u64
+L19:	loc12: u64
+L20:	loc13: u64
+L21:	loc14: u256
+L22:	loc15: u256
+L23:	loc16: u8
+L24:	loc17: u64
+L25:	loc18: u64
+L26:	loc19: &PriceFeed
+L27:	loc20: &OracleProviderConfig
+L28:	loc21: u256
+L29:	loc22: u64
+L30:	loc23: u256
+L31:	loc24: u64
+L32:	loc25: u8
+B0:
+	0: CopyLoc[1](Arg1: &OracleConfig)
+	1: Call config::version_verification(&OracleConfig)
+	2: CopyLoc[1](Arg1: &OracleConfig)
+	3: Call config::is_paused(&OracleConfig): bool
+	4: BrFalse(20)
+B1:
+	5: MoveLoc[5](Arg5: &Aggregator)
+	6: Pop
+	7: MoveLoc[3](Arg3: &OracleHolder)
+	8: Pop
+	9: MoveLoc[4](Arg4: &PriceInfoObject)
+	10: Pop
+	11: MoveLoc[2](Arg2: &PriceOracle)
+	12: Pop
+	13: MoveLoc[1](Arg1: &OracleConfig)
+	14: Pop
+	15: MoveLoc[0](Arg0: &Clock)
+	16: Pop
+	17: Call oracle_error::paused(): u64
+	18: LdU256(0)
+	19: Ret
+B2:
+	20: MoveLoc[1](Arg1: &OracleConfig)
+	21: MoveLoc[6](Arg6: address)
+	22: Call config::get_price_feed(&OracleConfig, address): &PriceFeed
+	23: StLoc[26](loc19: &PriceFeed)
+	24: CopyLoc[26](loc19: &PriceFeed)
+	25: Call config::is_price_feed_enable(&PriceFeed): bool
+	26: Not
+	27: BrFalse(43)
+B3:
+	28: MoveLoc[5](Arg5: &Aggregator)
+	29: Pop
+	30: MoveLoc[3](Arg3: &OracleHolder)
+	31: Pop
+	32: MoveLoc[4](Arg4: &PriceInfoObject)
+	33: Pop
+	34: MoveLoc[2](Arg2: &PriceOracle)
+	35: Pop
+	36: MoveLoc[26](loc19: &PriceFeed)
+	37: Pop
+	38: MoveLoc[0](Arg0: &Clock)
+	39: Pop
+	40: Call oracle_error::price_feed_not_found(): u64
+	41: LdU256(0)
+	42: Ret
+B4:
+	43: MoveLoc[0](Arg0: &Clock)
+	44: Call clock::timestamp_ms(&Clock): u64
+	45: StLoc[8](loc1: u64)
+	46: CopyLoc[26](loc19: &PriceFeed)
+	47: Call config::get_max_timestamp_diff_from_feed(&PriceFeed): u64
+	48: StLoc[19](loc12: u64)
+	49: CopyLoc[26](loc19: &PriceFeed)
+	50: Call config::get_oracle_id_from_feed(&PriceFeed): u8
+	51: StLoc[23](loc16: u8)
+	52: MoveLoc[2](Arg2: &PriceOracle)
+	53: MoveLoc[23](loc16: u8)
+	54: Call oracle::safe_decimal(&PriceOracle, u8): u8
+	55: StLoc[9](loc2: u8)
+	56: CopyLoc[26](loc19: &PriceFeed)
+	57: Call config::get_primary_oracle_provider(&PriceFeed): &OracleProvider
+	58: Call oracle_provider::is_empty(&OracleProvider): bool
+	59: BrFalse(71)
+B5:
+	60: MoveLoc[5](Arg5: &Aggregator)
+	61: Pop
+	62: MoveLoc[3](Arg3: &OracleHolder)
+	63: Pop
+	64: MoveLoc[4](Arg4: &PriceInfoObject)
+	65: Pop
+	66: MoveLoc[26](loc19: &PriceFeed)
+	67: Pop
+	68: Call oracle_error::invalid_oracle_provider(): u64
+	69: LdU256(0)
+	70: Ret
+B6:
+	71: CopyLoc[26](loc19: &PriceFeed)
+	72: Call config::get_primary_oracle_provider_config(&PriceFeed): &OracleProviderConfig
+	73: StLoc[27](loc20: &OracleProviderConfig)
+	74: CopyLoc[27](loc20: &OracleProviderConfig)
+	75: Call oracle_provider::is_oracle_provider_config_enable(&OracleProviderConfig): bool
+	76: Not
+	77: BrFalse(91)
+B7:
+	78: MoveLoc[5](Arg5: &Aggregator)
+	79: Pop
+	80: MoveLoc[3](Arg3: &OracleHolder)
+	81: Pop
+	82: MoveLoc[4](Arg4: &PriceInfoObject)
+	83: Pop
+	84: MoveLoc[27](loc20: &OracleProviderConfig)
+	85: Pop
+	86: MoveLoc[26](loc19: &PriceFeed)
+	87: Pop
+	88: Call oracle_error::oracle_provider_disabled(): u64
+	89: LdU256(0)
+	90: Ret
+B8:
+	91: MoveLoc[27](loc20: &OracleProviderConfig)
+	92: CopyLoc[9](loc2: u8)
+	93: CopyLoc[3](Arg3: &OracleHolder)
+	94: CopyLoc[4](Arg4: &PriceInfoObject)
+	95: CopyLoc[5](Arg5: &Aggregator)
+	96: Call oracle_pro::get_price_from_adaptor_v3(&OracleProviderConfig, u8, &OracleHolder, &PriceInfoObject, &Aggregator): u256 * u64
+	97: StLoc[29](loc22: u64)
+	98: StLoc[28](loc21: u256)
+	99: CopyLoc[8](loc1: u64)
+	100: MoveLoc[29](loc22: u64)
+	101: CopyLoc[19](loc12: u64)
+	102: Call strategy::is_oracle_price_fresh(u64, u64, u64): bool
+	103: StLoc[15](loc8: bool)
+	104: LdFalse
+	105: StLoc[17](loc10: bool)
+	106: CopyLoc[26](loc19: &PriceFeed)
+	107: Call config::is_secondary_oracle_available(&PriceFeed): bool
+	108: StLoc[16](loc9: bool)
+	109: LdU256(0)
+	110: StLoc[30](loc23: u256)
+	111: LdU64(0)
+	112: Pop
+	113: MoveLoc[16](loc9: bool)
+	114: BrFalse(130)
+B9:
+	115: CopyLoc[26](loc19: &PriceFeed)
+	116: Call config::get_secondary_source_config(&PriceFeed): &OracleProviderConfig
+	117: MoveLoc[9](loc2: u8)
+	118: MoveLoc[3](Arg3: &OracleHolder)
+	119: MoveLoc[4](Arg4: &PriceInfoObject)
+	120: MoveLoc[5](Arg5: &Aggregator)
+	121: Call oracle_pro::get_price_from_adaptor_v3(&OracleProviderConfig, u8, &OracleHolder, &PriceInfoObject, &Aggregator): u256 * u64
+	122: StLoc[31](loc24: u64)
+	123: StLoc[30](loc23: u256)
+	124: CopyLoc[8](loc1: u64)
+	125: MoveLoc[31](loc24: u64)
+	126: MoveLoc[19](loc12: u64)
+	127: Call strategy::is_oracle_price_fresh(u64, u64, u64): bool
+	128: StLoc[17](loc10: bool)
+	129: Branch(136)
+B10:
+	130: MoveLoc[5](Arg5: &Aggregator)
+	131: Pop
+	132: MoveLoc[3](Arg3: &OracleHolder)
+	133: Pop
+	134: MoveLoc[4](Arg4: &PriceInfoObject)
+	135: Pop
+B11:
+	136: CopyLoc[28](loc21: u256)
+	137: StLoc[11](loc4: u256)
+	138: CopyLoc[15](loc8: bool)
+	139: BrFalse(143)
+B12:
+	140: CopyLoc[17](loc10: bool)
+	141: StLoc[7](loc0: bool)
+	142: Branch(145)
+B13:
+	143: LdFalse
+	144: StLoc[7](loc0: bool)
+B14:
+	145: MoveLoc[7](loc0: bool)
+	146: BrFalse(182)
+B15:
+	147: CopyLoc[26](loc19: &PriceFeed)
+	148: Call config::get_price_diff_threshold1_from_feed(&PriceFeed): u64
+	149: CopyLoc[26](loc19: &PriceFeed)
+	150: Call config::get_price_diff_threshold2_from_feed(&PriceFeed): u64
+	151: StLoc[25](loc18: u64)
+	152: StLoc[24](loc17: u64)
+	153: CopyLoc[26](loc19: &PriceFeed)
+	154: Call config::get_max_duration_within_thresholds_from_feed(&PriceFeed): u64
+	155: StLoc[18](loc11: u64)
+	156: CopyLoc[26](loc19: &PriceFeed)
+	157: Call config::get_diff_threshold2_timer_from_feed(&PriceFeed): u64
+	158: StLoc[10](loc3: u64)
+	159: MoveLoc[28](loc21: u256)
+	160: MoveLoc[30](loc23: u256)
+	161: MoveLoc[24](loc17: u64)
+	162: MoveLoc[25](loc18: u64)
+	163: CopyLoc[8](loc1: u64)
+	164: MoveLoc[18](loc11: u64)
+	165: MoveLoc[10](loc3: u64)
+	166: Call strategy::validate_price_difference(u256, u256, u64, u64, u64, u64, u64): u8
+	167: StLoc[32](loc25: u8)
+	168: CopyLoc[32](loc25: u8)
+	169: Call oracle_constants::level_normal(): u8
+	170: Neq
+	171: BrFalse(181)
+B16:
+	172: MoveLoc[32](loc25: u8)
+	173: Call oracle_constants::level_warning(): u8
+	174: Neq
+	175: BrFalse(181)
+B17:
+	176: MoveLoc[26](loc19: &PriceFeed)
+	177: Pop
+	178: Call oracle_error::invalid_price_diff(): u64
+	179: LdU256(0)
+	180: Ret
+B18:
+	181: Branch(195)
+B19:
+	182: MoveLoc[15](loc8: bool)
+	183: BrFalse(185)
+B20:
+	184: Branch(195)
+B21:
+	185: MoveLoc[17](loc10: bool)
+	186: BrFalse(188)
+B22:
+	187: Branch(193)
+B23:
+	188: MoveLoc[26](loc19: &PriceFeed)
+	189: Pop
+	190: Call oracle_error::no_available_price(): u64
+	191: LdU256(0)
+	192: Ret
+B24:
+	193: MoveLoc[30](loc23: u256)
+	194: StLoc[11](loc4: u256)
+B25:
+	195: CopyLoc[26](loc19: &PriceFeed)
+	196: Call config::get_maximum_effective_price_from_feed(&PriceFeed): u256
+	197: CopyLoc[26](loc19: &PriceFeed)
+	198: Call config::get_minimum_effective_price_from_feed(&PriceFeed): u256
+	199: StLoc[22](loc15: u256)
+	200: StLoc[21](loc14: u256)
+	201: CopyLoc[26](loc19: &PriceFeed)
+	202: Call config::get_maximum_allowed_span_percentage_from_feed(&PriceFeed): u64
+	203: StLoc[20](loc13: u64)
+	204: CopyLoc[26](loc19: &PriceFeed)
+	205: Call config::get_historical_price_ttl(&PriceFeed): u64
+	206: StLoc[13](loc6: u64)
+	207: MoveLoc[26](loc19: &PriceFeed)
+	208: Call config::get_history_price_data_from_feed(&PriceFeed): u256 * u64
+	209: StLoc[14](loc7: u64)
+	210: StLoc[12](loc5: u256)
+	211: CopyLoc[11](loc4: u256)
+	212: MoveLoc[21](loc14: u256)
+	213: MoveLoc[22](loc15: u256)
+	214: MoveLoc[20](loc13: u64)
+	215: MoveLoc[8](loc1: u64)
+	216: MoveLoc[13](loc6: u64)
+	217: MoveLoc[12](loc5: u256)
+	218: MoveLoc[14](loc7: u64)
+	219: Call strategy::validate_price_range_and_history(u256, u256, u256, u64, u64, u64, u256, u64): bool
+	220: Not
+	221: BrFalse(225)
+B26:
+	222: Call oracle_error::invalid_final_price(): u64
+	223: LdU256(0)
+	224: Ret
+B27:
+	225: Call oracle_constants::success(): u64
+	226: MoveLoc[11](loc4: u256)
+	227: Ret
+}
+
+}

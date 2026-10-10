@@ -1,0 +1,349 @@
+// Move bytecode v7
+module ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f.oracle_manage {
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::adaptor_supra;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::config;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_provider;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+public create_config(Arg0: &OracleAdminCap, Arg1: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut TxContext)
+	1: Call config::new_config(&mut TxContext)
+	2: Ret
+}
+
+public version_migrate(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: &mut PriceOracle) {
+B0:
+	0: MoveLoc[1](Arg1: &mut OracleConfig)
+	1: Call config::version_migrate(&mut OracleConfig)
+	2: MoveLoc[0](Arg0: &OracleAdminCap)
+	3: MoveLoc[2](Arg2: &mut PriceOracle)
+	4: Call oracle::oracle_version_migrate(&OracleAdminCap, &mut PriceOracle)
+	5: Ret
+}
+
+public set_pause(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: bool) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: bool)
+	5: Call config::set_pause(&mut OracleConfig, bool)
+	6: Ret
+}
+
+public create_price_feed<Ty0>(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: u8, Arg3: u64, Arg4: u64, Arg5: u64, Arg6: u64, Arg7: u64, Arg8: u256, Arg9: u256, Arg10: u64, Arg11: &mut TxContext) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: u8)
+	5: MoveLoc[3](Arg3: u64)
+	6: MoveLoc[4](Arg4: u64)
+	7: MoveLoc[5](Arg5: u64)
+	8: MoveLoc[6](Arg6: u64)
+	9: MoveLoc[7](Arg7: u64)
+	10: MoveLoc[8](Arg8: u256)
+	11: MoveLoc[9](Arg9: u256)
+	12: MoveLoc[10](Arg10: u64)
+	13: MoveLoc[11](Arg11: &mut TxContext)
+	14: Call config::new_price_feed<Ty0>(&mut OracleConfig, u8, u64, u64, u64, u64, u64, u256, u256, u64, &mut TxContext)
+	15: Ret
+}
+
+public set_enable_to_price_feed(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: bool) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: bool)
+	6: Call config::set_enable_to_price_feed(&mut OracleConfig, address, bool)
+	7: Ret
+}
+
+public set_max_timestamp_diff_to_price_feed(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: u64) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: u64)
+	6: Call config::set_max_timestamp_diff_to_price_feed(&mut OracleConfig, address, u64)
+	7: Ret
+}
+
+public set_price_diff_threshold1_to_price_feed(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: u64) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: u64)
+	6: Call config::set_price_diff_threshold1_to_price_feed(&mut OracleConfig, address, u64)
+	7: Ret
+}
+
+public set_price_diff_threshold2_to_price_feed(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: u64) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: u64)
+	6: Call config::set_price_diff_threshold2_to_price_feed(&mut OracleConfig, address, u64)
+	7: Ret
+}
+
+public set_max_duration_within_thresholds_to_price_feed(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: u64) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: u64)
+	6: Call config::set_max_duration_within_thresholds_to_price_feed(&mut OracleConfig, address, u64)
+	7: Ret
+}
+
+public set_maximum_allowed_span_percentage_to_price_feed(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: u64) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: u64)
+	6: Call config::set_maximum_allowed_span_percentage_to_price_feed(&mut OracleConfig, address, u64)
+	7: Ret
+}
+
+public set_maximum_effective_price_to_price_feed(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: u256) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: u256)
+	6: Call config::set_maximum_effective_price_to_price_feed(&mut OracleConfig, address, u256)
+	7: Ret
+}
+
+public set_minimum_effective_price_to_price_feed(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: u256) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: u256)
+	6: Call config::set_minimum_effective_price_to_price_feed(&mut OracleConfig, address, u256)
+	7: Ret
+}
+
+public set_historical_price_ttl_to_price_feed(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: u64) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: u64)
+	6: Call config::set_historical_price_ttl_to_price_feed(&mut OracleConfig, address, u64)
+	7: Ret
+}
+
+public create_pyth_oracle_provider_config(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: vector<u8>, Arg4: bool) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::pyth_provider(): OracleProvider
+	6: MoveLoc[3](Arg3: vector<u8>)
+	7: MoveLoc[4](Arg4: bool)
+	8: Call config::new_oracle_provider_config(&mut OracleConfig, address, OracleProvider, vector<u8>, bool)
+	9: Ret
+}
+
+public set_pyth_price_oracle_provider_pair_id(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: vector<u8>) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::pyth_provider(): OracleProvider
+	6: MoveLoc[3](Arg3: vector<u8>)
+	7: Call config::set_oracle_provider_config_pair_id(&mut OracleConfig, address, OracleProvider, vector<u8>)
+	8: Ret
+}
+
+public enable_pyth_oracle_provider(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::pyth_provider(): OracleProvider
+	6: LdTrue
+	7: Call config::set_oracle_provider_config_enable(&mut OracleConfig, address, OracleProvider, bool)
+	8: Ret
+}
+
+public disable_pyth_oracle_provider(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::pyth_provider(): OracleProvider
+	6: LdFalse
+	7: Call config::set_oracle_provider_config_enable(&mut OracleConfig, address, OracleProvider, bool)
+	8: Ret
+}
+
+public create_supra_oracle_provider_config(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: u32, Arg4: bool) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::supra_provider(): OracleProvider
+	6: MoveLoc[3](Arg3: u32)
+	7: Call adaptor_supra::pair_id_to_vector(u32): vector<u8>
+	8: MoveLoc[4](Arg4: bool)
+	9: Call config::new_oracle_provider_config(&mut OracleConfig, address, OracleProvider, vector<u8>, bool)
+	10: Ret
+}
+
+public set_supra_price_source_pair_id(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: vector<u8>) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::supra_provider(): OracleProvider
+	6: MoveLoc[3](Arg3: vector<u8>)
+	7: Call config::set_oracle_provider_config_pair_id(&mut OracleConfig, address, OracleProvider, vector<u8>)
+	8: Ret
+}
+
+public enable_supra_oracle_provider(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::supra_provider(): OracleProvider
+	6: LdTrue
+	7: Call config::set_oracle_provider_config_enable(&mut OracleConfig, address, OracleProvider, bool)
+	8: Ret
+}
+
+public disable_supra_oracle_provider(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::supra_provider(): OracleProvider
+	6: LdFalse
+	7: Call config::set_oracle_provider_config_enable(&mut OracleConfig, address, OracleProvider, bool)
+	8: Ret
+}
+
+public create_switchboard_oracle_provider_config(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: vector<u8>, Arg4: bool) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::switchboard_provider(): OracleProvider
+	6: MoveLoc[3](Arg3: vector<u8>)
+	7: MoveLoc[4](Arg4: bool)
+	8: Call config::new_oracle_provider_config(&mut OracleConfig, address, OracleProvider, vector<u8>, bool)
+	9: Ret
+}
+
+public set_switchboard_price_source_pair_id(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: vector<u8>) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::switchboard_provider(): OracleProvider
+	6: MoveLoc[3](Arg3: vector<u8>)
+	7: Call config::set_oracle_provider_config_pair_id(&mut OracleConfig, address, OracleProvider, vector<u8>)
+	8: Ret
+}
+
+public enable_switchboard_oracle_provider(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::switchboard_provider(): OracleProvider
+	6: LdTrue
+	7: Call config::set_oracle_provider_config_enable(&mut OracleConfig, address, OracleProvider, bool)
+	8: Ret
+}
+
+public disable_switchboard_oracle_provider(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: Call oracle_provider::switchboard_provider(): OracleProvider
+	6: LdFalse
+	7: Call config::set_oracle_provider_config_enable(&mut OracleConfig, address, OracleProvider, bool)
+	8: Ret
+}
+
+public set_primary_oracle_provider(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: OracleProvider) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: OracleProvider)
+	6: Call config::set_primary_oracle_provider(&mut OracleConfig, address, OracleProvider)
+	7: Ret
+}
+
+public set_secondary_oracle_provider(Arg0: &OracleAdminCap, Arg1: &mut OracleConfig, Arg2: address, Arg3: OracleProvider) {
+B0:
+	0: CopyLoc[1](Arg1: &mut OracleConfig)
+	1: FreezeRef
+	2: Call config::version_verification(&OracleConfig)
+	3: MoveLoc[1](Arg1: &mut OracleConfig)
+	4: MoveLoc[2](Arg2: address)
+	5: MoveLoc[3](Arg3: OracleProvider)
+	6: Call config::set_secondary_oracle_provider(&mut OracleConfig, address, OracleProvider)
+	7: Ret
+}
+
+}

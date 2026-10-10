@@ -1,0 +1,228 @@
+{
+  "generated_at": "2026-10-10",
+  "scope": "Adjacent NAVI (Sui) packages/objects; unprivileged old-version path check. Public keyless data only (Sui GraphQL mainnet, public GitHub, GitBook, web search).",
+  "oracle": {
+    "package_original_id": "0xca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f",
+    "current_package_id": "0x4837ae94425107554c8847721cf9954c1ad8e10520433b9e37dc11c507148bea",
+    "versions": [
+      {"version": 1, "address": "0xca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f", "modules_in_pkg_object": ["oracle"], "gate_constant": 1, "gate_style": "inline version_verification (PriceOracle.version == 1, abort 50000)", "price_update_functions": "update_token_price / update_token_price_batch (&OracleFeederCap); register_token_price / set_update_interval (&OracleAdminCap); no public(friend) update_price; version_migrate (&OracleAdminCap, sets version=1 if version>=1)"},
+      {"version": 2, "address": "0x1951eff08b3fd5bd134df6787ec9ec533c682d74277b824dbd53e440926901ad", "modules_in_pkg_object": ["oracle"], "gate_constant": 1, "gate_style": "inline version_verification (== 1, abort 50000)", "price_update_functions": "same as v1 + create_feeder (&OracleAdminCap)"},
+      {"version": 3, "address": "0xc2d49bf5e75d2258ee5563efa527feb6155de7ac6f6bf025a23ee88cd12d5a83", "modules_in_pkg_object": ["adaptor_pyth","adaptor_supra","config","oracle","oracle_constants","oracle_dynamic_getter","oracle_error","oracle_manage","oracle_pro","oracle_provider","oracle_utils","oracle_version","strategy"], "gate_constant": 2, "gate_style": "oracle_version::pre_check_version == oracle_constants::version()", "notes": "config module + OracleConfig + oracle_pro + oracle_version first added in v3; OracleConfig type id = 0xc2d49bf5... (v3-defined); oracle_pro::update_single_price (public, no cap) added here"},
+      {"version": 4, "address": "0x203728f46eb10d19f8f8081db849c86aa8f2a19341b7fd84d7a0e74f053f6242", "modules_in_pkg_object": ["adaptor_pyth","adaptor_supra","adaptor_switchboard","config","oracle","oracle_constants","oracle_dynamic_getter","oracle_error","oracle_manage","oracle_pro","oracle_provider","oracle_utils","oracle_version","strategy"], "gate_constant": 3, "notes": "adds adaptor_switchboard; oracle_pro::update_single_price_v2 added; this is the package id announced 2026-02-11"},
+      {"version": 5, "address": "0x4837ae94425107554c8847721cf9954c1ad8e10520433b9e37dc11c507148bea", "gate_constant": 4, "notes": "current; oracle_pro::update_single_price_v3 added; MoveBit PythPro audit 2026"}
+    ],
+    "live_price_oracle_object": {
+      "address": "0x1568865ed9a0b5ec414220e8f79b3d04c77acc82358f6e5ae4635687392ffbef",
+      "type": "0xca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle::PriceOracle",
+      "object_version": 1042250017,
+      "owner": "Shared (initialSharedVersion 8202835)",
+      "contents_keys": ["id", "version", "update_interval", "price_oracles"],
+      "contents": {"version": "4", "update_interval": "15000", "price_oracles": {"size": "38"}}
+    },
+    "live_oracle_config_object": {
+      "address": "0x1afe1cb83634f581606cc73c4487ddd8cc39a944b951283af23f7d69d5589478",
+      "type": "0xc2d49bf5e75d2258ee5563efa527feb6155de7ac6f6bf025a23ee88cd12d5a83::config::OracleConfig",
+      "contents": {"version": "4", "paused": false, "vec_feeds_len": 38}
+    },
+    "version_gate": {
+      "present": true,
+      "mechanism": "oracle::version_verification(&PriceOracle) -> oracle_version::pre_check_version(PriceOracle.version) -> assert version == oracle_constants::version()",
+      "v1_v2_inline": "PriceOracle.version == 1",
+      "v3_constant": 2, "v4_constant": 3, "v5_constant": 4,
+      "live_object_version": 4,
+      "effect": "only current v5 state-changing functions pass the gate on the live object; v1-v4 all abort (incorrect_version 50000 / oracle_error::incorrect_version). OracleConfig is gated identically via config::version_verification (v3 const=2, v4=3, v5=4; live OracleConfig.version=4)."
+    },
+    "caps": {
+      "OracleAdminCap": {"count": 1, "objects": [{"address": "0x7204e37882baf10f31b66cd1ac78ac65b3b8ad29c265d1e474fb4b24ccd6d5b7", "owner": "0x39c70d4ce3ce769a46f46ad80184a88bc25be9b49545751f5425796ef0c3d9ba"}], "type": "0xca441b44...::oracle::OracleAdminCap (v1-defined type)"},
+      "OracleFeederCap": {"count": 6, "all_owned_by": "0x39c70d4ce3ce769a46f46ad80184a88bc25be9b49545751f5425796ef0c3d9ba", "addresses": ["0x4352b03f3a97bc4a736a614a3e1c7779b455614528c3130cd5915aa60d479e70","0x4842c54c048d099f635299584156a7ec48113d6eb5349a6ccf6932feb8dd6e6a","0x5ad48a8a8ae82faea9a656da70e42ea18750e84bedc6107e2af3e3764fd18b2e","0x910eb5162fde240c459f1dc60fe681adbff0038d816b7680212ed13f77c2aa3f","0xc213c342e3782e346679d4ce1cbae9a730e57f251e3b5e8833e6b071ba9fec3c","0xe667999eec3fe533dbb8f27574ee44fd6ff7db3aeea1cb0e115708910e6af054"]}
+    },
+    "price_update_paths": {
+      "cap_gated": {
+        "entry public update_token_price(&OracleFeederCap, &Clock, &mut PriceOracle, u8, u256)": "feeder cap",
+        "entry public update_token_price_batch(&OracleFeederCap, ...)": "feeder cap",
+        "entry public register_token_price(&OracleAdminCap, &Clock, &mut PriceOracle, u8, u256, u8)": "admin cap",
+        "entry public set_update_interval(&OracleAdminCap, &mut PriceOracle, u64)": "admin cap",
+        "entry public version_migrate(&OracleAdminCap, &mut PriceOracle)": "admin cap; v5 body aborts unconditionally; v1/v2 body can set version=1 (admin-only downgrade footgun)"
+      },
+      "friend_only": {
+        "public(friend) update_price(&Clock, &mut PriceOracle, u8, u256)": "callable only by friend modules in the same package (adaptors / oracle_pro)"
+      },
+      "permissionless_current_version": {
+        "functions": ["oracle_pro::update_single_price_v2(public)", "oracle_pro::update_single_price_v3(public)", "oracle_pro::update_single_price(public, v3 package only)"],
+        "ptb_callable": true,
+        "evidence": "transactions exist calling 0x4837ae...::oracle_pro::update_single_price_v2 / _v3 and older versioned package ids; senders include non-NAVI addresses e.g. 0x19befd5653987dfdb00d8ef6bb36504da3c8d4984af29070ec61a9610c8e9a92 and 0x3be8db6ca4adf33387f16c86c443737e78fd14db85a4e1c68cc8f256ac68549c",
+        "gating": "no cap; reads signed Pyth/Supra/Switchboard source data and enforces config/strategy checks (is_paused, config::version_verification, max_timestamp_diff, price diff thresholds, max/min effective price, span percentage, historical TTL) before oracle::update_price (friend, also version-checked)",
+        "risk": "by design permissionless keeper path; cannot set arbitrary values, only source-signed data passing sanity checks"
+      }
+    },
+    "unprivileged_old_version_update": {
+      "answer": "NO",
+      "why": "All v1-v4 price-mutating functions either require OracleAdminCap/OracleFeederCap (owned solely by 0x39c70d4c...) and/or are blocked by the per-version gate: live PriceOracle.version=4 != v1/v2 (==1), v3 (==2), v4 (==3). Old-version calls abort (incorrect_version). The same applies to OracleConfig (v3/v4 config gates expect 2/3, live=4). Residual: the single OracleAdminCap holder could call v1/v2 version_migrate to downgrade PriceOracle.version to 1 and then use old-version functions — admin-only, not unprivileged."
+    },
+    "upgrade_authority": {"upgrade_cap": "0x436d774dedebb6300c35ef99307a315e4c313fe79cdec326678a5c5ef574f0e0", "owner": "0x39c70d4ce3ce769a46f46ad80184a88bc25be9b49545751f5425796ef0c3d9ba", "policy": 0, "latest_upgrade_tx": "7nCLBXSRgH2uviK7HrD4sKGQyMYq1KbZWYrPUvEsZwdA"},
+    "publish_sender_v1": "0x7861f12c652dbcf96589413cf5cbc5ebcccd85c2c9f09c25fee76f2a218195c9"
+  },
+  "lineage_c": {
+    "original_id": "0xa49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26",
+    "current_package_id": "0xc371fc618faca4671253811faef480903b86c58966e8f899184ebaa640120c64",
+    "version_count": 21,
+    "versions": {
+      "1": "0xa49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26",
+      "2": "0x1125009baaa5ad3e3876966ed0a97747773aa76bec6274d2b4704203d57833db",
+      "3": "0x7a36940c685c754526f66e21ab98a48f73a7a4310f11f538e98dee4827be2566",
+      "4": "0x70eecfcc73c2ebf9a7315a987609bc12157d6495650901cb782f7b07b888a55d",
+      "5": "0x7b602f770346f9a1a20194570b1db7549cf6f8e34d257fd4b056d51541394db1",
+      "6": "0x842c0f008bf0d33b2fedf8c5e3130c58ef8c0eeb0f36fbbaffe603dda3e4fb30",
+      "7": "0x79d3590195a0453e62b9f4fdb5cfb3af139c631dca9f6a1afe9ae273c9997b1f",
+      "8": "0xb473a35ead35d9cc6da56d999eac7481d5c9bf81c6298e5fa04d8aa9c7784eb0",
+      "9": "0xc6359ef3cb54344521823286e32681bc19da2b4717557c48c8cc0b485d9d8889",
+      "10": "0x239b6bf3e23ca581af9c7475ad84e909256b9e04b4c29e8782dfae3179e8f2d9",
+      "11": "0x0e1cc55fde30886db947ca21174263670501b8ddf09bbf388672025992887d9c",
+      "12": "0x91740d0b09ae2310fb7855698fbf7e6ec6617014cca95f2d38f50f1fd121b92c",
+      "13": "0xacc64a324fc6f68b47fefd484419dedc4d620630665ead67f393c90d11b387b9",
+      "14": "0x2550b15390ee5236303d7c04d7e02b22612beda5546d730cbfcdb4265ee8cda1",
+      "15": "0x8200ce83e1bc0894b641f0a466694b4f6e25d3f9cc3093915a887ec9e7f3395e",
+      "16": "0x2efd8c1b5ebdbd64ef9a08496dcb16b4f311e576df5600c8c9c90592f148db41",
+      "17": "0x4fe00693e18a5f70e3cbad41ac080c5803629211802fc7c7f6ffcf1055fb01c8",
+      "18": "0xef18e10d96fbf4b8589f5373185ec8480afa35efc233bc5787b4a656ae843386",
+      "19": "0x6e9f8bce4bdf026123a156d67d59bd09a7e604679c6a8edda9ca714723162ab7",
+      "20": "0x20cb20ed9a8548569a3f7358da905e0a564d0369e1d879026bf733eed32a6341",
+      "21": "0xc371fc618faca4671253811faef480903b86c58966e8f899184ebaa640120c64"
+    },
+    "identity": {
+      "verdict": "NAVI STAGING / development deployment of lending_core (same codebase as main lineage, separate deployment, NOT the main NAVI protocol)",
+      "evidence": [
+        "naviprotocol/navi-sdk src/addressStg.ts getConfig: ProtocolPackage=0x8200ce83e1bc0894b641f0a466694b4f6e25d3f9cc3093915a887ec9e7f3395e (lineage C v15), StorageId=0x111b9d70174462646e7e47e6fec5da9eb50cea14e6c5a55a910c8b0e44cd2913, IncentiveV3=0x5db4063954356f37ebdc791ec30f4cfd39734feff18820ee44dc2d2de96db899 (lineage C), PriceOracle=0x25c718f494ff63021f75642ecaaeda826f44b2d9d59859a8ad45ef0fba9626f2",
+        "navi-smart-contracts Published.toml snapshot (cubix-framework/sui-move-test-corpus): [published.development] original-id=0xa49c5d1c..., published-at=0x239b6bf3... (lineage C v10), version=10",
+        "naviprotocol/navi-sdk src/address.ts + addressStg.ts reference RewardFund 0xfb0de07c... (lineage C WETH fund)"
+      ],
+      "upgrade_cap": {"address": "0x77c3e3ffe6889ed4d2d7280aece738119eccc5db4c50e784779f677cfd4d75cc", "owner": "0xdf6bff0ffa1e6a7ae93df6585c84438df84224e53bdc40965299d34c5ae3d6cc", "latest_upgrade_tx": "DinnLSukqu7GVuc35hTCAHdx4Vjp8WX4e5nRa7xMiEJi"},
+      "publish_sender_v1": "0x8635a944b059f419f54fa878270e310af8151249018ff3d26ec7b07c361041b1"
+    },
+    "modules_current": ["account","calculator","constants","dynamic_calculator","error","event","flash_loan","incentive","incentive_v2","incentive_v3","lending","logic","manage","pool","pool_manager","ray_math","safe_math","storage","utils","validation","version"],
+    "version_gate": {
+      "present": true,
+      "mechanism": "version::pre_check_version(v) assert v == constants::version(); used by storage::version_verification(&Storage) and incentive_v2/v3::version_verification(&Incentive)",
+      "constants_by_package_version": {"1": "6 (inline in v1 storage module)", "2": "6", "3": "6", "4": 7, "5": 8, "6": 9, "7": 10, "8": 10, "9": 10, "10": 11, "11": 11, "12": 12, "13": 13, "14": 12, "15": 13, "16": 13, "17": 13, "18": 14, "19": 14, "20": 14, "21": 15},
+      "live_object_versions": 15,
+      "old_version_callable": "No for state-changing gated functions: v1-v20 gates expect 6..14 (v14 anomaly expects 12), live objects are version 15, so only v21 functions pass. v1-v12 use inline constants (no version module); sampled v1 storage/lending entry points are gated. Residual class: any ungated function in pre-gate versions (not exhaustively enumerated here)."
+    },
+    "objects": {
+      "storage_objects": {"count": 12, "all_version_field": "15", "example_main": {"address": "0x111b9d70174462646e7e47e6fec5da9eb50cea14e6c5a55a910c8b0e44cd2913", "reserves_count": 39, "user_info_size": 142, "reserves_table": "0x287399b936f75e810e460f3d70ddb21d804d2224f16d04e9f3be12fe80115175"}},
+      "incentive_v3_objects": {"count": 14, "all_version_field": "15", "staging_sdk_one": "0x5db4063954356f37ebdc791ec30f4cfd39734feff18820ee44dc2d2de96db899"},
+      "reward_funds_v3": {"count": 13, "note": "type 0xacc64a32...::incentive_v3::RewardFund (incentive_v3 module first added at package v13)", "weth_fund": {"address": "0xfb0de07cd39509ecb312464daa9442fac0eb4487d7a9b984cdfc39c1fb7d2791", "balance_raw": "997715993", "coin_type": "0x0eedc3857f39f5e44b5786ebcd790317902ffca9960f44fcea5b7589cfc7a784::weth::WETH", "owner": "Shared (initialSharedVersion 488776894)"}, "others": ["0x5fdbd4ae16b58784bc898d81c732815c46f92b915ba3a188a520424482b6bdd9 (SUI, 952402006)","0x619cc3b88a0901e972ae88bdfb51f901170a4b6276bde101e20b7eb852b92632 (WETH, 998414731)","0x4a1bf763bdf03c1fae15d7329db115ed37b8bf3c323938a3ddaa6b6e31a89789 (CERT, 8278139203)","0x96945c944a7263ad6631c0ec4ef31adcf611563ef951d3b420bf0480338174ba (NAVX, 346469215038)","0x35bede72595e689f9b95b579de6b6c4a5a71bc9532a5f0a81d5c078c2477c60e (HASUI, 951338571)","plus 8 zero-balance/other funds"]},
+      "incentive_v2_objects": {"count": 2, "active": {"address": "0x952b6726bbcc08eb14f38a3632a3f98b823f301468d7de36f1d05faaef1bdd2a", "version_field": "15", "pool_objs": 8, "inactive_objs": 186, "pools_table_size": 194, "funds_table_size": 7, "pools_table_id": "0xca34cdeaa71e7094e7d23116a50bf671804da8b54854f33ec7b2b1b9ca69087e"}, "retired": {"address": "0x5517d9a0ac20c86fd443bdf21ff97d70bc30827acb556cc0715c65dbb11874e3", "version_field": "11"}},
+      "incentive_v2_funds": {"count": 7, "non_zero": [{"address": "0x524e28adcb04fe8b0ac5ddc23e6ca78f9a7d8afa17b680f6e59e7ab406ba60a9", "balance_raw": "7470458718", "coin": "0x2::sui::SUI"}, {"address": "0x6797966d809eccdd4827a49012c32172e2cac7dda27109aab922c513e83cf0c9", "balance_raw": "98440908924", "coin": "0x0eedc385...::weth::WETH"}, {"address": "0xf78f9269623a8a4b8b46b84ac4382ad450deea3d305cd8143870577332399e1f", "balance_raw": "98554023314", "coin": "0x0eedc385...::weth::WETH"}, {"address": "0x1ca8aff8df0296a8dcdbce782c468a9474d5575d16c484359587c3b26a7229e4", "balance_raw": "50111179527", "coin": "0x549e8b69...::cert::CERT"}, {"address": "0x015a4aa921fa99e071e0440d5d8c522b076bda63a0395a083adaafaf9061d4fa", "balance_raw": "203626432", "coin": "0xa99b8952...::navx::NAVX"}, {"address": "0x29659ecf615b9431f52c8e0cb9895b3610620acc988232fa7bbe877ba2f682e2", "balance_raw": "43986269203", "coin": "0xbde4ba4c...::hasui::HASUI"}, {"address": "0x68505acdc8f9d73446f08b160d6fbfb878ec9c81f6b706883240c030545d2c8a", "balance_raw": "35819385889", "coin": "0xf325ce13...::<coin>"}], "active_pools_reference_funds": ["0x015a4aa9... (NAVX)", "0x1ca8aff8... (CERT)"], "weth_funds_referenced_only_by_inactive_pools": true}
+    }
+  },
+  "other_lineages": [
+    {
+      "object": "0xf56370478288b5e1838769929823efaed88bf7ad89040d8a2ac391d6bd0aa2f2",
+      "kind": "IMMUTABLE package (uiGetter), v1 only, no upgrade lineage",
+      "modules": ["calculator","calculator_unchecked","getter","getter_unchecked","incentive_getter","incentive_getter_unchecked","incentive_v3_getter","incentive_v3_getter_unchecked","logic_getter_unchecked","ray_math","safe_math","unchecked_calculator","utils"],
+      "public_functions_sample": ["getter::get_oracle_info","getter::get_user_state","getter::get_reserve_data"],
+      "note": "read-only getter package; object() earlier returned no Move type because it is a MovePackage, not a MoveObject. Publish sender 0xf89bf436d166578e84fcd4e726ae206ff24851f1647b0a264114180cc2591914"
+    },
+    {
+      "object": "0x3672b2bf471a60c30a03325f104f92fb195c9d337ba58072dce764fe2aa5e2dc",
+      "kind": "shared flash_loan::Config object (flashloanConfig)",
+      "type": "0x06007a2d0ddd3ef4844c6d19c83f71475d6d3ac2d139188d6b62c052e6965edd::flash_loan::Config",
+      "defining_package": "main lineage v14 (0x06007a2d...)",
+      "contents": {"version": "16", "support_assets_table_size": "29", "assets_table_size": "29"},
+      "initialSharedVersion": 75708312,
+      "gate": "flash_loan module has version gates (9 version::pre_check_version/version_verification call sites in latest); live Config.version=16 matches only main-lineage v26 constants=16",
+      "note": "defining package is the main lineage (v14), already mapped; no separate lineage"
+    },
+    {
+      "object": "0xe6d4c6610b86ce7735ea754596d71d72d10c7980b5052fc3c8cdf8d09fea9b4b",
+      "kind": "ReserveParentId = storage.reserves Table (child/dynamic object of main storage 0xbb4e2f4b...)",
+      "type": "0x2::table::Table<u8, 0xd899cf7d...::storage::ReserveData> (child object; object() returns null for it)",
+      "note": "not a top-level object; not independently callable; belongs to the main lineage"
+    },
+    {
+      "packages_main_lineage": {
+        "original_id": "0xd899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca",
+        "current": "0x512f28261c1a293f49416d8885b8d5d32bde6dd68a99a0be36fe42b248e6833a (v26)",
+        "v22": "0x81c408448d0d57b3e371ea94de1d40bf852784d3e225de1e74acab3e8395c18f (IncentiveV3 module/type origin)",
+        "v23": "0xee0041239b89564ce870a7dec5ddc5d114367ab94a1137e90aa0633cb76518e0 (announced 2025-11-17)",
+        "v24": "0x1e4a13a0494d5facdbe8473e74127b838c2d446ecec0ce262e2eddafa77259cb (announced 2026-02-11)",
+        "v25": "0xc37b81366a01d6c2ef686bfe48f26116cdb0443516885b5ccd03a48e5efa2339",
+        "v26": "0x512f28261c1a293f49416d8885b8d5d32bde6dd68a99a0be36fe42b248e6833a (current; Published.toml verified)",
+        "constants_by_version": {"14": 7, "15": 8, "16": 8, "17": 9, "18": 10, "19": 10, "20": 11, "21": 12, "22": 13, "23": 14, "24": 15, "25": 15, "26": 16, "1-13": "no constants module (pre-gate)"},
+        "upgrade_authority": {"upgrade_cap": "0xdba1b40f3537441b51d2848fc0a149610e48e67c1cc48c6ad641767622000623", "owner": "0x25549f15b144032b4a61921552f6ecbfea13556615f7b45576b12f10d67955e7", "policy": 0, "latest_upgrade_tx": "9x1yr6Fxq2SV3eG3X3eA6J6MR9Xxztyr4S9SdQMDrUkQ"},
+        "publish_sender_v1": "0x7861f12c652dbcf96589413cf5cbc5ebcccd85c2c9f09c25fee76f2a218195c9",
+        "github_source": "https://github.com/naviprotocol/navi-smart-contracts (lending_core v26, Published.toml original-id/published-at verified)"
+      }
+    },
+    {
+      "incentive_v2_definition_package": {"package": "0xe66f07e2a8d9cf793da1e0bca98ff312b3ffba57228d97cf23a0613fddf31b65", "note": "main lineage v9; IncentiveV2/IncentivePool/IncentiveFundsPool types defined here; object type 0xe66f07e2...::incentive_v2::Incentive"},
+      "incentive_v3_definition_package": {"package": "0x81c408448d0d57b3e371ea94de1d40bf852784d3e225de1e74acab3e8395c18f", "note": "main lineage v22; RewardFund<WETH etc.> type for main deployment"}
+    }
+  ],
+  "incentive_objects": {
+    "main_incentive_v2": {
+      "address": "0xf87a8acb8b81d14307894d12595541a73f19933f88e1326d5be349c7a6f7559c",
+      "type": "0xe66f07e2...::incentive_v2::Incentive",
+      "version_field": "16",
+      "pool_objs": "empty (no active V2 pools)",
+      "inactive_objs": {"count": 746, "what": "vector<address> of frozen IncentivePool ids; each is the key of an entry in the pools Table (0xcc4aac9caf533d5b293b34e378c838e835bde9bd4c7d191aa5040773ae2bf444), i.e. NOT standalone objects and NOT coin-holding; multiGetObjects on them returns null", "sample_fetch": "dynamic field 0xd11e492b... of pools table -> IncentivePool {phase 11, funds 0xf975bc2d..., asset_id 2, option 3, total_supply 153150000000, distributed 131624362478, index_reward 87004398969037190795764, end_at 1701514800000}", "hold_value": "No coin balance; rewards would be paid from the referenced IncentiveFundsPool, which is empty (0 balance)"},
+      "funds_table": {"size": 9, "id": "0x4821004bd52f3f43603cebf7be8093ea3c9cf51609676c4d05c126af23b3026f", "incentive_funds_pool_objects": {"count": 9, "all_balances": "0", "coin_types": ["SUI","NS","CERT","NAVX","HASUI","STSUI","DEEP","BLUE","FDUSD"]}},
+      "main_v1_incentive": {"address": "0xaaf735bf83ff564e1b219a0d644de894ef5bdc4b2250b126b2a46dd002331821", "type": "0xd899cf7d...::incentive::Incentive", "incentive_funds_pool_objects": 0}
+    },
+    "main_incentive_v3": {
+      "address": "0x62982dad27fb10bb314b3384d5de8d2ac2d72ab2dbeae5d801dbdb9efa816c80",
+      "type": "0x81c40844...::incentive_v3::Incentive",
+      "version_field": "16",
+      "reward_fund_objects": {"count": 15, "type": "0x81c40844...::incentive_v3::RewardFund", "top_balances": ["0x7093cf75... CERT 369661883748906", "0x1a3f9fcf... NAVX 1543587590462287", "0xe65f2d9e... WA 716118088960942", "0xd378384c... IK 328674787388642", "0x1234d898... BLUE 89662223641627", "0xc889d78b... DEEP 5246490722448", "0x36682fbe... HA 18219003995951"]}
+    },
+    "lineage_c_incentive_v2": {
+      "active_object": "0x952b6726bbcc08eb14f38a3632a3f98b823f301468d7de36f1d05faaef1bdd2a",
+      "pool_objs": 8,
+      "inactive_objs": 186,
+      "funds": 7,
+      "active_pool_details_sample": [
+        {"pool": "0xf8bc5a8c68bd14bd963781494fe96fde1880f64b28e9de943b586822d227438f", "funds": "0x015a4aa9... NAVX", "asset_id": 6, "option": 1, "total_supply": 1000000000, "distributed": 53145335, "index_reward": "166352844635601272283710109"},
+        {"pool": "0xa21c4406dd90b6d13b5011ee38341a2205b98dd529cadf9e0af3ccdef75ed9ca", "funds": "0x015a4aa9... NAVX", "asset_id": 6, "option": 3, "total_supply": 1000000000, "distributed": 0, "index_reward": "854498953396009897312741610"},
+        {"pool": "0x106cbb59b65aadd30eeb82cd76c753795f518e3fe5580650d29e80b216303b86", "funds": "0x1ca8aff8... CERT", "asset_id": 6, "option": 1, "total_supply": 100000000, "distributed": 34264963, "index_reward": "17123537514342525238090640"},
+        {"pool": "0xa0746535c3c7f5dc8aeb1e67a8f00bdef9e818a5569d0876f3b9182cf4a0ec74", "funds": "0x1ca8aff8... CERT", "asset_id": 6, "option": 3, "total_supply": 100000000, "distributed": 0, "index_reward": "85449895339600989731274161"}
+      ]
+    }
+  },
+  "reward_checkpoint_bug": {
+    "description": "Deprecated v1/v2 claim paths treat a missing per-user reward checkpoint (index_rewards_paids / user_index) as index 0, so an account that was never settled appears to have earned the pool's full historical index x its current balance and can claim rewards for a window in which it held no balance.",
+    "source_locations": ["lending_core/sources/incentive.move lines 271-277", "lending_core/sources/incentive_v2.move lines 448-453"],
+    "deployed_bytecode_confirmed": "main v26 and lineage C v21 incentive_v2::calculate_one is byte-identical (both 51407 bytes): LdU256(0) default for index_rewards_paid; reward_increase = (index_reward - index_rewards_paid) * user_balance",
+    "gate_status": "claim path calls version_verification(incentive) via base_claim_reward/update_reward; live object versions match current constants (main 16/16, staging 15/15) so the CURRENT-version claim path is callable by anyone; old versions remain gated off.",
+    "public_fix_attempt": {"pr": "https://github.com/naviprotocol/navi-smart-contracts/pull/13", "title": "fix(lending_core): stop discarding sub-second interest and initialise absent legacy reward checkpoints", "author": "claude[bot]", "created": "2026-09-13", "closed": "2026-09-15", "merged": false, "fix_in_main_source": false},
+    "impact_main_deployment": "None at present: V2 pool_objs empty (no active pools) and all 9 V2 IncentiveFundsPool balances = 0; V1 has no funds pools at all.",
+    "impact_lineage_c_staging": "Reachable: 8 active V2 pools reference non-empty funds (NAVX 0x015a4aa9 balance 203,626,432 raw; CERT 0x1ca8aff8 balance 50,111,179,527 raw). A user with a supply/borrow balance and no checkpoint can claim index_reward x balance / RAY capped by remaining pool supply and fund balance. WETH funds (98.4 WETH x2) are referenced only by inactive pools and are NOT reachable through this claim path (get_pool_from_funds_pool scans pool_objs only).",
+    "related": {"issue_2": "https://github.com/naviprotocol/navi-smart-contracts/issues/2 'owner is not the real owner' (AccountCap.owner is logical, not enforced by Sui ownership - standard capability semantics)"}
+  },
+  "web_context": {
+    "release_history": [
+      {"date": "2025-11-17", "package_id": "0xee0041239b89564ce870a7dec5ddc5d114367ab94a1137e90aa0633cb76518e0 (main lineage v23)", "notes": "Fund Manager module (vSUI staking), flexible borrow fee; v2 interfaces added; audited by OtterSec + Movebit", "url": "https://naviprotocol.gitbook.io/navi-protocol-developer-docs/smart-contract-overview/release-history/navi-lending-protocol-upgrade-announcement-2025-11-17.md"},
+      {"date": "2026-02-11", "package_ids": {"lending": "0x1e4a13a0494d5facdbe8473e74127b838c2d446ecec0ce262e2eddafa77259cb (main lineage v24)", "oracle": "0x203728f46eb10d19f8f8081db849c86aa8f2a19341b7fd84d7a0e74f053f6242 (oracle lineage v4)"}, "notes": "E-Mode, multiple isolated markets, dynamic borrow weights, enhanced liquidation, redesigned Incentive V3; old package id deprecated and 'no longer functional'; oracle interface update_single_price -> update_single_price_v2; fully audited by Veridise and Movebit", "url": "https://naviprotocol.gitbook.io/navi-protocol-developer-docs/smart-contract-overview/release-history/navi-lending-protocol-upgrade-announcement-2026-02-11.md"}
+    ],
+    "audits": {
+      "repo_dir": "https://github.com/naviprotocol/navi-smart-contracts/tree/main/audits",
+      "files": ["NAVI_Full_Audit_OtterSec_2023.pdf","NAVI_Full_Audit_Movebit_2023.pdf","NAVI_Penetration_Test_Salus_2023.pdf","NAVI_Full_Audit_Veridise_2024.pdf","NAVI_Increment_Audit_OtterSec_2024.pdf","NAVI_Oracle_Increment_Audit_Veridise_2024.pdf","NAVI_Full_Audit_OtterSec_2025.pdf","NAVI_Incentive_Increment_Audit_Movebit_2025.pdf","NAVI_Pool_Increment_Audit_OtterSec_2025.pdf","NAVI_EMode_Increment_Audit_MoveBit_2026.pdf","NAVI_EMode_Increment_Audit_Veridise_2026.pdf","NAVI_Oracle_PythPro_Increment_Audit_MoveBit_2026.pdf","NAVI_Formal_Verification_Asymptotic_2026.pdf"],
+      "web_claims": "naviprotocol.io/developers lists 4 firms (OtterSec, MoveBit, Veridise, Salus); Veridise audits archive has NAVI entries incl. Volo Vault 2025-07-14"
+    },
+    "github_repos": {
+      "navi-smart-contracts": "https://github.com/naviprotocol/navi-smart-contracts - PUBLIC; lending_core/ (v26), oracle/ (v5), lending_ui/ (uiGetter), switchboard_sui/, volo_liquid_staking/, audits/; version gate code published in lending_core/sources/version.move; Published.toml confirms original-id/published-at for both lending_core and oracle",
+      "navi-sdk": "https://github.com/naviprotocol/navi-sdk - PUBLIC; src/address.ts (main config) and src/addressStg.ts (staging = lineage C config)",
+      "naviprotocol-monorepo": "https://github.com/naviprotocol/naviprotocol-monorepo - announced as SDK repo 2026-02-11",
+      "others": ["protocol-interface","navi-aggregator-sdk","supra-oracle","mcp","skills","examples","astros-contracts","account-cap-demo"]
+    },
+    "incidents": [
+      {"date": "2026-04-21/22", "what": "Volo Protocol vaults (WBTC, XAUm, USDC) drained ~$3.5M via compromised operator private key (social engineering), not a contract bug; Volo is a NAVI-group product that routes deposits into NAVI lending; NAVI stated no impact to NAVI user funds. DefiLlama lists it as NAVI's 1 recorded incident.", "sources": ["https://blocksec.com/blog/weekly-web3-security-roundup-2026-04-26","https://bitcoinfoundation.org/news/crimes-and-fraud-news/volo-hacked/","https://defillama.com/protocol/navi-protocol"]}
+    ],
+    "bug_bounty": "https://hackenproof.com/companies/navi-protocol ; https://naviprotocol.io/security (responsible disclosure)"
+  },
+  "conclusions": {
+    "oracle": "Version-gated (live version 4); all price mutation in v1-v4 aborts on the live object; v1-v5 direct updates require OracleAdminCap/OracleFeederCap, all held by 0x39c70d4c...; current v5 additionally exposes a permissionless keeper path (oracle_pro::update_single_price_v2/v3) that accepts only signed source data with strategy checks. No unprivileged old-version oracle update path.",
+    "lineage_c": "NAVI staging/development lending_core deployment (original 0xa49c5d1c..., 21 versions, current 0xc371fc61...), controlled by 0xdf6bff0f...; version-gated (constants 6->15, live objects 15); old versions abort on gated functions. Non-empty V2 funds + active V2 pools make the (unmerged-fix) reward-checkpoint bug economically reachable here; main deployment is not affected (no active V2 pools, empty funds).",
+    "main_lineage_upgrade_authority": "0x25549f15b144032b4a61921552f6ecbfea13556615f7b45576b12f10d67955e7 (UpgradeCap 0xdba1b40f...).",
+    "additional_lineages_found": "Only the main lending lineage (26 versions), oracle lineage (5 versions), lineage C staging (21 versions), the immutable uiGetter package, and type-origin packages for incentive_v2 (v9) / incentive_v3 (v22) / flash_loan (v14) within the main lineage. No other independent package origins were found among the SDK-listed objects."
+  }
+}

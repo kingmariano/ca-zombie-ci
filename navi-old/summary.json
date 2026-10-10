@@ -1,0 +1,52 @@
+{
+  "finding": "C2-54",
+  "title": "NAVI (Sui) old package versions — closure re-verified; staging checkpoint-bug residual ≤$0.39",
+  "chains": ["sui"],
+  "headline_extractable_usd": 0.39,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.39,
+    "H-O": 678047.47,
+    "P": 197056.74,
+    "S": 0
+  },
+  "latest_block": 332277185,
+  "block_numbers": {"sui": 332277185},
+  "targets_checked": 52,
+  "live_targets": 4,
+  "closed_reasons": [
+    "Lineage A (main market, original pkg 0xd899cf7d…, 26 versions): all v1–v25 abort on the live version gate — v1–v13 inline storage::version_verification expects 2–6 (abort 43000); v14–v25 version::pre_check_version expects 7–15 (abort 1400); only v26 (constant 16) matches live Storage/IncentiveV2/IncentiveV3 version=16 (dev-inspect matrix, CI).",
+    "No ungated value-moving entry in any of 52 scanned package versions / 818 modules; no unprivileged writer of any version field; v9 incentive_v2::claim_reward aborts 7999; v22 incentive_v3 gate aborts 1400; v26 claim is user-scoped (sender/AccountCap), saturating, market-id-checked, with 0 payout for a fresh user (positive control).",
+    "Main V2 funds pools (9) and legacy v1 IncentiveBal (59) all balance 0; legacy incentive claims are ungated but valueless.",
+    "Staging deployment (0xa49c5d1c…, 21 versions, live objects v15, current v21 matches) has a documented reward-checkpoint bug (navi-smart-contracts PR #13 closed unmerged): proven payout +15,918,193 raw vSUI to an existing supplier with no prior claim; bounded by 8 active pools' remaining budgets + NAVX/vSUI funds balances = ≤0.2818 vSUI + 0.2036 NAVX ≈ $0.39 (dust).",
+    "Staging V2 funds pools (USDT $98.5k + USDC $98.4k) are unreachable via claim_reward (their IncentivePools are inactive; get_pool_from_funds_pool scans pool_objs only) → admin-only (P) via withdraw_funds(&OwnerCap) held by active address 0xdf6bff0f….",
+    "Oracle package (0xca441b44…, 5 versions; live PriceOracle v4) is version-gated (only v5 passes) and cap-controlled (OracleAdminCap/OracleFeederCap owned by 0x39c70d4c…); v5 keeper path accepts only signed external data."
+  ],
+  "poc": {
+    "tests_passed": 31,
+    "tests_total": 31,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38018083607",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38021696728",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/CI_RUN_3_ID_PENDING"
+    ]
+  },
+  "key_facts": [
+    "Main lineage gate constants by version: v1..v26 = 2,2,3,3,3,5,5,5,6,6,6,6,6,7,8,8,9,10,10,11,12,13,14,15,15,16; live Storage 0xbb4e2f4b… version=16 paused=false; only v26 (0x512f2826…) executes.",
+    "Dev-inspect gate matrix (all 26 versions, storage::version_verification on live Storage): v1–v13 FAIL abort 43000; v14–v25 FAIL abort 1400; v26 SUCCESS.",
+    "Reward-fund census (44 objects, $875,104.21 at 2026-10-10 ~02:40 UTC): main v3 RewardFunds 15 = $674,547.89 (vSUI $429.1k, DEEP $113.3k, FDUSD $78.3k, WAL $25.6k, NAVX $18.4k, NS $6.5k, rest dust); staging v3 13 = $3,499.58; staging v2 7 = $197,056.74 (USDT+USDC, admin-only); main v2 9 = $0; legacy v1 59 = $0.",
+    "Staging checkpoint bug reachable today: claim_reward (v21) pays index_reward/RAY × effective_amount for users missing from index_rewards_paids (paid defaults to 0); dev-inspect proof: sender 0x9f4c3fee… (haSUI balance 929,608,909, absent from the pool's 3-entry paid table) received +15,918,193 raw vSUI.",
+    "Staging active-pool extraction bound: vSUI pools remaining 0.2818 vSUI (fund balance 50.11 vSUI) + NAVX pools remaining 3.05 NAVX capped by fund balance 0.2036 NAVX ≈ $0.39 total; 186 inactive pools (incl. all USDT/USDC budgets) unreachable.",
+    "Main-market v26 claim path positive control: claim_reward_entry for a fresh user SUCCEEDS with zero payout; market-id consistency checks (verify_market_storage_incentive / verify_market_incentive_funds) present.",
+    "No unprivileged version writer: version_migrate functions are StorageAdminCap/OwnerCap-gated (friend for incentive_v3); admin caps owned by 0x39c70d4c… (main) and 0xdf6bff0f… (staging, active).",
+    "Finding's original raw figures (1.5M/869k/385k) are approximate/stale; current exact balances are in analysis/reward-funds-census.json."
+  ],
+  "caveats": [
+    "dev-inspect (simulateTransaction, checks disabled) only; no transactions signed or sent; shared-object reads resolve at latest version.",
+    "The staging ≤$0.39 bound assumes an attacker can deposit haSUI/NAVX into the staging market (Pool<haSUI>/Pool<NAVX> are live shared objects and Storage is unpaused, but a full deposit→claim→withdraw PTB was not executed end-to-end; the payout mechanism itself is dev-inspect-proven).",
+    "USD values are point-in-time (DefiLlama/CoinGecko at 2026-10-10 ~02:40 UTC); balances move with claims/deposits (three main funds decreased mid-census).",
+    "H-O figure is the full reward-fund backing (upper bound; includes any admin-withdrawable remainder; exact user-owed split not quantified). P figure is the staging V2 funds recoverable by the OwnerCap holder.",
+    "The legacy main v1 incentive claim family is ungated (legacy Incentive object 0xaaf735bf… has no version field) but all 59 legacy balances are 0 today."
+  ],
+  "one_liner": "External unprivileged attacker can extract ≈$0 from NAVI's main market (all 25 old package versions abort on the live version=16 gate; only v26 executes; no ungated value path) plus ≤$0.39 dust on NAVI's staging deployment via a documented reward-checkpoint bug; $875k of reward funds are H-O/P reserves, not attacker-extractable."
+}

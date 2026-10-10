@@ -1,0 +1,612 @@
+// Move bytecode v6
+module a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26.lending {
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::incentive;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::logic;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::pool;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::storage;
+use 859de5e155d57462d3fe0aeb980b9a3f9cdccf76522d9499f372789183440aca::oracle;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::utils;
+
+struct DepositEvent has copy, drop {
+	reserve: u8,
+	sender: address,
+	amount: u64
+}
+
+struct WithdrawEvent has copy, drop {
+	reserve: u8,
+	sender: address,
+	to: address,
+	amount: u64
+}
+
+struct BorrowEvent has copy, drop {
+	reserve: u8,
+	sender: address,
+	amount: u64
+}
+
+struct RepayEvent has copy, drop {
+	reserve: u8,
+	sender: address,
+	amount: u64
+}
+
+struct LiquidationCallEvent has copy, drop {
+	reserve: u8,
+	sender: address,
+	liquidate_user: address,
+	liquidate_amount: u64
+}
+
+when_not_paused(Arg0: &Storage) {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: Call storage::pause(&Storage): bool
+	2: Not
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 41001)
+	6: Abort
+B3:
+	7: Ret
+}
+
+entry public deposit<Ty0>(Arg0: &Clock, Arg1: &mut Storage, Arg2: &mut Pool<Ty0>, Arg3: u8, Arg4: Coin<Ty0>, Arg5: u64, Arg6: &mut Incentive, Arg7: &mut TxContext) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+entry public withdraw<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: address, Arg7: &mut Incentive, Arg8: &mut TxContext) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+entry public borrow<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: &mut TxContext) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+entry public repay<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: Coin<Ty0>, Arg6: u64, Arg7: &mut TxContext) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+entry public liquidation_call<Ty0, Ty1>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: u8, Arg4: &mut Pool<Ty0>, Arg5: u8, Arg6: &mut Pool<Ty1>, Arg7: Coin<Ty0>, Arg8: address, Arg9: u64, Arg10: &mut Incentive, Arg11: &mut TxContext) {
+L12:	loc0: u64
+L13:	loc1: u64
+L14:	loc2: u64
+L15:	loc3: u64
+L16:	loc4: u256
+L17:	loc5: u256
+L18:	loc6: u64
+L19:	loc7: u64
+L20:	loc8: u64
+L21:	loc9: u64
+L22:	loc10: u64
+L23:	loc11: address
+L24:	loc12: Coin<Ty0>
+L25:	loc13: u256
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: FreezeRef
+	2: Call when_not_paused(&Storage)
+	3: CopyLoc[11](Arg11: &mut TxContext)
+	4: FreezeRef
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[23](loc11: address)
+	7: MoveLoc[10](Arg10: &mut Incentive)
+	8: CopyLoc[0](Arg0: &Clock)
+	9: CopyLoc[2](Arg2: &mut Storage)
+	10: CopyLoc[5](Arg5: u8)
+	11: CopyLoc[8](Arg8: address)
+	12: Call incentive::update_reward(&mut Incentive, &Clock, &mut Storage, u8, address)
+	13: MoveLoc[7](Arg7: Coin<Ty0>)
+	14: MoveLoc[9](Arg9: u64)
+	15: CopyLoc[11](Arg11: &mut TxContext)
+	16: Call utils::split_coin<Ty0>(Coin<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	17: StLoc[24](loc12: Coin<Ty0>)
+	18: ImmBorrowLoc[24](loc12: Coin<Ty0>)
+	19: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	20: StLoc[18](loc6: u64)
+	21: CopyLoc[4](Arg4: &mut Pool<Ty0>)
+	22: MoveLoc[24](loc12: Coin<Ty0>)
+	23: CopyLoc[11](Arg11: &mut TxContext)
+	24: Call pool::deposit<Ty0>(&mut Pool<Ty0>, Coin<Ty0>, &mut TxContext)
+	25: CopyLoc[4](Arg4: &mut Pool<Ty0>)
+	26: MoveLoc[18](loc6: u64)
+	27: StLoc[12](loc0: u64)
+	28: FreezeRef
+	29: MoveLoc[12](loc0: u64)
+	30: Call pool::normal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	31: StLoc[21](loc9: u64)
+	32: MoveLoc[0](Arg0: &Clock)
+	33: MoveLoc[1](Arg1: &PriceOracle)
+	34: MoveLoc[2](Arg2: &mut Storage)
+	35: CopyLoc[8](Arg8: address)
+	36: CopyLoc[5](Arg5: u8)
+	37: MoveLoc[3](Arg3: u8)
+	38: MoveLoc[21](loc9: u64)
+	39: CastU256
+	40: Call logic::execute_liquidate<Ty0, Ty1>(&Clock, &PriceOracle, &mut Storage, address, u8, u8, u256): u256 * u256 * u256
+	41: StLoc[25](loc13: u256)
+	42: StLoc[17](loc5: u256)
+	43: StLoc[16](loc4: u256)
+	44: CopyLoc[4](Arg4: &mut Pool<Ty0>)
+	45: MoveLoc[17](loc5: u256)
+	46: CastU64
+	47: StLoc[13](loc1: u64)
+	48: FreezeRef
+	49: MoveLoc[13](loc1: u64)
+	50: Call pool::unnormal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	51: StLoc[20](loc8: u64)
+	52: MoveLoc[4](Arg4: &mut Pool<Ty0>)
+	53: MoveLoc[20](loc8: u64)
+	54: CopyLoc[23](loc11: address)
+	55: CopyLoc[11](Arg11: &mut TxContext)
+	56: Call pool::withdraw<Ty0>(&mut Pool<Ty0>, u64, address, &mut TxContext)
+	57: CopyLoc[6](Arg6: &mut Pool<Ty1>)
+	58: MoveLoc[16](loc4: u256)
+	59: CastU64
+	60: StLoc[14](loc2: u64)
+	61: FreezeRef
+	62: MoveLoc[14](loc2: u64)
+	63: Call pool::unnormal_amount<Ty1>(&Pool<Ty1>, u64): u64
+	64: StLoc[19](loc7: u64)
+	65: CopyLoc[6](Arg6: &mut Pool<Ty1>)
+	66: CopyLoc[19](loc7: u64)
+	67: CopyLoc[23](loc11: address)
+	68: MoveLoc[11](Arg11: &mut TxContext)
+	69: Call pool::withdraw<Ty1>(&mut Pool<Ty1>, u64, address, &mut TxContext)
+	70: CopyLoc[6](Arg6: &mut Pool<Ty1>)
+	71: MoveLoc[25](loc13: u256)
+	72: CastU64
+	73: StLoc[15](loc3: u64)
+	74: FreezeRef
+	75: MoveLoc[15](loc3: u64)
+	76: Call pool::unnormal_amount<Ty1>(&Pool<Ty1>, u64): u64
+	77: StLoc[22](loc10: u64)
+	78: MoveLoc[6](Arg6: &mut Pool<Ty1>)
+	79: CopyLoc[22](loc10: u64)
+	80: Call pool::deposit_treasury<Ty1>(&mut Pool<Ty1>, u64)
+	81: MoveLoc[5](Arg5: u8)
+	82: MoveLoc[23](loc11: address)
+	83: MoveLoc[8](Arg8: address)
+	84: MoveLoc[19](loc7: u64)
+	85: MoveLoc[22](loc10: u64)
+	86: Add
+	87: Pack[4](LiquidationCallEvent)
+	88: Call event::emit<LiquidationCallEvent>(LiquidationCallEvent)
+	89: Ret
+}
+
+public(friend) deposit_coin<Ty0>(Arg0: &Clock, Arg1: &mut Storage, Arg2: &mut Pool<Ty0>, Arg3: u8, Arg4: Coin<Ty0>, Arg5: u64, Arg6: &mut TxContext) {
+L7:	loc0: Balance<Ty0>
+L8:	loc1: address
+B0:
+	0: CopyLoc[6](Arg6: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[8](loc1: address)
+	4: MoveLoc[4](Arg4: Coin<Ty0>)
+	5: MoveLoc[5](Arg5: u64)
+	6: MoveLoc[6](Arg6: &mut TxContext)
+	7: Call utils::split_coin_to_balance<Ty0>(Coin<Ty0>, u64, &mut TxContext): Balance<Ty0>
+	8: StLoc[7](loc0: Balance<Ty0>)
+	9: MoveLoc[0](Arg0: &Clock)
+	10: MoveLoc[1](Arg1: &mut Storage)
+	11: MoveLoc[2](Arg2: &mut Pool<Ty0>)
+	12: MoveLoc[3](Arg3: u8)
+	13: MoveLoc[8](loc1: address)
+	14: MoveLoc[7](loc0: Balance<Ty0>)
+	15: Call base_deposit<Ty0>(&Clock, &mut Storage, &mut Pool<Ty0>, u8, address, Balance<Ty0>)
+	16: Ret
+}
+
+base_deposit<Ty0>(Arg0: &Clock, Arg1: &mut Storage, Arg2: &mut Pool<Ty0>, Arg3: u8, Arg4: address, Arg5: Balance<Ty0>) {
+L6:	loc0: u64
+L7:	loc1: u64
+L8:	loc2: u64
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call storage::when_not_paused(&Storage)
+	3: CopyLoc[1](Arg1: &mut Storage)
+	4: FreezeRef
+	5: Call storage::version_verification(&Storage)
+	6: ImmBorrowLoc[5](Arg5: Balance<Ty0>)
+	7: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	8: StLoc[7](loc1: u64)
+	9: CopyLoc[2](Arg2: &mut Pool<Ty0>)
+	10: MoveLoc[5](Arg5: Balance<Ty0>)
+	11: CopyLoc[4](Arg4: address)
+	12: Call pool::deposit_balance<Ty0>(&mut Pool<Ty0>, Balance<Ty0>, address)
+	13: MoveLoc[2](Arg2: &mut Pool<Ty0>)
+	14: CopyLoc[7](loc1: u64)
+	15: StLoc[6](loc0: u64)
+	16: FreezeRef
+	17: MoveLoc[6](loc0: u64)
+	18: Call pool::normal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	19: StLoc[8](loc2: u64)
+	20: MoveLoc[0](Arg0: &Clock)
+	21: MoveLoc[1](Arg1: &mut Storage)
+	22: CopyLoc[3](Arg3: u8)
+	23: CopyLoc[4](Arg4: address)
+	24: MoveLoc[8](loc2: u64)
+	25: CastU256
+	26: Call logic::execute_deposit<Ty0>(&Clock, &mut Storage, u8, address, u256)
+	27: MoveLoc[3](Arg3: u8)
+	28: MoveLoc[4](Arg4: address)
+	29: MoveLoc[7](loc1: u64)
+	30: Pack[0](DepositEvent)
+	31: Call event::emit<DepositEvent>(DepositEvent)
+	32: Ret
+}
+
+public(friend) withdraw_coin<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: &mut TxContext): Balance<Ty0> {
+L7:	loc0: address
+B0:
+	0: MoveLoc[6](Arg6: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[7](loc0: address)
+	4: MoveLoc[0](Arg0: &Clock)
+	5: MoveLoc[1](Arg1: &PriceOracle)
+	6: MoveLoc[2](Arg2: &mut Storage)
+	7: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	8: MoveLoc[4](Arg4: u8)
+	9: MoveLoc[5](Arg5: u64)
+	10: MoveLoc[7](loc0: address)
+	11: Call base_withdraw<Ty0>(&Clock, &PriceOracle, &mut Storage, &mut Pool<Ty0>, u8, u64, address): Balance<Ty0>
+	12: Ret
+}
+
+base_withdraw<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: address): Balance<Ty0> {
+L7:	loc0: u64
+L8:	loc1: u64
+L9:	loc2: Balance<Ty0>
+L10:	loc3: u64
+L11:	loc4: u64
+L12:	loc5: u64
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: FreezeRef
+	2: Call storage::when_not_paused(&Storage)
+	3: CopyLoc[2](Arg2: &mut Storage)
+	4: FreezeRef
+	5: Call storage::version_verification(&Storage)
+	6: CopyLoc[3](Arg3: &mut Pool<Ty0>)
+	7: MoveLoc[5](Arg5: u64)
+	8: StLoc[7](loc0: u64)
+	9: FreezeRef
+	10: MoveLoc[7](loc0: u64)
+	11: Call pool::normal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	12: StLoc[10](loc3: u64)
+	13: MoveLoc[0](Arg0: &Clock)
+	14: MoveLoc[1](Arg1: &PriceOracle)
+	15: MoveLoc[2](Arg2: &mut Storage)
+	16: CopyLoc[4](Arg4: u8)
+	17: CopyLoc[6](Arg6: address)
+	18: MoveLoc[10](loc3: u64)
+	19: CastU256
+	20: Call logic::execute_withdraw<Ty0>(&Clock, &PriceOracle, &mut Storage, u8, address, u256): u64
+	21: StLoc[12](loc5: u64)
+	22: CopyLoc[3](Arg3: &mut Pool<Ty0>)
+	23: MoveLoc[12](loc5: u64)
+	24: StLoc[8](loc1: u64)
+	25: FreezeRef
+	26: MoveLoc[8](loc1: u64)
+	27: Call pool::unnormal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	28: StLoc[11](loc4: u64)
+	29: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	30: CopyLoc[11](loc4: u64)
+	31: CopyLoc[6](Arg6: address)
+	32: Call pool::withdraw_balance<Ty0>(&mut Pool<Ty0>, u64, address): Balance<Ty0>
+	33: StLoc[9](loc2: Balance<Ty0>)
+	34: MoveLoc[4](Arg4: u8)
+	35: CopyLoc[6](Arg6: address)
+	36: MoveLoc[6](Arg6: address)
+	37: MoveLoc[11](loc4: u64)
+	38: Pack[1](WithdrawEvent)
+	39: Call event::emit<WithdrawEvent>(WithdrawEvent)
+	40: MoveLoc[9](loc2: Balance<Ty0>)
+	41: Ret
+}
+
+public(friend) borrow_coin<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: &mut TxContext): Balance<Ty0> {
+L7:	loc0: address
+B0:
+	0: MoveLoc[6](Arg6: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[7](loc0: address)
+	4: MoveLoc[0](Arg0: &Clock)
+	5: MoveLoc[1](Arg1: &PriceOracle)
+	6: MoveLoc[2](Arg2: &mut Storage)
+	7: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	8: MoveLoc[4](Arg4: u8)
+	9: MoveLoc[5](Arg5: u64)
+	10: MoveLoc[7](loc0: address)
+	11: Call base_borrow<Ty0>(&Clock, &PriceOracle, &mut Storage, &mut Pool<Ty0>, u8, u64, address): Balance<Ty0>
+	12: Ret
+}
+
+base_borrow<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: address): Balance<Ty0> {
+L7:	loc0: u64
+L8:	loc1: Balance<Ty0>
+L9:	loc2: u64
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: FreezeRef
+	2: Call storage::when_not_paused(&Storage)
+	3: CopyLoc[2](Arg2: &mut Storage)
+	4: FreezeRef
+	5: Call storage::version_verification(&Storage)
+	6: CopyLoc[3](Arg3: &mut Pool<Ty0>)
+	7: CopyLoc[5](Arg5: u64)
+	8: StLoc[7](loc0: u64)
+	9: FreezeRef
+	10: MoveLoc[7](loc0: u64)
+	11: Call pool::normal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	12: StLoc[9](loc2: u64)
+	13: MoveLoc[0](Arg0: &Clock)
+	14: MoveLoc[1](Arg1: &PriceOracle)
+	15: MoveLoc[2](Arg2: &mut Storage)
+	16: CopyLoc[4](Arg4: u8)
+	17: CopyLoc[6](Arg6: address)
+	18: MoveLoc[9](loc2: u64)
+	19: CastU256
+	20: Call logic::execute_borrow<Ty0>(&Clock, &PriceOracle, &mut Storage, u8, address, u256)
+	21: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	22: CopyLoc[5](Arg5: u64)
+	23: CopyLoc[6](Arg6: address)
+	24: Call pool::withdraw_balance<Ty0>(&mut Pool<Ty0>, u64, address): Balance<Ty0>
+	25: StLoc[8](loc1: Balance<Ty0>)
+	26: MoveLoc[4](Arg4: u8)
+	27: MoveLoc[6](Arg6: address)
+	28: MoveLoc[5](Arg5: u64)
+	29: Pack[2](BorrowEvent)
+	30: Call event::emit<BorrowEvent>(BorrowEvent)
+	31: MoveLoc[8](loc1: Balance<Ty0>)
+	32: Ret
+}
+
+public(friend) repay_coin<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: Coin<Ty0>, Arg6: u64, Arg7: &mut TxContext): Balance<Ty0> {
+L8:	loc0: Balance<Ty0>
+L9:	loc1: address
+B0:
+	0: CopyLoc[7](Arg7: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[9](loc1: address)
+	4: MoveLoc[5](Arg5: Coin<Ty0>)
+	5: MoveLoc[6](Arg6: u64)
+	6: MoveLoc[7](Arg7: &mut TxContext)
+	7: Call utils::split_coin_to_balance<Ty0>(Coin<Ty0>, u64, &mut TxContext): Balance<Ty0>
+	8: StLoc[8](loc0: Balance<Ty0>)
+	9: MoveLoc[0](Arg0: &Clock)
+	10: MoveLoc[1](Arg1: &PriceOracle)
+	11: MoveLoc[2](Arg2: &mut Storage)
+	12: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	13: MoveLoc[4](Arg4: u8)
+	14: MoveLoc[8](loc0: Balance<Ty0>)
+	15: MoveLoc[9](loc1: address)
+	16: Call base_repay<Ty0>(&Clock, &PriceOracle, &mut Storage, &mut Pool<Ty0>, u8, Balance<Ty0>, address): Balance<Ty0>
+	17: Ret
+}
+
+base_repay<Ty0>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: &mut Pool<Ty0>, Arg4: u8, Arg5: Balance<Ty0>, Arg6: address): Balance<Ty0> {
+L7:	loc0: u64
+L8:	loc1: u64
+L9:	loc2: u256
+L10:	loc3: u64
+L11:	loc4: u64
+L12:	loc5: u64
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: FreezeRef
+	2: Call storage::when_not_paused(&Storage)
+	3: CopyLoc[2](Arg2: &mut Storage)
+	4: FreezeRef
+	5: Call storage::version_verification(&Storage)
+	6: ImmBorrowLoc[5](Arg5: Balance<Ty0>)
+	7: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	8: StLoc[12](loc5: u64)
+	9: CopyLoc[3](Arg3: &mut Pool<Ty0>)
+	10: MoveLoc[5](Arg5: Balance<Ty0>)
+	11: CopyLoc[6](Arg6: address)
+	12: Call pool::deposit_balance<Ty0>(&mut Pool<Ty0>, Balance<Ty0>, address)
+	13: CopyLoc[3](Arg3: &mut Pool<Ty0>)
+	14: CopyLoc[12](loc5: u64)
+	15: StLoc[7](loc0: u64)
+	16: FreezeRef
+	17: MoveLoc[7](loc0: u64)
+	18: Call pool::normal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	19: StLoc[11](loc4: u64)
+	20: MoveLoc[0](Arg0: &Clock)
+	21: MoveLoc[1](Arg1: &PriceOracle)
+	22: MoveLoc[2](Arg2: &mut Storage)
+	23: CopyLoc[4](Arg4: u8)
+	24: CopyLoc[6](Arg6: address)
+	25: MoveLoc[11](loc4: u64)
+	26: CastU256
+	27: Call logic::execute_repay<Ty0>(&Clock, &PriceOracle, &mut Storage, u8, address, u256): u256
+	28: StLoc[9](loc2: u256)
+	29: CopyLoc[3](Arg3: &mut Pool<Ty0>)
+	30: MoveLoc[9](loc2: u256)
+	31: CastU64
+	32: StLoc[8](loc1: u64)
+	33: FreezeRef
+	34: MoveLoc[8](loc1: u64)
+	35: Call pool::unnormal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	36: StLoc[10](loc3: u64)
+	37: MoveLoc[4](Arg4: u8)
+	38: CopyLoc[6](Arg6: address)
+	39: MoveLoc[12](loc5: u64)
+	40: CopyLoc[10](loc3: u64)
+	41: Sub
+	42: Pack[3](RepayEvent)
+	43: Call event::emit<RepayEvent>(RepayEvent)
+	44: CopyLoc[10](loc3: u64)
+	45: LdU64(0)
+	46: Gt
+	47: BrFalse(53)
+B1:
+	48: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	49: MoveLoc[10](loc3: u64)
+	50: MoveLoc[6](Arg6: address)
+	51: Call pool::withdraw_balance<Ty0>(&mut Pool<Ty0>, u64, address): Balance<Ty0>
+	52: Ret
+B2:
+	53: MoveLoc[3](Arg3: &mut Pool<Ty0>)
+	54: Pop
+	55: Call balance::zero<Ty0>(): Balance<Ty0>
+	56: Ret
+}
+
+public(friend) liquidation<Ty0, Ty1>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: u8, Arg4: &mut Pool<Ty0>, Arg5: Coin<Ty0>, Arg6: u8, Arg7: &mut Pool<Ty1>, Arg8: address, Arg9: u64, Arg10: &mut TxContext): Balance<Ty1> * Balance<Ty0> {
+L11:	loc0: Balance<Ty1>
+L12:	loc1: Balance<Ty0>
+L13:	loc2: Balance<Ty0>
+L14:	loc3: address
+B0:
+	0: CopyLoc[10](Arg10: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[14](loc3: address)
+	4: MoveLoc[5](Arg5: Coin<Ty0>)
+	5: MoveLoc[9](Arg9: u64)
+	6: MoveLoc[10](Arg10: &mut TxContext)
+	7: Call utils::split_coin_to_balance<Ty0>(Coin<Ty0>, u64, &mut TxContext): Balance<Ty0>
+	8: StLoc[13](loc2: Balance<Ty0>)
+	9: MoveLoc[0](Arg0: &Clock)
+	10: MoveLoc[1](Arg1: &PriceOracle)
+	11: MoveLoc[2](Arg2: &mut Storage)
+	12: MoveLoc[3](Arg3: u8)
+	13: MoveLoc[4](Arg4: &mut Pool<Ty0>)
+	14: MoveLoc[13](loc2: Balance<Ty0>)
+	15: MoveLoc[6](Arg6: u8)
+	16: MoveLoc[7](Arg7: &mut Pool<Ty1>)
+	17: MoveLoc[14](loc3: address)
+	18: MoveLoc[8](Arg8: address)
+	19: Call base_liquidation_call<Ty0, Ty1>(&Clock, &PriceOracle, &mut Storage, u8, &mut Pool<Ty0>, Balance<Ty0>, u8, &mut Pool<Ty1>, address, address): Balance<Ty0> * Balance<Ty1>
+	20: StLoc[11](loc0: Balance<Ty1>)
+	21: StLoc[12](loc1: Balance<Ty0>)
+	22: MoveLoc[11](loc0: Balance<Ty1>)
+	23: MoveLoc[12](loc1: Balance<Ty0>)
+	24: Ret
+}
+
+base_liquidation_call<Ty0, Ty1>(Arg0: &Clock, Arg1: &PriceOracle, Arg2: &mut Storage, Arg3: u8, Arg4: &mut Pool<Ty0>, Arg5: Balance<Ty0>, Arg6: u8, Arg7: &mut Pool<Ty1>, Arg8: address, Arg9: address): Balance<Ty0> * Balance<Ty1> {
+L10:	loc0: u64
+L11:	loc1: u64
+L12:	loc2: u64
+L13:	loc3: u64
+L14:	loc4: Balance<Ty1>
+L15:	loc5: Balance<Ty0>
+L16:	loc6: u256
+L17:	loc7: u64
+L18:	loc8: u256
+L19:	loc9: u64
+L20:	loc10: u64
+L21:	loc11: u64
+L22:	loc12: u64
+L23:	loc13: u256
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: FreezeRef
+	2: Call storage::when_not_paused(&Storage)
+	3: CopyLoc[2](Arg2: &mut Storage)
+	4: FreezeRef
+	5: Call storage::version_verification(&Storage)
+	6: ImmBorrowLoc[5](Arg5: Balance<Ty0>)
+	7: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	8: StLoc[17](loc7: u64)
+	9: CopyLoc[4](Arg4: &mut Pool<Ty0>)
+	10: MoveLoc[5](Arg5: Balance<Ty0>)
+	11: CopyLoc[8](Arg8: address)
+	12: Call pool::deposit_balance<Ty0>(&mut Pool<Ty0>, Balance<Ty0>, address)
+	13: CopyLoc[4](Arg4: &mut Pool<Ty0>)
+	14: MoveLoc[17](loc7: u64)
+	15: StLoc[10](loc0: u64)
+	16: FreezeRef
+	17: MoveLoc[10](loc0: u64)
+	18: Call pool::normal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	19: StLoc[20](loc10: u64)
+	20: MoveLoc[0](Arg0: &Clock)
+	21: MoveLoc[1](Arg1: &PriceOracle)
+	22: MoveLoc[2](Arg2: &mut Storage)
+	23: CopyLoc[9](Arg9: address)
+	24: CopyLoc[6](Arg6: u8)
+	25: MoveLoc[3](Arg3: u8)
+	26: MoveLoc[20](loc10: u64)
+	27: CastU256
+	28: Call logic::execute_liquidate<Ty0, Ty1>(&Clock, &PriceOracle, &mut Storage, address, u8, u8, u256): u256 * u256 * u256
+	29: StLoc[23](loc13: u256)
+	30: StLoc[18](loc8: u256)
+	31: StLoc[16](loc6: u256)
+	32: CopyLoc[7](Arg7: &mut Pool<Ty1>)
+	33: MoveLoc[23](loc13: u256)
+	34: CastU64
+	35: StLoc[11](loc1: u64)
+	36: FreezeRef
+	37: MoveLoc[11](loc1: u64)
+	38: Call pool::unnormal_amount<Ty1>(&Pool<Ty1>, u64): u64
+	39: StLoc[22](loc12: u64)
+	40: CopyLoc[7](Arg7: &mut Pool<Ty1>)
+	41: CopyLoc[22](loc12: u64)
+	42: Call pool::deposit_treasury<Ty1>(&mut Pool<Ty1>, u64)
+	43: CopyLoc[7](Arg7: &mut Pool<Ty1>)
+	44: MoveLoc[16](loc6: u256)
+	45: CastU64
+	46: StLoc[12](loc2: u64)
+	47: FreezeRef
+	48: MoveLoc[12](loc2: u64)
+	49: Call pool::unnormal_amount<Ty1>(&Pool<Ty1>, u64): u64
+	50: StLoc[19](loc9: u64)
+	51: MoveLoc[7](Arg7: &mut Pool<Ty1>)
+	52: CopyLoc[19](loc9: u64)
+	53: CopyLoc[8](Arg8: address)
+	54: Call pool::withdraw_balance<Ty1>(&mut Pool<Ty1>, u64, address): Balance<Ty1>
+	55: StLoc[14](loc4: Balance<Ty1>)
+	56: CopyLoc[4](Arg4: &mut Pool<Ty0>)
+	57: MoveLoc[18](loc8: u256)
+	58: CastU64
+	59: StLoc[13](loc3: u64)
+	60: FreezeRef
+	61: MoveLoc[13](loc3: u64)
+	62: Call pool::unnormal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	63: StLoc[21](loc11: u64)
+	64: MoveLoc[4](Arg4: &mut Pool<Ty0>)
+	65: MoveLoc[21](loc11: u64)
+	66: CopyLoc[8](Arg8: address)
+	67: Call pool::withdraw_balance<Ty0>(&mut Pool<Ty0>, u64, address): Balance<Ty0>
+	68: StLoc[15](loc5: Balance<Ty0>)
+	69: MoveLoc[6](Arg6: u8)
+	70: MoveLoc[8](Arg8: address)
+	71: MoveLoc[9](Arg9: address)
+	72: MoveLoc[19](loc9: u64)
+	73: MoveLoc[22](loc12: u64)
+	74: Add
+	75: Pack[4](LiquidationCallEvent)
+	76: Call event::emit<LiquidationCallEvent>(LiquidationCallEvent)
+	77: MoveLoc[15](loc5: Balance<Ty0>)
+	78: MoveLoc[14](loc4: Balance<Ty1>)
+	79: Ret
+}
+
+Constants [
+	0 => u64: 41001
+]
+}

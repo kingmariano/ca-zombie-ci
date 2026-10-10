@@ -1,0 +1,695 @@
+// Move bytecode v7
+module d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca.pool_manager {
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::error;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::event;
+use 634511c660964940915acb37dde75963e35f2d1b0a034b41e2da8f3e9d1491ae::cert;
+use 634511c660964940915acb37dde75963e35f2d1b0a034b41e2da8f3e9d1491ae::stake_pool;
+use 0000000000000000000000000000000000000000000000000000000000000001::u64;
+use 0000000000000000000000000000000000000000000000000000000000000002::bag;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::sui;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 0000000000000000000000000000000000000000000000000000000000000002::vec_map;
+use 0000000000000000000000000000000000000000000000000000000000000003::sui_system;
+
+struct SuiPoolManager has store, key {
+	id: UID,
+	original_sui_amount: u64,
+	vsui_balance: Balance<CERT>,
+	temp_sui_balance: Bag,
+	enabled_manage: bool,
+	target_sui_amount: u64,
+	vsui_stake_pool: StakePool,
+	vsui_metadata: Metadata<CERT>
+}
+
+struct FundUpdated has copy, drop {
+	original_sui_amount: u64,
+	current_sui_amount: u64,
+	vsui_balance_amount: u64,
+	target_sui_amount: u64
+}
+
+struct StakingTreasuryWithdrawn has copy, drop {
+	taken_vsui_balance_amount: u64,
+	equal_sui_balance_amount: u64
+}
+
+struct SuiKey has copy, drop, store {
+	dummy_field: bool
+}
+
+public(friend) new(Arg0: StakePool, Arg1: Metadata<CERT>, Arg2: u64, Arg3: u64, Arg4: &mut TxContext): SuiPoolManager {
+L5:	loc0: SuiPoolManager
+B0:
+	0: CopyLoc[4](Arg4: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: MoveLoc[2](Arg2: u64)
+	3: Call balance::zero<CERT>(): Balance<CERT>
+	4: MoveLoc[4](Arg4: &mut TxContext)
+	5: Call bag::new(&mut TxContext): Bag
+	6: LdFalse
+	7: MoveLoc[3](Arg3: u64)
+	8: MoveLoc[0](Arg0: StakePool)
+	9: MoveLoc[1](Arg1: Metadata<CERT>)
+	10: Pack[0](SuiPoolManager)
+	11: StLoc[5](loc0: SuiPoolManager)
+	12: MutBorrowLoc[5](loc0: SuiPoolManager)
+	13: MutBorrowField[0](SuiPoolManager.temp_sui_balance: Bag)
+	14: LdFalse
+	15: Pack[3](SuiKey)
+	16: Call balance::zero<SUI>(): Balance<SUI>
+	17: Call bag::add<SuiKey, Balance<SUI>>(&mut Bag, SuiKey, Balance<SUI>)
+	18: MoveLoc[5](loc0: SuiPoolManager)
+	19: Ret
+}
+
+public(friend) enable_manage(Arg0: &mut SuiPoolManager) {
+B0:
+	0: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	1: ImmBorrowField[1](SuiPoolManager.enabled_manage: bool)
+	2: ReadRef
+	3: LdFalse
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	8: Pop
+	9: Call error::paused(): u64
+	10: Abort
+B3:
+	11: LdTrue
+	12: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	13: MutBorrowField[1](SuiPoolManager.enabled_manage: bool)
+	14: WriteRef
+	15: Ret
+}
+
+public(friend) disable_manage(Arg0: &mut SuiPoolManager, Arg1: u64) {
+B0:
+	0: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	1: ImmBorrowField[1](SuiPoolManager.enabled_manage: bool)
+	2: ReadRef
+	3: LdTrue
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	8: Pop
+	9: Call error::paused(): u64
+	10: Abort
+B3:
+	11: MoveLoc[1](Arg1: u64)
+	12: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	13: ImmBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	14: ReadRef
+	15: Ge
+	16: BrFalse(18)
+B4:
+	17: Branch(22)
+B5:
+	18: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	19: Pop
+	20: Call error::insufficient_balance(): u64
+	21: Abort
+B6:
+	22: LdFalse
+	23: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	24: MutBorrowField[1](SuiPoolManager.enabled_manage: bool)
+	25: WriteRef
+	26: Ret
+}
+
+public(friend) update_deposit(Arg0: &mut SuiPoolManager, Arg1: u64) {
+B0:
+	0: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	1: ImmBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	2: ReadRef
+	3: MoveLoc[1](Arg1: u64)
+	4: Add
+	5: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	6: MutBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	7: WriteRef
+	8: Ret
+}
+
+public(friend) update_withdraw(Arg0: &mut SuiPoolManager, Arg1: u64) {
+B0:
+	0: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	1: ImmBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	2: ReadRef
+	3: MoveLoc[1](Arg1: u64)
+	4: Sub
+	5: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	6: MutBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	7: WriteRef
+	8: Ret
+}
+
+public(friend) refresh_stake(Arg0: &mut SuiPoolManager, Arg1: &mut Balance<SUI>, Arg2: &mut SuiSystemState, Arg3: &mut TxContext) {
+L4:	loc0: &mut SuiSystemState
+L5:	loc1: &mut TxContext
+L6:	loc2: u64
+L7:	loc3: &mut Metadata<CERT>
+L8:	loc4: u64
+L9:	loc5: u64
+L10:	loc6: &mut Metadata<CERT>
+L11:	loc7: u64
+L12:	loc8: u64
+L13:	loc9: &mut Balance<CERT>
+L14:	loc10: &mut StakePool
+L15:	loc11: Balance<SUI>
+L16:	loc12: Coin<SUI>
+L17:	loc13: u64
+L18:	loc14: u64
+L19:	loc15: Balance<CERT>
+L20:	loc16: Coin<CERT>
+L21:	loc17: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	1: ImmBorrowField[1](SuiPoolManager.enabled_manage: bool)
+	2: ReadRef
+	3: Not
+	4: BrFalse(14)
+B1:
+	5: MoveLoc[2](Arg2: &mut SuiSystemState)
+	6: Pop
+	7: MoveLoc[1](Arg1: &mut Balance<SUI>)
+	8: Pop
+	9: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	10: Pop
+	11: MoveLoc[3](Arg3: &mut TxContext)
+	12: Pop
+	13: Ret
+B2:
+	14: CopyLoc[1](Arg1: &mut Balance<SUI>)
+	15: FreezeRef
+	16: Call balance::value<SUI>(&Balance<SUI>): u64
+	17: StLoc[11](loc7: u64)
+	18: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	19: MutBorrowField[3](SuiPoolManager.vsui_balance: Balance<CERT>)
+	20: StLoc[13](loc9: &mut Balance<CERT>)
+	21: CopyLoc[13](loc9: &mut Balance<CERT>)
+	22: FreezeRef
+	23: Call balance::value<CERT>(&Balance<CERT>): u64
+	24: StLoc[12](loc8: u64)
+	25: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	26: MutBorrowField[4](SuiPoolManager.vsui_stake_pool: StakePool)
+	27: StLoc[14](loc10: &mut StakePool)
+	28: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	29: MutBorrowField[5](SuiPoolManager.vsui_metadata: Metadata<CERT>)
+	30: StLoc[10](loc6: &mut Metadata<CERT>)
+	31: CopyLoc[14](loc10: &mut StakePool)
+	32: CopyLoc[10](loc6: &mut Metadata<CERT>)
+	33: CopyLoc[2](Arg2: &mut SuiSystemState)
+	34: CopyLoc[3](Arg3: &mut TxContext)
+	35: StLoc[5](loc1: &mut TxContext)
+	36: StLoc[4](loc0: &mut SuiSystemState)
+	37: FreezeRef
+	38: MoveLoc[4](loc0: &mut SuiSystemState)
+	39: MoveLoc[5](loc1: &mut TxContext)
+	40: Call stake_pool::refresh(&mut StakePool, &Metadata<CERT>, &mut SuiSystemState, &mut TxContext): bool
+	41: Pop
+	42: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	43: ImmBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	44: ReadRef
+	45: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	46: ImmBorrowField[6](SuiPoolManager.target_sui_amount: u64)
+	47: ReadRef
+	48: Gt
+	49: BrFalse(55)
+B3:
+	50: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	51: ImmBorrowField[6](SuiPoolManager.target_sui_amount: u64)
+	52: ReadRef
+	53: StLoc[6](loc2: u64)
+	54: Branch(59)
+B4:
+	55: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	56: ImmBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	57: ReadRef
+	58: StLoc[6](loc2: u64)
+B5:
+	59: MoveLoc[6](loc2: u64)
+	60: StLoc[18](loc14: u64)
+	61: CopyLoc[11](loc7: u64)
+	62: LdConst[0](u64: 1000..)
+	63: Add
+	64: CopyLoc[18](loc14: u64)
+	65: Lt
+	66: BrFalse(132)
+B6:
+	67: MoveLoc[18](loc14: u64)
+	68: MoveLoc[11](loc7: u64)
+	69: Sub
+	70: StLoc[9](loc5: u64)
+	71: CopyLoc[14](loc10: &mut StakePool)
+	72: CopyLoc[10](loc6: &mut Metadata<CERT>)
+	73: MoveLoc[9](loc5: u64)
+	74: StLoc[8](loc4: u64)
+	75: StLoc[7](loc3: &mut Metadata<CERT>)
+	76: FreezeRef
+	77: MoveLoc[7](loc3: &mut Metadata<CERT>)
+	78: FreezeRef
+	79: MoveLoc[8](loc4: u64)
+	80: Call stake_pool::sui_amount_to_lst_amount(&StakePool, &Metadata<CERT>, u64): u64
+	81: StLoc[21](loc17: u64)
+	82: CopyLoc[21](loc17: u64)
+	83: CopyLoc[12](loc8: u64)
+	84: Gt
+	85: BrFalse(88)
+B7:
+	86: MoveLoc[12](loc8: u64)
+	87: StLoc[21](loc17: u64)
+B8:
+	88: CopyLoc[21](loc17: u64)
+	89: LdConst[0](u64: 1000..)
+	90: Gt
+	91: BrFalse(123)
+B9:
+	92: CopyLoc[13](loc9: &mut Balance<CERT>)
+	93: FreezeRef
+	94: Call balance::value<CERT>(&Balance<CERT>): u64
+	95: CopyLoc[21](loc17: u64)
+	96: LdConst[0](u64: 1000..)
+	97: Add
+	98: Lt
+	99: BrFalse(104)
+B10:
+	100: CopyLoc[13](loc9: &mut Balance<CERT>)
+	101: FreezeRef
+	102: Call balance::value<CERT>(&Balance<CERT>): u64
+	103: StLoc[21](loc17: u64)
+B11:
+	104: CopyLoc[13](loc9: &mut Balance<CERT>)
+	105: MoveLoc[21](loc17: u64)
+	106: Call balance::split<CERT>(&mut Balance<CERT>, u64): Balance<CERT>
+	107: CopyLoc[3](Arg3: &mut TxContext)
+	108: Call coin::from_balance<CERT>(Balance<CERT>, &mut TxContext): Coin<CERT>
+	109: StLoc[20](loc16: Coin<CERT>)
+	110: MoveLoc[14](loc10: &mut StakePool)
+	111: MoveLoc[10](loc6: &mut Metadata<CERT>)
+	112: MoveLoc[2](Arg2: &mut SuiSystemState)
+	113: MoveLoc[20](loc16: Coin<CERT>)
+	114: MoveLoc[3](Arg3: &mut TxContext)
+	115: Call stake_pool::unstake(&mut StakePool, &mut Metadata<CERT>, &mut SuiSystemState, Coin<CERT>, &mut TxContext): Coin<SUI>
+	116: Call coin::into_balance<SUI>(Coin<SUI>): Balance<SUI>
+	117: StLoc[15](loc11: Balance<SUI>)
+	118: CopyLoc[1](Arg1: &mut Balance<SUI>)
+	119: MoveLoc[15](loc11: Balance<SUI>)
+	120: Call balance::join<SUI>(&mut Balance<SUI>, Balance<SUI>): u64
+	121: Pop
+	122: Branch(131)
+B12:
+	123: MoveLoc[2](Arg2: &mut SuiSystemState)
+	124: Pop
+	125: MoveLoc[14](loc10: &mut StakePool)
+	126: Pop
+	127: MoveLoc[10](loc6: &mut Metadata<CERT>)
+	128: Pop
+	129: MoveLoc[3](Arg3: &mut TxContext)
+	130: Pop
+B13:
+	131: Branch(169)
+B14:
+	132: CopyLoc[11](loc7: u64)
+	133: CopyLoc[18](loc14: u64)
+	134: LdConst[0](u64: 1000..)
+	135: Add
+	136: Gt
+	137: BrFalse(161)
+B15:
+	138: MoveLoc[11](loc7: u64)
+	139: MoveLoc[18](loc14: u64)
+	140: Sub
+	141: StLoc[17](loc13: u64)
+	142: CopyLoc[1](Arg1: &mut Balance<SUI>)
+	143: MoveLoc[17](loc13: u64)
+	144: Call balance::split<SUI>(&mut Balance<SUI>, u64): Balance<SUI>
+	145: CopyLoc[3](Arg3: &mut TxContext)
+	146: Call coin::from_balance<SUI>(Balance<SUI>, &mut TxContext): Coin<SUI>
+	147: StLoc[16](loc12: Coin<SUI>)
+	148: MoveLoc[14](loc10: &mut StakePool)
+	149: MoveLoc[10](loc6: &mut Metadata<CERT>)
+	150: MoveLoc[2](Arg2: &mut SuiSystemState)
+	151: MoveLoc[16](loc12: Coin<SUI>)
+	152: MoveLoc[3](Arg3: &mut TxContext)
+	153: Call stake_pool::stake(&mut StakePool, &mut Metadata<CERT>, &mut SuiSystemState, Coin<SUI>, &mut TxContext): Coin<CERT>
+	154: Call coin::into_balance<CERT>(Coin<CERT>): Balance<CERT>
+	155: StLoc[19](loc15: Balance<CERT>)
+	156: CopyLoc[13](loc9: &mut Balance<CERT>)
+	157: MoveLoc[19](loc15: Balance<CERT>)
+	158: Call balance::join<CERT>(&mut Balance<CERT>, Balance<CERT>): u64
+	159: Pop
+	160: Branch(169)
+B16:
+	161: MoveLoc[2](Arg2: &mut SuiSystemState)
+	162: Pop
+	163: MoveLoc[14](loc10: &mut StakePool)
+	164: Pop
+	165: MoveLoc[10](loc6: &mut Metadata<CERT>)
+	166: Pop
+	167: MoveLoc[3](Arg3: &mut TxContext)
+	168: Pop
+B17:
+	169: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	170: ImmBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	171: ReadRef
+	172: MoveLoc[1](Arg1: &mut Balance<SUI>)
+	173: FreezeRef
+	174: Call balance::value<SUI>(&Balance<SUI>): u64
+	175: MoveLoc[13](loc9: &mut Balance<CERT>)
+	176: FreezeRef
+	177: Call balance::value<CERT>(&Balance<CERT>): u64
+	178: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	179: ImmBorrowField[6](SuiPoolManager.target_sui_amount: u64)
+	180: ReadRef
+	181: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	182: ImmBorrowField[7](SuiPoolManager.id: UID)
+	183: Call object::uid_to_address(&UID): address
+	184: Call event::emit_fund_updated(u64, u64, u64, u64, address)
+	185: Ret
+}
+
+public(friend) prepare_before_withdraw<Ty0>(Arg0: &mut SuiPoolManager, Arg1: u64, Arg2: u64, Arg3: &mut SuiSystemState, Arg4: &mut TxContext): Balance<Ty0> {
+L5:	loc0: bool
+L6:	loc1: &mut SuiSystemState
+L7:	loc2: &mut TxContext
+L8:	loc3: &mut Metadata<CERT>
+L9:	loc4: u64
+L10:	loc5: u64
+L11:	loc6: &mut Metadata<CERT>
+L12:	loc7: &mut Balance<CERT>
+L13:	loc8: Balance<Ty0>
+L14:	loc9: u64
+L15:	loc10: &mut StakePool
+L16:	loc11: Balance<SUI>
+L17:	loc12: Coin<CERT>
+L18:	loc13: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	1: MutBorrowField[3](SuiPoolManager.vsui_balance: Balance<CERT>)
+	2: StLoc[12](loc7: &mut Balance<CERT>)
+	3: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	4: MutBorrowField[4](SuiPoolManager.vsui_stake_pool: StakePool)
+	5: StLoc[15](loc10: &mut StakePool)
+	6: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	7: MutBorrowField[5](SuiPoolManager.vsui_metadata: Metadata<CERT>)
+	8: StLoc[11](loc6: &mut Metadata<CERT>)
+	9: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	10: ImmBorrowField[1](SuiPoolManager.enabled_manage: bool)
+	11: ReadRef
+	12: Not
+	13: BrFalse(17)
+B1:
+	14: LdTrue
+	15: StLoc[5](loc0: bool)
+	16: Branch(21)
+B2:
+	17: CopyLoc[2](Arg2: u64)
+	18: CopyLoc[1](Arg1: u64)
+	19: Ge
+	20: StLoc[5](loc0: bool)
+B3:
+	21: MoveLoc[5](loc0: bool)
+	22: BrFalse(37)
+B4:
+	23: MoveLoc[3](Arg3: &mut SuiSystemState)
+	24: Pop
+	25: MoveLoc[15](loc10: &mut StakePool)
+	26: Pop
+	27: MoveLoc[12](loc7: &mut Balance<CERT>)
+	28: Pop
+	29: MoveLoc[11](loc6: &mut Metadata<CERT>)
+	30: Pop
+	31: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	32: Pop
+	33: MoveLoc[4](Arg4: &mut TxContext)
+	34: Pop
+	35: Call balance::zero<Ty0>(): Balance<Ty0>
+	36: Ret
+B5:
+	37: CopyLoc[15](loc10: &mut StakePool)
+	38: CopyLoc[11](loc6: &mut Metadata<CERT>)
+	39: CopyLoc[3](Arg3: &mut SuiSystemState)
+	40: CopyLoc[4](Arg4: &mut TxContext)
+	41: StLoc[7](loc2: &mut TxContext)
+	42: StLoc[6](loc1: &mut SuiSystemState)
+	43: FreezeRef
+	44: MoveLoc[6](loc1: &mut SuiSystemState)
+	45: MoveLoc[7](loc2: &mut TxContext)
+	46: Call stake_pool::refresh(&mut StakePool, &Metadata<CERT>, &mut SuiSystemState, &mut TxContext): bool
+	47: Pop
+	48: MoveLoc[1](Arg1: u64)
+	49: CopyLoc[2](Arg2: u64)
+	50: Sub
+	51: LdConst[0](u64: 1000..)
+	52: Call u64::max(u64, u64): u64
+	53: LdU64(1000)
+	54: Add
+	55: StLoc[14](loc9: u64)
+	56: CopyLoc[15](loc10: &mut StakePool)
+	57: CopyLoc[11](loc6: &mut Metadata<CERT>)
+	58: MoveLoc[14](loc9: u64)
+	59: StLoc[9](loc4: u64)
+	60: StLoc[8](loc3: &mut Metadata<CERT>)
+	61: FreezeRef
+	62: MoveLoc[8](loc3: &mut Metadata<CERT>)
+	63: FreezeRef
+	64: MoveLoc[9](loc4: u64)
+	65: Call stake_pool::sui_amount_to_lst_amount(&StakePool, &Metadata<CERT>, u64): u64
+	66: StLoc[18](loc13: u64)
+	67: CopyLoc[18](loc13: u64)
+	68: LdConst[0](u64: 1000..)
+	69: Add
+	70: CopyLoc[12](loc7: &mut Balance<CERT>)
+	71: FreezeRef
+	72: Call balance::value<CERT>(&Balance<CERT>): u64
+	73: Gt
+	74: BrFalse(79)
+B6:
+	75: CopyLoc[12](loc7: &mut Balance<CERT>)
+	76: FreezeRef
+	77: Call balance::value<CERT>(&Balance<CERT>): u64
+	78: StLoc[18](loc13: u64)
+B7:
+	79: MoveLoc[12](loc7: &mut Balance<CERT>)
+	80: MoveLoc[18](loc13: u64)
+	81: Call balance::split<CERT>(&mut Balance<CERT>, u64): Balance<CERT>
+	82: CopyLoc[4](Arg4: &mut TxContext)
+	83: Call coin::from_balance<CERT>(Balance<CERT>, &mut TxContext): Coin<CERT>
+	84: StLoc[17](loc12: Coin<CERT>)
+	85: MoveLoc[15](loc10: &mut StakePool)
+	86: MoveLoc[11](loc6: &mut Metadata<CERT>)
+	87: MoveLoc[3](Arg3: &mut SuiSystemState)
+	88: MoveLoc[17](loc12: Coin<CERT>)
+	89: MoveLoc[4](Arg4: &mut TxContext)
+	90: Call stake_pool::unstake(&mut StakePool, &mut Metadata<CERT>, &mut SuiSystemState, Coin<CERT>, &mut TxContext): Coin<SUI>
+	91: Call coin::into_balance<SUI>(Coin<SUI>): Balance<SUI>
+	92: StLoc[16](loc11: Balance<SUI>)
+	93: ImmBorrowLoc[16](loc11: Balance<SUI>)
+	94: Call balance::value<SUI>(&Balance<SUI>): u64
+	95: StLoc[10](loc5: u64)
+	96: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	97: MutBorrowField[0](SuiPoolManager.temp_sui_balance: Bag)
+	98: LdFalse
+	99: Pack[3](SuiKey)
+	100: Call bag::borrow_mut<SuiKey, Balance<SUI>>(&mut Bag, SuiKey): &mut Balance<SUI>
+	101: MoveLoc[16](loc11: Balance<SUI>)
+	102: Call balance::join<SUI>(&mut Balance<SUI>, Balance<SUI>): u64
+	103: Pop
+	104: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	105: MutBorrowField[0](SuiPoolManager.temp_sui_balance: Bag)
+	106: LdFalse
+	107: Pack[3](SuiKey)
+	108: Call bag::borrow_mut<SuiKey, Balance<Ty0>>(&mut Bag, SuiKey): &mut Balance<Ty0>
+	109: MoveLoc[10](loc5: u64)
+	110: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	111: StLoc[13](loc8: Balance<Ty0>)
+	112: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	113: ImmBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	114: ReadRef
+	115: MoveLoc[2](Arg2: u64)
+	116: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	117: ImmBorrowField[3](SuiPoolManager.vsui_balance: Balance<CERT>)
+	118: Call balance::value<CERT>(&Balance<CERT>): u64
+	119: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	120: ImmBorrowField[6](SuiPoolManager.target_sui_amount: u64)
+	121: ReadRef
+	122: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	123: ImmBorrowField[7](SuiPoolManager.id: UID)
+	124: Call object::uid_to_address(&UID): address
+	125: Call event::emit_fund_updated(u64, u64, u64, u64, address)
+	126: MoveLoc[13](loc8: Balance<Ty0>)
+	127: Ret
+}
+
+public(friend) set_target_sui_amount(Arg0: &mut SuiPoolManager, Arg1: u64) {
+B0:
+	0: MoveLoc[1](Arg1: u64)
+	1: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	2: MutBorrowField[6](SuiPoolManager.target_sui_amount: u64)
+	3: WriteRef
+	4: Ret
+}
+
+public(friend) get_treasury_sui_amount(Arg0: &SuiPoolManager, Arg1: u64): u64 {
+L2:	loc0: u64
+L3:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &SuiPoolManager)
+	1: ImmBorrowField[3](SuiPoolManager.vsui_balance: Balance<CERT>)
+	2: Call balance::value<CERT>(&Balance<CERT>): u64
+	3: StLoc[2](loc0: u64)
+	4: MoveLoc[1](Arg1: u64)
+	5: CopyLoc[0](Arg0: &SuiPoolManager)
+	6: ImmBorrowField[4](SuiPoolManager.vsui_stake_pool: StakePool)
+	7: CopyLoc[0](Arg0: &SuiPoolManager)
+	8: ImmBorrowField[5](SuiPoolManager.vsui_metadata: Metadata<CERT>)
+	9: MoveLoc[2](loc0: u64)
+	10: Call stake_pool::lst_amount_to_sui_amount(&StakePool, &Metadata<CERT>, u64): u64
+	11: Add
+	12: StLoc[3](loc1: u64)
+	13: CopyLoc[3](loc1: u64)
+	14: CopyLoc[0](Arg0: &SuiPoolManager)
+	15: ImmBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	16: ReadRef
+	17: Gt
+	18: BrFalse(25)
+B1:
+	19: MoveLoc[3](loc1: u64)
+	20: MoveLoc[0](Arg0: &SuiPoolManager)
+	21: ImmBorrowField[2](SuiPoolManager.original_sui_amount: u64)
+	22: ReadRef
+	23: Sub
+	24: Ret
+B2:
+	25: MoveLoc[0](Arg0: &SuiPoolManager)
+	26: Pop
+	27: LdU64(0)
+	28: Ret
+}
+
+public(friend) take_vsui_from_treasury(Arg0: &mut SuiPoolManager, Arg1: u64, Arg2: &mut SuiSystemState, Arg3: &mut TxContext): Balance<CERT> {
+L4:	loc0: u64
+L5:	loc1: bool
+L6:	loc2: u64
+L7:	loc3: Balance<CERT>
+L8:	loc4: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	1: MutBorrowField[4](SuiPoolManager.vsui_stake_pool: StakePool)
+	2: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	3: ImmBorrowField[5](SuiPoolManager.vsui_metadata: Metadata<CERT>)
+	4: MoveLoc[2](Arg2: &mut SuiSystemState)
+	5: MoveLoc[3](Arg3: &mut TxContext)
+	6: Call stake_pool::refresh(&mut StakePool, &Metadata<CERT>, &mut SuiSystemState, &mut TxContext): bool
+	7: Pop
+	8: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	9: MoveLoc[1](Arg1: u64)
+	10: StLoc[4](loc0: u64)
+	11: FreezeRef
+	12: MoveLoc[4](loc0: u64)
+	13: Call get_treasury_sui_amount(&SuiPoolManager, u64): u64
+	14: StLoc[6](loc2: u64)
+	15: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	16: ImmBorrowField[4](SuiPoolManager.vsui_stake_pool: StakePool)
+	17: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	18: ImmBorrowField[5](SuiPoolManager.vsui_metadata: Metadata<CERT>)
+	19: CopyLoc[6](loc2: u64)
+	20: Call stake_pool::sui_amount_to_lst_amount(&StakePool, &Metadata<CERT>, u64): u64
+	21: StLoc[8](loc4: u64)
+	22: CopyLoc[8](loc4: u64)
+	23: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	24: ImmBorrowField[3](SuiPoolManager.vsui_balance: Balance<CERT>)
+	25: Call balance::value<CERT>(&Balance<CERT>): u64
+	26: Gt
+	27: BrFalse(32)
+B1:
+	28: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	29: ImmBorrowField[3](SuiPoolManager.vsui_balance: Balance<CERT>)
+	30: Call balance::value<CERT>(&Balance<CERT>): u64
+	31: StLoc[8](loc4: u64)
+B2:
+	32: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	33: MutBorrowField[3](SuiPoolManager.vsui_balance: Balance<CERT>)
+	34: MoveLoc[8](loc4: u64)
+	35: Call balance::split<CERT>(&mut Balance<CERT>, u64): Balance<CERT>
+	36: StLoc[7](loc3: Balance<CERT>)
+	37: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	38: ImmBorrowField[3](SuiPoolManager.vsui_balance: Balance<CERT>)
+	39: Call balance::value<CERT>(&Balance<CERT>): u64
+	40: LdU64(0)
+	41: Eq
+	42: BrFalse(46)
+B3:
+	43: LdTrue
+	44: StLoc[5](loc1: bool)
+	45: Branch(52)
+B4:
+	46: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	47: ImmBorrowField[3](SuiPoolManager.vsui_balance: Balance<CERT>)
+	48: Call balance::value<CERT>(&Balance<CERT>): u64
+	49: LdConst[0](u64: 1000..)
+	50: Gt
+	51: StLoc[5](loc1: bool)
+B5:
+	52: MoveLoc[5](loc1: bool)
+	53: BrFalse(55)
+B6:
+	54: Branch(59)
+B7:
+	55: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	56: Pop
+	57: Call error::insufficient_balance(): u64
+	58: Abort
+B8:
+	59: ImmBorrowLoc[7](loc3: Balance<CERT>)
+	60: Call balance::value<CERT>(&Balance<CERT>): u64
+	61: MoveLoc[6](loc2: u64)
+	62: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	63: ImmBorrowField[7](SuiPoolManager.id: UID)
+	64: Call object::uid_to_address(&UID): address
+	65: Call event::emit_staking_treasury_withdrawn(u64, u64, address)
+	66: MoveLoc[7](loc3: Balance<CERT>)
+	67: Ret
+}
+
+public(friend) unstake_vsui(Arg0: &mut SuiPoolManager, Arg1: &mut SuiSystemState, Arg2: Coin<CERT>, Arg3: &mut TxContext): Coin<SUI> {
+B0:
+	0: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	1: MutBorrowField[4](SuiPoolManager.vsui_stake_pool: StakePool)
+	2: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	3: MutBorrowField[5](SuiPoolManager.vsui_metadata: Metadata<CERT>)
+	4: MoveLoc[1](Arg1: &mut SuiSystemState)
+	5: MoveLoc[2](Arg2: Coin<CERT>)
+	6: MoveLoc[3](Arg3: &mut TxContext)
+	7: Call stake_pool::unstake(&mut StakePool, &mut Metadata<CERT>, &mut SuiSystemState, Coin<CERT>, &mut TxContext): Coin<SUI>
+	8: Ret
+}
+
+public(friend) set_validator_weights_vsui(Arg0: &mut SuiPoolManager, Arg1: &mut SuiSystemState, Arg2: &OperatorCap, Arg3: VecMap<address, u64>, Arg4: &mut TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &mut SuiPoolManager)
+	1: MutBorrowField[4](SuiPoolManager.vsui_stake_pool: StakePool)
+	2: MoveLoc[0](Arg0: &mut SuiPoolManager)
+	3: MutBorrowField[5](SuiPoolManager.vsui_metadata: Metadata<CERT>)
+	4: MoveLoc[1](Arg1: &mut SuiSystemState)
+	5: MoveLoc[2](Arg2: &OperatorCap)
+	6: MoveLoc[3](Arg3: VecMap<address, u64>)
+	7: MoveLoc[4](Arg4: &mut TxContext)
+	8: Call stake_pool::set_validator_weights(&mut StakePool, &mut Metadata<CERT>, &mut SuiSystemState, &OperatorCap, VecMap<address, u64>, &mut TxContext)
+	9: Ret
+}
+
+Constants [
+	0 => u64: 1000000000
+]
+}
+

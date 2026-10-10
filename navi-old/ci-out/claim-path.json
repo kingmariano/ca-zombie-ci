@@ -1,0 +1,71 @@
+[
+  {
+    "test": "v9_claim_reward",
+    "result": {
+      "status": "FAILURE",
+      "executionError": {
+        "abortCode": "7999",
+        "message": "Error in 1st command, from '0xe66f07e2a8d9cf793da1e0bca98ff312b3ffba57228d97cf23a0613fddf31b65::incentive_v2::version_verification' (instruction 8), abort code: 7999",
+        "function": {
+          "name": "version_verification"
+        },
+        "module": {
+          "name": "incentive_v2"
+        }
+      },
+      "balanceChanges": {
+        "nodes": [
+          {
+            "amount": "-1106812",
+            "coinType": {
+              "repr": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "test": "v22_iv3_version_verification",
+    "result": {
+      "status": "FAILURE",
+      "executionError": {
+        "abortCode": "1400",
+        "message": "Error in 1st command, from '0x81c408448d0d57b3e371ea94de1d40bf852784d3e225de1e74acab3e8395c18f::version::pre_check_version' (instruction 6), abort code: 1400",
+        "function": {
+          "name": "pre_check_version"
+        },
+        "module": {
+          "name": "version"
+        }
+      },
+      "balanceChanges": {
+        "nodes": [
+          {
+            "amount": "-1117000",
+            "coinType": {
+              "repr": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "test": "v26_iv3_version_verification",
+    "result": {
+      "status": "SUCCESS",
+      "executionError": null,
+      "balanceChanges": {
+        "nodes": [
+          {
+            "amount": "-1166000",
+            "coinType": {
+              "repr": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+            }
+          }
+        ]
+      }
+    }
+  }
+]

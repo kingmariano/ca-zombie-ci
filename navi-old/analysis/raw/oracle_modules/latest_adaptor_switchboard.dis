@@ -1,0 +1,74 @@
+// Move bytecode v7
+module ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f.adaptor_switchboard {
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_utils;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use c3c7e6eb7202e9fb0389a2f7542b91cc40e4f7a33c02554fec11c4c92f938ea3::aggregator;
+use c3c7e6eb7202e9fb0389a2f7542b91cc40e4f7a33c02554fec11c4c92f938ea3::decimal;
+
+public get_price_native(Arg0: &Aggregator): u128 * u8 * u64 {
+L1:	loc0: u8
+L2:	loc1: u128
+L3:	loc2: &Decimal
+L4:	loc3: u64
+B0:
+	0: CopyLoc[0](Arg0: &Aggregator)
+	1: Call aggregator::current_result(&Aggregator): &CurrentResult
+	2: Call aggregator::timestamp_ms(&CurrentResult): u64
+	3: StLoc[4](loc3: u64)
+	4: MoveLoc[0](Arg0: &Aggregator)
+	5: Call aggregator::current_result(&Aggregator): &CurrentResult
+	6: Call aggregator::result(&CurrentResult): &Decimal
+	7: StLoc[3](loc2: &Decimal)
+	8: CopyLoc[3](loc2: &Decimal)
+	9: Call decimal::value(&Decimal): u128
+	10: StLoc[2](loc1: u128)
+	11: MoveLoc[3](loc2: &Decimal)
+	12: Call decimal::dec(&Decimal): u8
+	13: StLoc[1](loc0: u8)
+	14: MoveLoc[2](loc1: u128)
+	15: MoveLoc[1](loc0: u8)
+	16: MoveLoc[4](loc3: u64)
+	17: Ret
+}
+
+public get_price_to_target_decimal(Arg0: &Aggregator, Arg1: u8): u256 * u64 {
+L2:	loc0: u8
+L3:	loc1: u64
+B0:
+	0: MoveLoc[0](Arg0: &Aggregator)
+	1: Call get_price_native(&Aggregator): u128 * u8 * u64
+	2: StLoc[3](loc1: u64)
+	3: StLoc[2](loc0: u8)
+	4: CastU256
+	5: MoveLoc[2](loc0: u8)
+	6: CastU64
+	7: MoveLoc[1](Arg1: u8)
+	8: CastU64
+	9: Call oracle_utils::to_target_decimal_value_safe(u256, u64, u64): u256
+	10: MoveLoc[3](loc1: u64)
+	11: Ret
+}
+
+public get_identifier_to_vector(Arg0: &Aggregator): vector<u8> {
+L1:	loc0: ID
+B0:
+	0: MoveLoc[0](Arg0: &Aggregator)
+	1: Call aggregator::id(&Aggregator): ID
+	2: StLoc[1](loc0: ID)
+	3: ImmBorrowLoc[1](loc0: ID)
+	4: Call object::id_to_bytes(&ID): vector<u8>
+	5: Ret
+}
+
+public get_aggregator_id(Arg0: &Aggregator): address {
+L1:	loc0: ID
+B0:
+	0: MoveLoc[0](Arg0: &Aggregator)
+	1: Call aggregator::id(&Aggregator): ID
+	2: StLoc[1](loc0: ID)
+	3: ImmBorrowLoc[1](loc0: ID)
+	4: Call object::id_to_address(&ID): address
+	5: Ret
+}
+
+}

@@ -1,0 +1,1001 @@
+// Move bytecode v7
+module d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca.flash_loan {
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::constants;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::error;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::event;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::logic;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::pool;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::storage;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::version;
+use d899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca::ray_math;
+use 0000000000000000000000000000000000000000000000000000000000000001::ascii;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::dynamic_field;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 0000000000000000000000000000000000000000000000000000000000000003::sui_system;
+
+struct Config has store, key {
+	id: UID,
+	version: u64,
+	support_assets: Table<vector<u8>, address>,
+	assets: Table<address, AssetConfig>
+}
+
+struct AssetConfig has store, key {
+	id: UID,
+	asset_id: u8,
+	coin_type: String,
+	pool_id: address,
+	rate_to_supplier: u64,
+	rate_to_treasury: u64,
+	max: u64,
+	min: u64
+}
+
+struct Receipt<phantom Ty0> {
+	user: address,
+	asset: address,
+	amount: u64,
+	pool: address,
+	fee_to_supplier: u64,
+	fee_to_treasury: u64
+}
+
+struct MARKET_ID_KEY has copy, drop, store {
+	dummy_field: bool
+}
+
+struct ConfigCreated has copy, drop {
+	sender: address,
+	id: address
+}
+
+struct AssetConfigCreated has copy, drop {
+	sender: address,
+	config_id: address,
+	asset_id: address
+}
+
+struct FlashLoan has copy, drop {
+	sender: address,
+	asset: address,
+	amount: u64
+}
+
+struct FlashRepay has copy, drop {
+	sender: address,
+	asset: address,
+	amount: u64,
+	fee_to_supplier: u64,
+	fee_to_treasury: u64
+}
+
+public version_verification(Arg0: &Config) {
+B0:
+	0: MoveLoc[0](Arg0: &Config)
+	1: ImmBorrowField[0](Config.version: u64)
+	2: ReadRef
+	3: Call version::pre_check_version(u64)
+	4: Ret
+}
+
+public version_migrate(Arg0: &StorageAdminCap, Arg1: &mut Config) {
+B0:
+	0: CopyLoc[1](Arg1: &mut Config)
+	1: ImmBorrowField[0](Config.version: u64)
+	2: ReadRef
+	3: Call version::this_version(): u64
+	4: Lt
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[1](Arg1: &mut Config)
+	8: Pop
+	9: Call error::incorrect_version(): u64
+	10: Abort
+B3:
+	11: Call version::this_version(): u64
+	12: MoveLoc[1](Arg1: &mut Config)
+	13: MutBorrowField[0](Config.version: u64)
+	14: WriteRef
+	15: Ret
+}
+
+public(friend) create_config(Arg0: &mut TxContext) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public init_config_for_main_market(Arg0: &StorageAdminCap, Arg1: &mut Config) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Config)
+	1: MutBorrowField[1](Config.id: UID)
+	2: LdFalse
+	3: Pack[3](MARKET_ID_KEY)
+	4: LdU64(0)
+	5: Call dynamic_field::add<MARKET_ID_KEY, u64>(&mut UID, MARKET_ID_KEY, u64)
+	6: Ret
+}
+
+public(friend) create_config_with_market_id(Arg0: &Storage, Arg1: &mut TxContext) {
+L2:	loc0: UID
+L3:	loc1: u64
+L4:	loc2: Table<address, AssetConfig>
+L5:	loc3: Table<vector<u8>, address>
+L6:	loc4: Config
+L7:	loc5: u64
+L8:	loc6: UID
+L9:	loc7: address
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: Call storage::get_market_id(&Storage): u64
+	2: StLoc[7](loc5: u64)
+	3: CopyLoc[1](Arg1: &mut TxContext)
+	4: Call object::new(&mut TxContext): UID
+	5: StLoc[8](loc6: UID)
+	6: ImmBorrowLoc[8](loc6: UID)
+	7: Call object::uid_to_address(&UID): address
+	8: StLoc[9](loc7: address)
+	9: MoveLoc[8](loc6: UID)
+	10: StLoc[2](loc0: UID)
+	11: Call version::this_version(): u64
+	12: StLoc[3](loc1: u64)
+	13: CopyLoc[1](Arg1: &mut TxContext)
+	14: Call table::new<address, AssetConfig>(&mut TxContext): Table<address, AssetConfig>
+	15: StLoc[4](loc2: Table<address, AssetConfig>)
+	16: CopyLoc[1](Arg1: &mut TxContext)
+	17: Call table::new<vector<u8>, address>(&mut TxContext): Table<vector<u8>, address>
+	18: StLoc[5](loc3: Table<vector<u8>, address>)
+	19: MoveLoc[2](loc0: UID)
+	20: MoveLoc[3](loc1: u64)
+	21: MoveLoc[5](loc3: Table<vector<u8>, address>)
+	22: MoveLoc[4](loc2: Table<address, AssetConfig>)
+	23: Pack[0](Config)
+	24: StLoc[6](loc4: Config)
+	25: MutBorrowLoc[6](loc4: Config)
+	26: MutBorrowField[1](Config.id: UID)
+	27: LdFalse
+	28: Pack[3](MARKET_ID_KEY)
+	29: CopyLoc[7](loc5: u64)
+	30: Call dynamic_field::add<MARKET_ID_KEY, u64>(&mut UID, MARKET_ID_KEY, u64)
+	31: MoveLoc[1](Arg1: &mut TxContext)
+	32: FreezeRef
+	33: Call tx_context::sender(&TxContext): address
+	34: MoveLoc[9](loc7: address)
+	35: MoveLoc[7](loc5: u64)
+	36: Call event::emit_config_created(address, address, u64)
+	37: MoveLoc[6](loc4: Config)
+	38: Call transfer::share_object<Config>(Config)
+	39: Ret
+}
+
+public(friend) create_asset(Arg0: &mut Config, Arg1: u8, Arg2: String, Arg3: address, Arg4: u64, Arg5: u64, Arg6: u64, Arg7: u64, Arg8: &mut TxContext) {
+L9:	loc0: AssetConfig
+L10:	loc1: u64
+L11:	loc2: UID
+L12:	loc3: address
+B0:
+	0: CopyLoc[0](Arg0: &mut Config)
+	1: FreezeRef
+	2: Call version_verification(&Config)
+	3: CopyLoc[0](Arg0: &mut Config)
+	4: ImmBorrowField[2](Config.support_assets: Table<vector<u8>, address>)
+	5: ImmBorrowLoc[2](Arg2: String)
+	6: Call ascii::as_bytes(&String): &vector<u8>
+	7: ReadRef
+	8: Call table::contains<vector<u8>, address>(&Table<vector<u8>, address>, vector<u8>): bool
+	9: Not
+	10: BrFalse(12)
+B1:
+	11: Branch(18)
+B2:
+	12: MoveLoc[8](Arg8: &mut TxContext)
+	13: Pop
+	14: MoveLoc[0](Arg0: &mut Config)
+	15: Pop
+	16: Call error::duplicate_config(): u64
+	17: Abort
+B3:
+	18: CopyLoc[8](Arg8: &mut TxContext)
+	19: Call object::new(&mut TxContext): UID
+	20: StLoc[11](loc2: UID)
+	21: ImmBorrowLoc[11](loc2: UID)
+	22: Call object::uid_to_address(&UID): address
+	23: StLoc[12](loc3: address)
+	24: MoveLoc[11](loc2: UID)
+	25: MoveLoc[1](Arg1: u8)
+	26: CopyLoc[2](Arg2: String)
+	27: MoveLoc[3](Arg3: address)
+	28: MoveLoc[4](Arg4: u64)
+	29: MoveLoc[5](Arg5: u64)
+	30: MoveLoc[6](Arg6: u64)
+	31: MoveLoc[7](Arg7: u64)
+	32: Pack[1](AssetConfig)
+	33: StLoc[9](loc0: AssetConfig)
+	34: ImmBorrowLoc[9](loc0: AssetConfig)
+	35: Call verify_config(&AssetConfig)
+	36: CopyLoc[0](Arg0: &mut Config)
+	37: MutBorrowField[3](Config.assets: Table<address, AssetConfig>)
+	38: CopyLoc[12](loc3: address)
+	39: MoveLoc[9](loc0: AssetConfig)
+	40: Call table::add<address, AssetConfig>(&mut Table<address, AssetConfig>, address, AssetConfig)
+	41: CopyLoc[0](Arg0: &mut Config)
+	42: MutBorrowField[2](Config.support_assets: Table<vector<u8>, address>)
+	43: ImmBorrowLoc[2](Arg2: String)
+	44: Call ascii::as_bytes(&String): &vector<u8>
+	45: ReadRef
+	46: CopyLoc[12](loc3: address)
+	47: Call table::add<vector<u8>, address>(&mut Table<vector<u8>, address>, vector<u8>, address)
+	48: CopyLoc[0](Arg0: &mut Config)
+	49: FreezeRef
+	50: Call get_market_id(&Config): u64
+	51: StLoc[10](loc1: u64)
+	52: MoveLoc[8](Arg8: &mut TxContext)
+	53: FreezeRef
+	54: Call tx_context::sender(&TxContext): address
+	55: MoveLoc[0](Arg0: &mut Config)
+	56: ImmBorrowField[1](Config.id: UID)
+	57: Call object::uid_to_address(&UID): address
+	58: MoveLoc[12](loc3: address)
+	59: MoveLoc[10](loc1: u64)
+	60: Call event::emit_asset_config_created(address, address, address, u64)
+	61: Ret
+}
+
+public(friend) loan<Ty0>(Arg0: &Config, Arg1: &mut Pool<Ty0>, Arg2: address, Arg3: u64): Balance<Ty0> * Receipt<Ty0> {
+L4:	loc0: bool
+L5:	loc1: Balance<Ty0>
+L6:	loc2: Receipt<Ty0>
+L7:	loc3: &address
+L8:	loc4: &AssetConfig
+L9:	loc5: u64
+L10:	loc6: address
+L11:	loc7: String
+L12:	loc8: u64
+L13:	loc9: u64
+B0:
+	0: CopyLoc[0](Arg0: &Config)
+	1: Call version_verification(&Config)
+	2: Call type_name::get<Ty0>(): TypeName
+	3: Call type_name::into_string(TypeName): String
+	4: StLoc[11](loc7: String)
+	5: CopyLoc[0](Arg0: &Config)
+	6: ImmBorrowField[2](Config.support_assets: Table<vector<u8>, address>)
+	7: ImmBorrowLoc[11](loc7: String)
+	8: Call ascii::as_bytes(&String): &vector<u8>
+	9: ReadRef
+	10: Call table::contains<vector<u8>, address>(&Table<vector<u8>, address>, vector<u8>): bool
+	11: BrFalse(13)
+B1:
+	12: Branch(19)
+B2:
+	13: MoveLoc[0](Arg0: &Config)
+	14: Pop
+	15: MoveLoc[1](Arg1: &mut Pool<Ty0>)
+	16: Pop
+	17: Call error::reserve_not_found(): u64
+	18: Abort
+B3:
+	19: CopyLoc[0](Arg0: &Config)
+	20: ImmBorrowField[2](Config.support_assets: Table<vector<u8>, address>)
+	21: ImmBorrowLoc[11](loc7: String)
+	22: Call ascii::as_bytes(&String): &vector<u8>
+	23: ReadRef
+	24: Call table::borrow<vector<u8>, address>(&Table<vector<u8>, address>, vector<u8>): &address
+	25: StLoc[7](loc3: &address)
+	26: CopyLoc[0](Arg0: &Config)
+	27: ImmBorrowField[3](Config.assets: Table<address, AssetConfig>)
+	28: CopyLoc[7](loc3: &address)
+	29: ReadRef
+	30: Call table::borrow<address, AssetConfig>(&Table<address, AssetConfig>, address): &AssetConfig
+	31: StLoc[8](loc4: &AssetConfig)
+	32: CopyLoc[1](Arg1: &mut Pool<Ty0>)
+	33: FreezeRef
+	34: Call pool::uid<Ty0>(&Pool<Ty0>): &UID
+	35: Call object::uid_to_address(&UID): address
+	36: StLoc[10](loc6: address)
+	37: CopyLoc[3](Arg3: u64)
+	38: CopyLoc[8](loc4: &AssetConfig)
+	39: ImmBorrowField[4](AssetConfig.min: u64)
+	40: ReadRef
+	41: Ge
+	42: BrFalse(50)
+B4:
+	43: CopyLoc[3](Arg3: u64)
+	44: CopyLoc[8](loc4: &AssetConfig)
+	45: ImmBorrowField[5](AssetConfig.max: u64)
+	46: ReadRef
+	47: Le
+	48: StLoc[4](loc0: bool)
+	49: Branch(52)
+B5:
+	50: LdFalse
+	51: StLoc[4](loc0: bool)
+B6:
+	52: MoveLoc[4](loc0: bool)
+	53: BrFalse(55)
+B7:
+	54: Branch(65)
+B8:
+	55: MoveLoc[0](Arg0: &Config)
+	56: Pop
+	57: MoveLoc[8](loc4: &AssetConfig)
+	58: Pop
+	59: MoveLoc[7](loc3: &address)
+	60: Pop
+	61: MoveLoc[1](Arg1: &mut Pool<Ty0>)
+	62: Pop
+	63: Call error::invalid_amount(): u64
+	64: Abort
+B9:
+	65: CopyLoc[8](loc4: &AssetConfig)
+	66: ImmBorrowField[6](AssetConfig.pool_id: address)
+	67: ReadRef
+	68: CopyLoc[10](loc6: address)
+	69: Eq
+	70: BrFalse(72)
+B10:
+	71: Branch(82)
+B11:
+	72: MoveLoc[0](Arg0: &Config)
+	73: Pop
+	74: MoveLoc[8](loc4: &AssetConfig)
+	75: Pop
+	76: MoveLoc[7](loc3: &address)
+	77: Pop
+	78: MoveLoc[1](Arg1: &mut Pool<Ty0>)
+	79: Pop
+	80: Call error::invalid_pool(): u64
+	81: Abort
+B12:
+	82: CopyLoc[3](Arg3: u64)
+	83: CopyLoc[8](loc4: &AssetConfig)
+	84: ImmBorrowField[7](AssetConfig.rate_to_supplier: u64)
+	85: ReadRef
+	86: Mul
+	87: Call constants::FlashLoanMultiple(): u64
+	88: Div
+	89: StLoc[12](loc8: u64)
+	90: CopyLoc[3](Arg3: u64)
+	91: MoveLoc[8](loc4: &AssetConfig)
+	92: ImmBorrowField[8](AssetConfig.rate_to_treasury: u64)
+	93: ReadRef
+	94: Mul
+	95: Call constants::FlashLoanMultiple(): u64
+	96: Div
+	97: StLoc[13](loc9: u64)
+	98: MoveLoc[1](Arg1: &mut Pool<Ty0>)
+	99: CopyLoc[3](Arg3: u64)
+	100: CopyLoc[2](Arg2: address)
+	101: Call pool::withdraw_balance<Ty0>(&mut Pool<Ty0>, u64, address): Balance<Ty0>
+	102: StLoc[5](loc1: Balance<Ty0>)
+	103: CopyLoc[2](Arg2: address)
+	104: CopyLoc[7](loc3: &address)
+	105: ReadRef
+	106: CopyLoc[3](Arg3: u64)
+	107: MoveLoc[10](loc6: address)
+	108: MoveLoc[12](loc8: u64)
+	109: MoveLoc[13](loc9: u64)
+	110: PackGeneric[0](Receipt<Ty0>)
+	111: StLoc[6](loc2: Receipt<Ty0>)
+	112: MoveLoc[0](Arg0: &Config)
+	113: Call get_market_id(&Config): u64
+	114: StLoc[9](loc5: u64)
+	115: MoveLoc[2](Arg2: address)
+	116: MoveLoc[7](loc3: &address)
+	117: ReadRef
+	118: MoveLoc[3](Arg3: u64)
+	119: MoveLoc[9](loc5: u64)
+	120: Call event::emit_flash_loan(address, address, u64, u64)
+	121: MoveLoc[5](loc1: Balance<Ty0>)
+	122: MoveLoc[6](loc2: Receipt<Ty0>)
+	123: Ret
+}
+
+public(friend) loan_v2<Ty0>(Arg0: &Config, Arg1: &mut Pool<Ty0>, Arg2: address, Arg3: u64, Arg4: &mut SuiSystemState, Arg5: &mut TxContext): Balance<Ty0> * Receipt<Ty0> {
+L6:	loc0: bool
+L7:	loc1: Balance<Ty0>
+L8:	loc2: Receipt<Ty0>
+L9:	loc3: &address
+L10:	loc4: &AssetConfig
+L11:	loc5: u64
+L12:	loc6: address
+L13:	loc7: String
+L14:	loc8: u64
+L15:	loc9: u64
+B0:
+	0: CopyLoc[0](Arg0: &Config)
+	1: Call version_verification(&Config)
+	2: Call type_name::get<Ty0>(): TypeName
+	3: Call type_name::into_string(TypeName): String
+	4: StLoc[13](loc7: String)
+	5: CopyLoc[0](Arg0: &Config)
+	6: ImmBorrowField[2](Config.support_assets: Table<vector<u8>, address>)
+	7: ImmBorrowLoc[13](loc7: String)
+	8: Call ascii::as_bytes(&String): &vector<u8>
+	9: ReadRef
+	10: Call table::contains<vector<u8>, address>(&Table<vector<u8>, address>, vector<u8>): bool
+	11: BrFalse(13)
+B1:
+	12: Branch(23)
+B2:
+	13: MoveLoc[4](Arg4: &mut SuiSystemState)
+	14: Pop
+	15: MoveLoc[5](Arg5: &mut TxContext)
+	16: Pop
+	17: MoveLoc[0](Arg0: &Config)
+	18: Pop
+	19: MoveLoc[1](Arg1: &mut Pool<Ty0>)
+	20: Pop
+	21: Call error::reserve_not_found(): u64
+	22: Abort
+B3:
+	23: CopyLoc[0](Arg0: &Config)
+	24: ImmBorrowField[2](Config.support_assets: Table<vector<u8>, address>)
+	25: ImmBorrowLoc[13](loc7: String)
+	26: Call ascii::as_bytes(&String): &vector<u8>
+	27: ReadRef
+	28: Call table::borrow<vector<u8>, address>(&Table<vector<u8>, address>, vector<u8>): &address
+	29: StLoc[9](loc3: &address)
+	30: CopyLoc[0](Arg0: &Config)
+	31: ImmBorrowField[3](Config.assets: Table<address, AssetConfig>)
+	32: CopyLoc[9](loc3: &address)
+	33: ReadRef
+	34: Call table::borrow<address, AssetConfig>(&Table<address, AssetConfig>, address): &AssetConfig
+	35: StLoc[10](loc4: &AssetConfig)
+	36: CopyLoc[1](Arg1: &mut Pool<Ty0>)
+	37: FreezeRef
+	38: Call pool::uid<Ty0>(&Pool<Ty0>): &UID
+	39: Call object::uid_to_address(&UID): address
+	40: StLoc[12](loc6: address)
+	41: CopyLoc[3](Arg3: u64)
+	42: CopyLoc[10](loc4: &AssetConfig)
+	43: ImmBorrowField[4](AssetConfig.min: u64)
+	44: ReadRef
+	45: Ge
+	46: BrFalse(54)
+B4:
+	47: CopyLoc[3](Arg3: u64)
+	48: CopyLoc[10](loc4: &AssetConfig)
+	49: ImmBorrowField[5](AssetConfig.max: u64)
+	50: ReadRef
+	51: Le
+	52: StLoc[6](loc0: bool)
+	53: Branch(56)
+B5:
+	54: LdFalse
+	55: StLoc[6](loc0: bool)
+B6:
+	56: MoveLoc[6](loc0: bool)
+	57: BrFalse(59)
+B7:
+	58: Branch(73)
+B8:
+	59: MoveLoc[4](Arg4: &mut SuiSystemState)
+	60: Pop
+	61: MoveLoc[5](Arg5: &mut TxContext)
+	62: Pop
+	63: MoveLoc[0](Arg0: &Config)
+	64: Pop
+	65: MoveLoc[10](loc4: &AssetConfig)
+	66: Pop
+	67: MoveLoc[9](loc3: &address)
+	68: Pop
+	69: MoveLoc[1](Arg1: &mut Pool<Ty0>)
+	70: Pop
+	71: Call error::invalid_amount(): u64
+	72: Abort
+B9:
+	73: CopyLoc[10](loc4: &AssetConfig)
+	74: ImmBorrowField[6](AssetConfig.pool_id: address)
+	75: ReadRef
+	76: CopyLoc[12](loc6: address)
+	77: Eq
+	78: BrFalse(80)
+B10:
+	79: Branch(94)
+B11:
+	80: MoveLoc[4](Arg4: &mut SuiSystemState)
+	81: Pop
+	82: MoveLoc[5](Arg5: &mut TxContext)
+	83: Pop
+	84: MoveLoc[0](Arg0: &Config)
+	85: Pop
+	86: MoveLoc[10](loc4: &AssetConfig)
+	87: Pop
+	88: MoveLoc[9](loc3: &address)
+	89: Pop
+	90: MoveLoc[1](Arg1: &mut Pool<Ty0>)
+	91: Pop
+	92: Call error::invalid_pool(): u64
+	93: Abort
+B12:
+	94: CopyLoc[3](Arg3: u64)
+	95: CopyLoc[10](loc4: &AssetConfig)
+	96: ImmBorrowField[7](AssetConfig.rate_to_supplier: u64)
+	97: ReadRef
+	98: Mul
+	99: Call constants::FlashLoanMultiple(): u64
+	100: Div
+	101: StLoc[14](loc8: u64)
+	102: CopyLoc[3](Arg3: u64)
+	103: MoveLoc[10](loc4: &AssetConfig)
+	104: ImmBorrowField[8](AssetConfig.rate_to_treasury: u64)
+	105: ReadRef
+	106: Mul
+	107: Call constants::FlashLoanMultiple(): u64
+	108: Div
+	109: StLoc[15](loc9: u64)
+	110: MoveLoc[1](Arg1: &mut Pool<Ty0>)
+	111: CopyLoc[3](Arg3: u64)
+	112: CopyLoc[2](Arg2: address)
+	113: MoveLoc[4](Arg4: &mut SuiSystemState)
+	114: MoveLoc[5](Arg5: &mut TxContext)
+	115: Call pool::withdraw_balance_v2<Ty0>(&mut Pool<Ty0>, u64, address, &mut SuiSystemState, &mut TxContext): Balance<Ty0>
+	116: StLoc[7](loc1: Balance<Ty0>)
+	117: CopyLoc[2](Arg2: address)
+	118: CopyLoc[9](loc3: &address)
+	119: ReadRef
+	120: CopyLoc[3](Arg3: u64)
+	121: MoveLoc[12](loc6: address)
+	122: MoveLoc[14](loc8: u64)
+	123: MoveLoc[15](loc9: u64)
+	124: PackGeneric[0](Receipt<Ty0>)
+	125: StLoc[8](loc2: Receipt<Ty0>)
+	126: MoveLoc[0](Arg0: &Config)
+	127: Call get_market_id(&Config): u64
+	128: StLoc[11](loc5: u64)
+	129: MoveLoc[2](Arg2: address)
+	130: MoveLoc[9](loc3: &address)
+	131: ReadRef
+	132: MoveLoc[3](Arg3: u64)
+	133: MoveLoc[11](loc5: u64)
+	134: Call event::emit_flash_loan(address, address, u64, u64)
+	135: MoveLoc[7](loc1: Balance<Ty0>)
+	136: MoveLoc[8](loc2: Receipt<Ty0>)
+	137: Ret
+}
+
+public(friend) repay<Ty0>(Arg0: &Clock, Arg1: &mut Storage, Arg2: &mut Pool<Ty0>, Arg3: Receipt<Ty0>, Arg4: address, Arg5: Balance<Ty0>): Balance<Ty0> {
+L6:	loc0: String
+L7:	loc1: u64
+L8:	loc2: u64
+L9:	loc3: address
+L10:	loc4: u8
+L11:	loc5: u64
+L12:	loc6: u64
+L13:	loc7: u64
+L14:	loc8: u64
+L15:	loc9: address
+L16:	loc10: Balance<Ty0>
+L17:	loc11: u256
+L18:	loc12: u256
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call storage::when_not_paused(&Storage)
+	3: MoveLoc[3](Arg3: Receipt<Ty0>)
+	4: UnpackGeneric[0](Receipt<Ty0>)
+	5: StLoc[12](loc6: u64)
+	6: StLoc[11](loc5: u64)
+	7: StLoc[15](loc9: address)
+	8: StLoc[8](loc2: u64)
+	9: StLoc[9](loc3: address)
+	10: CopyLoc[4](Arg4: address)
+	11: Eq
+	12: BrFalse(14)
+B1:
+	13: Branch(22)
+B2:
+	14: MoveLoc[1](Arg1: &mut Storage)
+	15: Pop
+	16: MoveLoc[0](Arg0: &Clock)
+	17: Pop
+	18: MoveLoc[2](Arg2: &mut Pool<Ty0>)
+	19: Pop
+	20: Call error::invalid_user(): u64
+	21: Abort
+B3:
+	22: MoveLoc[15](loc9: address)
+	23: CopyLoc[2](Arg2: &mut Pool<Ty0>)
+	24: FreezeRef
+	25: Call pool::uid<Ty0>(&Pool<Ty0>): &UID
+	26: Call object::uid_to_address(&UID): address
+	27: Eq
+	28: BrFalse(30)
+B4:
+	29: Branch(38)
+B5:
+	30: MoveLoc[1](Arg1: &mut Storage)
+	31: Pop
+	32: MoveLoc[0](Arg0: &Clock)
+	33: Pop
+	34: MoveLoc[2](Arg2: &mut Pool<Ty0>)
+	35: Pop
+	36: Call error::invalid_pool(): u64
+	37: Abort
+B6:
+	38: MoveLoc[0](Arg0: &Clock)
+	39: CopyLoc[1](Arg1: &mut Storage)
+	40: Call logic::update_state_of_all(&Clock, &mut Storage)
+	41: CopyLoc[1](Arg1: &mut Storage)
+	42: Call type_name::get<Ty0>(): TypeName
+	43: Call type_name::into_string(TypeName): String
+	44: StLoc[6](loc0: String)
+	45: FreezeRef
+	46: MoveLoc[6](loc0: String)
+	47: Call get_storage_asset_id_from_coin_type(&Storage, String): u8
+	48: StLoc[10](loc4: u8)
+	49: CopyLoc[2](Arg2: &mut Pool<Ty0>)
+	50: CopyLoc[11](loc5: u64)
+	51: StLoc[7](loc1: u64)
+	52: FreezeRef
+	53: MoveLoc[7](loc1: u64)
+	54: Call pool::normal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	55: StLoc[14](loc8: u64)
+	56: CopyLoc[1](Arg1: &mut Storage)
+	57: CopyLoc[10](loc4: u8)
+	58: Call storage::get_index(&mut Storage, u8): u256 * u256
+	59: Pop
+	60: StLoc[18](loc12: u256)
+	61: MoveLoc[14](loc8: u64)
+	62: CastU256
+	63: MoveLoc[18](loc12: u256)
+	64: Call ray_math::ray_div(u256, u256): u256
+	65: StLoc[17](loc11: u256)
+	66: CopyLoc[1](Arg1: &mut Storage)
+	67: CopyLoc[10](loc4: u8)
+	68: MoveLoc[17](loc11: u256)
+	69: Call logic::cumulate_to_supply_index(&mut Storage, u8, u256)
+	70: CopyLoc[1](Arg1: &mut Storage)
+	71: MoveLoc[10](loc4: u8)
+	72: Call logic::update_interest_rate(&mut Storage, u8)
+	73: ImmBorrowLoc[5](Arg5: Balance<Ty0>)
+	74: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	75: CopyLoc[8](loc2: u64)
+	76: CopyLoc[11](loc5: u64)
+	77: Add
+	78: CopyLoc[12](loc6: u64)
+	79: Add
+	80: Ge
+	81: BrFalse(83)
+B7:
+	82: Branch(89)
+B8:
+	83: MoveLoc[1](Arg1: &mut Storage)
+	84: Pop
+	85: MoveLoc[2](Arg2: &mut Pool<Ty0>)
+	86: Pop
+	87: Call error::invalid_amount(): u64
+	88: Abort
+B9:
+	89: MutBorrowLoc[5](Arg5: Balance<Ty0>)
+	90: CopyLoc[8](loc2: u64)
+	91: CopyLoc[11](loc5: u64)
+	92: Add
+	93: CopyLoc[12](loc6: u64)
+	94: Add
+	95: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	96: StLoc[16](loc10: Balance<Ty0>)
+	97: CopyLoc[2](Arg2: &mut Pool<Ty0>)
+	98: MoveLoc[16](loc10: Balance<Ty0>)
+	99: CopyLoc[4](Arg4: address)
+	100: Call pool::deposit_balance<Ty0>(&mut Pool<Ty0>, Balance<Ty0>, address)
+	101: MoveLoc[2](Arg2: &mut Pool<Ty0>)
+	102: CopyLoc[12](loc6: u64)
+	103: Call pool::deposit_treasury<Ty0>(&mut Pool<Ty0>, u64)
+	104: MoveLoc[1](Arg1: &mut Storage)
+	105: FreezeRef
+	106: Call storage::get_market_id(&Storage): u64
+	107: StLoc[13](loc7: u64)
+	108: MoveLoc[4](Arg4: address)
+	109: MoveLoc[9](loc3: address)
+	110: MoveLoc[8](loc2: u64)
+	111: MoveLoc[11](loc5: u64)
+	112: MoveLoc[12](loc6: u64)
+	113: MoveLoc[13](loc7: u64)
+	114: Call event::emit_flash_repay(address, address, u64, u64, u64, u64)
+	115: MoveLoc[5](Arg5: Balance<Ty0>)
+	116: Ret
+}
+
+get_storage_asset_id_from_coin_type(Arg0: &Storage, Arg1: String): u8 {
+L2:	loc0: u8
+L3:	loc1: u8
+B0:
+	0: CopyLoc[0](Arg0: &Storage)
+	1: Call storage::get_reserves_count(&Storage): u8
+	2: StLoc[2](loc0: u8)
+B1:
+	3: CopyLoc[2](loc0: u8)
+	4: LdU8(0)
+	5: Gt
+	6: BrFalse(27)
+B2:
+	7: Branch(8)
+B3:
+	8: CopyLoc[2](loc0: u8)
+	9: LdU8(1)
+	10: Sub
+	11: StLoc[3](loc1: u8)
+	12: CopyLoc[0](Arg0: &Storage)
+	13: CopyLoc[3](loc1: u8)
+	14: Call storage::get_coin_type(&Storage, u8): String
+	15: CopyLoc[1](Arg1: String)
+	16: Eq
+	17: BrFalse(22)
+B4:
+	18: MoveLoc[0](Arg0: &Storage)
+	19: Pop
+	20: MoveLoc[3](loc1: u8)
+	21: Ret
+B5:
+	22: MoveLoc[2](loc0: u8)
+	23: LdU8(1)
+	24: Sub
+	25: StLoc[2](loc0: u8)
+	26: Branch(3)
+B6:
+	27: MoveLoc[0](Arg0: &Storage)
+	28: Pop
+	29: Call error::reserve_not_found(): u64
+	30: Abort
+}
+
+public parsed_receipt<Ty0>(Arg0: &Receipt<Ty0>): address * address * u64 * address * u64 * u64 {
+B0:
+	0: CopyLoc[0](Arg0: &Receipt<Ty0>)
+	1: ImmBorrowFieldGeneric[0](Receipt.user: address)
+	2: ReadRef
+	3: CopyLoc[0](Arg0: &Receipt<Ty0>)
+	4: ImmBorrowFieldGeneric[1](Receipt.asset: address)
+	5: ReadRef
+	6: CopyLoc[0](Arg0: &Receipt<Ty0>)
+	7: ImmBorrowFieldGeneric[2](Receipt.amount: u64)
+	8: ReadRef
+	9: CopyLoc[0](Arg0: &Receipt<Ty0>)
+	10: ImmBorrowFieldGeneric[3](Receipt.pool: address)
+	11: ReadRef
+	12: CopyLoc[0](Arg0: &Receipt<Ty0>)
+	13: ImmBorrowFieldGeneric[4](Receipt.fee_to_supplier: u64)
+	14: ReadRef
+	15: MoveLoc[0](Arg0: &Receipt<Ty0>)
+	16: ImmBorrowFieldGeneric[5](Receipt.fee_to_treasury: u64)
+	17: ReadRef
+	18: Ret
+}
+
+public get_asset<Ty0>(Arg0: &Config): address * u8 * vector<u8> * address * u64 * u64 * u64 * u64 {
+L1:	loc0: &address
+L2:	loc1: &AssetConfig
+L3:	loc2: String
+B0:
+	0: Call type_name::get<Ty0>(): TypeName
+	1: Call type_name::into_string(TypeName): String
+	2: StLoc[3](loc2: String)
+	3: CopyLoc[0](Arg0: &Config)
+	4: ImmBorrowField[2](Config.support_assets: Table<vector<u8>, address>)
+	5: ImmBorrowLoc[3](loc2: String)
+	6: Call ascii::as_bytes(&String): &vector<u8>
+	7: ReadRef
+	8: Call table::contains<vector<u8>, address>(&Table<vector<u8>, address>, vector<u8>): bool
+	9: BrFalse(11)
+B1:
+	10: Branch(15)
+B2:
+	11: MoveLoc[0](Arg0: &Config)
+	12: Pop
+	13: Call error::reserve_not_found(): u64
+	14: Abort
+B3:
+	15: CopyLoc[0](Arg0: &Config)
+	16: ImmBorrowField[2](Config.support_assets: Table<vector<u8>, address>)
+	17: ImmBorrowLoc[3](loc2: String)
+	18: Call ascii::as_bytes(&String): &vector<u8>
+	19: ReadRef
+	20: Call table::borrow<vector<u8>, address>(&Table<vector<u8>, address>, vector<u8>): &address
+	21: StLoc[1](loc0: &address)
+	22: MoveLoc[0](Arg0: &Config)
+	23: ImmBorrowField[3](Config.assets: Table<address, AssetConfig>)
+	24: MoveLoc[1](loc0: &address)
+	25: ReadRef
+	26: Call table::borrow<address, AssetConfig>(&Table<address, AssetConfig>, address): &AssetConfig
+	27: StLoc[2](loc1: &AssetConfig)
+	28: CopyLoc[2](loc1: &AssetConfig)
+	29: ImmBorrowField[15](AssetConfig.id: UID)
+	30: Call object::uid_to_address(&UID): address
+	31: CopyLoc[2](loc1: &AssetConfig)
+	32: ImmBorrowField[16](AssetConfig.asset_id: u8)
+	33: ReadRef
+	34: CopyLoc[2](loc1: &AssetConfig)
+	35: ImmBorrowField[17](AssetConfig.coin_type: String)
+	36: Call ascii::as_bytes(&String): &vector<u8>
+	37: ReadRef
+	38: CopyLoc[2](loc1: &AssetConfig)
+	39: ImmBorrowField[6](AssetConfig.pool_id: address)
+	40: ReadRef
+	41: CopyLoc[2](loc1: &AssetConfig)
+	42: ImmBorrowField[7](AssetConfig.rate_to_supplier: u64)
+	43: ReadRef
+	44: CopyLoc[2](loc1: &AssetConfig)
+	45: ImmBorrowField[8](AssetConfig.rate_to_treasury: u64)
+	46: ReadRef
+	47: CopyLoc[2](loc1: &AssetConfig)
+	48: ImmBorrowField[5](AssetConfig.max: u64)
+	49: ReadRef
+	50: MoveLoc[2](loc1: &AssetConfig)
+	51: ImmBorrowField[4](AssetConfig.min: u64)
+	52: ReadRef
+	53: Ret
+}
+
+public(friend) set_asset_rate_to_supplier(Arg0: &mut Config, Arg1: String, Arg2: u64) {
+L3:	loc0: &mut AssetConfig
+B0:
+	0: CopyLoc[0](Arg0: &mut Config)
+	1: FreezeRef
+	2: Call version_verification(&Config)
+	3: MoveLoc[0](Arg0: &mut Config)
+	4: MoveLoc[1](Arg1: String)
+	5: Call get_asset_config_by_coin_type(&mut Config, String): &mut AssetConfig
+	6: StLoc[3](loc0: &mut AssetConfig)
+	7: MoveLoc[2](Arg2: u64)
+	8: CopyLoc[3](loc0: &mut AssetConfig)
+	9: MutBorrowField[7](AssetConfig.rate_to_supplier: u64)
+	10: WriteRef
+	11: MoveLoc[3](loc0: &mut AssetConfig)
+	12: FreezeRef
+	13: Call verify_config(&AssetConfig)
+	14: Ret
+}
+
+public(friend) set_asset_rate_to_treasury(Arg0: &mut Config, Arg1: String, Arg2: u64) {
+L3:	loc0: &mut AssetConfig
+B0:
+	0: CopyLoc[0](Arg0: &mut Config)
+	1: FreezeRef
+	2: Call version_verification(&Config)
+	3: MoveLoc[0](Arg0: &mut Config)
+	4: MoveLoc[1](Arg1: String)
+	5: Call get_asset_config_by_coin_type(&mut Config, String): &mut AssetConfig
+	6: StLoc[3](loc0: &mut AssetConfig)
+	7: MoveLoc[2](Arg2: u64)
+	8: CopyLoc[3](loc0: &mut AssetConfig)
+	9: MutBorrowField[8](AssetConfig.rate_to_treasury: u64)
+	10: WriteRef
+	11: MoveLoc[3](loc0: &mut AssetConfig)
+	12: FreezeRef
+	13: Call verify_config(&AssetConfig)
+	14: Ret
+}
+
+public(friend) set_asset_min(Arg0: &mut Config, Arg1: String, Arg2: u64) {
+L3:	loc0: &mut AssetConfig
+B0:
+	0: CopyLoc[0](Arg0: &mut Config)
+	1: FreezeRef
+	2: Call version_verification(&Config)
+	3: MoveLoc[0](Arg0: &mut Config)
+	4: MoveLoc[1](Arg1: String)
+	5: Call get_asset_config_by_coin_type(&mut Config, String): &mut AssetConfig
+	6: StLoc[3](loc0: &mut AssetConfig)
+	7: MoveLoc[2](Arg2: u64)
+	8: CopyLoc[3](loc0: &mut AssetConfig)
+	9: MutBorrowField[4](AssetConfig.min: u64)
+	10: WriteRef
+	11: MoveLoc[3](loc0: &mut AssetConfig)
+	12: FreezeRef
+	13: Call verify_config(&AssetConfig)
+	14: Ret
+}
+
+public(friend) set_asset_max(Arg0: &mut Config, Arg1: String, Arg2: u64) {
+L3:	loc0: &mut AssetConfig
+B0:
+	0: CopyLoc[0](Arg0: &mut Config)
+	1: FreezeRef
+	2: Call version_verification(&Config)
+	3: MoveLoc[0](Arg0: &mut Config)
+	4: MoveLoc[1](Arg1: String)
+	5: Call get_asset_config_by_coin_type(&mut Config, String): &mut AssetConfig
+	6: StLoc[3](loc0: &mut AssetConfig)
+	7: MoveLoc[2](Arg2: u64)
+	8: CopyLoc[3](loc0: &mut AssetConfig)
+	9: MutBorrowField[5](AssetConfig.max: u64)
+	10: WriteRef
+	11: MoveLoc[3](loc0: &mut AssetConfig)
+	12: FreezeRef
+	13: Call verify_config(&AssetConfig)
+	14: Ret
+}
+
+get_asset_config_by_coin_type(Arg0: &mut Config, Arg1: String): &mut AssetConfig {
+L2:	loc0: &address
+B0:
+	0: CopyLoc[0](Arg0: &mut Config)
+	1: ImmBorrowField[2](Config.support_assets: Table<vector<u8>, address>)
+	2: ImmBorrowLoc[1](Arg1: String)
+	3: Call ascii::as_bytes(&String): &vector<u8>
+	4: ReadRef
+	5: Call table::contains<vector<u8>, address>(&Table<vector<u8>, address>, vector<u8>): bool
+	6: BrFalse(8)
+B1:
+	7: Branch(12)
+B2:
+	8: MoveLoc[0](Arg0: &mut Config)
+	9: Pop
+	10: Call error::reserve_not_found(): u64
+	11: Abort
+B3:
+	12: CopyLoc[0](Arg0: &mut Config)
+	13: ImmBorrowField[2](Config.support_assets: Table<vector<u8>, address>)
+	14: ImmBorrowLoc[1](Arg1: String)
+	15: Call ascii::as_bytes(&String): &vector<u8>
+	16: ReadRef
+	17: Call table::borrow<vector<u8>, address>(&Table<vector<u8>, address>, vector<u8>): &address
+	18: StLoc[2](loc0: &address)
+	19: MoveLoc[0](Arg0: &mut Config)
+	20: MutBorrowField[3](Config.assets: Table<address, AssetConfig>)
+	21: MoveLoc[2](loc0: &address)
+	22: ReadRef
+	23: Call table::borrow_mut<address, AssetConfig>(&mut Table<address, AssetConfig>, address): &mut AssetConfig
+	24: Ret
+}
+
+verify_config(Arg0: &AssetConfig) {
+B0:
+	0: CopyLoc[0](Arg0: &AssetConfig)
+	1: ImmBorrowField[7](AssetConfig.rate_to_supplier: u64)
+	2: ReadRef
+	3: CopyLoc[0](Arg0: &AssetConfig)
+	4: ImmBorrowField[8](AssetConfig.rate_to_treasury: u64)
+	5: ReadRef
+	6: Add
+	7: Call constants::FlashLoanMultiple(): u64
+	8: Lt
+	9: BrFalse(11)
+B1:
+	10: Branch(15)
+B2:
+	11: MoveLoc[0](Arg0: &AssetConfig)
+	12: Pop
+	13: Call error::invalid_amount(): u64
+	14: Abort
+B3:
+	15: CopyLoc[0](Arg0: &AssetConfig)
+	16: ImmBorrowField[4](AssetConfig.min: u64)
+	17: ReadRef
+	18: MoveLoc[0](Arg0: &AssetConfig)
+	19: ImmBorrowField[5](AssetConfig.max: u64)
+	20: ReadRef
+	21: Lt
+	22: BrFalse(24)
+B4:
+	23: Branch(26)
+B5:
+	24: Call error::invalid_amount(): u64
+	25: Abort
+B6:
+	26: Ret
+}
+
+public get_market_id(Arg0: &Config): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Config)
+	1: ImmBorrowField[1](Config.id: UID)
+	2: LdFalse
+	3: Pack[3](MARKET_ID_KEY)
+	4: Call dynamic_field::borrow<MARKET_ID_KEY, u64>(&UID, MARKET_ID_KEY): &u64
+	5: ReadRef
+	6: Ret
+}
+
+}
+

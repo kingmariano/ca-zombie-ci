@@ -1,0 +1,186 @@
+// Move bytecode v7
+module ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f.adaptor_pyth {
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_utils;
+use 55300367a2d40813727ccac4ecee977a39fb9cdb46f2e6b2c354b9798f5de2c0::i64;
+use 55300367a2d40813727ccac4ecee977a39fb9cdb46f2e6b2c354b9798f5de2c0::price;
+use 55300367a2d40813727ccac4ecee977a39fb9cdb46f2e6b2c354b9798f5de2c0::price_identifier;
+use 55300367a2d40813727ccac4ecee977a39fb9cdb46f2e6b2c354b9798f5de2c0::price_info;
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::price_info as 0price_info;
+use 55300367a2d40813727ccac4ecee977a39fb9cdb46f2e6b2c354b9798f5de2c0::pyth;
+use 55300367a2d40813727ccac4ecee977a39fb9cdb46f2e6b2c354b9798f5de2c0::state;
+use 8d97f1cd6ac663735be08d1d2b6d02a159e711586461306ce60a2b7a6a565a9e::state as 0state;
+use 0000000000000000000000000000000000000000000000000000000000000002::address;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+
+public get_price_native(Arg0: &Clock, Arg1: &State, Arg2: &PriceInfoObject): u64 * u64 * u64 {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public get_price_native_v2(Arg0: &Clock, Arg1: &State, Arg2: &PriceInfoObject): u64 * u64 * u64 {
+L3:	loc0: u64
+L4:	loc1: I64
+L5:	loc2: I64
+L6:	loc3: u64
+L7:	loc4: Price
+L8:	loc5: u64
+B0:
+	0: MoveLoc[1](Arg1: &State)
+	1: MoveLoc[2](Arg2: &PriceInfoObject)
+	2: MoveLoc[0](Arg0: &Clock)
+	3: Call pyth::get_price(&State, &PriceInfoObject, &Clock): Price
+	4: StLoc[7](loc4: Price)
+	5: ImmBorrowLoc[7](loc4: Price)
+	6: Call price::get_price(&Price): I64
+	7: StLoc[5](loc2: I64)
+	8: ImmBorrowLoc[7](loc4: Price)
+	9: Call price::get_expo(&Price): I64
+	10: StLoc[4](loc1: I64)
+	11: ImmBorrowLoc[7](loc4: Price)
+	12: Call price::get_timestamp(&Price): u64
+	13: LdU64(1000)
+	14: Mul
+	15: StLoc[8](loc5: u64)
+	16: ImmBorrowLoc[5](loc2: I64)
+	17: Call i64::get_magnitude_if_positive(&I64): u64
+	18: StLoc[6](loc3: u64)
+	19: ImmBorrowLoc[4](loc1: I64)
+	20: Call i64::get_magnitude_if_negative(&I64): u64
+	21: StLoc[3](loc0: u64)
+	22: MoveLoc[6](loc3: u64)
+	23: MoveLoc[3](loc0: u64)
+	24: MoveLoc[8](loc5: u64)
+	25: Ret
+}
+
+public get_price_unsafe_native(Arg0: &PriceInfoObject): u64 * u64 * u64 {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public get_price_unsafe_native_v2(Arg0: &PriceInfoObject): u64 * u64 * u64 {
+L1:	loc0: u64
+L2:	loc1: I64
+L3:	loc2: I64
+L4:	loc3: u64
+L5:	loc4: Price
+L6:	loc5: u64
+B0:
+	0: MoveLoc[0](Arg0: &PriceInfoObject)
+	1: Call pyth::get_price_unsafe(&PriceInfoObject): Price
+	2: StLoc[5](loc4: Price)
+	3: ImmBorrowLoc[5](loc4: Price)
+	4: Call price::get_price(&Price): I64
+	5: StLoc[3](loc2: I64)
+	6: ImmBorrowLoc[5](loc4: Price)
+	7: Call price::get_expo(&Price): I64
+	8: StLoc[2](loc1: I64)
+	9: ImmBorrowLoc[5](loc4: Price)
+	10: Call price::get_timestamp(&Price): u64
+	11: LdU64(1000)
+	12: Mul
+	13: StLoc[6](loc5: u64)
+	14: ImmBorrowLoc[3](loc2: I64)
+	15: Call i64::get_magnitude_if_positive(&I64): u64
+	16: StLoc[4](loc3: u64)
+	17: ImmBorrowLoc[2](loc1: I64)
+	18: Call i64::get_magnitude_if_negative(&I64): u64
+	19: StLoc[1](loc0: u64)
+	20: MoveLoc[4](loc3: u64)
+	21: MoveLoc[1](loc0: u64)
+	22: MoveLoc[6](loc5: u64)
+	23: Ret
+}
+
+public get_price_to_target_decimal(Arg0: &Clock, Arg1: &State, Arg2: &PriceInfoObject, Arg3: u8): u256 * u64 {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public get_price_to_target_decimal_v2(Arg0: &Clock, Arg1: &State, Arg2: &PriceInfoObject, Arg3: u8): u256 * u64 {
+L4:	loc0: u64
+L5:	loc1: u64
+B0:
+	0: MoveLoc[0](Arg0: &Clock)
+	1: MoveLoc[1](Arg1: &State)
+	2: MoveLoc[2](Arg2: &PriceInfoObject)
+	3: Call get_price_native_v2(&Clock, &State, &PriceInfoObject): u64 * u64 * u64
+	4: StLoc[5](loc1: u64)
+	5: StLoc[4](loc0: u64)
+	6: CastU256
+	7: MoveLoc[4](loc0: u64)
+	8: MoveLoc[3](Arg3: u8)
+	9: CastU64
+	10: Call oracle_utils::to_target_decimal_value_safe(u256, u64, u64): u256
+	11: MoveLoc[5](loc1: u64)
+	12: Ret
+}
+
+public get_price_unsafe_to_target_decimal(Arg0: &PriceInfoObject, Arg1: u8): u256 * u64 {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public get_price_unsafe_to_target_decimal_v2(Arg0: &PriceInfoObject, Arg1: u8): u256 * u64 {
+L2:	loc0: u64
+L3:	loc1: u64
+B0:
+	0: MoveLoc[0](Arg0: &PriceInfoObject)
+	1: Call get_price_unsafe_native_v2(&PriceInfoObject): u64 * u64 * u64
+	2: StLoc[3](loc1: u64)
+	3: StLoc[2](loc0: u64)
+	4: CastU256
+	5: MoveLoc[2](loc0: u64)
+	6: MoveLoc[1](Arg1: u8)
+	7: CastU64
+	8: Call oracle_utils::to_target_decimal_value_safe(u256, u64, u64): u256
+	9: MoveLoc[3](loc1: u64)
+	10: Ret
+}
+
+public get_identifier_to_vector(Arg0: &PriceInfoObject): vector<u8> {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public get_identifier_to_vector_v2(Arg0: &PriceInfoObject): vector<u8> {
+L1:	loc0: PriceIdentifier
+L2:	loc1: PriceInfo
+B0:
+	0: MoveLoc[0](Arg0: &PriceInfoObject)
+	1: Call price_info::get_price_info_from_price_info_object(&PriceInfoObject): PriceInfo
+	2: StLoc[2](loc1: PriceInfo)
+	3: ImmBorrowLoc[2](loc1: PriceInfo)
+	4: Call price_info::get_price_identifier(&PriceInfo): PriceIdentifier
+	5: StLoc[1](loc0: PriceIdentifier)
+	6: ImmBorrowLoc[1](loc0: PriceIdentifier)
+	7: Call price_identifier::get_bytes(&PriceIdentifier): vector<u8>
+	8: Ret
+}
+
+public get_price_info_object_id(Arg0: &State, Arg1: address): address {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public get_price_info_object_id_v2(Arg0: &State, Arg1: address): address {
+L2:	loc0: ID
+B0:
+	0: MoveLoc[0](Arg0: &State)
+	1: MoveLoc[1](Arg1: address)
+	2: Call address::to_bytes(address): vector<u8>
+	3: Call state::get_price_info_object_id(&State, vector<u8>): ID
+	4: StLoc[2](loc0: ID)
+	5: ImmBorrowLoc[2](loc0: ID)
+	6: Call object::id_to_address(&ID): address
+	7: Ret
+}
+
+}

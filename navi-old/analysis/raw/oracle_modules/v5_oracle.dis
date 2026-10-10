@@ -1,0 +1,519 @@
+// Move bytecode v7
+module ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f.oracle {
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_constants;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_error;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_version;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct OracleAdminCap has store, key {
+	id: UID
+}
+
+struct OracleFeederCap has store, key {
+	id: UID
+}
+
+struct PriceOracle has key {
+	id: UID,
+	version: u64,
+	update_interval: u64,
+	price_oracles: Table<u8, Price>
+}
+
+struct Price has store {
+	value: u256,
+	decimal: u8,
+	timestamp: u64
+}
+
+struct PriceUpdated has copy, drop {
+	price_oracle: address,
+	id: u8,
+	price: u256,
+	last_price: u256,
+	update_at: u64,
+	last_update_at: u64
+}
+
+init(Arg0: &mut TxContext) {
+L1:	loc0: UID
+L2:	loc1: u64
+L3:	loc2: Table<u8, Price>
+L4:	loc3: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: Pack[0](OracleAdminCap)
+	3: CopyLoc[0](Arg0: &mut TxContext)
+	4: FreezeRef
+	5: Call tx_context::sender(&TxContext): address
+	6: Call transfer::public_transfer<OracleAdminCap>(OracleAdminCap, address)
+	7: CopyLoc[0](Arg0: &mut TxContext)
+	8: Call object::new(&mut TxContext): UID
+	9: Pack[1](OracleFeederCap)
+	10: CopyLoc[0](Arg0: &mut TxContext)
+	11: FreezeRef
+	12: Call tx_context::sender(&TxContext): address
+	13: Call transfer::public_transfer<OracleFeederCap>(OracleFeederCap, address)
+	14: CopyLoc[0](Arg0: &mut TxContext)
+	15: Call object::new(&mut TxContext): UID
+	16: StLoc[1](loc0: UID)
+	17: Call oracle_version::this_version(): u64
+	18: StLoc[2](loc1: u64)
+	19: MoveLoc[0](Arg0: &mut TxContext)
+	20: Call table::new<u8, Price>(&mut TxContext): Table<u8, Price>
+	21: StLoc[3](loc2: Table<u8, Price>)
+	22: Call oracle_constants::default_update_interval(): u64
+	23: StLoc[4](loc3: u64)
+	24: MoveLoc[1](loc0: UID)
+	25: MoveLoc[2](loc1: u64)
+	26: MoveLoc[4](loc3: u64)
+	27: MoveLoc[3](loc2: Table<u8, Price>)
+	28: Pack[2](PriceOracle)
+	29: Call transfer::share_object<PriceOracle>(PriceOracle)
+	30: Ret
+}
+
+public create_feeder(Arg0: &OracleAdminCap, Arg1: &mut TxContext) {
+B0:
+	0: CopyLoc[1](Arg1: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: Pack[1](OracleFeederCap)
+	3: MoveLoc[1](Arg1: &mut TxContext)
+	4: FreezeRef
+	5: Call tx_context::sender(&TxContext): address
+	6: Call transfer::public_transfer<OracleFeederCap>(OracleFeederCap, address)
+	7: Ret
+}
+
+version_verification(Arg0: &PriceOracle) {
+B0:
+	0: MoveLoc[0](Arg0: &PriceOracle)
+	1: ImmBorrowField[0](PriceOracle.version: u64)
+	2: ReadRef
+	3: Call oracle_version::pre_check_version(u64)
+	4: Ret
+}
+
+entry version_migrate(Arg0: &OracleAdminCap, Arg1: &mut PriceOracle) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public(friend) oracle_version_migrate(Arg0: &OracleAdminCap, Arg1: &mut PriceOracle) {
+B0:
+	0: CopyLoc[1](Arg1: &mut PriceOracle)
+	1: ImmBorrowField[0](PriceOracle.version: u64)
+	2: ReadRef
+	3: Call oracle_version::this_version(): u64
+	4: Le
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[1](Arg1: &mut PriceOracle)
+	8: Pop
+	9: Call oracle_error::not_available_version(): u64
+	10: Abort
+B3:
+	11: Call oracle_version::this_version(): u64
+	12: MoveLoc[1](Arg1: &mut PriceOracle)
+	13: MutBorrowField[0](PriceOracle.version: u64)
+	14: WriteRef
+	15: Ret
+}
+
+entry public set_update_interval(Arg0: &OracleAdminCap, Arg1: &mut PriceOracle, Arg2: u64) {
+B0:
+	0: CopyLoc[1](Arg1: &mut PriceOracle)
+	1: FreezeRef
+	2: Call version_verification(&PriceOracle)
+	3: CopyLoc[2](Arg2: u64)
+	4: LdU64(0)
+	5: Gt
+	6: BrFalse(8)
+B1:
+	7: Branch(12)
+B2:
+	8: MoveLoc[1](Arg1: &mut PriceOracle)
+	9: Pop
+	10: Call oracle_error::invalid_value(): u64
+	11: Abort
+B3:
+	12: MoveLoc[2](Arg2: u64)
+	13: MoveLoc[1](Arg1: &mut PriceOracle)
+	14: MutBorrowField[1](PriceOracle.update_interval: u64)
+	15: WriteRef
+	16: Ret
+}
+
+entry public register_token_price(Arg0: &OracleAdminCap, Arg1: &Clock, Arg2: &mut PriceOracle, Arg3: u8, Arg4: u256, Arg5: u8) {
+L6:	loc0: bool
+L7:	loc1: u8
+L8:	loc2: &mut Table<u8, Price>
+B0:
+	0: CopyLoc[2](Arg2: &mut PriceOracle)
+	1: FreezeRef
+	2: Call version_verification(&PriceOracle)
+	3: CopyLoc[5](Arg5: u8)
+	4: Call oracle_constants::default_decimal_limit(): u8
+	5: Le
+	6: BrFalse(12)
+B1:
+	7: CopyLoc[5](Arg5: u8)
+	8: LdU8(0)
+	9: Gt
+	10: StLoc[6](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[6](loc0: bool)
+B3:
+	14: MoveLoc[6](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(23)
+B5:
+	17: MoveLoc[2](Arg2: &mut PriceOracle)
+	18: Pop
+	19: MoveLoc[1](Arg1: &Clock)
+	20: Pop
+	21: Call oracle_error::invalid_value(): u64
+	22: Abort
+B6:
+	23: MoveLoc[2](Arg2: &mut PriceOracle)
+	24: MutBorrowField[2](PriceOracle.price_oracles: Table<u8, Price>)
+	25: StLoc[8](loc2: &mut Table<u8, Price>)
+	26: CopyLoc[8](loc2: &mut Table<u8, Price>)
+	27: CopyLoc[3](Arg3: u8)
+	28: StLoc[7](loc1: u8)
+	29: FreezeRef
+	30: MoveLoc[7](loc1: u8)
+	31: Call table::contains<u8, Price>(&Table<u8, Price>, u8): bool
+	32: Not
+	33: BrFalse(35)
+B7:
+	34: Branch(41)
+B8:
+	35: MoveLoc[8](loc2: &mut Table<u8, Price>)
+	36: Pop
+	37: MoveLoc[1](Arg1: &Clock)
+	38: Pop
+	39: Call oracle_error::oracle_already_exist(): u64
+	40: Abort
+B9:
+	41: MoveLoc[8](loc2: &mut Table<u8, Price>)
+	42: MoveLoc[3](Arg3: u8)
+	43: MoveLoc[4](Arg4: u256)
+	44: MoveLoc[5](Arg5: u8)
+	45: MoveLoc[1](Arg1: &Clock)
+	46: Call clock::timestamp_ms(&Clock): u64
+	47: Pack[3](Price)
+	48: Call table::add<u8, Price>(&mut Table<u8, Price>, u8, Price)
+	49: Ret
+}
+
+public(friend) update_price(Arg0: &Clock, Arg1: &mut PriceOracle, Arg2: u8, Arg3: u256) {
+L4:	loc0: u8
+L5:	loc1: u64
+L6:	loc2: &mut Price
+L7:	loc3: &mut Table<u8, Price>
+B0:
+	0: CopyLoc[1](Arg1: &mut PriceOracle)
+	1: FreezeRef
+	2: Call version_verification(&PriceOracle)
+	3: CopyLoc[1](Arg1: &mut PriceOracle)
+	4: MutBorrowField[2](PriceOracle.price_oracles: Table<u8, Price>)
+	5: StLoc[7](loc3: &mut Table<u8, Price>)
+	6: CopyLoc[7](loc3: &mut Table<u8, Price>)
+	7: CopyLoc[2](Arg2: u8)
+	8: StLoc[4](loc0: u8)
+	9: FreezeRef
+	10: MoveLoc[4](loc0: u8)
+	11: Call table::contains<u8, Price>(&Table<u8, Price>, u8): bool
+	12: BrFalse(14)
+B1:
+	13: Branch(22)
+B2:
+	14: MoveLoc[7](loc3: &mut Table<u8, Price>)
+	15: Pop
+	16: MoveLoc[1](Arg1: &mut PriceOracle)
+	17: Pop
+	18: MoveLoc[0](Arg0: &Clock)
+	19: Pop
+	20: Call oracle_error::non_existent_oracle(): u64
+	21: Abort
+B3:
+	22: MoveLoc[7](loc3: &mut Table<u8, Price>)
+	23: CopyLoc[2](Arg2: u8)
+	24: Call table::borrow_mut<u8, Price>(&mut Table<u8, Price>, u8): &mut Price
+	25: StLoc[6](loc2: &mut Price)
+	26: MoveLoc[0](Arg0: &Clock)
+	27: Call clock::timestamp_ms(&Clock): u64
+	28: StLoc[5](loc1: u64)
+	29: MoveLoc[1](Arg1: &mut PriceOracle)
+	30: ImmBorrowField[3](PriceOracle.id: UID)
+	31: Call object::uid_to_address(&UID): address
+	32: MoveLoc[2](Arg2: u8)
+	33: CopyLoc[3](Arg3: u256)
+	34: CopyLoc[6](loc2: &mut Price)
+	35: ImmBorrowField[4](Price.value: u256)
+	36: ReadRef
+	37: CopyLoc[5](loc1: u64)
+	38: CopyLoc[6](loc2: &mut Price)
+	39: ImmBorrowField[5](Price.timestamp: u64)
+	40: ReadRef
+	41: Pack[4](PriceUpdated)
+	42: Call event::emit<PriceUpdated>(PriceUpdated)
+	43: MoveLoc[3](Arg3: u256)
+	44: CopyLoc[6](loc2: &mut Price)
+	45: MutBorrowField[4](Price.value: u256)
+	46: WriteRef
+	47: MoveLoc[5](loc1: u64)
+	48: MoveLoc[6](loc2: &mut Price)
+	49: MutBorrowField[5](Price.timestamp: u64)
+	50: WriteRef
+	51: Ret
+}
+
+entry public update_token_price(Arg0: &OracleFeederCap, Arg1: &Clock, Arg2: &mut PriceOracle, Arg3: u8, Arg4: u256) {
+L5:	loc0: u8
+L6:	loc1: &mut Price
+L7:	loc2: &mut Table<u8, Price>
+B0:
+	0: CopyLoc[2](Arg2: &mut PriceOracle)
+	1: FreezeRef
+	2: Call version_verification(&PriceOracle)
+	3: MoveLoc[2](Arg2: &mut PriceOracle)
+	4: MutBorrowField[2](PriceOracle.price_oracles: Table<u8, Price>)
+	5: StLoc[7](loc2: &mut Table<u8, Price>)
+	6: CopyLoc[7](loc2: &mut Table<u8, Price>)
+	7: CopyLoc[3](Arg3: u8)
+	8: StLoc[5](loc0: u8)
+	9: FreezeRef
+	10: MoveLoc[5](loc0: u8)
+	11: Call table::contains<u8, Price>(&Table<u8, Price>, u8): bool
+	12: BrFalse(14)
+B1:
+	13: Branch(20)
+B2:
+	14: MoveLoc[7](loc2: &mut Table<u8, Price>)
+	15: Pop
+	16: MoveLoc[1](Arg1: &Clock)
+	17: Pop
+	18: Call oracle_error::non_existent_oracle(): u64
+	19: Abort
+B3:
+	20: MoveLoc[7](loc2: &mut Table<u8, Price>)
+	21: MoveLoc[3](Arg3: u8)
+	22: Call table::borrow_mut<u8, Price>(&mut Table<u8, Price>, u8): &mut Price
+	23: StLoc[6](loc1: &mut Price)
+	24: MoveLoc[4](Arg4: u256)
+	25: CopyLoc[6](loc1: &mut Price)
+	26: MutBorrowField[4](Price.value: u256)
+	27: WriteRef
+	28: MoveLoc[1](Arg1: &Clock)
+	29: Call clock::timestamp_ms(&Clock): u64
+	30: MoveLoc[6](loc1: &mut Price)
+	31: MutBorrowField[5](Price.timestamp: u64)
+	32: WriteRef
+	33: Ret
+}
+
+entry public update_token_price_batch(Arg0: &OracleFeederCap, Arg1: &Clock, Arg2: &mut PriceOracle, Arg3: vector<u8>, Arg4: vector<u256>) {
+L5:	loc0: u64
+L6:	loc1: u64
+L7:	loc2: &u8
+B0:
+	0: CopyLoc[2](Arg2: &mut PriceOracle)
+	1: FreezeRef
+	2: Call version_verification(&PriceOracle)
+	3: ImmBorrowLoc[3](Arg3: vector<u8>)
+	4: VecLen(15)
+	5: StLoc[6](loc1: u64)
+	6: CopyLoc[6](loc1: u64)
+	7: ImmBorrowLoc[4](Arg4: vector<u256>)
+	8: VecLen(40)
+	9: Eq
+	10: BrFalse(12)
+B1:
+	11: Branch(20)
+B2:
+	12: MoveLoc[2](Arg2: &mut PriceOracle)
+	13: Pop
+	14: MoveLoc[1](Arg1: &Clock)
+	15: Pop
+	16: MoveLoc[0](Arg0: &OracleFeederCap)
+	17: Pop
+	18: Call oracle_error::price_length_not_match(): u64
+	19: Abort
+B3:
+	20: LdU64(0)
+	21: StLoc[5](loc0: u64)
+B4:
+	22: CopyLoc[5](loc0: u64)
+	23: CopyLoc[6](loc1: u64)
+	24: Lt
+	25: BrFalse(46)
+B5:
+	26: Branch(27)
+B6:
+	27: ImmBorrowLoc[3](Arg3: vector<u8>)
+	28: CopyLoc[5](loc0: u64)
+	29: VecImmBorrow(15)
+	30: StLoc[7](loc2: &u8)
+	31: CopyLoc[0](Arg0: &OracleFeederCap)
+	32: CopyLoc[1](Arg1: &Clock)
+	33: CopyLoc[2](Arg2: &mut PriceOracle)
+	34: MoveLoc[7](loc2: &u8)
+	35: ReadRef
+	36: ImmBorrowLoc[4](Arg4: vector<u256>)
+	37: CopyLoc[5](loc0: u64)
+	38: VecImmBorrow(40)
+	39: ReadRef
+	40: Call update_token_price(&OracleFeederCap, &Clock, &mut PriceOracle, u8, u256)
+	41: MoveLoc[5](loc0: u64)
+	42: LdU64(1)
+	43: Add
+	44: StLoc[5](loc0: u64)
+	45: Branch(22)
+B7:
+	46: MoveLoc[2](Arg2: &mut PriceOracle)
+	47: Pop
+	48: MoveLoc[1](Arg1: &Clock)
+	49: Pop
+	50: MoveLoc[0](Arg0: &OracleFeederCap)
+	51: Pop
+	52: Ret
+}
+
+public get_token_price(Arg0: &Clock, Arg1: &PriceOracle, Arg2: u8): bool * u256 * u8 {
+L3:	loc0: bool
+L4:	loc1: u64
+L5:	loc2: &Table<u8, Price>
+L6:	loc3: &Price
+L7:	loc4: bool
+B0:
+	0: CopyLoc[1](Arg1: &PriceOracle)
+	1: Call version_verification(&PriceOracle)
+	2: CopyLoc[1](Arg1: &PriceOracle)
+	3: ImmBorrowField[2](PriceOracle.price_oracles: Table<u8, Price>)
+	4: StLoc[5](loc2: &Table<u8, Price>)
+	5: CopyLoc[5](loc2: &Table<u8, Price>)
+	6: CopyLoc[2](Arg2: u8)
+	7: Call table::contains<u8, Price>(&Table<u8, Price>, u8): bool
+	8: BrFalse(10)
+B1:
+	9: Branch(18)
+B2:
+	10: MoveLoc[5](loc2: &Table<u8, Price>)
+	11: Pop
+	12: MoveLoc[1](Arg1: &PriceOracle)
+	13: Pop
+	14: MoveLoc[0](Arg0: &Clock)
+	15: Pop
+	16: Call oracle_error::non_existent_oracle(): u64
+	17: Abort
+B3:
+	18: MoveLoc[5](loc2: &Table<u8, Price>)
+	19: MoveLoc[2](Arg2: u8)
+	20: Call table::borrow<u8, Price>(&Table<u8, Price>, u8): &Price
+	21: StLoc[6](loc3: &Price)
+	22: MoveLoc[0](Arg0: &Clock)
+	23: Call clock::timestamp_ms(&Clock): u64
+	24: StLoc[4](loc1: u64)
+	25: LdFalse
+	26: StLoc[7](loc4: bool)
+	27: CopyLoc[6](loc3: &Price)
+	28: ImmBorrowField[4](Price.value: u256)
+	29: ReadRef
+	30: LdU256(0)
+	31: Gt
+	32: BrFalse(44)
+B4:
+	33: MoveLoc[4](loc1: u64)
+	34: CopyLoc[6](loc3: &Price)
+	35: ImmBorrowField[5](Price.timestamp: u64)
+	36: ReadRef
+	37: Sub
+	38: MoveLoc[1](Arg1: &PriceOracle)
+	39: ImmBorrowField[1](PriceOracle.update_interval: u64)
+	40: ReadRef
+	41: Le
+	42: StLoc[3](loc0: bool)
+	43: Branch(48)
+B5:
+	44: MoveLoc[1](Arg1: &PriceOracle)
+	45: Pop
+	46: LdFalse
+	47: StLoc[3](loc0: bool)
+B6:
+	48: MoveLoc[3](loc0: bool)
+	49: BrFalse(52)
+B7:
+	50: LdTrue
+	51: StLoc[7](loc4: bool)
+B8:
+	52: MoveLoc[7](loc4: bool)
+	53: CopyLoc[6](loc3: &Price)
+	54: ImmBorrowField[4](Price.value: u256)
+	55: ReadRef
+	56: MoveLoc[6](loc3: &Price)
+	57: ImmBorrowField[6](Price.decimal: u8)
+	58: ReadRef
+	59: Ret
+}
+
+public price_object(Arg0: &PriceOracle, Arg1: u8): &Price {
+B0:
+	0: CopyLoc[0](Arg0: &PriceOracle)
+	1: ImmBorrowField[2](PriceOracle.price_oracles: Table<u8, Price>)
+	2: CopyLoc[1](Arg1: u8)
+	3: Call table::contains<u8, Price>(&Table<u8, Price>, u8): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &PriceOracle)
+	7: Pop
+	8: Call oracle_error::price_oracle_not_found(): u64
+	9: Abort
+B3:
+	10: MoveLoc[0](Arg0: &PriceOracle)
+	11: ImmBorrowField[2](PriceOracle.price_oracles: Table<u8, Price>)
+	12: MoveLoc[1](Arg1: u8)
+	13: Call table::borrow<u8, Price>(&Table<u8, Price>, u8): &Price
+	14: Ret
+}
+
+public decimal(Arg0: &mut PriceOracle, Arg1: u8): u8 {
+L2:	loc0: u8
+B0:
+	0: MoveLoc[0](Arg0: &mut PriceOracle)
+	1: MoveLoc[1](Arg1: u8)
+	2: StLoc[2](loc0: u8)
+	3: FreezeRef
+	4: MoveLoc[2](loc0: u8)
+	5: Call price_object(&PriceOracle, u8): &Price
+	6: ImmBorrowField[6](Price.decimal: u8)
+	7: ReadRef
+	8: Ret
+}
+
+public safe_decimal(Arg0: &PriceOracle, Arg1: u8): u8 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceOracle)
+	1: MoveLoc[1](Arg1: u8)
+	2: Call price_object(&PriceOracle, u8): &Price
+	3: ImmBorrowField[6](Price.decimal: u8)
+	4: ReadRef
+	5: Ret
+}
+
+}

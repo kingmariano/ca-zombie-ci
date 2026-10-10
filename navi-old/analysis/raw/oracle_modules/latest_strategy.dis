@@ -1,0 +1,126 @@
+// Move bytecode v7
+module ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f.strategy {
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_constants;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_utils;
+
+public validate_price_difference(Arg0: u256, Arg1: u256, Arg2: u64, Arg3: u64, Arg4: u64, Arg5: u64, Arg6: u64): u8 {
+L7:	loc0: bool
+L8:	loc1: u64
+B0:
+	0: MoveLoc[0](Arg0: u256)
+	1: MoveLoc[1](Arg1: u256)
+	2: Call oracle_utils::calculate_amplitude(u256, u256): u64
+	3: StLoc[8](loc1: u64)
+	4: CopyLoc[8](loc1: u64)
+	5: MoveLoc[2](Arg2: u64)
+	6: Lt
+	7: BrFalse(10)
+B1:
+	8: Call oracle_constants::level_normal(): u8
+	9: Ret
+B2:
+	10: MoveLoc[8](loc1: u64)
+	11: MoveLoc[3](Arg3: u64)
+	12: Gt
+	13: BrFalse(16)
+B3:
+	14: Call oracle_constants::level_critical(): u8
+	15: Ret
+B4:
+	16: CopyLoc[6](Arg6: u64)
+	17: LdU64(0)
+	18: Gt
+	19: BrFalse(27)
+B5:
+	20: MoveLoc[4](Arg4: u64)
+	21: MoveLoc[5](Arg5: u64)
+	22: MoveLoc[6](Arg6: u64)
+	23: Add
+	24: Gt
+	25: StLoc[7](loc0: bool)
+	26: Branch(29)
+B6:
+	27: LdFalse
+	28: StLoc[7](loc0: bool)
+B7:
+	29: MoveLoc[7](loc0: bool)
+	30: BrFalse(33)
+B8:
+	31: Call oracle_constants::level_major(): u8
+	32: Ret
+B9:
+	33: Call oracle_constants::level_warning(): u8
+	34: Ret
+}
+
+public validate_price_range_and_history(Arg0: u256, Arg1: u256, Arg2: u256, Arg3: u64, Arg4: u64, Arg5: u64, Arg6: u256, Arg7: u64): bool {
+L8:	loc0: bool
+B0:
+	0: CopyLoc[1](Arg1: u256)
+	1: LdU256(0)
+	2: Gt
+	3: BrFalse(9)
+B1:
+	4: CopyLoc[0](Arg0: u256)
+	5: MoveLoc[1](Arg1: u256)
+	6: Gt
+	7: StLoc[8](loc0: bool)
+	8: Branch(11)
+B2:
+	9: LdFalse
+	10: StLoc[8](loc0: bool)
+B3:
+	11: MoveLoc[8](loc0: bool)
+	12: BrFalse(15)
+B4:
+	13: LdFalse
+	14: Ret
+B5:
+	15: CopyLoc[0](Arg0: u256)
+	16: MoveLoc[2](Arg2: u256)
+	17: Lt
+	18: BrFalse(21)
+B6:
+	19: LdFalse
+	20: Ret
+B7:
+	21: MoveLoc[4](Arg4: u64)
+	22: MoveLoc[7](Arg7: u64)
+	23: Sub
+	24: MoveLoc[5](Arg5: u64)
+	25: Lt
+	26: BrFalse(35)
+B8:
+	27: MoveLoc[6](Arg6: u256)
+	28: MoveLoc[0](Arg0: u256)
+	29: Call oracle_utils::calculate_amplitude(u256, u256): u64
+	30: MoveLoc[3](Arg3: u64)
+	31: Gt
+	32: BrFalse(35)
+B9:
+	33: LdFalse
+	34: Ret
+B10:
+	35: LdTrue
+	36: Ret
+}
+
+public is_oracle_price_fresh(Arg0: u64, Arg1: u64, Arg2: u64): bool {
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: CopyLoc[1](Arg1: u64)
+	2: Lt
+	3: BrFalse(6)
+B1:
+	4: LdFalse
+	5: Ret
+B2:
+	6: MoveLoc[0](Arg0: u64)
+	7: MoveLoc[1](Arg1: u64)
+	8: Sub
+	9: MoveLoc[2](Arg2: u64)
+	10: Lt
+	11: Ret
+}
+
+}

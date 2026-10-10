@@ -1,0 +1,1904 @@
+// Move bytecode v7
+module ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f.config {
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_error;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_provider;
+use ca441b44943c16be0e6e23c5a955bb971537ea3289ae8016fbf33fffe1fd210f::oracle_version;
+use 0000000000000000000000000000000000000000000000000000000000000001::ascii;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct OracleConfig has store, key {
+	id: UID,
+	version: u64,
+	paused: bool,
+	vec_feeds: vector<address>,
+	feeds: Table<address, PriceFeed>
+}
+
+struct PriceFeed has store {
+	id: UID,
+	enable: bool,
+	max_timestamp_diff: u64,
+	price_diff_threshold1: u64,
+	price_diff_threshold2: u64,
+	max_duration_within_thresholds: u64,
+	diff_threshold2_timer: u64,
+	maximum_allowed_span_percentage: u64,
+	maximum_effective_price: u256,
+	minimum_effective_price: u256,
+	oracle_id: u8,
+	coin_type: String,
+	primary: OracleProvider,
+	secondary: OracleProvider,
+	oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>,
+	historical_price_ttl: u64,
+	history: History
+}
+
+struct History has copy, store {
+	price: u256,
+	updated_time: u64
+}
+
+struct ConfigCreated has copy, drop {
+	sender: address,
+	id: address
+}
+
+struct ConfigSetPaused has copy, drop {
+	config: address,
+	value: bool,
+	before_value: bool
+}
+
+struct PriceFeedCreated has copy, drop {
+	sender: address,
+	config: address,
+	feed_id: address
+}
+
+struct PriceFeedSetEnable has copy, drop {
+	config: address,
+	feed_id: address,
+	value: bool,
+	before_value: bool
+}
+
+struct PriceFeedSetMaxTimestampDiff has copy, drop {
+	config: address,
+	feed_id: address,
+	value: u64,
+	before_value: u64
+}
+
+struct PriceFeedSetPriceDiffThreshold1 has copy, drop {
+	config: address,
+	feed_id: address,
+	value: u64,
+	before_value: u64
+}
+
+struct PriceFeedSetPriceDiffThreshold2 has copy, drop {
+	config: address,
+	feed_id: address,
+	value: u64,
+	before_value: u64
+}
+
+struct PriceFeedSetMaxDurationWithinThresholds has copy, drop {
+	config: address,
+	feed_id: address,
+	value: u64,
+	before_value: u64
+}
+
+struct PriceFeedSetMaximumAllowedSpanPercentage has copy, drop {
+	config: address,
+	feed_id: address,
+	value: u64,
+	before_value: u64
+}
+
+struct PriceFeedSetMaximumEffectivePrice has copy, drop {
+	config: address,
+	feed_id: address,
+	value: u256,
+	before_value: u256
+}
+
+struct PriceFeedSetMinimumEffectivePrice has copy, drop {
+	config: address,
+	feed_id: address,
+	value: u256,
+	before_value: u256
+}
+
+struct PriceFeedSetOracleId has copy, drop {
+	config: address,
+	feed_id: address,
+	value: u8,
+	before_value: u8
+}
+
+struct SetOracleProvider has copy, drop {
+	config: address,
+	feed_id: address,
+	is_primary: bool,
+	provider: String,
+	before_provider: String
+}
+
+struct OracleProviderConfigCreated has copy, drop {
+	config: address,
+	feed_id: address,
+	provider: String,
+	pair_id: vector<u8>
+}
+
+struct OracleProviderConfigSetPairId has copy, drop {
+	config: address,
+	feed_id: address,
+	provider: String,
+	value: vector<u8>,
+	before_value: vector<u8>
+}
+
+struct OracleProviderConfigSetEnable has copy, drop {
+	config: address,
+	feed_id: address,
+	provider: String,
+	value: bool,
+	before_value: bool
+}
+
+struct PriceFeedSetHistoricalPriceTTL has copy, drop {
+	config: address,
+	feed_id: address,
+	value: u64,
+	before_value: u64
+}
+
+struct PriceFeedDiffThreshold2TimerUpdated has copy, drop {
+	feed_id: address,
+	updated_at: u64
+}
+
+struct PriceFeedDiffThreshold2TimerReset has copy, drop {
+	feed_id: address,
+	started_at: u64
+}
+
+public version_verification(Arg0: &OracleConfig) {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: ImmBorrowField[0](OracleConfig.version: u64)
+	2: ReadRef
+	3: Call oracle_version::pre_check_version(u64)
+	4: Ret
+}
+
+public(friend) version_migrate(Arg0: &mut OracleConfig) {
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[0](OracleConfig.version: u64)
+	2: ReadRef
+	3: Call oracle_version::this_version(): u64
+	4: Le
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[0](Arg0: &mut OracleConfig)
+	8: Pop
+	9: Call oracle_error::not_available_version(): u64
+	10: Abort
+B3:
+	11: Call oracle_version::this_version(): u64
+	12: MoveLoc[0](Arg0: &mut OracleConfig)
+	13: MutBorrowField[0](OracleConfig.version: u64)
+	14: WriteRef
+	15: Ret
+}
+
+public(friend) new_config(Arg0: &mut TxContext) {
+L1:	loc0: address
+L2:	loc1: UID
+B0:
+	0: CopyLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: StLoc[2](loc1: UID)
+	3: ImmBorrowLoc[2](loc1: UID)
+	4: Call object::uid_to_address(&UID): address
+	5: StLoc[1](loc0: address)
+	6: MoveLoc[2](loc1: UID)
+	7: Call oracle_version::this_version(): u64
+	8: LdFalse
+	9: VecPack(19, 0)
+	10: CopyLoc[0](Arg0: &mut TxContext)
+	11: Call table::new<address, PriceFeed>(&mut TxContext): Table<address, PriceFeed>
+	12: Pack[0](OracleConfig)
+	13: Call transfer::share_object<OracleConfig>(OracleConfig)
+	14: MoveLoc[0](Arg0: &mut TxContext)
+	15: FreezeRef
+	16: Call tx_context::sender(&TxContext): address
+	17: MoveLoc[1](loc0: address)
+	18: Pack[3](ConfigCreated)
+	19: Call event::emit<ConfigCreated>(ConfigCreated)
+	20: Ret
+}
+
+public(friend) set_pause(Arg0: &mut OracleConfig, Arg1: bool) {
+L2:	loc0: bool
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[1](OracleConfig.paused: bool)
+	2: ReadRef
+	3: StLoc[2](loc0: bool)
+	4: CopyLoc[1](Arg1: bool)
+	5: CopyLoc[0](Arg0: &mut OracleConfig)
+	6: MutBorrowField[1](OracleConfig.paused: bool)
+	7: WriteRef
+	8: MoveLoc[0](Arg0: &mut OracleConfig)
+	9: ImmBorrowField[2](OracleConfig.id: UID)
+	10: Call object::uid_to_address(&UID): address
+	11: MoveLoc[1](Arg1: bool)
+	12: MoveLoc[2](loc0: bool)
+	13: Pack[4](ConfigSetPaused)
+	14: Call event::emit<ConfigSetPaused>(ConfigSetPaused)
+	15: Ret
+}
+
+public(friend) new_price_feed<Ty0>(Arg0: &mut OracleConfig, Arg1: u8, Arg2: u64, Arg3: u64, Arg4: u64, Arg5: u64, Arg6: u64, Arg7: u256, Arg8: u256, Arg9: u64, Arg10: &mut TxContext) {
+L11:	loc0: u8
+L12:	loc1: PriceFeed
+L13:	loc2: address
+L14:	loc3: UID
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: CopyLoc[1](Arg1: u8)
+	2: StLoc[11](loc0: u8)
+	3: FreezeRef
+	4: MoveLoc[11](loc0: u8)
+	5: Call is_price_feed_exists<Ty0>(&OracleConfig, u8): bool
+	6: Not
+	7: BrFalse(9)
+B1:
+	8: Branch(15)
+B2:
+	9: MoveLoc[10](Arg10: &mut TxContext)
+	10: Pop
+	11: MoveLoc[0](Arg0: &mut OracleConfig)
+	12: Pop
+	13: Call oracle_error::price_feed_already_exists(): u64
+	14: Abort
+B3:
+	15: CopyLoc[7](Arg7: u256)
+	16: LdU256(0)
+	17: Gt
+	18: BrFalse(30)
+B4:
+	19: CopyLoc[8](Arg8: u256)
+	20: CopyLoc[7](Arg7: u256)
+	21: Le
+	22: BrFalse(24)
+B5:
+	23: Branch(30)
+B6:
+	24: MoveLoc[10](Arg10: &mut TxContext)
+	25: Pop
+	26: MoveLoc[0](Arg0: &mut OracleConfig)
+	27: Pop
+	28: Call oracle_error::invalid_value(): u64
+	29: Abort
+B7:
+	30: CopyLoc[10](Arg10: &mut TxContext)
+	31: Call object::new(&mut TxContext): UID
+	32: StLoc[14](loc3: UID)
+	33: ImmBorrowLoc[14](loc3: UID)
+	34: Call object::uid_to_address(&UID): address
+	35: StLoc[13](loc2: address)
+	36: MoveLoc[14](loc3: UID)
+	37: LdTrue
+	38: MoveLoc[2](Arg2: u64)
+	39: MoveLoc[3](Arg3: u64)
+	40: MoveLoc[4](Arg4: u64)
+	41: MoveLoc[5](Arg5: u64)
+	42: LdU64(0)
+	43: MoveLoc[6](Arg6: u64)
+	44: MoveLoc[7](Arg7: u256)
+	45: MoveLoc[8](Arg8: u256)
+	46: MoveLoc[1](Arg1: u8)
+	47: Call type_name::get<Ty0>(): TypeName
+	48: Call type_name::into_string(TypeName): String
+	49: Call oracle_provider::new_empty_provider(): OracleProvider
+	50: Call oracle_provider::new_empty_provider(): OracleProvider
+	51: CopyLoc[10](Arg10: &mut TxContext)
+	52: Call table::new<OracleProvider, OracleProviderConfig>(&mut TxContext): Table<OracleProvider, OracleProviderConfig>
+	53: MoveLoc[9](Arg9: u64)
+	54: LdU256(0)
+	55: LdU64(0)
+	56: Pack[2](History)
+	57: Pack[1](PriceFeed)
+	58: StLoc[12](loc1: PriceFeed)
+	59: CopyLoc[0](Arg0: &mut OracleConfig)
+	60: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	61: CopyLoc[13](loc2: address)
+	62: MoveLoc[12](loc1: PriceFeed)
+	63: Call table::add<address, PriceFeed>(&mut Table<address, PriceFeed>, address, PriceFeed)
+	64: CopyLoc[0](Arg0: &mut OracleConfig)
+	65: MutBorrowField[4](OracleConfig.vec_feeds: vector<address>)
+	66: CopyLoc[13](loc2: address)
+	67: VecPushBack(19)
+	68: MoveLoc[10](Arg10: &mut TxContext)
+	69: FreezeRef
+	70: Call tx_context::sender(&TxContext): address
+	71: MoveLoc[0](Arg0: &mut OracleConfig)
+	72: ImmBorrowField[2](OracleConfig.id: UID)
+	73: Call object::uid_to_address(&UID): address
+	74: MoveLoc[13](loc2: address)
+	75: Pack[5](PriceFeedCreated)
+	76: Call event::emit<PriceFeedCreated>(PriceFeedCreated)
+	77: Ret
+}
+
+public is_price_feed_exists<Ty0>(Arg0: &OracleConfig, Arg1: u8): bool {
+L2:	loc0: String
+L3:	loc1: &address
+L4:	loc2: u64
+L5:	loc3: u64
+L6:	loc4: &PriceFeed
+B0:
+	0: Call type_name::get<Ty0>(): TypeName
+	1: Call type_name::into_string(TypeName): String
+	2: StLoc[2](loc0: String)
+	3: CopyLoc[0](Arg0: &OracleConfig)
+	4: ImmBorrowField[4](OracleConfig.vec_feeds: vector<address>)
+	5: VecLen(19)
+	6: StLoc[4](loc2: u64)
+	7: LdU64(0)
+	8: StLoc[5](loc3: u64)
+B1:
+	9: CopyLoc[5](loc3: u64)
+	10: CopyLoc[4](loc2: u64)
+	11: Lt
+	12: BrFalse(52)
+B2:
+	13: Branch(14)
+B3:
+	14: CopyLoc[0](Arg0: &OracleConfig)
+	15: ImmBorrowField[4](OracleConfig.vec_feeds: vector<address>)
+	16: CopyLoc[5](loc3: u64)
+	17: VecImmBorrow(19)
+	18: StLoc[3](loc1: &address)
+	19: CopyLoc[0](Arg0: &OracleConfig)
+	20: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	21: MoveLoc[3](loc1: &address)
+	22: ReadRef
+	23: Call table::borrow<address, PriceFeed>(&Table<address, PriceFeed>, address): &PriceFeed
+	24: StLoc[6](loc4: &PriceFeed)
+	25: CopyLoc[6](loc4: &PriceFeed)
+	26: ImmBorrowField[5](PriceFeed.coin_type: String)
+	27: ReadRef
+	28: CopyLoc[2](loc0: String)
+	29: Eq
+	30: BrFalse(37)
+B4:
+	31: MoveLoc[6](loc4: &PriceFeed)
+	32: Pop
+	33: MoveLoc[0](Arg0: &OracleConfig)
+	34: Pop
+	35: LdTrue
+	36: Ret
+B5:
+	37: MoveLoc[6](loc4: &PriceFeed)
+	38: ImmBorrowField[6](PriceFeed.oracle_id: u8)
+	39: ReadRef
+	40: CopyLoc[1](Arg1: u8)
+	41: Eq
+	42: BrFalse(47)
+B6:
+	43: MoveLoc[0](Arg0: &OracleConfig)
+	44: Pop
+	45: LdTrue
+	46: Ret
+B7:
+	47: MoveLoc[5](loc3: u64)
+	48: LdU64(1)
+	49: Add
+	50: StLoc[5](loc3: u64)
+	51: Branch(9)
+B8:
+	52: MoveLoc[0](Arg0: &OracleConfig)
+	53: Pop
+	54: LdFalse
+	55: Ret
+}
+
+public(friend) set_enable_to_price_feed(Arg0: &mut OracleConfig, Arg1: address, Arg2: bool) {
+L3:	loc0: bool
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[7](PriceFeed.enable: bool)
+	17: ReadRef
+	18: StLoc[3](loc0: bool)
+	19: CopyLoc[2](Arg2: bool)
+	20: MoveLoc[4](loc1: &mut PriceFeed)
+	21: MutBorrowField[7](PriceFeed.enable: bool)
+	22: WriteRef
+	23: MoveLoc[0](Arg0: &mut OracleConfig)
+	24: ImmBorrowField[2](OracleConfig.id: UID)
+	25: Call object::uid_to_address(&UID): address
+	26: MoveLoc[1](Arg1: address)
+	27: MoveLoc[2](Arg2: bool)
+	28: MoveLoc[3](loc0: bool)
+	29: Pack[6](PriceFeedSetEnable)
+	30: Call event::emit<PriceFeedSetEnable>(PriceFeedSetEnable)
+	31: Ret
+}
+
+public(friend) set_max_timestamp_diff_to_price_feed(Arg0: &mut OracleConfig, Arg1: address, Arg2: u64) {
+L3:	loc0: u64
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[8](PriceFeed.max_timestamp_diff: u64)
+	17: ReadRef
+	18: StLoc[3](loc0: u64)
+	19: CopyLoc[2](Arg2: u64)
+	20: MoveLoc[4](loc1: &mut PriceFeed)
+	21: MutBorrowField[8](PriceFeed.max_timestamp_diff: u64)
+	22: WriteRef
+	23: MoveLoc[0](Arg0: &mut OracleConfig)
+	24: ImmBorrowField[2](OracleConfig.id: UID)
+	25: Call object::uid_to_address(&UID): address
+	26: MoveLoc[1](Arg1: address)
+	27: MoveLoc[2](Arg2: u64)
+	28: MoveLoc[3](loc0: u64)
+	29: Pack[7](PriceFeedSetMaxTimestampDiff)
+	30: Call event::emit<PriceFeedSetMaxTimestampDiff>(PriceFeedSetMaxTimestampDiff)
+	31: Ret
+}
+
+public(friend) set_price_diff_threshold1_to_price_feed(Arg0: &mut OracleConfig, Arg1: address, Arg2: u64) {
+L3:	loc0: u64
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[9](PriceFeed.price_diff_threshold1: u64)
+	17: ReadRef
+	18: StLoc[3](loc0: u64)
+	19: CopyLoc[4](loc1: &mut PriceFeed)
+	20: ImmBorrowField[10](PriceFeed.price_diff_threshold2: u64)
+	21: ReadRef
+	22: LdU64(0)
+	23: Gt
+	24: BrFalse(38)
+B4:
+	25: CopyLoc[2](Arg2: u64)
+	26: CopyLoc[4](loc1: &mut PriceFeed)
+	27: ImmBorrowField[10](PriceFeed.price_diff_threshold2: u64)
+	28: ReadRef
+	29: Le
+	30: BrFalse(32)
+B5:
+	31: Branch(38)
+B6:
+	32: MoveLoc[4](loc1: &mut PriceFeed)
+	33: Pop
+	34: MoveLoc[0](Arg0: &mut OracleConfig)
+	35: Pop
+	36: Call oracle_error::invalid_value(): u64
+	37: Abort
+B7:
+	38: CopyLoc[2](Arg2: u64)
+	39: MoveLoc[4](loc1: &mut PriceFeed)
+	40: MutBorrowField[9](PriceFeed.price_diff_threshold1: u64)
+	41: WriteRef
+	42: MoveLoc[0](Arg0: &mut OracleConfig)
+	43: ImmBorrowField[2](OracleConfig.id: UID)
+	44: Call object::uid_to_address(&UID): address
+	45: MoveLoc[1](Arg1: address)
+	46: MoveLoc[2](Arg2: u64)
+	47: MoveLoc[3](loc0: u64)
+	48: Pack[8](PriceFeedSetPriceDiffThreshold1)
+	49: Call event::emit<PriceFeedSetPriceDiffThreshold1>(PriceFeedSetPriceDiffThreshold1)
+	50: Ret
+}
+
+public(friend) set_price_diff_threshold2_to_price_feed(Arg0: &mut OracleConfig, Arg1: address, Arg2: u64) {
+L3:	loc0: u64
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[10](PriceFeed.price_diff_threshold2: u64)
+	17: ReadRef
+	18: StLoc[3](loc0: u64)
+	19: CopyLoc[2](Arg2: u64)
+	20: CopyLoc[4](loc1: &mut PriceFeed)
+	21: ImmBorrowField[9](PriceFeed.price_diff_threshold1: u64)
+	22: ReadRef
+	23: Ge
+	24: BrFalse(26)
+B4:
+	25: Branch(32)
+B5:
+	26: MoveLoc[4](loc1: &mut PriceFeed)
+	27: Pop
+	28: MoveLoc[0](Arg0: &mut OracleConfig)
+	29: Pop
+	30: Call oracle_error::invalid_value(): u64
+	31: Abort
+B6:
+	32: CopyLoc[2](Arg2: u64)
+	33: MoveLoc[4](loc1: &mut PriceFeed)
+	34: MutBorrowField[10](PriceFeed.price_diff_threshold2: u64)
+	35: WriteRef
+	36: MoveLoc[0](Arg0: &mut OracleConfig)
+	37: ImmBorrowField[2](OracleConfig.id: UID)
+	38: Call object::uid_to_address(&UID): address
+	39: MoveLoc[1](Arg1: address)
+	40: MoveLoc[2](Arg2: u64)
+	41: MoveLoc[3](loc0: u64)
+	42: Pack[9](PriceFeedSetPriceDiffThreshold2)
+	43: Call event::emit<PriceFeedSetPriceDiffThreshold2>(PriceFeedSetPriceDiffThreshold2)
+	44: Ret
+}
+
+public(friend) set_max_duration_within_thresholds_to_price_feed(Arg0: &mut OracleConfig, Arg1: address, Arg2: u64) {
+L3:	loc0: u64
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[11](PriceFeed.max_duration_within_thresholds: u64)
+	17: ReadRef
+	18: StLoc[3](loc0: u64)
+	19: CopyLoc[2](Arg2: u64)
+	20: MoveLoc[4](loc1: &mut PriceFeed)
+	21: MutBorrowField[11](PriceFeed.max_duration_within_thresholds: u64)
+	22: WriteRef
+	23: MoveLoc[0](Arg0: &mut OracleConfig)
+	24: ImmBorrowField[2](OracleConfig.id: UID)
+	25: Call object::uid_to_address(&UID): address
+	26: MoveLoc[1](Arg1: address)
+	27: MoveLoc[2](Arg2: u64)
+	28: MoveLoc[3](loc0: u64)
+	29: Pack[10](PriceFeedSetMaxDurationWithinThresholds)
+	30: Call event::emit<PriceFeedSetMaxDurationWithinThresholds>(PriceFeedSetMaxDurationWithinThresholds)
+	31: Ret
+}
+
+public(friend) set_maximum_allowed_span_percentage_to_price_feed(Arg0: &mut OracleConfig, Arg1: address, Arg2: u64) {
+L3:	loc0: u64
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[12](PriceFeed.maximum_allowed_span_percentage: u64)
+	17: ReadRef
+	18: StLoc[3](loc0: u64)
+	19: CopyLoc[2](Arg2: u64)
+	20: MoveLoc[4](loc1: &mut PriceFeed)
+	21: MutBorrowField[12](PriceFeed.maximum_allowed_span_percentage: u64)
+	22: WriteRef
+	23: MoveLoc[0](Arg0: &mut OracleConfig)
+	24: ImmBorrowField[2](OracleConfig.id: UID)
+	25: Call object::uid_to_address(&UID): address
+	26: MoveLoc[1](Arg1: address)
+	27: MoveLoc[2](Arg2: u64)
+	28: MoveLoc[3](loc0: u64)
+	29: Pack[11](PriceFeedSetMaximumAllowedSpanPercentage)
+	30: Call event::emit<PriceFeedSetMaximumAllowedSpanPercentage>(PriceFeedSetMaximumAllowedSpanPercentage)
+	31: Ret
+}
+
+public(friend) set_maximum_effective_price_to_price_feed(Arg0: &mut OracleConfig, Arg1: address, Arg2: u256) {
+L3:	loc0: u256
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[13](PriceFeed.maximum_effective_price: u256)
+	17: ReadRef
+	18: StLoc[3](loc0: u256)
+	19: CopyLoc[2](Arg2: u256)
+	20: CopyLoc[4](loc1: &mut PriceFeed)
+	21: ImmBorrowField[14](PriceFeed.minimum_effective_price: u256)
+	22: ReadRef
+	23: Ge
+	24: BrFalse(26)
+B4:
+	25: Branch(32)
+B5:
+	26: MoveLoc[4](loc1: &mut PriceFeed)
+	27: Pop
+	28: MoveLoc[0](Arg0: &mut OracleConfig)
+	29: Pop
+	30: Call oracle_error::invalid_value(): u64
+	31: Abort
+B6:
+	32: CopyLoc[2](Arg2: u256)
+	33: MoveLoc[4](loc1: &mut PriceFeed)
+	34: MutBorrowField[13](PriceFeed.maximum_effective_price: u256)
+	35: WriteRef
+	36: MoveLoc[0](Arg0: &mut OracleConfig)
+	37: ImmBorrowField[2](OracleConfig.id: UID)
+	38: Call object::uid_to_address(&UID): address
+	39: MoveLoc[1](Arg1: address)
+	40: MoveLoc[2](Arg2: u256)
+	41: MoveLoc[3](loc0: u256)
+	42: Pack[12](PriceFeedSetMaximumEffectivePrice)
+	43: Call event::emit<PriceFeedSetMaximumEffectivePrice>(PriceFeedSetMaximumEffectivePrice)
+	44: Ret
+}
+
+public(friend) set_minimum_effective_price_to_price_feed(Arg0: &mut OracleConfig, Arg1: address, Arg2: u256) {
+L3:	loc0: u256
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[14](PriceFeed.minimum_effective_price: u256)
+	17: ReadRef
+	18: StLoc[3](loc0: u256)
+	19: CopyLoc[4](loc1: &mut PriceFeed)
+	20: ImmBorrowField[13](PriceFeed.maximum_effective_price: u256)
+	21: ReadRef
+	22: LdU256(0)
+	23: Gt
+	24: BrFalse(38)
+B4:
+	25: CopyLoc[2](Arg2: u256)
+	26: CopyLoc[4](loc1: &mut PriceFeed)
+	27: ImmBorrowField[13](PriceFeed.maximum_effective_price: u256)
+	28: ReadRef
+	29: Le
+	30: BrFalse(32)
+B5:
+	31: Branch(38)
+B6:
+	32: MoveLoc[4](loc1: &mut PriceFeed)
+	33: Pop
+	34: MoveLoc[0](Arg0: &mut OracleConfig)
+	35: Pop
+	36: Call oracle_error::invalid_value(): u64
+	37: Abort
+B7:
+	38: CopyLoc[2](Arg2: u256)
+	39: MoveLoc[4](loc1: &mut PriceFeed)
+	40: MutBorrowField[14](PriceFeed.minimum_effective_price: u256)
+	41: WriteRef
+	42: MoveLoc[0](Arg0: &mut OracleConfig)
+	43: ImmBorrowField[2](OracleConfig.id: UID)
+	44: Call object::uid_to_address(&UID): address
+	45: MoveLoc[1](Arg1: address)
+	46: MoveLoc[2](Arg2: u256)
+	47: MoveLoc[3](loc0: u256)
+	48: Pack[13](PriceFeedSetMinimumEffectivePrice)
+	49: Call event::emit<PriceFeedSetMinimumEffectivePrice>(PriceFeedSetMinimumEffectivePrice)
+	50: Ret
+}
+
+public(friend) set_oracle_id_to_price_feed(Arg0: &mut OracleConfig, Arg1: address, Arg2: u8) {
+L3:	loc0: u8
+L4:	loc1: &address
+L5:	loc2: u64
+L6:	loc3: u64
+L7:	loc4: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: ImmBorrowField[4](OracleConfig.vec_feeds: vector<address>)
+	12: VecLen(19)
+	13: StLoc[5](loc2: u64)
+	14: LdU64(0)
+	15: StLoc[6](loc3: u64)
+B4:
+	16: CopyLoc[6](loc3: u64)
+	17: CopyLoc[5](loc2: u64)
+	18: Lt
+	19: BrFalse(45)
+B5:
+	20: Branch(21)
+B6:
+	21: CopyLoc[0](Arg0: &mut OracleConfig)
+	22: ImmBorrowField[4](OracleConfig.vec_feeds: vector<address>)
+	23: CopyLoc[6](loc3: u64)
+	24: VecImmBorrow(19)
+	25: StLoc[4](loc1: &address)
+	26: CopyLoc[0](Arg0: &mut OracleConfig)
+	27: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	28: MoveLoc[4](loc1: &address)
+	29: ReadRef
+	30: Call table::borrow<address, PriceFeed>(&Table<address, PriceFeed>, address): &PriceFeed
+	31: ImmBorrowField[6](PriceFeed.oracle_id: u8)
+	32: ReadRef
+	33: CopyLoc[2](Arg2: u8)
+	34: Eq
+	35: BrFalse(40)
+B7:
+	36: MoveLoc[0](Arg0: &mut OracleConfig)
+	37: Pop
+	38: Call oracle_error::price_feed_already_exists(): u64
+	39: Abort
+B8:
+	40: MoveLoc[6](loc3: u64)
+	41: LdU64(1)
+	42: Add
+	43: StLoc[6](loc3: u64)
+	44: Branch(16)
+B9:
+	45: CopyLoc[0](Arg0: &mut OracleConfig)
+	46: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	47: CopyLoc[1](Arg1: address)
+	48: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	49: StLoc[7](loc4: &mut PriceFeed)
+	50: CopyLoc[7](loc4: &mut PriceFeed)
+	51: ImmBorrowField[6](PriceFeed.oracle_id: u8)
+	52: ReadRef
+	53: StLoc[3](loc0: u8)
+	54: CopyLoc[2](Arg2: u8)
+	55: MoveLoc[7](loc4: &mut PriceFeed)
+	56: MutBorrowField[6](PriceFeed.oracle_id: u8)
+	57: WriteRef
+	58: MoveLoc[0](Arg0: &mut OracleConfig)
+	59: ImmBorrowField[2](OracleConfig.id: UID)
+	60: Call object::uid_to_address(&UID): address
+	61: MoveLoc[1](Arg1: address)
+	62: MoveLoc[2](Arg2: u8)
+	63: MoveLoc[3](loc0: u8)
+	64: Pack[14](PriceFeedSetOracleId)
+	65: Call event::emit<PriceFeedSetOracleId>(PriceFeedSetOracleId)
+	66: Ret
+}
+
+public(friend) set_primary_oracle_provider(Arg0: &mut OracleConfig, Arg1: address, Arg2: OracleProvider) {
+L3:	loc0: OracleProvider
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[15](PriceFeed.primary: OracleProvider)
+	17: ReadRef
+	18: CopyLoc[2](Arg2: OracleProvider)
+	19: Eq
+	20: BrFalse(26)
+B4:
+	21: MoveLoc[4](loc1: &mut PriceFeed)
+	22: Pop
+	23: MoveLoc[0](Arg0: &mut OracleConfig)
+	24: Pop
+	25: Ret
+B5:
+	26: CopyLoc[4](loc1: &mut PriceFeed)
+	27: ImmBorrowField[15](PriceFeed.primary: OracleProvider)
+	28: ReadRef
+	29: StLoc[3](loc0: OracleProvider)
+	30: CopyLoc[4](loc1: &mut PriceFeed)
+	31: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	32: CopyLoc[2](Arg2: OracleProvider)
+	33: Call table::contains<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): bool
+	34: BrFalse(36)
+B6:
+	35: Branch(42)
+B7:
+	36: MoveLoc[4](loc1: &mut PriceFeed)
+	37: Pop
+	38: MoveLoc[0](Arg0: &mut OracleConfig)
+	39: Pop
+	40: Call oracle_error::provider_config_not_found(): u64
+	41: Abort
+B8:
+	42: CopyLoc[4](loc1: &mut PriceFeed)
+	43: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	44: CopyLoc[2](Arg2: OracleProvider)
+	45: Call table::borrow<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): &OracleProviderConfig
+	46: Call oracle_provider::is_oracle_provider_config_enable(&OracleProviderConfig): bool
+	47: BrFalse(49)
+B9:
+	48: Branch(55)
+B10:
+	49: MoveLoc[4](loc1: &mut PriceFeed)
+	50: Pop
+	51: MoveLoc[0](Arg0: &mut OracleConfig)
+	52: Pop
+	53: Call oracle_error::oracle_provider_disabled(): u64
+	54: Abort
+B11:
+	55: CopyLoc[2](Arg2: OracleProvider)
+	56: MoveLoc[4](loc1: &mut PriceFeed)
+	57: MutBorrowField[15](PriceFeed.primary: OracleProvider)
+	58: WriteRef
+	59: MoveLoc[0](Arg0: &mut OracleConfig)
+	60: ImmBorrowField[2](OracleConfig.id: UID)
+	61: Call object::uid_to_address(&UID): address
+	62: MoveLoc[1](Arg1: address)
+	63: LdTrue
+	64: ImmBorrowLoc[2](Arg2: OracleProvider)
+	65: Call oracle_provider::to_string(&OracleProvider): String
+	66: ImmBorrowLoc[3](loc0: OracleProvider)
+	67: Call oracle_provider::to_string(&OracleProvider): String
+	68: Pack[15](SetOracleProvider)
+	69: Call event::emit<SetOracleProvider>(SetOracleProvider)
+	70: Ret
+}
+
+public(friend) set_secondary_oracle_provider(Arg0: &mut OracleConfig, Arg1: address, Arg2: OracleProvider) {
+L3:	loc0: OracleProvider
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[17](PriceFeed.secondary: OracleProvider)
+	17: ReadRef
+	18: CopyLoc[2](Arg2: OracleProvider)
+	19: Eq
+	20: BrFalse(26)
+B4:
+	21: MoveLoc[4](loc1: &mut PriceFeed)
+	22: Pop
+	23: MoveLoc[0](Arg0: &mut OracleConfig)
+	24: Pop
+	25: Ret
+B5:
+	26: CopyLoc[4](loc1: &mut PriceFeed)
+	27: ImmBorrowField[17](PriceFeed.secondary: OracleProvider)
+	28: ReadRef
+	29: StLoc[3](loc0: OracleProvider)
+	30: ImmBorrowLoc[2](Arg2: OracleProvider)
+	31: Call oracle_provider::is_empty(&OracleProvider): bool
+	32: Not
+	33: BrFalse(46)
+B6:
+	34: CopyLoc[4](loc1: &mut PriceFeed)
+	35: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	36: CopyLoc[2](Arg2: OracleProvider)
+	37: Call table::contains<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): bool
+	38: BrFalse(40)
+B7:
+	39: Branch(46)
+B8:
+	40: MoveLoc[4](loc1: &mut PriceFeed)
+	41: Pop
+	42: MoveLoc[0](Arg0: &mut OracleConfig)
+	43: Pop
+	44: Call oracle_error::provider_config_not_found(): u64
+	45: Abort
+B9:
+	46: CopyLoc[2](Arg2: OracleProvider)
+	47: MoveLoc[4](loc1: &mut PriceFeed)
+	48: MutBorrowField[17](PriceFeed.secondary: OracleProvider)
+	49: WriteRef
+	50: MoveLoc[0](Arg0: &mut OracleConfig)
+	51: ImmBorrowField[2](OracleConfig.id: UID)
+	52: Call object::uid_to_address(&UID): address
+	53: MoveLoc[1](Arg1: address)
+	54: LdFalse
+	55: ImmBorrowLoc[2](Arg2: OracleProvider)
+	56: Call oracle_provider::to_string(&OracleProvider): String
+	57: ImmBorrowLoc[3](loc0: OracleProvider)
+	58: Call oracle_provider::to_string(&OracleProvider): String
+	59: Pack[15](SetOracleProvider)
+	60: Call event::emit<SetOracleProvider>(SetOracleProvider)
+	61: Ret
+}
+
+public(friend) new_oracle_provider_config(Arg0: &mut OracleConfig, Arg1: address, Arg2: OracleProvider, Arg3: vector<u8>, Arg4: bool) {
+L5:	loc0: OracleProviderConfig
+L6:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[6](loc1: &mut PriceFeed)
+	15: CopyLoc[6](loc1: &mut PriceFeed)
+	16: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	17: CopyLoc[2](Arg2: OracleProvider)
+	18: Call table::contains<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): bool
+	19: Not
+	20: BrFalse(22)
+B4:
+	21: Branch(28)
+B5:
+	22: MoveLoc[6](loc1: &mut PriceFeed)
+	23: Pop
+	24: MoveLoc[0](Arg0: &mut OracleConfig)
+	25: Pop
+	26: Call oracle_error::oracle_config_already_exists(): u64
+	27: Abort
+B6:
+	28: CopyLoc[2](Arg2: OracleProvider)
+	29: MoveLoc[4](Arg4: bool)
+	30: CopyLoc[3](Arg3: vector<u8>)
+	31: Call oracle_provider::new_oracle_provider_config(OracleProvider, bool, vector<u8>): OracleProviderConfig
+	32: StLoc[5](loc0: OracleProviderConfig)
+	33: MoveLoc[6](loc1: &mut PriceFeed)
+	34: MutBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	35: CopyLoc[2](Arg2: OracleProvider)
+	36: MoveLoc[5](loc0: OracleProviderConfig)
+	37: Call table::add<OracleProvider, OracleProviderConfig>(&mut Table<OracleProvider, OracleProviderConfig>, OracleProvider, OracleProviderConfig)
+	38: MoveLoc[0](Arg0: &mut OracleConfig)
+	39: ImmBorrowField[2](OracleConfig.id: UID)
+	40: Call object::uid_to_address(&UID): address
+	41: MoveLoc[1](Arg1: address)
+	42: ImmBorrowLoc[2](Arg2: OracleProvider)
+	43: Call oracle_provider::to_string(&OracleProvider): String
+	44: MoveLoc[3](Arg3: vector<u8>)
+	45: Pack[16](OracleProviderConfigCreated)
+	46: Call event::emit<OracleProviderConfigCreated>(OracleProviderConfigCreated)
+	47: Ret
+}
+
+public(friend) set_oracle_provider_config_pair_id(Arg0: &mut OracleConfig, Arg1: address, Arg2: OracleProvider, Arg3: vector<u8>) {
+L4:	loc0: vector<u8>
+L5:	loc1: &mut PriceFeed
+L6:	loc2: &mut OracleProviderConfig
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[5](loc1: &mut PriceFeed)
+	15: CopyLoc[5](loc1: &mut PriceFeed)
+	16: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	17: CopyLoc[2](Arg2: OracleProvider)
+	18: Call table::contains<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): bool
+	19: BrFalse(21)
+B4:
+	20: Branch(27)
+B5:
+	21: MoveLoc[5](loc1: &mut PriceFeed)
+	22: Pop
+	23: MoveLoc[0](Arg0: &mut OracleConfig)
+	24: Pop
+	25: Call oracle_error::oracle_provider_config_not_found(): u64
+	26: Abort
+B6:
+	27: MoveLoc[5](loc1: &mut PriceFeed)
+	28: MutBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	29: CopyLoc[2](Arg2: OracleProvider)
+	30: Call table::borrow_mut<OracleProvider, OracleProviderConfig>(&mut Table<OracleProvider, OracleProviderConfig>, OracleProvider): &mut OracleProviderConfig
+	31: StLoc[6](loc2: &mut OracleProviderConfig)
+	32: CopyLoc[6](loc2: &mut OracleProviderConfig)
+	33: FreezeRef
+	34: Call oracle_provider::get_pair_id_from_oracle_provider_config(&OracleProviderConfig): vector<u8>
+	35: StLoc[4](loc0: vector<u8>)
+	36: MoveLoc[6](loc2: &mut OracleProviderConfig)
+	37: CopyLoc[3](Arg3: vector<u8>)
+	38: Call oracle_provider::set_pair_id_to_oracle_provider_config(&mut OracleProviderConfig, vector<u8>)
+	39: MoveLoc[0](Arg0: &mut OracleConfig)
+	40: ImmBorrowField[2](OracleConfig.id: UID)
+	41: Call object::uid_to_address(&UID): address
+	42: MoveLoc[1](Arg1: address)
+	43: ImmBorrowLoc[2](Arg2: OracleProvider)
+	44: Call oracle_provider::to_string(&OracleProvider): String
+	45: MoveLoc[3](Arg3: vector<u8>)
+	46: MoveLoc[4](loc0: vector<u8>)
+	47: Pack[17](OracleProviderConfigSetPairId)
+	48: Call event::emit<OracleProviderConfigSetPairId>(OracleProviderConfigSetPairId)
+	49: Ret
+}
+
+public(friend) set_oracle_provider_config_enable(Arg0: &mut OracleConfig, Arg1: address, Arg2: OracleProvider, Arg3: bool) {
+L4:	loc0: bool
+L5:	loc1: &mut PriceFeed
+L6:	loc2: &mut OracleProviderConfig
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[5](loc1: &mut PriceFeed)
+	15: CopyLoc[5](loc1: &mut PriceFeed)
+	16: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	17: CopyLoc[2](Arg2: OracleProvider)
+	18: Call table::contains<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): bool
+	19: BrFalse(21)
+B4:
+	20: Branch(27)
+B5:
+	21: MoveLoc[5](loc1: &mut PriceFeed)
+	22: Pop
+	23: MoveLoc[0](Arg0: &mut OracleConfig)
+	24: Pop
+	25: Call oracle_error::oracle_provider_config_not_found(): u64
+	26: Abort
+B6:
+	27: CopyLoc[5](loc1: &mut PriceFeed)
+	28: ImmBorrowField[15](PriceFeed.primary: OracleProvider)
+	29: ReadRef
+	30: CopyLoc[2](Arg2: OracleProvider)
+	31: Neq
+	32: BrFalse(34)
+B7:
+	33: Branch(40)
+B8:
+	34: MoveLoc[5](loc1: &mut PriceFeed)
+	35: Pop
+	36: MoveLoc[0](Arg0: &mut OracleConfig)
+	37: Pop
+	38: Call oracle_error::provider_is_being_used_in_primary(): u64
+	39: Abort
+B9:
+	40: MoveLoc[5](loc1: &mut PriceFeed)
+	41: MutBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	42: CopyLoc[2](Arg2: OracleProvider)
+	43: Call table::borrow_mut<OracleProvider, OracleProviderConfig>(&mut Table<OracleProvider, OracleProviderConfig>, OracleProvider): &mut OracleProviderConfig
+	44: StLoc[6](loc2: &mut OracleProviderConfig)
+	45: CopyLoc[6](loc2: &mut OracleProviderConfig)
+	46: FreezeRef
+	47: Call oracle_provider::is_oracle_provider_config_enable(&OracleProviderConfig): bool
+	48: StLoc[4](loc0: bool)
+	49: MoveLoc[6](loc2: &mut OracleProviderConfig)
+	50: CopyLoc[3](Arg3: bool)
+	51: Call oracle_provider::set_enable_to_oracle_provider_config(&mut OracleProviderConfig, bool)
+	52: MoveLoc[0](Arg0: &mut OracleConfig)
+	53: ImmBorrowField[2](OracleConfig.id: UID)
+	54: Call object::uid_to_address(&UID): address
+	55: MoveLoc[1](Arg1: address)
+	56: ImmBorrowLoc[2](Arg2: OracleProvider)
+	57: Call oracle_provider::to_string(&OracleProvider): String
+	58: MoveLoc[3](Arg3: bool)
+	59: MoveLoc[4](loc0: bool)
+	60: Pack[18](OracleProviderConfigSetEnable)
+	61: Call event::emit<OracleProviderConfigSetEnable>(OracleProviderConfigSetEnable)
+	62: Ret
+}
+
+public(friend) set_historical_price_ttl_to_price_feed(Arg0: &mut OracleConfig, Arg1: address, Arg2: u64) {
+L3:	loc0: u64
+L4:	loc1: &mut PriceFeed
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: CopyLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: CopyLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: StLoc[4](loc1: &mut PriceFeed)
+	15: CopyLoc[4](loc1: &mut PriceFeed)
+	16: ImmBorrowField[18](PriceFeed.historical_price_ttl: u64)
+	17: ReadRef
+	18: StLoc[3](loc0: u64)
+	19: CopyLoc[2](Arg2: u64)
+	20: MoveLoc[4](loc1: &mut PriceFeed)
+	21: MutBorrowField[18](PriceFeed.historical_price_ttl: u64)
+	22: WriteRef
+	23: MoveLoc[0](Arg0: &mut OracleConfig)
+	24: ImmBorrowField[2](OracleConfig.id: UID)
+	25: Call object::uid_to_address(&UID): address
+	26: MoveLoc[1](Arg1: address)
+	27: MoveLoc[2](Arg2: u64)
+	28: MoveLoc[3](loc0: u64)
+	29: Pack[19](PriceFeedSetHistoricalPriceTTL)
+	30: Call event::emit<PriceFeedSetHistoricalPriceTTL>(PriceFeedSetHistoricalPriceTTL)
+	31: Ret
+}
+
+public(friend) start_or_continue_diff_threshold2_timer(Arg0: &mut PriceFeed, Arg1: u64) {
+B0:
+	0: CopyLoc[0](Arg0: &mut PriceFeed)
+	1: ImmBorrowField[19](PriceFeed.diff_threshold2_timer: u64)
+	2: ReadRef
+	3: LdU64(0)
+	4: Gt
+	5: BrFalse(9)
+B1:
+	6: MoveLoc[0](Arg0: &mut PriceFeed)
+	7: Pop
+	8: Ret
+B2:
+	9: CopyLoc[1](Arg1: u64)
+	10: CopyLoc[0](Arg0: &mut PriceFeed)
+	11: MutBorrowField[19](PriceFeed.diff_threshold2_timer: u64)
+	12: WriteRef
+	13: MoveLoc[0](Arg0: &mut PriceFeed)
+	14: FreezeRef
+	15: Call get_price_feed_id_from_feed(&PriceFeed): address
+	16: MoveLoc[1](Arg1: u64)
+	17: Pack[20](PriceFeedDiffThreshold2TimerUpdated)
+	18: Call event::emit<PriceFeedDiffThreshold2TimerUpdated>(PriceFeedDiffThreshold2TimerUpdated)
+	19: Ret
+}
+
+public(friend) reset_diff_threshold2_timer(Arg0: &mut PriceFeed) {
+L1:	loc0: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut PriceFeed)
+	1: ImmBorrowField[19](PriceFeed.diff_threshold2_timer: u64)
+	2: ReadRef
+	3: StLoc[1](loc0: u64)
+	4: CopyLoc[1](loc0: u64)
+	5: LdU64(0)
+	6: Eq
+	7: BrFalse(11)
+B1:
+	8: MoveLoc[0](Arg0: &mut PriceFeed)
+	9: Pop
+	10: Ret
+B2:
+	11: LdU64(0)
+	12: CopyLoc[0](Arg0: &mut PriceFeed)
+	13: MutBorrowField[19](PriceFeed.diff_threshold2_timer: u64)
+	14: WriteRef
+	15: MoveLoc[0](Arg0: &mut PriceFeed)
+	16: FreezeRef
+	17: Call get_price_feed_id_from_feed(&PriceFeed): address
+	18: MoveLoc[1](loc0: u64)
+	19: Pack[21](PriceFeedDiffThreshold2TimerReset)
+	20: Call event::emit<PriceFeedDiffThreshold2TimerReset>(PriceFeedDiffThreshold2TimerReset)
+	21: Ret
+}
+
+public(friend) keep_history_update(Arg0: &mut PriceFeed, Arg1: u256, Arg2: u64) {
+L3:	loc0: &mut History
+B0:
+	0: MoveLoc[0](Arg0: &mut PriceFeed)
+	1: MutBorrowField[20](PriceFeed.history: History)
+	2: StLoc[3](loc0: &mut History)
+	3: MoveLoc[1](Arg1: u256)
+	4: CopyLoc[3](loc0: &mut History)
+	5: MutBorrowField[21](History.price: u256)
+	6: WriteRef
+	7: MoveLoc[2](Arg2: u64)
+	8: MoveLoc[3](loc0: &mut History)
+	9: MutBorrowField[22](History.updated_time: u64)
+	10: WriteRef
+	11: Ret
+}
+
+public get_config_id_to_address(Arg0: &OracleConfig): address {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: ImmBorrowField[2](OracleConfig.id: UID)
+	2: Call object::uid_to_address(&UID): address
+	3: Ret
+}
+
+public is_paused(Arg0: &OracleConfig): bool {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: ImmBorrowField[1](OracleConfig.paused: bool)
+	2: ReadRef
+	3: Ret
+}
+
+public get_vec_feeds(Arg0: &OracleConfig): vector<address> {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: ImmBorrowField[4](OracleConfig.vec_feeds: vector<address>)
+	2: ReadRef
+	3: Ret
+}
+
+public get_feeds(Arg0: &OracleConfig): &Table<address, PriceFeed> {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: Ret
+}
+
+public get_price_feed(Arg0: &OracleConfig, Arg1: address): &PriceFeed {
+B0:
+	0: CopyLoc[0](Arg0: &OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: MoveLoc[0](Arg0: &OracleConfig)
+	11: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: MoveLoc[1](Arg1: address)
+	13: Call table::borrow<address, PriceFeed>(&Table<address, PriceFeed>, address): &PriceFeed
+	14: Ret
+}
+
+public(friend) get_price_feed_mut(Arg0: &mut OracleConfig, Arg1: address): &mut PriceFeed {
+B0:
+	0: CopyLoc[0](Arg0: &mut OracleConfig)
+	1: ImmBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, PriceFeed>(&Table<address, PriceFeed>, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &mut OracleConfig)
+	7: Pop
+	8: Call oracle_error::price_feed_not_found(): u64
+	9: Abort
+B3:
+	10: MoveLoc[0](Arg0: &mut OracleConfig)
+	11: MutBorrowField[3](OracleConfig.feeds: Table<address, PriceFeed>)
+	12: MoveLoc[1](Arg1: address)
+	13: Call table::borrow_mut<address, PriceFeed>(&mut Table<address, PriceFeed>, address): &mut PriceFeed
+	14: Ret
+}
+
+public get_price_feed_id(Arg0: &OracleConfig, Arg1: address): address {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[23](PriceFeed.id: UID)
+	4: Call object::uid_to_address(&UID): address
+	5: Ret
+}
+
+public get_price_feed_id_from_feed(Arg0: &PriceFeed): address {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[23](PriceFeed.id: UID)
+	2: Call object::uid_to_address(&UID): address
+	3: Ret
+}
+
+public is_price_feed_enable(Arg0: &PriceFeed): bool {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[7](PriceFeed.enable: bool)
+	2: ReadRef
+	3: Ret
+}
+
+public get_max_timestamp_diff(Arg0: &OracleConfig, Arg1: address): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[8](PriceFeed.max_timestamp_diff: u64)
+	4: ReadRef
+	5: Ret
+}
+
+public get_max_timestamp_diff_from_feed(Arg0: &PriceFeed): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[8](PriceFeed.max_timestamp_diff: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public get_price_diff_threshold1(Arg0: &OracleConfig, Arg1: address): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[9](PriceFeed.price_diff_threshold1: u64)
+	4: ReadRef
+	5: Ret
+}
+
+public get_price_diff_threshold1_from_feed(Arg0: &PriceFeed): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[9](PriceFeed.price_diff_threshold1: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public get_price_diff_threshold2(Arg0: &OracleConfig, Arg1: address): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[10](PriceFeed.price_diff_threshold2: u64)
+	4: ReadRef
+	5: Ret
+}
+
+public get_price_diff_threshold2_from_feed(Arg0: &PriceFeed): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[10](PriceFeed.price_diff_threshold2: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public get_max_duration_within_thresholds(Arg0: &OracleConfig, Arg1: address): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[11](PriceFeed.max_duration_within_thresholds: u64)
+	4: ReadRef
+	5: Ret
+}
+
+public get_max_duration_within_thresholds_from_feed(Arg0: &PriceFeed): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[11](PriceFeed.max_duration_within_thresholds: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public get_diff_threshold2_timer(Arg0: &OracleConfig, Arg1: address): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[19](PriceFeed.diff_threshold2_timer: u64)
+	4: ReadRef
+	5: Ret
+}
+
+public get_diff_threshold2_timer_from_feed(Arg0: &PriceFeed): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[19](PriceFeed.diff_threshold2_timer: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public get_maximum_allowed_span_percentage(Arg0: &OracleConfig, Arg1: address): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[12](PriceFeed.maximum_allowed_span_percentage: u64)
+	4: ReadRef
+	5: Ret
+}
+
+public get_maximum_allowed_span_percentage_from_feed(Arg0: &PriceFeed): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[12](PriceFeed.maximum_allowed_span_percentage: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public get_maximum_effective_price(Arg0: &OracleConfig, Arg1: address): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[13](PriceFeed.maximum_effective_price: u256)
+	4: ReadRef
+	5: Ret
+}
+
+public get_maximum_effective_price_from_feed(Arg0: &PriceFeed): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[13](PriceFeed.maximum_effective_price: u256)
+	2: ReadRef
+	3: Ret
+}
+
+public get_minimum_effective_price(Arg0: &OracleConfig, Arg1: address): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[14](PriceFeed.minimum_effective_price: u256)
+	4: ReadRef
+	5: Ret
+}
+
+public get_minimum_effective_price_from_feed(Arg0: &PriceFeed): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[14](PriceFeed.minimum_effective_price: u256)
+	2: ReadRef
+	3: Ret
+}
+
+public get_oracle_id(Arg0: &OracleConfig, Arg1: address): u8 {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[6](PriceFeed.oracle_id: u8)
+	4: ReadRef
+	5: Ret
+}
+
+public get_oracle_id_from_feed(Arg0: &PriceFeed): u8 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[6](PriceFeed.oracle_id: u8)
+	2: ReadRef
+	3: Ret
+}
+
+public get_coin_type(Arg0: &OracleConfig, Arg1: address): String {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[5](PriceFeed.coin_type: String)
+	4: ReadRef
+	5: Ret
+}
+
+public get_coin_type_from_feed(Arg0: &PriceFeed): String {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[5](PriceFeed.coin_type: String)
+	2: ReadRef
+	3: Ret
+}
+
+public get_primary_oracle_provider(Arg0: &PriceFeed): &OracleProvider {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[15](PriceFeed.primary: OracleProvider)
+	2: Ret
+}
+
+public get_secondary_oracle_provider(Arg0: &PriceFeed): &OracleProvider {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[17](PriceFeed.secondary: OracleProvider)
+	2: Ret
+}
+
+public get_oracle_provider_configs(Arg0: &OracleConfig, Arg1: address): &Table<OracleProvider, OracleProviderConfig> {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	4: Ret
+}
+
+public get_oracle_provider_configs_from_feed(Arg0: &PriceFeed): &Table<OracleProvider, OracleProviderConfig> {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	2: Ret
+}
+
+public get_primary_oracle_provider_config(Arg0: &PriceFeed): &OracleProviderConfig {
+L1:	loc0: OracleProvider
+B0:
+	0: CopyLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[15](PriceFeed.primary: OracleProvider)
+	2: ReadRef
+	3: StLoc[1](loc0: OracleProvider)
+	4: MoveLoc[0](Arg0: &PriceFeed)
+	5: MoveLoc[1](loc0: OracleProvider)
+	6: Call get_oracle_provider_config_from_feed(&PriceFeed, OracleProvider): &OracleProviderConfig
+	7: Ret
+}
+
+public get_secondary_source_config(Arg0: &PriceFeed): &OracleProviderConfig {
+L1:	loc0: OracleProvider
+B0:
+	0: CopyLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[17](PriceFeed.secondary: OracleProvider)
+	2: ReadRef
+	3: StLoc[1](loc0: OracleProvider)
+	4: MoveLoc[0](Arg0: &PriceFeed)
+	5: MoveLoc[1](loc0: OracleProvider)
+	6: Call get_oracle_provider_config_from_feed(&PriceFeed, OracleProvider): &OracleProviderConfig
+	7: Ret
+}
+
+public get_historical_price_ttl(Arg0: &PriceFeed): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[18](PriceFeed.historical_price_ttl: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public get_history_price_from_feed(Arg0: &PriceFeed): History {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[20](PriceFeed.history: History)
+	2: ReadRef
+	3: Ret
+}
+
+public get_history_price_data_from_feed(Arg0: &PriceFeed): u256 * u64 {
+L1:	loc0: &History
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[20](PriceFeed.history: History)
+	2: StLoc[1](loc0: &History)
+	3: CopyLoc[1](loc0: &History)
+	4: ImmBorrowField[21](History.price: u256)
+	5: ReadRef
+	6: MoveLoc[1](loc0: &History)
+	7: ImmBorrowField[22](History.updated_time: u64)
+	8: ReadRef
+	9: Ret
+}
+
+public get_oracle_provider_config(Arg0: &OracleConfig, Arg1: address, Arg2: OracleProvider): &OracleProviderConfig {
+L3:	loc0: &PriceFeed
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: Call get_price_feed(&OracleConfig, address): &PriceFeed
+	3: StLoc[3](loc0: &PriceFeed)
+	4: CopyLoc[3](loc0: &PriceFeed)
+	5: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	6: CopyLoc[2](Arg2: OracleProvider)
+	7: Call table::contains<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): bool
+	8: BrFalse(10)
+B1:
+	9: Branch(14)
+B2:
+	10: MoveLoc[3](loc0: &PriceFeed)
+	11: Pop
+	12: Call oracle_error::oracle_provider_config_not_found(): u64
+	13: Abort
+B3:
+	14: MoveLoc[3](loc0: &PriceFeed)
+	15: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	16: MoveLoc[2](Arg2: OracleProvider)
+	17: Call table::borrow<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): &OracleProviderConfig
+	18: Ret
+}
+
+public get_oracle_provider_config_from_feed(Arg0: &PriceFeed, Arg1: OracleProvider): &OracleProviderConfig {
+B0:
+	0: CopyLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	2: CopyLoc[1](Arg1: OracleProvider)
+	3: Call table::contains<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(10)
+B2:
+	6: MoveLoc[0](Arg0: &PriceFeed)
+	7: Pop
+	8: Call oracle_error::oracle_provider_config_not_found(): u64
+	9: Abort
+B3:
+	10: MoveLoc[0](Arg0: &PriceFeed)
+	11: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	12: MoveLoc[1](Arg1: OracleProvider)
+	13: Call table::borrow<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): &OracleProviderConfig
+	14: Ret
+}
+
+public get_pair_id(Arg0: &OracleConfig, Arg1: address, Arg2: OracleProvider): vector<u8> {
+B0:
+	0: MoveLoc[0](Arg0: &OracleConfig)
+	1: MoveLoc[1](Arg1: address)
+	2: MoveLoc[2](Arg2: OracleProvider)
+	3: Call get_oracle_provider_config(&OracleConfig, address, OracleProvider): &OracleProviderConfig
+	4: Call oracle_provider::get_pair_id_from_oracle_provider_config(&OracleProviderConfig): vector<u8>
+	5: Ret
+}
+
+public get_pair_id_from_feed(Arg0: &PriceFeed, Arg1: OracleProvider): vector<u8> {
+B0:
+	0: MoveLoc[0](Arg0: &PriceFeed)
+	1: MoveLoc[1](Arg1: OracleProvider)
+	2: Call get_oracle_provider_config_from_feed(&PriceFeed, OracleProvider): &OracleProviderConfig
+	3: Call oracle_provider::get_pair_id_from_oracle_provider_config(&OracleProviderConfig): vector<u8>
+	4: Ret
+}
+
+public get_pair_id_from_oracle_provider_config(Arg0: &OracleProviderConfig): vector<u8> {
+B0:
+	0: MoveLoc[0](Arg0: &OracleProviderConfig)
+	1: Call oracle_provider::get_pair_id_from_oracle_provider_config(&OracleProviderConfig): vector<u8>
+	2: Ret
+}
+
+public is_oracle_provider_config_enable(Arg0: &OracleProviderConfig): bool {
+B0:
+	0: MoveLoc[0](Arg0: &OracleProviderConfig)
+	1: Call oracle_provider::is_oracle_provider_config_enable(&OracleProviderConfig): bool
+	2: Ret
+}
+
+public get_oracle_provider_from_oracle_provider_config(Arg0: &OracleProviderConfig): OracleProvider {
+B0:
+	0: MoveLoc[0](Arg0: &OracleProviderConfig)
+	1: Call oracle_provider::get_provider_from_oracle_provider_config(&OracleProviderConfig): OracleProvider
+	2: Ret
+}
+
+public get_price_from_history(Arg0: &History): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &History)
+	1: ImmBorrowField[21](History.price: u256)
+	2: ReadRef
+	3: Ret
+}
+
+public get_updated_time_from_history(Arg0: &History): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &History)
+	1: ImmBorrowField[22](History.updated_time: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public is_secondary_oracle_available(Arg0: &PriceFeed): bool {
+L1:	loc0: &OracleProvider
+B0:
+	0: CopyLoc[0](Arg0: &PriceFeed)
+	1: ImmBorrowField[17](PriceFeed.secondary: OracleProvider)
+	2: StLoc[1](loc0: &OracleProvider)
+	3: CopyLoc[1](loc0: &OracleProvider)
+	4: Call oracle_provider::is_empty(&OracleProvider): bool
+	5: BrFalse(12)
+B1:
+	6: MoveLoc[1](loc0: &OracleProvider)
+	7: Pop
+	8: MoveLoc[0](Arg0: &PriceFeed)
+	9: Pop
+	10: LdFalse
+	11: Ret
+B2:
+	12: CopyLoc[1](loc0: &OracleProvider)
+	13: CopyLoc[0](Arg0: &PriceFeed)
+	14: ImmBorrowField[15](PriceFeed.primary: OracleProvider)
+	15: Eq
+	16: BrFalse(23)
+B3:
+	17: MoveLoc[1](loc0: &OracleProvider)
+	18: Pop
+	19: MoveLoc[0](Arg0: &PriceFeed)
+	20: Pop
+	21: LdFalse
+	22: Ret
+B4:
+	23: MoveLoc[0](Arg0: &PriceFeed)
+	24: ImmBorrowField[16](PriceFeed.oracle_provider_configs: Table<OracleProvider, OracleProviderConfig>)
+	25: MoveLoc[1](loc0: &OracleProvider)
+	26: ReadRef
+	27: Call table::borrow<OracleProvider, OracleProviderConfig>(&Table<OracleProvider, OracleProviderConfig>, OracleProvider): &OracleProviderConfig
+	28: Call oracle_provider::is_oracle_provider_config_enable(&OracleProviderConfig): bool
+	29: Ret
+}
+
+}

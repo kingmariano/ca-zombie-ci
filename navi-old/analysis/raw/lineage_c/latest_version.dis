@@ -1,0 +1,35 @@
+// Move bytecode v6
+module a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26.version {
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::constants;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::error;
+
+public this_version(): u64 {
+B0:
+	0: Call constants::version(): u64
+	1: Ret
+}
+
+public next_version(): u64 {
+B0:
+	0: Call constants::version(): u64
+	1: LdU64(1)
+	2: Add
+	3: Ret
+}
+
+public pre_check_version(Arg0: u64) {
+B0:
+	0: MoveLoc[0](Arg0: u64)
+	1: Call constants::version(): u64
+	2: Eq
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: Call error::incorrect_version(): u64
+	6: Abort
+B3:
+	7: Ret
+}
+
+}

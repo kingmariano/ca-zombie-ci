@@ -1,0 +1,14 @@
+# navi-old CI results (C2-54)
+- checkpoint: 332298171
+- Storage/IncentiveV2/IncentiveV3 version fields: {  "storage_version": "16",  "iv2_version": "16",  "iv3_version": "16",  "storage_paused": false}
+- gate matrix: v1..v25 FAIL, v26 SUCCESS (see gate-matrix.json)
+- v9 claim_reward: aborts at incentive_v2::version_verification (see claim-path.json)
+- reward funds: 28 objects (see reward-funds.json)
+- reward funds valued total: $673940.5 (see reward-funds-valued.json)
+- legacy IncentiveBal: 59 objects, non-zero 0
+- V2 funds pools: 9 (see v2-pools.summary.json)
+- lineage B (0xa49c5d1c legacy market): objects {  "storage_version": "15",  "storage_paused": false,  "incentive_version": "15",  "incentive_pools": "194",  "incentive_funds": "7",  "pool_objs": 8}
+- lineage B gate constants: [{"v":1,"e":6},{"v":2,"e":6},{"v":3,"e":6},{"v":4,"e":7},{"v":5,"e":8},{"v":6,"e":9},{"v":7,"e":10},{"v":8,"e":10},{"v":9,"e":10},{"v":10,"e":11},{"v":11,"e":11},{"v":12,"e":12},{"v":13,"e":13},{"v":14,"e":12},{"v":15,"e":13},{"v":16,"e":13},{"v":17,"e":13},{"v":18,"e":14},{"v":19,"e":14},{"v":20,"e":14},{"v":21,"e":15}]
+- lineage B v21 claim_reward (existing supplier, no prior claim): {"status":"SUCCESS","balanceChanges":[]}
+- lineage B v2 funds: 7 pools (see lineageB-funds.summary.json)
+- dev-inspect only; no transactions signed/sent; public endpoints only.

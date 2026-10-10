@@ -1,0 +1,559 @@
+// Move bytecode v6
+module a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26.manage {
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::error;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::flash_loan;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::incentive_v2;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::incentive_v3;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::pool;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::storage;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::version;
+use 0000000000000000000000000000000000000000000000000000000000000001::ascii;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct BorrowFeeCap has store, key {
+	id: UID
+}
+
+public create_flash_loan_config(Arg0: &StorageAdminCap, Arg1: &mut TxContext) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public create_flash_loan_config_with_storage(Arg0: &StorageAdminCap, Arg1: &Storage, Arg2: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &Storage)
+	1: MoveLoc[2](Arg2: &mut TxContext)
+	2: Call flash_loan::create_config_with_market_id(&Storage, &mut TxContext)
+	3: Ret
+}
+
+public create_flash_loan_asset<Ty0>(Arg0: &StorageAdminCap, Arg1: &mut Config, Arg2: &Storage, Arg3: &Pool<Ty0>, Arg4: u8, Arg5: u64, Arg6: u64, Arg7: u64, Arg8: u64, Arg9: &mut TxContext) {
+L10:	loc0: String
+L11:	loc1: address
+L12:	loc2: u8
+B0:
+	0: CopyLoc[2](Arg2: &Storage)
+	1: Call storage::get_reserves_count(&Storage): u8
+	2: StLoc[12](loc2: u8)
+	3: CopyLoc[4](Arg4: u8)
+	4: MoveLoc[12](loc2: u8)
+	5: Lt
+	6: BrFalse(8)
+B1:
+	7: Branch(18)
+B2:
+	8: MoveLoc[2](Arg2: &Storage)
+	9: Pop
+	10: MoveLoc[3](Arg3: &Pool<Ty0>)
+	11: Pop
+	12: MoveLoc[9](Arg9: &mut TxContext)
+	13: Pop
+	14: MoveLoc[1](Arg1: &mut Config)
+	15: Pop
+	16: Call error::reserve_not_found(): u64
+	17: Abort
+B3:
+	18: CopyLoc[1](Arg1: &mut Config)
+	19: FreezeRef
+	20: Call flash_loan::get_market_id(&Config): u64
+	21: CopyLoc[2](Arg2: &Storage)
+	22: Call storage::get_market_id(&Storage): u64
+	23: Eq
+	24: BrFalse(26)
+B4:
+	25: Branch(36)
+B5:
+	26: MoveLoc[2](Arg2: &Storage)
+	27: Pop
+	28: MoveLoc[3](Arg3: &Pool<Ty0>)
+	29: Pop
+	30: MoveLoc[9](Arg9: &mut TxContext)
+	31: Pop
+	32: MoveLoc[1](Arg1: &mut Config)
+	33: Pop
+	34: Call error::unmatched_market_id(): u64
+	35: Abort
+B6:
+	36: CopyLoc[2](Arg2: &Storage)
+	37: Call storage::get_market_id(&Storage): u64
+	38: CopyLoc[3](Arg3: &Pool<Ty0>)
+	39: Call pool::get_market_id<Ty0>(&Pool<Ty0>): u64
+	40: Eq
+	41: BrFalse(43)
+B7:
+	42: Branch(53)
+B8:
+	43: MoveLoc[2](Arg2: &Storage)
+	44: Pop
+	45: MoveLoc[3](Arg3: &Pool<Ty0>)
+	46: Pop
+	47: MoveLoc[9](Arg9: &mut TxContext)
+	48: Pop
+	49: MoveLoc[1](Arg1: &mut Config)
+	50: Pop
+	51: Call error::unmatched_market_id(): u64
+	52: Abort
+B9:
+	53: MoveLoc[2](Arg2: &Storage)
+	54: CopyLoc[4](Arg4: u8)
+	55: Call storage::get_coin_type(&Storage, u8): String
+	56: StLoc[10](loc0: String)
+	57: Call type_name::get<Ty0>(): TypeName
+	58: Call type_name::into_string(TypeName): String
+	59: CopyLoc[10](loc0: String)
+	60: Eq
+	61: BrFalse(63)
+B10:
+	62: Branch(71)
+B11:
+	63: MoveLoc[3](Arg3: &Pool<Ty0>)
+	64: Pop
+	65: MoveLoc[9](Arg9: &mut TxContext)
+	66: Pop
+	67: MoveLoc[1](Arg1: &mut Config)
+	68: Pop
+	69: Call error::invalid_coin_type(): u64
+	70: Abort
+B12:
+	71: MoveLoc[3](Arg3: &Pool<Ty0>)
+	72: Call pool::uid<Ty0>(&Pool<Ty0>): &UID
+	73: Call object::uid_to_address(&UID): address
+	74: StLoc[11](loc1: address)
+	75: MoveLoc[1](Arg1: &mut Config)
+	76: MoveLoc[4](Arg4: u8)
+	77: MoveLoc[10](loc0: String)
+	78: MoveLoc[11](loc1: address)
+	79: MoveLoc[5](Arg5: u64)
+	80: MoveLoc[6](Arg6: u64)
+	81: MoveLoc[7](Arg7: u64)
+	82: MoveLoc[8](Arg8: u64)
+	83: MoveLoc[9](Arg9: &mut TxContext)
+	84: Call flash_loan::create_asset(&mut Config, u8, String, address, u64, u64, u64, u64, &mut TxContext)
+	85: Ret
+}
+
+public set_flash_loan_asset_rate_to_supplier<Ty0>(Arg0: &StorageAdminCap, Arg1: &mut Config, Arg2: u64) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Config)
+	1: Call type_name::get<Ty0>(): TypeName
+	2: Call type_name::into_string(TypeName): String
+	3: MoveLoc[2](Arg2: u64)
+	4: Call flash_loan::set_asset_rate_to_supplier(&mut Config, String, u64)
+	5: Ret
+}
+
+public set_flash_loan_asset_rate_to_treasury<Ty0>(Arg0: &StorageAdminCap, Arg1: &mut Config, Arg2: u64) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Config)
+	1: Call type_name::get<Ty0>(): TypeName
+	2: Call type_name::into_string(TypeName): String
+	3: MoveLoc[2](Arg2: u64)
+	4: Call flash_loan::set_asset_rate_to_treasury(&mut Config, String, u64)
+	5: Ret
+}
+
+public set_flash_loan_asset_min<Ty0>(Arg0: &StorageAdminCap, Arg1: &mut Config, Arg2: u64) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Config)
+	1: Call type_name::get<Ty0>(): TypeName
+	2: Call type_name::into_string(TypeName): String
+	3: MoveLoc[2](Arg2: u64)
+	4: Call flash_loan::set_asset_min(&mut Config, String, u64)
+	5: Ret
+}
+
+public set_flash_loan_asset_max<Ty0>(Arg0: &StorageAdminCap, Arg1: &mut Config, Arg2: u64) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Config)
+	1: Call type_name::get<Ty0>(): TypeName
+	2: Call type_name::into_string(TypeName): String
+	3: MoveLoc[2](Arg2: u64)
+	4: Call flash_loan::set_asset_max(&mut Config, String, u64)
+	5: Ret
+}
+
+public withdraw_borrow_fee<Ty0>(Arg0: &StorageAdminCap, Arg1: &mut Incentive, Arg2: u64, Arg3: address, Arg4: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: u64)
+	2: CopyLoc[4](Arg4: &mut TxContext)
+	3: FreezeRef
+	4: Call incentive_v3::withdraw_borrow_fee<Ty0>(&mut Incentive, u64, &TxContext): Balance<Ty0>
+	5: MoveLoc[4](Arg4: &mut TxContext)
+	6: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	7: MoveLoc[3](Arg3: address)
+	8: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	9: Ret
+}
+
+public incentive_v3_version_migrate(Arg0: &StorageAdminCap, Arg1: &mut Incentive) {
+B0:
+	0: CopyLoc[1](Arg1: &mut Incentive)
+	1: FreezeRef
+	2: Call incentive_v3::version(&Incentive): u64
+	3: Call version::this_version(): u64
+	4: Lt
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[1](Arg1: &mut Incentive)
+	8: Pop
+	9: Call error::incorrect_version(): u64
+	10: Abort
+B3:
+	11: MoveLoc[1](Arg1: &mut Incentive)
+	12: Call version::this_version(): u64
+	13: Call incentive_v3::version_migrate(&mut Incentive, u64)
+	14: Ret
+}
+
+public create_incentive_v3_reward_fund<Ty0>(Arg0: &OwnerCap, Arg1: &mut TxContext) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public create_incentive_v3_reward_fund_with_storage<Ty0>(Arg0: &OwnerCap, Arg1: &Storage, Arg2: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &Storage)
+	1: MoveLoc[2](Arg2: &mut TxContext)
+	2: Call incentive_v3::create_reward_fund_with_market_id<Ty0>(&Storage, &mut TxContext)
+	3: Ret
+}
+
+public deposit_incentive_v3_reward_fund<Ty0>(Arg0: &OwnerCap, Arg1: &mut RewardFund<Ty0>, Arg2: Coin<Ty0>, Arg3: u64, Arg4: &mut TxContext) {
+L5:	loc0: Coin<Ty0>
+B0:
+	0: ImmBorrowLoc[2](Arg2: Coin<Ty0>)
+	1: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	2: CopyLoc[3](Arg3: u64)
+	3: Ge
+	4: BrFalse(6)
+B1:
+	5: Branch(12)
+B2:
+	6: MoveLoc[1](Arg1: &mut RewardFund<Ty0>)
+	7: Pop
+	8: MoveLoc[4](Arg4: &mut TxContext)
+	9: Pop
+	10: Call error::invalid_amount(): u64
+	11: Abort
+B3:
+	12: MutBorrowLoc[2](Arg2: Coin<Ty0>)
+	13: MoveLoc[3](Arg3: u64)
+	14: CopyLoc[4](Arg4: &mut TxContext)
+	15: Call coin::split<Ty0>(&mut Coin<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	16: StLoc[5](loc0: Coin<Ty0>)
+	17: MoveLoc[1](Arg1: &mut RewardFund<Ty0>)
+	18: MoveLoc[5](loc0: Coin<Ty0>)
+	19: Call coin::into_balance<Ty0>(Coin<Ty0>): Balance<Ty0>
+	20: CopyLoc[4](Arg4: &mut TxContext)
+	21: FreezeRef
+	22: Call incentive_v3::deposit_reward_fund<Ty0>(&mut RewardFund<Ty0>, Balance<Ty0>, &TxContext)
+	23: MoveLoc[2](Arg2: Coin<Ty0>)
+	24: MoveLoc[4](Arg4: &mut TxContext)
+	25: FreezeRef
+	26: Call tx_context::sender(&TxContext): address
+	27: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	28: Ret
+}
+
+public withdraw_incentive_v3_reward_fund<Ty0>(Arg0: &StorageAdminCap, Arg1: &mut RewardFund<Ty0>, Arg2: u64, Arg3: address, Arg4: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut RewardFund<Ty0>)
+	1: MoveLoc[2](Arg2: u64)
+	2: CopyLoc[4](Arg4: &mut TxContext)
+	3: FreezeRef
+	4: Call incentive_v3::withdraw_reward_fund<Ty0>(&mut RewardFund<Ty0>, u64, &TxContext): Balance<Ty0>
+	5: MoveLoc[4](Arg4: &mut TxContext)
+	6: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	7: MoveLoc[3](Arg3: address)
+	8: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	9: Ret
+}
+
+public create_incentive_v3(Arg0: &OwnerCap, Arg1: &mut TxContext) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public create_incentive_v3_with_storage(Arg0: &OwnerCap, Arg1: &Storage, Arg2: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &Storage)
+	1: MoveLoc[2](Arg2: &mut TxContext)
+	2: Call incentive_v3::create_incentive_v3_with_market_id(&Storage, &mut TxContext)
+	3: Ret
+}
+
+public create_incentive_v3_pool<Ty0>(Arg0: &OwnerCap, Arg1: &mut Incentive, Arg2: &Storage, Arg3: u8, Arg4: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: &Storage)
+	2: MoveLoc[3](Arg3: u8)
+	3: MoveLoc[4](Arg4: &mut TxContext)
+	4: Call incentive_v3::create_pool<Ty0>(&mut Incentive, &Storage, u8, &mut TxContext)
+	5: Ret
+}
+
+public create_incentive_v3_rule<Ty0, Ty1>(Arg0: &OwnerCap, Arg1: &Clock, Arg2: &mut Incentive, Arg3: u8, Arg4: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &Clock)
+	1: MoveLoc[2](Arg2: &mut Incentive)
+	2: MoveLoc[3](Arg3: u8)
+	3: MoveLoc[4](Arg4: &mut TxContext)
+	4: Call incentive_v3::create_rule<Ty0, Ty1>(&Clock, &mut Incentive, u8, &mut TxContext)
+	5: Ret
+}
+
+public enable_incentive_v3_by_rule_id<Ty0>(Arg0: &OwnerCap, Arg1: &mut Incentive, Arg2: address, Arg3: &mut TxContext) {
+L4:	loc0: &mut TxContext
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: address)
+	2: MoveLoc[3](Arg3: &mut TxContext)
+	3: StLoc[4](loc0: &mut TxContext)
+	4: LdTrue
+	5: MoveLoc[4](loc0: &mut TxContext)
+	6: FreezeRef
+	7: Call incentive_v3::set_enable_by_rule_id<Ty0>(&mut Incentive, address, bool, &TxContext)
+	8: Ret
+}
+
+public disable_incentive_v3_by_rule_id<Ty0>(Arg0: &OwnerCap, Arg1: &mut Incentive, Arg2: address, Arg3: &mut TxContext) {
+L4:	loc0: &mut TxContext
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: address)
+	2: MoveLoc[3](Arg3: &mut TxContext)
+	3: StLoc[4](loc0: &mut TxContext)
+	4: LdFalse
+	5: MoveLoc[4](loc0: &mut TxContext)
+	6: FreezeRef
+	7: Call incentive_v3::set_enable_by_rule_id<Ty0>(&mut Incentive, address, bool, &TxContext)
+	8: Ret
+}
+
+public set_incentive_v3_reward_rate_by_rule_id<Ty0>(Arg0: &OwnerCap, Arg1: &Clock, Arg2: &mut Incentive, Arg3: &mut Storage, Arg4: address, Arg5: u64, Arg6: u64, Arg7: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &Clock)
+	1: MoveLoc[2](Arg2: &mut Incentive)
+	2: MoveLoc[3](Arg3: &mut Storage)
+	3: MoveLoc[4](Arg4: address)
+	4: MoveLoc[5](Arg5: u64)
+	5: MoveLoc[6](Arg6: u64)
+	6: MoveLoc[7](Arg7: &mut TxContext)
+	7: FreezeRef
+	8: Call incentive_v3::set_reward_rate_by_rule_id<Ty0>(&Clock, &mut Incentive, &mut Storage, address, u64, u64, &TxContext)
+	9: Ret
+}
+
+public set_incentive_v3_max_reward_rate_by_rule_id<Ty0>(Arg0: &OwnerCap, Arg1: &mut Incentive, Arg2: address, Arg3: u64, Arg4: u64) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: address)
+	2: MoveLoc[3](Arg3: u64)
+	3: MoveLoc[4](Arg4: u64)
+	4: Call incentive_v3::set_max_reward_rate_by_rule_id<Ty0>(&mut Incentive, address, u64, u64)
+	5: Ret
+}
+
+public set_incentive_v3_borrow_fee_rate(Arg0: &StorageAdminCap, Arg1: &mut Incentive, Arg2: u64, Arg3: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: u64)
+	2: MoveLoc[3](Arg3: &mut TxContext)
+	3: FreezeRef
+	4: Call incentive_v3::set_borrow_fee_rate(&mut Incentive, u64, &TxContext)
+	5: Ret
+}
+
+public init_fields_batch(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: &mut Incentive, Arg3: &mut TxContext) {
+B0:
+	0: MoveLoc[2](Arg2: &mut Incentive)
+	1: CopyLoc[3](Arg3: &mut TxContext)
+	2: Call incentive_v3::init_borrow_fee_fields(&mut Incentive, &mut TxContext)
+	3: MoveLoc[1](Arg1: &mut Storage)
+	4: MoveLoc[3](Arg3: &mut TxContext)
+	5: Call storage::init_protected_liquidation_fields(&mut Storage, &mut TxContext)
+	6: Ret
+}
+
+public mint_borrow_fee_cap(Arg0: &StorageAdminCap, Arg1: address, Arg2: &mut TxContext) {
+B0:
+	0: MoveLoc[2](Arg2: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: Pack[0](BorrowFeeCap)
+	3: MoveLoc[1](Arg1: address)
+	4: Call transfer::public_transfer<BorrowFeeCap>(BorrowFeeCap, address)
+	5: Ret
+}
+
+public set_borrow_fee_rate(Arg0: &BorrowFeeCap, Arg1: &mut Incentive, Arg2: u64, Arg3: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: u64)
+	2: MoveLoc[3](Arg3: &mut TxContext)
+	3: FreezeRef
+	4: Call incentive_v3::set_borrow_fee_rate(&mut Incentive, u64, &TxContext)
+	5: Ret
+}
+
+public set_asset_borrow_fee_rate(Arg0: &BorrowFeeCap, Arg1: &mut Incentive, Arg2: u8, Arg3: u64, Arg4: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: u8)
+	2: MoveLoc[3](Arg3: u64)
+	3: MoveLoc[4](Arg4: &mut TxContext)
+	4: FreezeRef
+	5: Call incentive_v3::set_asset_borrow_fee_rate(&mut Incentive, u8, u64, &TxContext)
+	6: Ret
+}
+
+public set_user_borrow_fee_rate(Arg0: &BorrowFeeCap, Arg1: &mut Incentive, Arg2: address, Arg3: u8, Arg4: u64, Arg5: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: address)
+	2: MoveLoc[3](Arg3: u8)
+	3: MoveLoc[4](Arg4: u64)
+	4: MoveLoc[5](Arg5: &mut TxContext)
+	5: Call incentive_v3::set_user_borrow_fee_rate(&mut Incentive, address, u8, u64, &mut TxContext)
+	6: Ret
+}
+
+public remove_incentive_v3_asset_borrow_fee_rate(Arg0: &BorrowFeeCap, Arg1: &mut Incentive, Arg2: u8, Arg3: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: u8)
+	2: MoveLoc[3](Arg3: &mut TxContext)
+	3: FreezeRef
+	4: Call incentive_v3::remove_asset_borrow_fee_rate(&mut Incentive, u8, &TxContext)
+	5: Ret
+}
+
+public remove_incentive_v3_user_borrow_fee_rate(Arg0: &BorrowFeeCap, Arg1: &mut Incentive, Arg2: address, Arg3: u8, Arg4: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Incentive)
+	1: MoveLoc[2](Arg2: address)
+	2: MoveLoc[3](Arg3: u8)
+	3: MoveLoc[4](Arg4: &mut TxContext)
+	4: FreezeRef
+	5: Call incentive_v3::remove_user_borrow_fee_rate(&mut Incentive, address, u8, &TxContext)
+	6: Ret
+}
+
+public set_designated_liquidators(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: address, Arg3: address, Arg4: bool, Arg5: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: address)
+	2: MoveLoc[3](Arg3: address)
+	3: MoveLoc[4](Arg4: bool)
+	4: MoveLoc[5](Arg5: &mut TxContext)
+	5: Call storage::set_designated_liquidators(&mut Storage, address, address, bool, &mut TxContext)
+	6: Ret
+}
+
+public set_protected_liquidation_users(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: address, Arg3: bool) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: address)
+	2: MoveLoc[3](Arg3: bool)
+	3: Call storage::set_protected_liquidation_users(&mut Storage, address, bool)
+	4: Ret
+}
+
+public create_emode_asset(Arg0: &StorageAdminCap, Arg1: u8, Arg2: bool, Arg3: bool, Arg4: u256, Arg5: u256, Arg6: u256): EmodeAsset {
+B0:
+	0: MoveLoc[1](Arg1: u8)
+	1: MoveLoc[2](Arg2: bool)
+	2: MoveLoc[3](Arg3: bool)
+	3: MoveLoc[4](Arg4: u256)
+	4: MoveLoc[5](Arg5: u256)
+	5: MoveLoc[6](Arg6: u256)
+	6: Call storage::create_emode_asset(u8, bool, bool, u256, u256, u256): EmodeAsset
+	7: Ret
+}
+
+public create_emode_pair(Arg0: &StorageAdminCap, Arg1: &mut Storage, Arg2: EmodeAsset, Arg3: EmodeAsset) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: EmodeAsset)
+	2: MoveLoc[3](Arg3: EmodeAsset)
+	3: Call storage::create_emode_pair(&mut Storage, EmodeAsset, EmodeAsset)
+	4: Ret
+}
+
+public set_emode_config_active(Arg0: &StorageAdminCap, Arg1: &mut Storage, Arg2: u64, Arg3: bool) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: u64)
+	2: MoveLoc[3](Arg3: bool)
+	3: Call storage::set_emode_config_active(&mut Storage, u64, bool)
+	4: Ret
+}
+
+public set_emode_asset_lt(Arg0: &StorageAdminCap, Arg1: &mut Storage, Arg2: u64, Arg3: u8, Arg4: u256) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: u64)
+	2: MoveLoc[3](Arg3: u8)
+	3: MoveLoc[4](Arg4: u256)
+	4: Call storage::set_emode_asset_lt(&mut Storage, u64, u8, u256)
+	5: Ret
+}
+
+public set_emode_asset_ltv(Arg0: &StorageAdminCap, Arg1: &mut Storage, Arg2: u64, Arg3: u8, Arg4: u256) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: u64)
+	2: MoveLoc[3](Arg3: u8)
+	3: MoveLoc[4](Arg4: u256)
+	4: Call storage::set_emode_asset_ltv(&mut Storage, u64, u8, u256)
+	5: Ret
+}
+
+public set_emode_asset_liquidation_bonus(Arg0: &StorageAdminCap, Arg1: &mut Storage, Arg2: u64, Arg3: u8, Arg4: u256) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: u64)
+	2: MoveLoc[3](Arg3: u8)
+	3: MoveLoc[4](Arg4: u256)
+	4: Call storage::set_emode_asset_liquidation_bonus(&mut Storage, u64, u8, u256)
+	5: Ret
+}
+
+public create_new_market(Arg0: &StorageAdminCap, Arg1: &mut Storage, Arg2: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: &mut TxContext)
+	2: Call storage::create_new_market(&mut Storage, &mut TxContext)
+	3: Ret
+}
+
+public set_borrow_weight(Arg0: &StorageAdminCap, Arg1: &mut Storage, Arg2: u8, Arg3: u64) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: u8)
+	2: MoveLoc[3](Arg3: u64)
+	3: Call storage::set_borrow_weight(&mut Storage, u8, u64)
+	4: Ret
+}
+
+public remove_borrow_weight(Arg0: &StorageAdminCap, Arg1: &mut Storage, Arg2: u8) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: u8)
+	2: Call storage::remove_borrow_weight(&mut Storage, u8)
+	3: Ret
+}
+
+}
+

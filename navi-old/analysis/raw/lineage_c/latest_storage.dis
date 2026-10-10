@@ -1,0 +1,3285 @@
+// Move bytecode v6
+module a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26.storage {
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::constants;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::error;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::event;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::pool;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::ray_math;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::safe_math;
+use a49c5d1c8f0a9eaa4e1c0c461c2b5dfb6e88213876739e56db1afb3649a8af26::version;
+use 0000000000000000000000000000000000000000000000000000000000000001::ascii;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000001::vector;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::dynamic_field;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 0000000000000000000000000000000000000000000000000000000000000003::sui_system;
+
+struct OwnerCap has store, key {
+	id: UID
+}
+
+struct StorageAdminCap has store, key {
+	id: UID
+}
+
+struct Storage has store, key {
+	id: UID,
+	version: u64,
+	paused: bool,
+	reserves: Table<u8, ReserveData>,
+	reserves_count: u8,
+	users: vector<address>,
+	user_info: Table<address, UserInfo>
+}
+
+struct ReserveData has store {
+	id: u8,
+	oracle_id: u8,
+	coin_type: String,
+	is_isolated: bool,
+	supply_cap_ceiling: u256,
+	borrow_cap_ceiling: u256,
+	current_supply_rate: u256,
+	current_borrow_rate: u256,
+	current_supply_index: u256,
+	current_borrow_index: u256,
+	supply_balance: TokenBalance,
+	borrow_balance: TokenBalance,
+	last_update_timestamp: u64,
+	ltv: u256,
+	treasury_factor: u256,
+	treasury_balance: u256,
+	borrow_rate_factors: BorrowRateFactors,
+	liquidation_factors: LiquidationFactors,
+	reserve_field_a: u256,
+	reserve_field_b: u256,
+	reserve_field_c: u256
+}
+
+struct UserInfo has store {
+	collaterals: vector<u8>,
+	loans: vector<u8>
+}
+
+struct ReserveConfigurationMap has copy, store {
+	data: u256
+}
+
+struct UserConfigurationMap has copy, store {
+	data: u256
+}
+
+struct TokenBalance has store {
+	user_state: Table<address, u256>,
+	total_supply: u256
+}
+
+struct BorrowRateFactors has store {
+	base_rate: u256,
+	multiplier: u256,
+	jump_rate_multiplier: u256,
+	reserve_factor: u256,
+	optimal_utilization: u256
+}
+
+struct LiquidationFactors has store {
+	ratio: u256,
+	bonus: u256,
+	threshold: u256
+}
+
+struct Emode has store {
+	emodes_pair: Table<u64, EmodeConfig>,
+	user_emode_id: Table<address, u64>,
+	next_emode_id: u64
+}
+
+struct EmodeConfig has store {
+	assetA: EmodeAsset,
+	assetB: EmodeAsset,
+	isActive: bool
+}
+
+struct EmodeAsset has store {
+	assetId: u8,
+	isCollateral: bool,
+	isDebt: bool,
+	ltv: u256,
+	lt: u256,
+	liquidation_bonus: u256
+}
+
+struct MarketInfo has store {
+	market_id: u64,
+	last_market_id: u64,
+	is_main_market: bool
+}
+
+struct StorageConfiguratorSetting has copy, drop {
+	sender: address,
+	configurator: address,
+	value: bool
+}
+
+struct Paused has copy, drop {
+	paused: bool
+}
+
+struct WithdrawTreasuryEvent has copy, drop {
+	sender: address,
+	recipient: address,
+	asset: u8,
+	amount: u256,
+	poolId: address,
+	before: u256,
+	after: u256,
+	index: u256
+}
+
+struct LiquidatorSet has copy, drop {
+	liquidator: address,
+	user: address,
+	is_liquidatable: bool
+}
+
+struct ProtectedUserSet has copy, drop {
+	user: address,
+	is_protected: bool
+}
+
+struct EmodePairCreated has copy, drop {
+	emode_id: u64,
+	assetA: u8,
+	assetB: u8
+}
+
+struct EmodeParamSet has copy, drop {
+	emode_id: u64,
+	asset: u8,
+	value: u256,
+	param_type: String
+}
+
+struct EmodeUserStateChanged has copy, drop {
+	user: address,
+	emode_id: u64,
+	is_entered: bool
+}
+
+struct MarketCreated has copy, drop {
+	market_id: u64
+}
+
+struct BorrowWeightSet has copy, drop {
+	asset: u8,
+	weight: u64
+}
+
+struct BorrowWeightRemoved has copy, drop {
+	asset: u8
+}
+
+struct DESIGNATED_LIQUIDATORS_KEY has copy, drop, store {
+	dummy_field: bool
+}
+
+struct PROTECTED_LIQUIDATION_USERS_KEY has copy, drop, store {
+	dummy_field: bool
+}
+
+struct EMODE_KEY has copy, drop, store {
+	dummy_field: bool
+}
+
+struct MARKET_KEY has copy, drop, store {
+	dummy_field: bool
+}
+
+struct BORROW_WEIGHT_KEY has copy, drop, store {
+	dummy_field: bool
+}
+
+init(Arg0: &mut TxContext) {
+L1:	loc0: Storage
+B0:
+	0: CopyLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: Pack[1](StorageAdminCap)
+	3: CopyLoc[0](Arg0: &mut TxContext)
+	4: FreezeRef
+	5: Call tx_context::sender(&TxContext): address
+	6: Call transfer::public_transfer<StorageAdminCap>(StorageAdminCap, address)
+	7: CopyLoc[0](Arg0: &mut TxContext)
+	8: Call object::new(&mut TxContext): UID
+	9: Pack[0](OwnerCap)
+	10: CopyLoc[0](Arg0: &mut TxContext)
+	11: FreezeRef
+	12: Call tx_context::sender(&TxContext): address
+	13: Call transfer::public_transfer<OwnerCap>(OwnerCap, address)
+	14: CopyLoc[0](Arg0: &mut TxContext)
+	15: Call object::new(&mut TxContext): UID
+	16: Call version::this_version(): u64
+	17: LdFalse
+	18: CopyLoc[0](Arg0: &mut TxContext)
+	19: Call table::new<u8, ReserveData>(&mut TxContext): Table<u8, ReserveData>
+	20: LdU8(0)
+	21: VecPack(57, 0)
+	22: CopyLoc[0](Arg0: &mut TxContext)
+	23: Call table::new<address, UserInfo>(&mut TxContext): Table<address, UserInfo>
+	24: Pack[2](Storage)
+	25: StLoc[1](loc0: Storage)
+	26: MutBorrowLoc[1](loc0: Storage)
+	27: CopyLoc[0](Arg0: &mut TxContext)
+	28: Call init_protected_liquidation_fields(&mut Storage, &mut TxContext)
+	29: MutBorrowLoc[1](loc0: Storage)
+	30: CopyLoc[0](Arg0: &mut TxContext)
+	31: Call init_emode_fields(&mut Storage, &mut TxContext)
+	32: MutBorrowLoc[1](loc0: Storage)
+	33: MoveLoc[0](Arg0: &mut TxContext)
+	34: Call init_borrow_weight_fields(&mut Storage, &mut TxContext)
+	35: MutBorrowLoc[1](loc0: Storage)
+	36: Call init_main_market(&mut Storage)
+	37: MoveLoc[1](loc0: Storage)
+	38: Call transfer::share_object<Storage>(Storage)
+	39: Ret
+}
+
+public when_not_paused(Arg0: &Storage) {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: Call pause(&Storage): bool
+	2: Not
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: Call error::paused(): u64
+	6: Abort
+B3:
+	7: Ret
+}
+
+public version_verification(Arg0: &Storage) {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[0](Storage.version: u64)
+	2: ReadRef
+	3: Call version::pre_check_version(u64)
+	4: Ret
+}
+
+entry public version_migrate(Arg0: &StorageAdminCap, Arg1: &mut Storage) {
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: ImmBorrowField[0](Storage.version: u64)
+	2: ReadRef
+	3: Call version::this_version(): u64
+	4: Lt
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[1](Arg1: &mut Storage)
+	8: Pop
+	9: Call error::not_available_version(): u64
+	10: Abort
+B3:
+	11: Call version::this_version(): u64
+	12: MoveLoc[1](Arg1: &mut Storage)
+	13: MutBorrowField[0](Storage.version: u64)
+	14: WriteRef
+	15: Ret
+}
+
+entry public init_reserve<Ty0>(Arg0: &StorageAdminCap, Arg1: &PoolAdminCap, Arg2: &Clock, Arg3: &mut Storage, Arg4: u8, Arg5: bool, Arg6: u256, Arg7: u256, Arg8: u256, Arg9: u256, Arg10: u256, Arg11: u256, Arg12: u256, Arg13: u256, Arg14: u256, Arg15: u256, Arg16: u256, Arg17: u256, Arg18: &CoinMetadata<Ty0>, Arg19: &mut TxContext) {
+L20:	loc0: u8
+L21:	loc1: u256
+L22:	loc2: u256
+L23:	loc3: u256
+L24:	loc4: TokenBalance
+L25:	loc5: TokenBalance
+L26:	loc6: u64
+L27:	loc7: BorrowRateFactors
+L28:	loc8: LiquidationFactors
+L29:	loc9: u8
+L30:	loc10: String
+L31:	loc11: bool
+L32:	loc12: u256
+L33:	loc13: u256
+L34:	loc14: u256
+L35:	loc15: u8
+L36:	loc16: u8
+L37:	loc17: &MarketInfo
+L38:	loc18: ReserveData
+B0:
+	0: CopyLoc[3](Arg3: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[3](Arg3: &mut Storage)
+	4: ImmBorrowField[1](Storage.reserves_count: u8)
+	5: ReadRef
+	6: StLoc[35](loc15: u8)
+	7: CopyLoc[35](loc15: u8)
+	8: Call constants::max_number_of_reserves(): u8
+	9: Lt
+	10: BrFalse(12)
+B1:
+	11: Branch(24)
+B2:
+	12: MoveLoc[3](Arg3: &mut Storage)
+	13: Pop
+	14: MoveLoc[1](Arg1: &PoolAdminCap)
+	15: Pop
+	16: MoveLoc[19](Arg19: &mut TxContext)
+	17: Pop
+	18: MoveLoc[18](Arg18: &CoinMetadata<Ty0>)
+	19: Pop
+	20: MoveLoc[2](Arg2: &Clock)
+	21: Pop
+	22: Call error::no_more_reserves_allowed(): u64
+	23: Abort
+B3:
+	24: CopyLoc[3](Arg3: &mut Storage)
+	25: FreezeRef
+	26: Call reserve_validation<Ty0>(&Storage)
+	27: CopyLoc[7](Arg7: u256)
+	28: Call percentage_ray_validation(u256)
+	29: CopyLoc[9](Arg9: u256)
+	30: Call percentage_ray_validation(u256)
+	31: CopyLoc[12](Arg12: u256)
+	32: Call percentage_ray_validation(u256)
+	33: CopyLoc[14](Arg14: u256)
+	34: Call percentage_ray_validation(u256)
+	35: CopyLoc[15](Arg15: u256)
+	36: Call percentage_ray_validation(u256)
+	37: CopyLoc[16](Arg16: u256)
+	38: Call percentage_ray_validation(u256)
+	39: CopyLoc[13](Arg13: u256)
+	40: Call percentage_ray_validation(u256)
+	41: CopyLoc[17](Arg17: u256)
+	42: Call percentage_ray_validation(u256)
+	43: CopyLoc[3](Arg3: &mut Storage)
+	44: ImmBorrowField[1](Storage.reserves_count: u8)
+	45: ReadRef
+	46: StLoc[20](loc0: u8)
+	47: MoveLoc[4](Arg4: u8)
+	48: StLoc[29](loc9: u8)
+	49: Call type_name::get<Ty0>(): TypeName
+	50: Call type_name::into_string(TypeName): String
+	51: StLoc[30](loc10: String)
+	52: MoveLoc[5](Arg5: bool)
+	53: StLoc[31](loc11: bool)
+	54: MoveLoc[6](Arg6: u256)
+	55: StLoc[32](loc12: u256)
+	56: MoveLoc[7](Arg7: u256)
+	57: StLoc[33](loc13: u256)
+	58: Call ray_math::ray(): u256
+	59: StLoc[34](loc14: u256)
+	60: Call ray_math::ray(): u256
+	61: StLoc[21](loc1: u256)
+	62: MoveLoc[13](Arg13: u256)
+	63: StLoc[22](loc2: u256)
+	64: MoveLoc[14](Arg14: u256)
+	65: StLoc[23](loc3: u256)
+	66: CopyLoc[19](Arg19: &mut TxContext)
+	67: Call table::new<address, u256>(&mut TxContext): Table<address, u256>
+	68: LdU256(0)
+	69: Pack[7](TokenBalance)
+	70: StLoc[24](loc4: TokenBalance)
+	71: CopyLoc[19](Arg19: &mut TxContext)
+	72: Call table::new<address, u256>(&mut TxContext): Table<address, u256>
+	73: LdU256(0)
+	74: Pack[7](TokenBalance)
+	75: StLoc[25](loc5: TokenBalance)
+	76: MoveLoc[2](Arg2: &Clock)
+	77: Call clock::timestamp_ms(&Clock): u64
+	78: StLoc[26](loc6: u64)
+	79: MoveLoc[8](Arg8: u256)
+	80: MoveLoc[10](Arg10: u256)
+	81: MoveLoc[11](Arg11: u256)
+	82: MoveLoc[12](Arg12: u256)
+	83: MoveLoc[9](Arg9: u256)
+	84: Pack[8](BorrowRateFactors)
+	85: StLoc[27](loc7: BorrowRateFactors)
+	86: MoveLoc[15](Arg15: u256)
+	87: MoveLoc[16](Arg16: u256)
+	88: MoveLoc[17](Arg17: u256)
+	89: Pack[9](LiquidationFactors)
+	90: StLoc[28](loc8: LiquidationFactors)
+	91: MoveLoc[20](loc0: u8)
+	92: MoveLoc[29](loc9: u8)
+	93: MoveLoc[30](loc10: String)
+	94: MoveLoc[31](loc11: bool)
+	95: MoveLoc[32](loc12: u256)
+	96: MoveLoc[33](loc13: u256)
+	97: LdU256(0)
+	98: LdU256(0)
+	99: MoveLoc[34](loc14: u256)
+	100: MoveLoc[21](loc1: u256)
+	101: MoveLoc[24](loc4: TokenBalance)
+	102: MoveLoc[25](loc5: TokenBalance)
+	103: MoveLoc[26](loc6: u64)
+	104: MoveLoc[22](loc2: u256)
+	105: MoveLoc[23](loc3: u256)
+	106: LdU256(0)
+	107: MoveLoc[27](loc7: BorrowRateFactors)
+	108: MoveLoc[28](loc8: LiquidationFactors)
+	109: LdU256(0)
+	110: LdU256(0)
+	111: LdU256(0)
+	112: Pack[3](ReserveData)
+	113: StLoc[38](loc18: ReserveData)
+	114: CopyLoc[3](Arg3: &mut Storage)
+	115: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	116: CopyLoc[35](loc15: u8)
+	117: MoveLoc[38](loc18: ReserveData)
+	118: Call table::add<u8, ReserveData>(&mut Table<u8, ReserveData>, u8, ReserveData)
+	119: MoveLoc[35](loc15: u8)
+	120: LdU8(1)
+	121: Add
+	122: CopyLoc[3](Arg3: &mut Storage)
+	123: MutBorrowField[1](Storage.reserves_count: u8)
+	124: WriteRef
+	125: MoveLoc[18](Arg18: &CoinMetadata<Ty0>)
+	126: Call coin::get_decimals<Ty0>(&CoinMetadata<Ty0>): u8
+	127: StLoc[36](loc16: u8)
+	128: MoveLoc[3](Arg3: &mut Storage)
+	129: ImmBorrowField[3](Storage.id: UID)
+	130: LdFalse
+	131: Pack[28](MARKET_KEY)
+	132: Call dynamic_field::borrow<MARKET_KEY, MarketInfo>(&UID, MARKET_KEY): &MarketInfo
+	133: StLoc[37](loc17: &MarketInfo)
+	134: MoveLoc[1](Arg1: &PoolAdminCap)
+	135: MoveLoc[36](loc16: u8)
+	136: MoveLoc[37](loc17: &MarketInfo)
+	137: ImmBorrowField[4](MarketInfo.market_id: u64)
+	138: ReadRef
+	139: MoveLoc[19](Arg19: &mut TxContext)
+	140: Call pool::create_pool_with_market_id<Ty0>(&PoolAdminCap, u8, u64, &mut TxContext)
+	141: Ret
+}
+
+entry public init_reserve_with_decimals<Ty0>(Arg0: &StorageAdminCap, Arg1: &PoolAdminCap, Arg2: &Clock, Arg3: &mut Storage, Arg4: u8, Arg5: bool, Arg6: u256, Arg7: u256, Arg8: u256, Arg9: u256, Arg10: u256, Arg11: u256, Arg12: u256, Arg13: u256, Arg14: u256, Arg15: u256, Arg16: u256, Arg17: u256, Arg18: u8, Arg19: &mut TxContext) {
+L20:	loc0: u8
+L21:	loc1: u256
+L22:	loc2: u256
+L23:	loc3: u256
+L24:	loc4: TokenBalance
+L25:	loc5: TokenBalance
+L26:	loc6: u64
+L27:	loc7: BorrowRateFactors
+L28:	loc8: LiquidationFactors
+L29:	loc9: u8
+L30:	loc10: String
+L31:	loc11: bool
+L32:	loc12: u256
+L33:	loc13: u256
+L34:	loc14: u256
+L35:	loc15: u8
+L36:	loc16: ReserveData
+B0:
+	0: CopyLoc[3](Arg3: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[3](Arg3: &mut Storage)
+	4: ImmBorrowField[1](Storage.reserves_count: u8)
+	5: ReadRef
+	6: StLoc[35](loc15: u8)
+	7: CopyLoc[35](loc15: u8)
+	8: Call constants::max_number_of_reserves(): u8
+	9: Lt
+	10: BrFalse(12)
+B1:
+	11: Branch(22)
+B2:
+	12: MoveLoc[3](Arg3: &mut Storage)
+	13: Pop
+	14: MoveLoc[1](Arg1: &PoolAdminCap)
+	15: Pop
+	16: MoveLoc[19](Arg19: &mut TxContext)
+	17: Pop
+	18: MoveLoc[2](Arg2: &Clock)
+	19: Pop
+	20: Call error::no_more_reserves_allowed(): u64
+	21: Abort
+B3:
+	22: CopyLoc[3](Arg3: &mut Storage)
+	23: FreezeRef
+	24: Call reserve_validation<Ty0>(&Storage)
+	25: CopyLoc[7](Arg7: u256)
+	26: Call percentage_ray_validation(u256)
+	27: CopyLoc[9](Arg9: u256)
+	28: Call percentage_ray_validation(u256)
+	29: CopyLoc[12](Arg12: u256)
+	30: Call percentage_ray_validation(u256)
+	31: CopyLoc[14](Arg14: u256)
+	32: Call percentage_ray_validation(u256)
+	33: CopyLoc[15](Arg15: u256)
+	34: Call percentage_ray_validation(u256)
+	35: CopyLoc[16](Arg16: u256)
+	36: Call percentage_ray_validation(u256)
+	37: CopyLoc[13](Arg13: u256)
+	38: Call percentage_ray_validation(u256)
+	39: CopyLoc[17](Arg17: u256)
+	40: Call percentage_ray_validation(u256)
+	41: CopyLoc[3](Arg3: &mut Storage)
+	42: ImmBorrowField[1](Storage.reserves_count: u8)
+	43: ReadRef
+	44: StLoc[20](loc0: u8)
+	45: MoveLoc[4](Arg4: u8)
+	46: StLoc[29](loc9: u8)
+	47: Call type_name::get<Ty0>(): TypeName
+	48: Call type_name::into_string(TypeName): String
+	49: StLoc[30](loc10: String)
+	50: MoveLoc[5](Arg5: bool)
+	51: StLoc[31](loc11: bool)
+	52: MoveLoc[6](Arg6: u256)
+	53: StLoc[32](loc12: u256)
+	54: MoveLoc[7](Arg7: u256)
+	55: StLoc[33](loc13: u256)
+	56: Call ray_math::ray(): u256
+	57: StLoc[34](loc14: u256)
+	58: Call ray_math::ray(): u256
+	59: StLoc[21](loc1: u256)
+	60: MoveLoc[13](Arg13: u256)
+	61: StLoc[22](loc2: u256)
+	62: MoveLoc[14](Arg14: u256)
+	63: StLoc[23](loc3: u256)
+	64: CopyLoc[19](Arg19: &mut TxContext)
+	65: Call table::new<address, u256>(&mut TxContext): Table<address, u256>
+	66: LdU256(0)
+	67: Pack[7](TokenBalance)
+	68: StLoc[24](loc4: TokenBalance)
+	69: CopyLoc[19](Arg19: &mut TxContext)
+	70: Call table::new<address, u256>(&mut TxContext): Table<address, u256>
+	71: LdU256(0)
+	72: Pack[7](TokenBalance)
+	73: StLoc[25](loc5: TokenBalance)
+	74: MoveLoc[2](Arg2: &Clock)
+	75: Call clock::timestamp_ms(&Clock): u64
+	76: StLoc[26](loc6: u64)
+	77: MoveLoc[8](Arg8: u256)
+	78: MoveLoc[10](Arg10: u256)
+	79: MoveLoc[11](Arg11: u256)
+	80: MoveLoc[12](Arg12: u256)
+	81: MoveLoc[9](Arg9: u256)
+	82: Pack[8](BorrowRateFactors)
+	83: StLoc[27](loc7: BorrowRateFactors)
+	84: MoveLoc[15](Arg15: u256)
+	85: MoveLoc[16](Arg16: u256)
+	86: MoveLoc[17](Arg17: u256)
+	87: Pack[9](LiquidationFactors)
+	88: StLoc[28](loc8: LiquidationFactors)
+	89: MoveLoc[20](loc0: u8)
+	90: MoveLoc[29](loc9: u8)
+	91: MoveLoc[30](loc10: String)
+	92: MoveLoc[31](loc11: bool)
+	93: MoveLoc[32](loc12: u256)
+	94: MoveLoc[33](loc13: u256)
+	95: LdU256(0)
+	96: LdU256(0)
+	97: MoveLoc[34](loc14: u256)
+	98: MoveLoc[21](loc1: u256)
+	99: MoveLoc[24](loc4: TokenBalance)
+	100: MoveLoc[25](loc5: TokenBalance)
+	101: MoveLoc[26](loc6: u64)
+	102: MoveLoc[22](loc2: u256)
+	103: MoveLoc[23](loc3: u256)
+	104: LdU256(0)
+	105: MoveLoc[27](loc7: BorrowRateFactors)
+	106: MoveLoc[28](loc8: LiquidationFactors)
+	107: LdU256(0)
+	108: LdU256(0)
+	109: LdU256(0)
+	110: Pack[3](ReserveData)
+	111: StLoc[36](loc16: ReserveData)
+	112: CopyLoc[3](Arg3: &mut Storage)
+	113: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	114: CopyLoc[35](loc15: u8)
+	115: MoveLoc[36](loc16: ReserveData)
+	116: Call table::add<u8, ReserveData>(&mut Table<u8, ReserveData>, u8, ReserveData)
+	117: MoveLoc[35](loc15: u8)
+	118: LdU8(1)
+	119: Add
+	120: MoveLoc[3](Arg3: &mut Storage)
+	121: MutBorrowField[1](Storage.reserves_count: u8)
+	122: WriteRef
+	123: MoveLoc[1](Arg1: &PoolAdminCap)
+	124: MoveLoc[18](Arg18: u8)
+	125: MoveLoc[19](Arg19: &mut TxContext)
+	126: Call pool::create_pool<Ty0>(&PoolAdminCap, u8, &mut TxContext)
+	127: Ret
+}
+
+entry public set_pause(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: bool) {
+L3:	loc0: u64
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[2](Arg2: bool)
+	4: CopyLoc[1](Arg1: &mut Storage)
+	5: MutBorrowField[5](Storage.paused: bool)
+	6: WriteRef
+	7: MoveLoc[1](Arg1: &mut Storage)
+	8: FreezeRef
+	9: Call get_market_id(&Storage): u64
+	10: StLoc[3](loc0: u64)
+	11: MoveLoc[2](Arg2: bool)
+	12: MoveLoc[3](loc0: u64)
+	13: Call event::emit_paused(bool, u64)
+	14: Ret
+}
+
+public set_supply_cap(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[1](Arg1: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: CopyLoc[2](Arg2: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: StLoc[5](loc1: &mut ReserveData)
+	8: CopyLoc[3](Arg3: u256)
+	9: MoveLoc[5](loc1: &mut ReserveData)
+	10: MutBorrowField[6](ReserveData.supply_cap_ceiling: u256)
+	11: WriteRef
+	12: MoveLoc[1](Arg1: &mut Storage)
+	13: FreezeRef
+	14: Call get_market_id(&Storage): u64
+	15: StLoc[4](loc0: u64)
+	16: MoveLoc[2](Arg2: u8)
+	17: LdConst[0](vector<u8>: "sup..)
+	18: Call ascii::string(vector<u8>): String
+	19: MoveLoc[3](Arg3: u256)
+	20: MoveLoc[4](loc0: u64)
+	21: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	22: Ret
+}
+
+public set_borrow_cap(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[3](Arg3: u256)
+	4: Call percentage_ray_validation(u256)
+	5: CopyLoc[1](Arg1: &mut Storage)
+	6: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	7: CopyLoc[2](Arg2: u8)
+	8: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	9: StLoc[5](loc1: &mut ReserveData)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[5](loc1: &mut ReserveData)
+	12: MutBorrowField[7](ReserveData.borrow_cap_ceiling: u256)
+	13: WriteRef
+	14: MoveLoc[1](Arg1: &mut Storage)
+	15: FreezeRef
+	16: Call get_market_id(&Storage): u64
+	17: StLoc[4](loc0: u64)
+	18: MoveLoc[2](Arg2: u8)
+	19: LdConst[1](vector<u8>: "bor..)
+	20: Call ascii::string(vector<u8>): String
+	21: MoveLoc[3](Arg3: u256)
+	22: MoveLoc[4](loc0: u64)
+	23: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	24: Ret
+}
+
+public set_ltv(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[3](Arg3: u256)
+	4: Call percentage_ray_validation(u256)
+	5: CopyLoc[1](Arg1: &mut Storage)
+	6: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	7: CopyLoc[2](Arg2: u8)
+	8: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	9: StLoc[5](loc1: &mut ReserveData)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[5](loc1: &mut ReserveData)
+	12: MutBorrowField[8](ReserveData.ltv: u256)
+	13: WriteRef
+	14: MoveLoc[1](Arg1: &mut Storage)
+	15: FreezeRef
+	16: Call get_market_id(&Storage): u64
+	17: StLoc[4](loc0: u64)
+	18: MoveLoc[2](Arg2: u8)
+	19: LdConst[2](vector<u8>: "ltv..)
+	20: Call ascii::string(vector<u8>): String
+	21: MoveLoc[3](Arg3: u256)
+	22: MoveLoc[4](loc0: u64)
+	23: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	24: Ret
+}
+
+public set_treasury_factor(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[3](Arg3: u256)
+	4: Call percentage_ray_validation(u256)
+	5: CopyLoc[1](Arg1: &mut Storage)
+	6: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	7: CopyLoc[2](Arg2: u8)
+	8: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	9: StLoc[5](loc1: &mut ReserveData)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[5](loc1: &mut ReserveData)
+	12: MutBorrowField[9](ReserveData.treasury_factor: u256)
+	13: WriteRef
+	14: MoveLoc[1](Arg1: &mut Storage)
+	15: FreezeRef
+	16: Call get_market_id(&Storage): u64
+	17: StLoc[4](loc0: u64)
+	18: MoveLoc[2](Arg2: u8)
+	19: LdConst[3](vector<u8>: "tre..)
+	20: Call ascii::string(vector<u8>): String
+	21: MoveLoc[3](Arg3: u256)
+	22: MoveLoc[4](loc0: u64)
+	23: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	24: Ret
+}
+
+public set_base_rate(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[1](Arg1: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: CopyLoc[2](Arg2: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: StLoc[5](loc1: &mut ReserveData)
+	8: CopyLoc[3](Arg3: u256)
+	9: MoveLoc[5](loc1: &mut ReserveData)
+	10: MutBorrowField[10](ReserveData.borrow_rate_factors: BorrowRateFactors)
+	11: MutBorrowField[11](BorrowRateFactors.base_rate: u256)
+	12: WriteRef
+	13: MoveLoc[1](Arg1: &mut Storage)
+	14: FreezeRef
+	15: Call get_market_id(&Storage): u64
+	16: StLoc[4](loc0: u64)
+	17: MoveLoc[2](Arg2: u8)
+	18: LdConst[4](vector<u8>: "bas..)
+	19: Call ascii::string(vector<u8>): String
+	20: MoveLoc[3](Arg3: u256)
+	21: MoveLoc[4](loc0: u64)
+	22: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	23: Ret
+}
+
+public set_multiplier(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[1](Arg1: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: CopyLoc[2](Arg2: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: StLoc[5](loc1: &mut ReserveData)
+	8: CopyLoc[3](Arg3: u256)
+	9: MoveLoc[5](loc1: &mut ReserveData)
+	10: MutBorrowField[10](ReserveData.borrow_rate_factors: BorrowRateFactors)
+	11: MutBorrowField[12](BorrowRateFactors.multiplier: u256)
+	12: WriteRef
+	13: MoveLoc[1](Arg1: &mut Storage)
+	14: FreezeRef
+	15: Call get_market_id(&Storage): u64
+	16: StLoc[4](loc0: u64)
+	17: MoveLoc[2](Arg2: u8)
+	18: LdConst[5](vector<u8>: "mul..)
+	19: Call ascii::string(vector<u8>): String
+	20: MoveLoc[3](Arg3: u256)
+	21: MoveLoc[4](loc0: u64)
+	22: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	23: Ret
+}
+
+public set_jump_rate_multiplier(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[1](Arg1: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: CopyLoc[2](Arg2: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: StLoc[5](loc1: &mut ReserveData)
+	8: CopyLoc[3](Arg3: u256)
+	9: MoveLoc[5](loc1: &mut ReserveData)
+	10: MutBorrowField[10](ReserveData.borrow_rate_factors: BorrowRateFactors)
+	11: MutBorrowField[13](BorrowRateFactors.jump_rate_multiplier: u256)
+	12: WriteRef
+	13: MoveLoc[1](Arg1: &mut Storage)
+	14: FreezeRef
+	15: Call get_market_id(&Storage): u64
+	16: StLoc[4](loc0: u64)
+	17: MoveLoc[2](Arg2: u8)
+	18: LdConst[6](vector<u8>: "jum..)
+	19: Call ascii::string(vector<u8>): String
+	20: MoveLoc[3](Arg3: u256)
+	21: MoveLoc[4](loc0: u64)
+	22: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	23: Ret
+}
+
+public set_reserve_factor(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[3](Arg3: u256)
+	4: Call percentage_ray_validation(u256)
+	5: CopyLoc[1](Arg1: &mut Storage)
+	6: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	7: CopyLoc[2](Arg2: u8)
+	8: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	9: StLoc[5](loc1: &mut ReserveData)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[5](loc1: &mut ReserveData)
+	12: MutBorrowField[10](ReserveData.borrow_rate_factors: BorrowRateFactors)
+	13: MutBorrowField[14](BorrowRateFactors.reserve_factor: u256)
+	14: WriteRef
+	15: MoveLoc[1](Arg1: &mut Storage)
+	16: FreezeRef
+	17: Call get_market_id(&Storage): u64
+	18: StLoc[4](loc0: u64)
+	19: MoveLoc[2](Arg2: u8)
+	20: LdConst[7](vector<u8>: "res..)
+	21: Call ascii::string(vector<u8>): String
+	22: MoveLoc[3](Arg3: u256)
+	23: MoveLoc[4](loc0: u64)
+	24: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	25: Ret
+}
+
+public set_optimal_utilization(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[3](Arg3: u256)
+	4: Call percentage_ray_validation(u256)
+	5: CopyLoc[1](Arg1: &mut Storage)
+	6: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	7: CopyLoc[2](Arg2: u8)
+	8: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	9: StLoc[5](loc1: &mut ReserveData)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[5](loc1: &mut ReserveData)
+	12: MutBorrowField[10](ReserveData.borrow_rate_factors: BorrowRateFactors)
+	13: MutBorrowField[15](BorrowRateFactors.optimal_utilization: u256)
+	14: WriteRef
+	15: MoveLoc[1](Arg1: &mut Storage)
+	16: FreezeRef
+	17: Call get_market_id(&Storage): u64
+	18: StLoc[4](loc0: u64)
+	19: MoveLoc[2](Arg2: u8)
+	20: LdConst[8](vector<u8>: "opt..)
+	21: Call ascii::string(vector<u8>): String
+	22: MoveLoc[3](Arg3: u256)
+	23: MoveLoc[4](loc0: u64)
+	24: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	25: Ret
+}
+
+public set_liquidation_ratio(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[3](Arg3: u256)
+	4: Call percentage_ray_validation(u256)
+	5: CopyLoc[1](Arg1: &mut Storage)
+	6: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	7: CopyLoc[2](Arg2: u8)
+	8: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	9: StLoc[5](loc1: &mut ReserveData)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[5](loc1: &mut ReserveData)
+	12: MutBorrowField[16](ReserveData.liquidation_factors: LiquidationFactors)
+	13: MutBorrowField[17](LiquidationFactors.ratio: u256)
+	14: WriteRef
+	15: MoveLoc[1](Arg1: &mut Storage)
+	16: FreezeRef
+	17: Call get_market_id(&Storage): u64
+	18: StLoc[4](loc0: u64)
+	19: MoveLoc[2](Arg2: u8)
+	20: LdConst[9](vector<u8>: "liq..)
+	21: Call ascii::string(vector<u8>): String
+	22: MoveLoc[3](Arg3: u256)
+	23: MoveLoc[4](loc0: u64)
+	24: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	25: Ret
+}
+
+public set_liquidation_bonus(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[3](Arg3: u256)
+	4: Call percentage_ray_validation(u256)
+	5: CopyLoc[1](Arg1: &mut Storage)
+	6: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	7: CopyLoc[2](Arg2: u8)
+	8: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	9: StLoc[5](loc1: &mut ReserveData)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[5](loc1: &mut ReserveData)
+	12: MutBorrowField[16](ReserveData.liquidation_factors: LiquidationFactors)
+	13: MutBorrowField[18](LiquidationFactors.bonus: u256)
+	14: WriteRef
+	15: MoveLoc[1](Arg1: &mut Storage)
+	16: FreezeRef
+	17: Call get_market_id(&Storage): u64
+	18: StLoc[4](loc0: u64)
+	19: MoveLoc[2](Arg2: u8)
+	20: LdConst[10](vector<u8>: "liq..)
+	21: Call ascii::string(vector<u8>): String
+	22: MoveLoc[3](Arg3: u256)
+	23: MoveLoc[4](loc0: u64)
+	24: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	25: Ret
+}
+
+public set_liquidation_threshold(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u256) {
+L4:	loc0: u64
+L5:	loc1: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[3](Arg3: u256)
+	4: Call percentage_ray_validation(u256)
+	5: CopyLoc[1](Arg1: &mut Storage)
+	6: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	7: CopyLoc[2](Arg2: u8)
+	8: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	9: StLoc[5](loc1: &mut ReserveData)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[5](loc1: &mut ReserveData)
+	12: MutBorrowField[16](ReserveData.liquidation_factors: LiquidationFactors)
+	13: MutBorrowField[19](LiquidationFactors.threshold: u256)
+	14: WriteRef
+	15: MoveLoc[1](Arg1: &mut Storage)
+	16: FreezeRef
+	17: Call get_market_id(&Storage): u64
+	18: StLoc[4](loc0: u64)
+	19: MoveLoc[2](Arg2: u8)
+	20: LdConst[11](vector<u8>: "liq..)
+	21: Call ascii::string(vector<u8>): String
+	22: MoveLoc[3](Arg3: u256)
+	23: MoveLoc[4](loc0: u64)
+	24: Call event::emit_storage_params_updated(u8, String, u256, u64)
+	25: Ret
+}
+
+public set_oracle_id(Arg0: &OwnerCap, Arg1: &mut Storage, Arg2: u8, Arg3: u8) {
+L4:	loc0: &mut ReserveData
+B0:
+	0: CopyLoc[1](Arg1: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: MoveLoc[1](Arg1: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: MoveLoc[2](Arg2: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: StLoc[4](loc0: &mut ReserveData)
+	8: MoveLoc[3](Arg3: u8)
+	9: MoveLoc[4](loc0: &mut ReserveData)
+	10: MutBorrowField[20](ReserveData.oracle_id: u8)
+	11: WriteRef
+	12: Ret
+}
+
+public reserve_validation<Ty0>(Arg0: &Storage) {
+L1:	loc0: u8
+L2:	loc1: u8
+L3:	loc2: String
+B0:
+	0: Call type_name::get<Ty0>(): TypeName
+	1: Call type_name::into_string(TypeName): String
+	2: StLoc[3](loc2: String)
+	3: CopyLoc[0](Arg0: &Storage)
+	4: ImmBorrowField[1](Storage.reserves_count: u8)
+	5: ReadRef
+	6: StLoc[1](loc0: u8)
+	7: LdU8(0)
+	8: StLoc[2](loc1: u8)
+B1:
+	9: CopyLoc[2](loc1: u8)
+	10: CopyLoc[1](loc0: u8)
+	11: Lt
+	12: BrFalse(33)
+B2:
+	13: Branch(14)
+B3:
+	14: CopyLoc[0](Arg0: &Storage)
+	15: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	16: CopyLoc[2](loc1: u8)
+	17: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	18: ImmBorrowField[21](ReserveData.coin_type: String)
+	19: ReadRef
+	20: CopyLoc[3](loc2: String)
+	21: Neq
+	22: BrFalse(24)
+B4:
+	23: Branch(28)
+B5:
+	24: MoveLoc[0](Arg0: &Storage)
+	25: Pop
+	26: Call error::duplicate_reserve(): u64
+	27: Abort
+B6:
+	28: MoveLoc[2](loc1: u8)
+	29: LdU8(1)
+	30: Add
+	31: StLoc[2](loc1: u8)
+	32: Branch(9)
+B7:
+	33: MoveLoc[0](Arg0: &Storage)
+	34: Pop
+	35: Ret
+}
+
+public pause(Arg0: &Storage): bool {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[5](Storage.paused: bool)
+	2: ReadRef
+	3: Ret
+}
+
+public get_reserves_count(Arg0: &Storage): u8 {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[1](Storage.reserves_count: u8)
+	2: ReadRef
+	3: Ret
+}
+
+public get_user_assets(Arg0: &Storage, Arg1: address): vector<u8> * vector<u8> {
+L2:	loc0: &UserInfo
+B0:
+	0: CopyLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[22](Storage.user_info: Table<address, UserInfo>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, UserInfo>(&Table<address, UserInfo>, address): bool
+	4: Not
+	5: BrFalse(11)
+B1:
+	6: MoveLoc[0](Arg0: &Storage)
+	7: Pop
+	8: VecPack(10, 0)
+	9: VecPack(10, 0)
+	10: Ret
+B2:
+	11: MoveLoc[0](Arg0: &Storage)
+	12: ImmBorrowField[22](Storage.user_info: Table<address, UserInfo>)
+	13: MoveLoc[1](Arg1: address)
+	14: Call table::borrow<address, UserInfo>(&Table<address, UserInfo>, address): &UserInfo
+	15: StLoc[2](loc0: &UserInfo)
+	16: CopyLoc[2](loc0: &UserInfo)
+	17: ImmBorrowField[23](UserInfo.collaterals: vector<u8>)
+	18: ReadRef
+	19: MoveLoc[2](loc0: &UserInfo)
+	20: ImmBorrowField[24](UserInfo.loans: vector<u8>)
+	21: ReadRef
+	22: Ret
+}
+
+public get_oracle_id(Arg0: &Storage, Arg1: u8): u8 {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: ImmBorrowField[20](ReserveData.oracle_id: u8)
+	5: ReadRef
+	6: Ret
+}
+
+public get_coin_type(Arg0: &Storage, Arg1: u8): String {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: ImmBorrowField[21](ReserveData.coin_type: String)
+	5: ReadRef
+	6: Ret
+}
+
+public get_supply_cap_ceiling(Arg0: &mut Storage, Arg1: u8): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: ImmBorrowField[6](ReserveData.supply_cap_ceiling: u256)
+	5: ReadRef
+	6: Ret
+}
+
+public get_borrow_cap_ceiling_ratio(Arg0: &mut Storage, Arg1: u8): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: ImmBorrowField[7](ReserveData.borrow_cap_ceiling: u256)
+	5: ReadRef
+	6: Ret
+}
+
+public get_current_rate(Arg0: &mut Storage, Arg1: u8): u256 * u256 {
+L2:	loc0: &ReserveData
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: StLoc[2](loc0: &ReserveData)
+	5: CopyLoc[2](loc0: &ReserveData)
+	6: ImmBorrowField[25](ReserveData.current_supply_rate: u256)
+	7: ReadRef
+	8: MoveLoc[2](loc0: &ReserveData)
+	9: ImmBorrowField[26](ReserveData.current_borrow_rate: u256)
+	10: ReadRef
+	11: Ret
+}
+
+public get_index(Arg0: &mut Storage, Arg1: u8): u256 * u256 {
+L2:	loc0: &ReserveData
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: StLoc[2](loc0: &ReserveData)
+	5: CopyLoc[2](loc0: &ReserveData)
+	6: ImmBorrowField[27](ReserveData.current_supply_index: u256)
+	7: ReadRef
+	8: MoveLoc[2](loc0: &ReserveData)
+	9: ImmBorrowField[28](ReserveData.current_borrow_index: u256)
+	10: ReadRef
+	11: Ret
+}
+
+public get_total_supply(Arg0: &mut Storage, Arg1: u8): u256 * u256 {
+L2:	loc0: &ReserveData
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: StLoc[2](loc0: &ReserveData)
+	5: CopyLoc[2](loc0: &ReserveData)
+	6: ImmBorrowField[29](ReserveData.supply_balance: TokenBalance)
+	7: ImmBorrowField[30](TokenBalance.total_supply: u256)
+	8: ReadRef
+	9: MoveLoc[2](loc0: &ReserveData)
+	10: ImmBorrowField[31](ReserveData.borrow_balance: TokenBalance)
+	11: ImmBorrowField[30](TokenBalance.total_supply: u256)
+	12: ReadRef
+	13: Ret
+}
+
+public get_user_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address): u256 * u256 {
+L3:	loc0: u256
+L4:	loc1: &ReserveData
+L5:	loc2: u256
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: StLoc[4](loc1: &ReserveData)
+	5: LdU256(0)
+	6: StLoc[5](loc2: u256)
+	7: LdU256(0)
+	8: StLoc[3](loc0: u256)
+	9: CopyLoc[4](loc1: &ReserveData)
+	10: ImmBorrowField[29](ReserveData.supply_balance: TokenBalance)
+	11: ImmBorrowField[32](TokenBalance.user_state: Table<address, u256>)
+	12: CopyLoc[2](Arg2: address)
+	13: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	14: BrFalse(22)
+B1:
+	15: CopyLoc[4](loc1: &ReserveData)
+	16: ImmBorrowField[29](ReserveData.supply_balance: TokenBalance)
+	17: ImmBorrowField[32](TokenBalance.user_state: Table<address, u256>)
+	18: CopyLoc[2](Arg2: address)
+	19: Call table::borrow<address, u256>(&Table<address, u256>, address): &u256
+	20: ReadRef
+	21: StLoc[5](loc2: u256)
+B2:
+	22: CopyLoc[4](loc1: &ReserveData)
+	23: ImmBorrowField[31](ReserveData.borrow_balance: TokenBalance)
+	24: ImmBorrowField[32](TokenBalance.user_state: Table<address, u256>)
+	25: CopyLoc[2](Arg2: address)
+	26: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	27: BrFalse(36)
+B3:
+	28: MoveLoc[4](loc1: &ReserveData)
+	29: ImmBorrowField[31](ReserveData.borrow_balance: TokenBalance)
+	30: ImmBorrowField[32](TokenBalance.user_state: Table<address, u256>)
+	31: MoveLoc[2](Arg2: address)
+	32: Call table::borrow<address, u256>(&Table<address, u256>, address): &u256
+	33: ReadRef
+	34: StLoc[3](loc0: u256)
+	35: Branch(38)
+B4:
+	36: MoveLoc[4](loc1: &ReserveData)
+	37: Pop
+B5:
+	38: MoveLoc[5](loc2: u256)
+	39: MoveLoc[3](loc0: u256)
+	40: Ret
+}
+
+public get_last_update_timestamp(Arg0: &Storage, Arg1: u8): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: ImmBorrowField[33](ReserveData.last_update_timestamp: u64)
+	5: ReadRef
+	6: Ret
+}
+
+public get_asset_ltv(Arg0: &Storage, Arg1: u8): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: ImmBorrowField[8](ReserveData.ltv: u256)
+	5: ReadRef
+	6: Ret
+}
+
+public get_treasury_factor(Arg0: &mut Storage, Arg1: u8): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: ImmBorrowField[9](ReserveData.treasury_factor: u256)
+	5: ReadRef
+	6: Ret
+}
+
+public get_treasury_balance(Arg0: &Storage, Arg1: u8): u256 {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: ImmBorrowField[34](ReserveData.treasury_balance: u256)
+	5: ReadRef
+	6: Ret
+}
+
+public get_borrow_rate_factors(Arg0: &mut Storage, Arg1: u8): u256 * u256 * u256 * u256 * u256 {
+L2:	loc0: &ReserveData
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: StLoc[2](loc0: &ReserveData)
+	5: CopyLoc[2](loc0: &ReserveData)
+	6: ImmBorrowField[10](ReserveData.borrow_rate_factors: BorrowRateFactors)
+	7: ImmBorrowField[11](BorrowRateFactors.base_rate: u256)
+	8: ReadRef
+	9: CopyLoc[2](loc0: &ReserveData)
+	10: ImmBorrowField[10](ReserveData.borrow_rate_factors: BorrowRateFactors)
+	11: ImmBorrowField[12](BorrowRateFactors.multiplier: u256)
+	12: ReadRef
+	13: CopyLoc[2](loc0: &ReserveData)
+	14: ImmBorrowField[10](ReserveData.borrow_rate_factors: BorrowRateFactors)
+	15: ImmBorrowField[13](BorrowRateFactors.jump_rate_multiplier: u256)
+	16: ReadRef
+	17: CopyLoc[2](loc0: &ReserveData)
+	18: ImmBorrowField[10](ReserveData.borrow_rate_factors: BorrowRateFactors)
+	19: ImmBorrowField[14](BorrowRateFactors.reserve_factor: u256)
+	20: ReadRef
+	21: MoveLoc[2](loc0: &ReserveData)
+	22: ImmBorrowField[10](ReserveData.borrow_rate_factors: BorrowRateFactors)
+	23: ImmBorrowField[15](BorrowRateFactors.optimal_utilization: u256)
+	24: ReadRef
+	25: Ret
+}
+
+public get_liquidation_factors(Arg0: &mut Storage, Arg1: u8): u256 * u256 * u256 {
+L2:	loc0: &ReserveData
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: StLoc[2](loc0: &ReserveData)
+	5: CopyLoc[2](loc0: &ReserveData)
+	6: ImmBorrowField[16](ReserveData.liquidation_factors: LiquidationFactors)
+	7: ImmBorrowField[17](LiquidationFactors.ratio: u256)
+	8: ReadRef
+	9: CopyLoc[2](loc0: &ReserveData)
+	10: ImmBorrowField[16](ReserveData.liquidation_factors: LiquidationFactors)
+	11: ImmBorrowField[18](LiquidationFactors.bonus: u256)
+	12: ReadRef
+	13: MoveLoc[2](loc0: &ReserveData)
+	14: ImmBorrowField[16](ReserveData.liquidation_factors: LiquidationFactors)
+	15: ImmBorrowField[19](LiquidationFactors.threshold: u256)
+	16: ReadRef
+	17: Ret
+}
+
+public(friend) update_interest_rate(Arg0: &mut Storage, Arg1: u8, Arg2: u256, Arg3: u256) {
+L4:	loc0: &mut ReserveData
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: MoveLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: MoveLoc[1](Arg1: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: StLoc[4](loc0: &mut ReserveData)
+	8: MoveLoc[3](Arg3: u256)
+	9: CopyLoc[4](loc0: &mut ReserveData)
+	10: MutBorrowField[25](ReserveData.current_supply_rate: u256)
+	11: WriteRef
+	12: MoveLoc[2](Arg2: u256)
+	13: MoveLoc[4](loc0: &mut ReserveData)
+	14: MutBorrowField[26](ReserveData.current_borrow_rate: u256)
+	15: WriteRef
+	16: Ret
+}
+
+public(friend) update_state(Arg0: &mut Storage, Arg1: u8, Arg2: u256, Arg3: u256, Arg4: u64, Arg5: u256) {
+L6:	loc0: &mut ReserveData
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: MoveLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: MoveLoc[1](Arg1: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: StLoc[6](loc0: &mut ReserveData)
+	8: MoveLoc[2](Arg2: u256)
+	9: CopyLoc[6](loc0: &mut ReserveData)
+	10: MutBorrowField[28](ReserveData.current_borrow_index: u256)
+	11: WriteRef
+	12: MoveLoc[3](Arg3: u256)
+	13: CopyLoc[6](loc0: &mut ReserveData)
+	14: MutBorrowField[27](ReserveData.current_supply_index: u256)
+	15: WriteRef
+	16: MoveLoc[4](Arg4: u64)
+	17: CopyLoc[6](loc0: &mut ReserveData)
+	18: MutBorrowField[33](ReserveData.last_update_timestamp: u64)
+	19: WriteRef
+	20: CopyLoc[6](loc0: &mut ReserveData)
+	21: ImmBorrowField[34](ReserveData.treasury_balance: u256)
+	22: ReadRef
+	23: MoveLoc[5](Arg5: u256)
+	24: Add
+	25: MoveLoc[6](loc0: &mut ReserveData)
+	26: MutBorrowField[34](ReserveData.treasury_balance: u256)
+	27: WriteRef
+	28: Ret
+}
+
+public(friend) increase_balance_for_pool(Arg0: &mut Storage, Arg1: u8, Arg2: u256, Arg3: u256) {
+L4:	loc0: &mut TokenBalance
+L5:	loc1: &mut ReserveData
+L6:	loc2: &mut TokenBalance
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: MoveLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: MoveLoc[1](Arg1: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: StLoc[5](loc1: &mut ReserveData)
+	8: CopyLoc[5](loc1: &mut ReserveData)
+	9: MutBorrowField[29](ReserveData.supply_balance: TokenBalance)
+	10: StLoc[6](loc2: &mut TokenBalance)
+	11: MoveLoc[5](loc1: &mut ReserveData)
+	12: MutBorrowField[31](ReserveData.borrow_balance: TokenBalance)
+	13: StLoc[4](loc0: &mut TokenBalance)
+	14: CopyLoc[6](loc2: &mut TokenBalance)
+	15: ImmBorrowField[30](TokenBalance.total_supply: u256)
+	16: ReadRef
+	17: MoveLoc[2](Arg2: u256)
+	18: Add
+	19: MoveLoc[6](loc2: &mut TokenBalance)
+	20: MutBorrowField[30](TokenBalance.total_supply: u256)
+	21: WriteRef
+	22: CopyLoc[4](loc0: &mut TokenBalance)
+	23: ImmBorrowField[30](TokenBalance.total_supply: u256)
+	24: ReadRef
+	25: MoveLoc[3](Arg3: u256)
+	26: Add
+	27: MoveLoc[4](loc0: &mut TokenBalance)
+	28: MutBorrowField[30](TokenBalance.total_supply: u256)
+	29: WriteRef
+	30: Ret
+}
+
+public(friend) increase_supply_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address, Arg3: u256) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: MoveLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: MoveLoc[1](Arg1: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: MutBorrowField[29](ReserveData.supply_balance: TokenBalance)
+	8: MoveLoc[2](Arg2: address)
+	9: MoveLoc[3](Arg3: u256)
+	10: Call increase_balance(&mut TokenBalance, address, u256)
+	11: Ret
+}
+
+public(friend) decrease_supply_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address, Arg3: u256) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: MoveLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: MoveLoc[1](Arg1: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: MutBorrowField[29](ReserveData.supply_balance: TokenBalance)
+	8: MoveLoc[2](Arg2: address)
+	9: MoveLoc[3](Arg3: u256)
+	10: Call decrease_balance(&mut TokenBalance, address, u256)
+	11: Ret
+}
+
+public(friend) increase_borrow_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address, Arg3: u256) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: MoveLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: MoveLoc[1](Arg1: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: MutBorrowField[31](ReserveData.borrow_balance: TokenBalance)
+	8: MoveLoc[2](Arg2: address)
+	9: MoveLoc[3](Arg3: u256)
+	10: Call increase_balance(&mut TokenBalance, address, u256)
+	11: Ret
+}
+
+public(friend) decrease_borrow_balance(Arg0: &mut Storage, Arg1: u8, Arg2: address, Arg3: u256) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: MoveLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	5: MoveLoc[1](Arg1: u8)
+	6: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	7: MutBorrowField[31](ReserveData.borrow_balance: TokenBalance)
+	8: MoveLoc[2](Arg2: address)
+	9: MoveLoc[3](Arg3: u256)
+	10: Call decrease_balance(&mut TokenBalance, address, u256)
+	11: Ret
+}
+
+increase_balance(Arg0: &mut TokenBalance, Arg1: address, Arg2: u256) {
+L3:	loc0: u256
+B0:
+	0: LdU256(0)
+	1: StLoc[3](loc0: u256)
+	2: CopyLoc[0](Arg0: &mut TokenBalance)
+	3: ImmBorrowField[32](TokenBalance.user_state: Table<address, u256>)
+	4: CopyLoc[1](Arg1: address)
+	5: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	6: BrFalse(12)
+B1:
+	7: CopyLoc[0](Arg0: &mut TokenBalance)
+	8: MutBorrowField[32](TokenBalance.user_state: Table<address, u256>)
+	9: CopyLoc[1](Arg1: address)
+	10: Call table::remove<address, u256>(&mut Table<address, u256>, address): u256
+	11: StLoc[3](loc0: u256)
+B2:
+	12: CopyLoc[0](Arg0: &mut TokenBalance)
+	13: MutBorrowField[32](TokenBalance.user_state: Table<address, u256>)
+	14: MoveLoc[1](Arg1: address)
+	15: MoveLoc[3](loc0: u256)
+	16: CopyLoc[2](Arg2: u256)
+	17: Add
+	18: Call table::add<address, u256>(&mut Table<address, u256>, address, u256)
+	19: CopyLoc[0](Arg0: &mut TokenBalance)
+	20: ImmBorrowField[30](TokenBalance.total_supply: u256)
+	21: ReadRef
+	22: MoveLoc[2](Arg2: u256)
+	23: Add
+	24: MoveLoc[0](Arg0: &mut TokenBalance)
+	25: MutBorrowField[30](TokenBalance.total_supply: u256)
+	26: WriteRef
+	27: Ret
+}
+
+decrease_balance(Arg0: &mut TokenBalance, Arg1: address, Arg2: u256) {
+L3:	loc0: u256
+B0:
+	0: LdU256(0)
+	1: StLoc[3](loc0: u256)
+	2: CopyLoc[0](Arg0: &mut TokenBalance)
+	3: ImmBorrowField[32](TokenBalance.user_state: Table<address, u256>)
+	4: CopyLoc[1](Arg1: address)
+	5: Call table::contains<address, u256>(&Table<address, u256>, address): bool
+	6: BrFalse(12)
+B1:
+	7: CopyLoc[0](Arg0: &mut TokenBalance)
+	8: MutBorrowField[32](TokenBalance.user_state: Table<address, u256>)
+	9: CopyLoc[1](Arg1: address)
+	10: Call table::remove<address, u256>(&mut Table<address, u256>, address): u256
+	11: StLoc[3](loc0: u256)
+B2:
+	12: CopyLoc[3](loc0: u256)
+	13: CopyLoc[2](Arg2: u256)
+	14: Ge
+	15: BrFalse(17)
+B3:
+	16: Branch(21)
+B4:
+	17: MoveLoc[0](Arg0: &mut TokenBalance)
+	18: Pop
+	19: Call error::insufficient_balance(): u64
+	20: Abort
+B5:
+	21: CopyLoc[0](Arg0: &mut TokenBalance)
+	22: MutBorrowField[32](TokenBalance.user_state: Table<address, u256>)
+	23: MoveLoc[1](Arg1: address)
+	24: MoveLoc[3](loc0: u256)
+	25: CopyLoc[2](Arg2: u256)
+	26: Sub
+	27: Call table::add<address, u256>(&mut Table<address, u256>, address, u256)
+	28: CopyLoc[0](Arg0: &mut TokenBalance)
+	29: ImmBorrowField[30](TokenBalance.total_supply: u256)
+	30: ReadRef
+	31: MoveLoc[2](Arg2: u256)
+	32: Sub
+	33: MoveLoc[0](Arg0: &mut TokenBalance)
+	34: MutBorrowField[30](TokenBalance.total_supply: u256)
+	35: WriteRef
+	36: Ret
+}
+
+public(friend) increase_treasury_balance(Arg0: &mut Storage, Arg1: u8, Arg2: u256) {
+L3:	loc0: &mut ReserveData
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	4: StLoc[3](loc0: &mut ReserveData)
+	5: CopyLoc[3](loc0: &mut ReserveData)
+	6: ImmBorrowField[34](ReserveData.treasury_balance: u256)
+	7: ReadRef
+	8: MoveLoc[2](Arg2: u256)
+	9: Add
+	10: MoveLoc[3](loc0: &mut ReserveData)
+	11: MutBorrowField[34](ReserveData.treasury_balance: u256)
+	12: WriteRef
+	13: Ret
+}
+
+public(friend) increase_total_supply_balance(Arg0: &mut Storage, Arg1: u8, Arg2: u256) {
+L3:	loc0: &mut TokenBalance
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	4: MutBorrowField[29](ReserveData.supply_balance: TokenBalance)
+	5: StLoc[3](loc0: &mut TokenBalance)
+	6: CopyLoc[3](loc0: &mut TokenBalance)
+	7: ImmBorrowField[30](TokenBalance.total_supply: u256)
+	8: ReadRef
+	9: MoveLoc[2](Arg2: u256)
+	10: Add
+	11: MoveLoc[3](loc0: &mut TokenBalance)
+	12: MutBorrowField[30](TokenBalance.total_supply: u256)
+	13: WriteRef
+	14: Ret
+}
+
+public(friend) update_user_loans(Arg0: &mut Storage, Arg1: u8, Arg2: address) {
+L3:	loc0: vector<u8>
+L4:	loc1: UserInfo
+L5:	loc2: &mut UserInfo
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[22](Storage.user_info: Table<address, UserInfo>)
+	2: CopyLoc[2](Arg2: address)
+	3: Call table::contains<address, UserInfo>(&Table<address, UserInfo>, address): bool
+	4: Not
+	5: BrFalse(21)
+B1:
+	6: VecPack(10, 0)
+	7: StLoc[3](loc0: vector<u8>)
+	8: MutBorrowLoc[3](loc0: vector<u8>)
+	9: MoveLoc[1](Arg1: u8)
+	10: VecPushBack(10)
+	11: VecPack(10, 0)
+	12: MoveLoc[3](loc0: vector<u8>)
+	13: Pack[4](UserInfo)
+	14: StLoc[4](loc1: UserInfo)
+	15: MoveLoc[0](Arg0: &mut Storage)
+	16: MutBorrowField[22](Storage.user_info: Table<address, UserInfo>)
+	17: MoveLoc[2](Arg2: address)
+	18: MoveLoc[4](loc1: UserInfo)
+	19: Call table::add<address, UserInfo>(&mut Table<address, UserInfo>, address, UserInfo)
+	20: Branch(39)
+B2:
+	21: MoveLoc[0](Arg0: &mut Storage)
+	22: MutBorrowField[22](Storage.user_info: Table<address, UserInfo>)
+	23: MoveLoc[2](Arg2: address)
+	24: Call table::borrow_mut<address, UserInfo>(&mut Table<address, UserInfo>, address): &mut UserInfo
+	25: StLoc[5](loc2: &mut UserInfo)
+	26: CopyLoc[5](loc2: &mut UserInfo)
+	27: ImmBorrowField[24](UserInfo.loans: vector<u8>)
+	28: ImmBorrowLoc[1](Arg1: u8)
+	29: Call vector::contains<u8>(&vector<u8>, &u8): bool
+	30: Not
+	31: BrFalse(37)
+B3:
+	32: MoveLoc[5](loc2: &mut UserInfo)
+	33: MutBorrowField[24](UserInfo.loans: vector<u8>)
+	34: MoveLoc[1](Arg1: u8)
+	35: VecPushBack(10)
+	36: Branch(39)
+B4:
+	37: MoveLoc[5](loc2: &mut UserInfo)
+	38: Pop
+B5:
+	39: Ret
+}
+
+public(friend) remove_user_loans(Arg0: &mut Storage, Arg1: u8, Arg2: address) {
+L3:	loc0: u64
+L4:	loc1: &mut UserInfo
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: MutBorrowField[22](Storage.user_info: Table<address, UserInfo>)
+	2: MoveLoc[2](Arg2: address)
+	3: Call table::borrow_mut<address, UserInfo>(&mut Table<address, UserInfo>, address): &mut UserInfo
+	4: StLoc[4](loc1: &mut UserInfo)
+	5: CopyLoc[4](loc1: &mut UserInfo)
+	6: ImmBorrowField[24](UserInfo.loans: vector<u8>)
+	7: ImmBorrowLoc[1](Arg1: u8)
+	8: Call vector::index_of<u8>(&vector<u8>, &u8): bool * u64
+	9: StLoc[3](loc0: u64)
+	10: BrFalse(17)
+B1:
+	11: MoveLoc[4](loc1: &mut UserInfo)
+	12: MutBorrowField[24](UserInfo.loans: vector<u8>)
+	13: MoveLoc[3](loc0: u64)
+	14: Call vector::remove<u8>(&mut vector<u8>, u64): u8
+	15: Pop
+	16: Branch(19)
+B2:
+	17: MoveLoc[4](loc1: &mut UserInfo)
+	18: Pop
+B3:
+	19: Ret
+}
+
+public(friend) update_user_collaterals(Arg0: &mut Storage, Arg1: u8, Arg2: address) {
+L3:	loc0: vector<u8>
+L4:	loc1: UserInfo
+L5:	loc2: &mut UserInfo
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[22](Storage.user_info: Table<address, UserInfo>)
+	2: CopyLoc[2](Arg2: address)
+	3: Call table::contains<address, UserInfo>(&Table<address, UserInfo>, address): bool
+	4: Not
+	5: BrFalse(21)
+B1:
+	6: VecPack(10, 0)
+	7: StLoc[3](loc0: vector<u8>)
+	8: MutBorrowLoc[3](loc0: vector<u8>)
+	9: MoveLoc[1](Arg1: u8)
+	10: VecPushBack(10)
+	11: MoveLoc[3](loc0: vector<u8>)
+	12: VecPack(10, 0)
+	13: Pack[4](UserInfo)
+	14: StLoc[4](loc1: UserInfo)
+	15: MoveLoc[0](Arg0: &mut Storage)
+	16: MutBorrowField[22](Storage.user_info: Table<address, UserInfo>)
+	17: MoveLoc[2](Arg2: address)
+	18: MoveLoc[4](loc1: UserInfo)
+	19: Call table::add<address, UserInfo>(&mut Table<address, UserInfo>, address, UserInfo)
+	20: Branch(39)
+B2:
+	21: MoveLoc[0](Arg0: &mut Storage)
+	22: MutBorrowField[22](Storage.user_info: Table<address, UserInfo>)
+	23: MoveLoc[2](Arg2: address)
+	24: Call table::borrow_mut<address, UserInfo>(&mut Table<address, UserInfo>, address): &mut UserInfo
+	25: StLoc[5](loc2: &mut UserInfo)
+	26: CopyLoc[5](loc2: &mut UserInfo)
+	27: ImmBorrowField[23](UserInfo.collaterals: vector<u8>)
+	28: ImmBorrowLoc[1](Arg1: u8)
+	29: Call vector::contains<u8>(&vector<u8>, &u8): bool
+	30: Not
+	31: BrFalse(37)
+B3:
+	32: MoveLoc[5](loc2: &mut UserInfo)
+	33: MutBorrowField[23](UserInfo.collaterals: vector<u8>)
+	34: MoveLoc[1](Arg1: u8)
+	35: VecPushBack(10)
+	36: Branch(39)
+B4:
+	37: MoveLoc[5](loc2: &mut UserInfo)
+	38: Pop
+B5:
+	39: Ret
+}
+
+public(friend) remove_user_collaterals(Arg0: &mut Storage, Arg1: u8, Arg2: address) {
+L3:	loc0: u64
+L4:	loc1: &mut UserInfo
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: MutBorrowField[22](Storage.user_info: Table<address, UserInfo>)
+	2: MoveLoc[2](Arg2: address)
+	3: Call table::borrow_mut<address, UserInfo>(&mut Table<address, UserInfo>, address): &mut UserInfo
+	4: StLoc[4](loc1: &mut UserInfo)
+	5: CopyLoc[4](loc1: &mut UserInfo)
+	6: ImmBorrowField[23](UserInfo.collaterals: vector<u8>)
+	7: ImmBorrowLoc[1](Arg1: u8)
+	8: Call vector::index_of<u8>(&vector<u8>, &u8): bool * u64
+	9: StLoc[3](loc0: u64)
+	10: BrFalse(17)
+B1:
+	11: MoveLoc[4](loc1: &mut UserInfo)
+	12: MutBorrowField[23](UserInfo.collaterals: vector<u8>)
+	13: MoveLoc[3](loc0: u64)
+	14: Call vector::remove<u8>(&mut vector<u8>, u64): u8
+	15: Pop
+	16: Branch(19)
+B2:
+	17: MoveLoc[4](loc1: &mut UserInfo)
+	18: Pop
+B3:
+	19: Ret
+}
+
+public withdraw_treasury<Ty0>(Arg0: &StorageAdminCap, Arg1: &PoolAdminCap, Arg2: &mut Storage, Arg3: u8, Arg4: &mut Pool<Ty0>, Arg5: u64, Arg6: address, Arg7: &mut TxContext) {
+B0:
+	0: Call error::invalid_function_call(): u64
+	1: Abort
+}
+
+public withdraw_treasury_v2<Ty0>(Arg0: &StorageAdminCap, Arg1: &PoolAdminCap, Arg2: &mut Storage, Arg3: u8, Arg4: &mut Pool<Ty0>, Arg5: u64, Arg6: address, Arg7: &mut SuiSystemState, Arg8: &mut TxContext) {
+L9:	loc0: u8
+L10:	loc1: &mut Pool<Ty0>
+L11:	loc2: u8
+L12:	loc3: u64
+L13:	loc4: u64
+L14:	loc5: u64
+L15:	loc6: &mut ReserveData
+L16:	loc7: u256
+L17:	loc8: u256
+L18:	loc9: u256
+L19:	loc10: u256
+L20:	loc11: u256
+L21:	loc12: u64
+L22:	loc13: u64
+L23:	loc14: u256
+B0:
+	0: CopyLoc[2](Arg2: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[2](Arg2: &mut Storage)
+	4: CopyLoc[4](Arg4: &mut Pool<Ty0>)
+	5: StLoc[10](loc1: &mut Pool<Ty0>)
+	6: FreezeRef
+	7: MoveLoc[10](loc1: &mut Pool<Ty0>)
+	8: FreezeRef
+	9: Call verify_market_storage_pool<Ty0>(&Storage, &Pool<Ty0>)
+	10: CopyLoc[2](Arg2: &mut Storage)
+	11: CopyLoc[3](Arg3: u8)
+	12: StLoc[11](loc2: u8)
+	13: FreezeRef
+	14: MoveLoc[11](loc2: u8)
+	15: Call get_coin_type(&Storage, u8): String
+	16: Call type_name::get<Ty0>(): TypeName
+	17: Call type_name::into_string(TypeName): String
+	18: Eq
+	19: BrFalse(21)
+B1:
+	20: Branch(33)
+B2:
+	21: MoveLoc[7](Arg7: &mut SuiSystemState)
+	22: Pop
+	23: MoveLoc[2](Arg2: &mut Storage)
+	24: Pop
+	25: MoveLoc[1](Arg1: &PoolAdminCap)
+	26: Pop
+	27: MoveLoc[4](Arg4: &mut Pool<Ty0>)
+	28: Pop
+	29: MoveLoc[8](Arg8: &mut TxContext)
+	30: Pop
+	31: Call error::invalid_coin_type(): u64
+	32: Abort
+B3:
+	33: CopyLoc[2](Arg2: &mut Storage)
+	34: CopyLoc[3](Arg3: u8)
+	35: Call get_index(&mut Storage, u8): u256 * u256
+	36: Pop
+	37: StLoc[19](loc10: u256)
+	38: CopyLoc[2](Arg2: &mut Storage)
+	39: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	40: CopyLoc[3](Arg3: u8)
+	41: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	42: StLoc[15](loc6: &mut ReserveData)
+	43: CopyLoc[4](Arg4: &mut Pool<Ty0>)
+	44: MoveLoc[5](Arg5: u64)
+	45: StLoc[12](loc3: u64)
+	46: FreezeRef
+	47: MoveLoc[12](loc3: u64)
+	48: Call pool::normal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	49: StLoc[21](loc12: u64)
+	50: CopyLoc[15](loc6: &mut ReserveData)
+	51: ImmBorrowField[34](ReserveData.treasury_balance: u256)
+	52: ReadRef
+	53: StLoc[16](loc7: u256)
+	54: CopyLoc[16](loc7: u256)
+	55: CopyLoc[19](loc10: u256)
+	56: Call ray_math::ray_mul(u256, u256): u256
+	57: StLoc[20](loc11: u256)
+	58: MoveLoc[21](loc12: u64)
+	59: CastU256
+	60: MoveLoc[20](loc11: u256)
+	61: Call safe_math::min(u256, u256): u256
+	62: StLoc[23](loc14: u256)
+	63: CopyLoc[23](loc14: u256)
+	64: CopyLoc[19](loc10: u256)
+	65: Call ray_math::ray_div(u256, u256): u256
+	66: StLoc[18](loc9: u256)
+	67: CopyLoc[16](loc7: u256)
+	68: CopyLoc[18](loc9: u256)
+	69: Sub
+	70: MoveLoc[15](loc6: &mut ReserveData)
+	71: MutBorrowField[34](ReserveData.treasury_balance: u256)
+	72: WriteRef
+	73: CopyLoc[2](Arg2: &mut Storage)
+	74: CopyLoc[3](Arg3: u8)
+	75: MoveLoc[18](loc9: u256)
+	76: Call decrease_total_supply_balance(&mut Storage, u8, u256)
+	77: CopyLoc[4](Arg4: &mut Pool<Ty0>)
+	78: CopyLoc[23](loc14: u256)
+	79: CastU64
+	80: StLoc[13](loc4: u64)
+	81: FreezeRef
+	82: MoveLoc[13](loc4: u64)
+	83: Call pool::unnormal_amount<Ty0>(&Pool<Ty0>, u64): u64
+	84: StLoc[22](loc13: u64)
+	85: MoveLoc[1](Arg1: &PoolAdminCap)
+	86: CopyLoc[4](Arg4: &mut Pool<Ty0>)
+	87: MoveLoc[22](loc13: u64)
+	88: CopyLoc[6](Arg6: address)
+	89: MoveLoc[7](Arg7: &mut SuiSystemState)
+	90: CopyLoc[8](Arg8: &mut TxContext)
+	91: Call pool::withdraw_reserve_balance_v2<Ty0>(&PoolAdminCap, &mut Pool<Ty0>, u64, address, &mut SuiSystemState, &mut TxContext)
+	92: CopyLoc[2](Arg2: &mut Storage)
+	93: CopyLoc[3](Arg3: u8)
+	94: StLoc[9](loc0: u8)
+	95: FreezeRef
+	96: MoveLoc[9](loc0: u8)
+	97: Call get_treasury_balance(&Storage, u8): u256
+	98: StLoc[17](loc8: u256)
+	99: MoveLoc[2](Arg2: &mut Storage)
+	100: FreezeRef
+	101: Call get_market_id(&Storage): u64
+	102: StLoc[14](loc5: u64)
+	103: MoveLoc[8](Arg8: &mut TxContext)
+	104: FreezeRef
+	105: Call tx_context::sender(&TxContext): address
+	106: MoveLoc[6](Arg6: address)
+	107: MoveLoc[3](Arg3: u8)
+	108: MoveLoc[23](loc14: u256)
+	109: MoveLoc[4](Arg4: &mut Pool<Ty0>)
+	110: FreezeRef
+	111: Call pool::uid<Ty0>(&Pool<Ty0>): &UID
+	112: Call object::uid_to_address(&UID): address
+	113: MoveLoc[16](loc7: u256)
+	114: MoveLoc[17](loc8: u256)
+	115: MoveLoc[19](loc10: u256)
+	116: MoveLoc[14](loc5: u64)
+	117: Call event::emit_withdraw_treasury_event(address, address, u8, u256, address, u256, u256, u256, u64)
+	118: Ret
+}
+
+public destory_user(Arg0: &StorageAdminCap, Arg1: &mut Storage) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public(friend) decrease_total_supply_balance(Arg0: &mut Storage, Arg1: u8, Arg2: u256) {
+L3:	loc0: &mut TokenBalance
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: MutBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow_mut<u8, ReserveData>(&mut Table<u8, ReserveData>, u8): &mut ReserveData
+	4: MutBorrowField[29](ReserveData.supply_balance: TokenBalance)
+	5: StLoc[3](loc0: &mut TokenBalance)
+	6: CopyLoc[3](loc0: &mut TokenBalance)
+	7: ImmBorrowField[30](TokenBalance.total_supply: u256)
+	8: ReadRef
+	9: MoveLoc[2](Arg2: u256)
+	10: Sub
+	11: MoveLoc[3](loc0: &mut TokenBalance)
+	12: MutBorrowField[30](TokenBalance.total_supply: u256)
+	13: WriteRef
+	14: Ret
+}
+
+percentage_ray_validation(Arg0: u256) {
+B0:
+	0: MoveLoc[0](Arg0: u256)
+	1: Call ray_math::ray(): u256
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: Call error::invalid_value(): u64
+	6: Abort
+B3:
+	7: Ret
+}
+
+public mint_owner_cap(Arg0: &StorageAdminCap, Arg1: address, Arg2: &mut TxContext) {
+B0:
+	0: MoveLoc[2](Arg2: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: Pack[0](OwnerCap)
+	3: MoveLoc[1](Arg1: address)
+	4: Call transfer::public_transfer<OwnerCap>(OwnerCap, address)
+	5: Ret
+}
+
+public(friend) init_protected_liquidation_fields(Arg0: &mut Storage, Arg1: &mut TxContext) {
+L2:	loc0: Table<address, Table<address, bool>>
+L3:	loc1: Table<address, bool>
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[1](Arg1: &mut TxContext)
+	4: Call table::new<address, Table<address, bool>>(&mut TxContext): Table<address, Table<address, bool>>
+	5: StLoc[2](loc0: Table<address, Table<address, bool>>)
+	6: MoveLoc[1](Arg1: &mut TxContext)
+	7: Call table::new<address, bool>(&mut TxContext): Table<address, bool>
+	8: StLoc[3](loc1: Table<address, bool>)
+	9: CopyLoc[0](Arg0: &mut Storage)
+	10: MutBorrowField[3](Storage.id: UID)
+	11: LdFalse
+	12: Pack[25](DESIGNATED_LIQUIDATORS_KEY)
+	13: MoveLoc[2](loc0: Table<address, Table<address, bool>>)
+	14: Call dynamic_field::add<DESIGNATED_LIQUIDATORS_KEY, Table<address, Table<address, bool>>>(&mut UID, DESIGNATED_LIQUIDATORS_KEY, Table<address, Table<address, bool>>)
+	15: MoveLoc[0](Arg0: &mut Storage)
+	16: MutBorrowField[3](Storage.id: UID)
+	17: LdFalse
+	18: Pack[26](PROTECTED_LIQUIDATION_USERS_KEY)
+	19: MoveLoc[3](loc1: Table<address, bool>)
+	20: Call dynamic_field::add<PROTECTED_LIQUIDATION_USERS_KEY, Table<address, bool>>(&mut UID, PROTECTED_LIQUIDATION_USERS_KEY, Table<address, bool>)
+	21: Ret
+}
+
+public(friend) set_designated_liquidators(Arg0: &mut Storage, Arg1: address, Arg2: address, Arg3: bool, Arg4: &mut TxContext) {
+L5:	loc0: address
+L6:	loc1: address
+L7:	loc2: &mut Table<address, Table<address, bool>>
+L8:	loc3: u64
+L9:	loc4: &mut Table<address, bool>
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[3](Storage.id: UID)
+	5: LdFalse
+	6: Pack[25](DESIGNATED_LIQUIDATORS_KEY)
+	7: Call dynamic_field::borrow_mut<DESIGNATED_LIQUIDATORS_KEY, Table<address, Table<address, bool>>>(&mut UID, DESIGNATED_LIQUIDATORS_KEY): &mut Table<address, Table<address, bool>>
+	8: StLoc[7](loc2: &mut Table<address, Table<address, bool>>)
+	9: CopyLoc[7](loc2: &mut Table<address, Table<address, bool>>)
+	10: CopyLoc[1](Arg1: address)
+	11: StLoc[5](loc0: address)
+	12: FreezeRef
+	13: MoveLoc[5](loc0: address)
+	14: Call table::contains<address, Table<address, bool>>(&Table<address, Table<address, bool>>, address): bool
+	15: Not
+	16: BrFalse(23)
+B1:
+	17: CopyLoc[7](loc2: &mut Table<address, Table<address, bool>>)
+	18: CopyLoc[1](Arg1: address)
+	19: MoveLoc[4](Arg4: &mut TxContext)
+	20: Call table::new<address, bool>(&mut TxContext): Table<address, bool>
+	21: Call table::add<address, Table<address, bool>>(&mut Table<address, Table<address, bool>>, address, Table<address, bool>)
+	22: Branch(25)
+B2:
+	23: MoveLoc[4](Arg4: &mut TxContext)
+	24: Pop
+B3:
+	25: MoveLoc[7](loc2: &mut Table<address, Table<address, bool>>)
+	26: CopyLoc[1](Arg1: address)
+	27: Call table::borrow_mut<address, Table<address, bool>>(&mut Table<address, Table<address, bool>>, address): &mut Table<address, bool>
+	28: StLoc[9](loc4: &mut Table<address, bool>)
+	29: CopyLoc[9](loc4: &mut Table<address, bool>)
+	30: CopyLoc[2](Arg2: address)
+	31: StLoc[6](loc1: address)
+	32: FreezeRef
+	33: MoveLoc[6](loc1: address)
+	34: Call table::contains<address, bool>(&Table<address, bool>, address): bool
+	35: Not
+	36: BrFalse(42)
+B4:
+	37: MoveLoc[9](loc4: &mut Table<address, bool>)
+	38: CopyLoc[2](Arg2: address)
+	39: CopyLoc[3](Arg3: bool)
+	40: Call table::add<address, bool>(&mut Table<address, bool>, address, bool)
+	41: Branch(47)
+B5:
+	42: CopyLoc[3](Arg3: bool)
+	43: MoveLoc[9](loc4: &mut Table<address, bool>)
+	44: CopyLoc[2](Arg2: address)
+	45: Call table::borrow_mut<address, bool>(&mut Table<address, bool>, address): &mut bool
+	46: WriteRef
+B6:
+	47: MoveLoc[0](Arg0: &mut Storage)
+	48: FreezeRef
+	49: Call get_market_id(&Storage): u64
+	50: StLoc[8](loc3: u64)
+	51: MoveLoc[1](Arg1: address)
+	52: MoveLoc[2](Arg2: address)
+	53: MoveLoc[3](Arg3: bool)
+	54: MoveLoc[8](loc3: u64)
+	55: Call event::emit_liquidator_set(address, address, bool, u64)
+	56: Ret
+}
+
+public(friend) set_protected_liquidation_users(Arg0: &mut Storage, Arg1: address, Arg2: bool) {
+L3:	loc0: address
+L4:	loc1: u64
+L5:	loc2: &mut Table<address, bool>
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[3](Storage.id: UID)
+	5: LdFalse
+	6: Pack[26](PROTECTED_LIQUIDATION_USERS_KEY)
+	7: Call dynamic_field::borrow_mut<PROTECTED_LIQUIDATION_USERS_KEY, Table<address, bool>>(&mut UID, PROTECTED_LIQUIDATION_USERS_KEY): &mut Table<address, bool>
+	8: StLoc[5](loc2: &mut Table<address, bool>)
+	9: CopyLoc[5](loc2: &mut Table<address, bool>)
+	10: CopyLoc[1](Arg1: address)
+	11: StLoc[3](loc0: address)
+	12: FreezeRef
+	13: MoveLoc[3](loc0: address)
+	14: Call table::contains<address, bool>(&Table<address, bool>, address): bool
+	15: Not
+	16: BrFalse(22)
+B1:
+	17: MoveLoc[5](loc2: &mut Table<address, bool>)
+	18: CopyLoc[1](Arg1: address)
+	19: CopyLoc[2](Arg2: bool)
+	20: Call table::add<address, bool>(&mut Table<address, bool>, address, bool)
+	21: Branch(27)
+B2:
+	22: CopyLoc[2](Arg2: bool)
+	23: MoveLoc[5](loc2: &mut Table<address, bool>)
+	24: CopyLoc[1](Arg1: address)
+	25: Call table::borrow_mut<address, bool>(&mut Table<address, bool>, address): &mut bool
+	26: WriteRef
+B3:
+	27: MoveLoc[0](Arg0: &mut Storage)
+	28: FreezeRef
+	29: Call get_market_id(&Storage): u64
+	30: StLoc[4](loc1: u64)
+	31: MoveLoc[1](Arg1: address)
+	32: MoveLoc[2](Arg2: bool)
+	33: MoveLoc[4](loc1: u64)
+	34: Call event::emit_protected_user_set(address, bool, u64)
+	35: Ret
+}
+
+public is_liquidatable(Arg0: &mut Storage, Arg1: address, Arg2: address): bool {
+L3:	loc0: bool
+L4:	loc1: &Table<address, Table<address, bool>>
+L5:	loc2: &Table<address, bool>
+L6:	loc3: &Table<address, bool>
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[26](PROTECTED_LIQUIDATION_USERS_KEY)
+	4: Call dynamic_field::borrow<PROTECTED_LIQUIDATION_USERS_KEY, Table<address, bool>>(&UID, PROTECTED_LIQUIDATION_USERS_KEY): &Table<address, bool>
+	5: StLoc[5](loc2: &Table<address, bool>)
+	6: MoveLoc[0](Arg0: &mut Storage)
+	7: ImmBorrowField[3](Storage.id: UID)
+	8: LdFalse
+	9: Pack[25](DESIGNATED_LIQUIDATORS_KEY)
+	10: Call dynamic_field::borrow<DESIGNATED_LIQUIDATORS_KEY, Table<address, Table<address, bool>>>(&UID, DESIGNATED_LIQUIDATORS_KEY): &Table<address, Table<address, bool>>
+	11: StLoc[4](loc1: &Table<address, Table<address, bool>>)
+	12: CopyLoc[5](loc2: &Table<address, bool>)
+	13: CopyLoc[2](Arg2: address)
+	14: Call table::contains<address, bool>(&Table<address, bool>, address): bool
+	15: Not
+	16: BrFalse(22)
+B1:
+	17: MoveLoc[5](loc2: &Table<address, bool>)
+	18: Pop
+	19: LdTrue
+	20: StLoc[3](loc0: bool)
+	21: Branch(28)
+B2:
+	22: MoveLoc[5](loc2: &Table<address, bool>)
+	23: CopyLoc[2](Arg2: address)
+	24: Call table::borrow<address, bool>(&Table<address, bool>, address): &bool
+	25: ReadRef
+	26: Not
+	27: StLoc[3](loc0: bool)
+B3:
+	28: MoveLoc[3](loc0: bool)
+	29: BrFalse(34)
+B4:
+	30: MoveLoc[4](loc1: &Table<address, Table<address, bool>>)
+	31: Pop
+	32: LdTrue
+	33: Ret
+B5:
+	34: CopyLoc[4](loc1: &Table<address, Table<address, bool>>)
+	35: CopyLoc[1](Arg1: address)
+	36: Call table::contains<address, Table<address, bool>>(&Table<address, Table<address, bool>>, address): bool
+	37: Not
+	38: BrFalse(43)
+B6:
+	39: MoveLoc[4](loc1: &Table<address, Table<address, bool>>)
+	40: Pop
+	41: LdFalse
+	42: Ret
+B7:
+	43: MoveLoc[4](loc1: &Table<address, Table<address, bool>>)
+	44: MoveLoc[1](Arg1: address)
+	45: Call table::borrow<address, Table<address, bool>>(&Table<address, Table<address, bool>>, address): &Table<address, bool>
+	46: StLoc[6](loc3: &Table<address, bool>)
+	47: CopyLoc[6](loc3: &Table<address, bool>)
+	48: CopyLoc[2](Arg2: address)
+	49: Call table::contains<address, bool>(&Table<address, bool>, address): bool
+	50: Not
+	51: BrFalse(56)
+B8:
+	52: MoveLoc[6](loc3: &Table<address, bool>)
+	53: Pop
+	54: LdFalse
+	55: Ret
+B9:
+	56: MoveLoc[6](loc3: &Table<address, bool>)
+	57: MoveLoc[2](Arg2: address)
+	58: Call table::borrow<address, bool>(&Table<address, bool>, address): &bool
+	59: ReadRef
+	60: Ret
+}
+
+public when_liquidatable(Arg0: &mut Storage, Arg1: address, Arg2: address) {
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: MoveLoc[1](Arg1: address)
+	2: MoveLoc[2](Arg2: address)
+	3: Call is_liquidatable(&mut Storage, address, address): bool
+	4: BrFalse(6)
+B1:
+	5: Branch(8)
+B2:
+	6: Call error::not_liquidatable(): u64
+	7: Abort
+B3:
+	8: Ret
+}
+
+public init_emode_for_main_market(Arg0: &StorageAdminCap, Arg1: &mut Storage, Arg2: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: &mut TxContext)
+	2: Call init_emode_fields(&mut Storage, &mut TxContext)
+	3: Ret
+}
+
+init_emode_fields(Arg0: &mut Storage, Arg1: &mut TxContext) {
+L2:	loc0: Emode
+B0:
+	0: CopyLoc[1](Arg1: &mut TxContext)
+	1: Call table::new<u64, EmodeConfig>(&mut TxContext): Table<u64, EmodeConfig>
+	2: MoveLoc[1](Arg1: &mut TxContext)
+	3: Call table::new<address, u64>(&mut TxContext): Table<address, u64>
+	4: LdU64(0)
+	5: Pack[10](Emode)
+	6: StLoc[2](loc0: Emode)
+	7: MoveLoc[0](Arg0: &mut Storage)
+	8: MutBorrowField[3](Storage.id: UID)
+	9: LdFalse
+	10: Pack[27](EMODE_KEY)
+	11: MoveLoc[2](loc0: Emode)
+	12: Call dynamic_field::add<EMODE_KEY, Emode>(&mut UID, EMODE_KEY, Emode)
+	13: Ret
+}
+
+public(friend) create_emode_asset(Arg0: u8, Arg1: bool, Arg2: bool, Arg3: u256, Arg4: u256, Arg5: u256): EmodeAsset {
+B0:
+	0: MoveLoc[0](Arg0: u8)
+	1: MoveLoc[1](Arg1: bool)
+	2: MoveLoc[2](Arg2: bool)
+	3: MoveLoc[3](Arg3: u256)
+	4: MoveLoc[4](Arg4: u256)
+	5: MoveLoc[5](Arg5: u256)
+	6: Pack[12](EmodeAsset)
+	7: Ret
+}
+
+public(friend) create_emode_pair(Arg0: &mut Storage, Arg1: EmodeAsset, Arg2: EmodeAsset) {
+L3:	loc0: u8
+L4:	loc1: u8
+L5:	loc2: &mut Emode
+L6:	loc3: EmodeConfig
+L7:	loc4: u64
+L8:	loc5: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: ImmBorrowLoc[1](Arg1: EmodeAsset)
+	4: ImmBorrowField[35](EmodeAsset.assetId: u8)
+	5: ReadRef
+	6: ImmBorrowLoc[2](Arg2: EmodeAsset)
+	7: ImmBorrowField[35](EmodeAsset.assetId: u8)
+	8: ReadRef
+	9: Lt
+	10: BrFalse(12)
+B1:
+	11: Branch(16)
+B2:
+	12: MoveLoc[0](Arg0: &mut Storage)
+	13: Pop
+	14: Call error::invalid_value(): u64
+	15: Abort
+B3:
+	16: ImmBorrowLoc[1](Arg1: EmodeAsset)
+	17: ImmBorrowField[36](EmodeAsset.ltv: u256)
+	18: ReadRef
+	19: Call percentage_ray_validation(u256)
+	20: ImmBorrowLoc[1](Arg1: EmodeAsset)
+	21: ImmBorrowField[37](EmodeAsset.lt: u256)
+	22: ReadRef
+	23: Call percentage_ray_validation(u256)
+	24: ImmBorrowLoc[1](Arg1: EmodeAsset)
+	25: ImmBorrowField[38](EmodeAsset.liquidation_bonus: u256)
+	26: ReadRef
+	27: Call percentage_ray_validation(u256)
+	28: ImmBorrowLoc[2](Arg2: EmodeAsset)
+	29: ImmBorrowField[36](EmodeAsset.ltv: u256)
+	30: ReadRef
+	31: Call percentage_ray_validation(u256)
+	32: ImmBorrowLoc[2](Arg2: EmodeAsset)
+	33: ImmBorrowField[37](EmodeAsset.lt: u256)
+	34: ReadRef
+	35: Call percentage_ray_validation(u256)
+	36: ImmBorrowLoc[2](Arg2: EmodeAsset)
+	37: ImmBorrowField[38](EmodeAsset.liquidation_bonus: u256)
+	38: ReadRef
+	39: Call percentage_ray_validation(u256)
+	40: CopyLoc[0](Arg0: &mut Storage)
+	41: MutBorrowField[3](Storage.id: UID)
+	42: LdFalse
+	43: Pack[27](EMODE_KEY)
+	44: Call dynamic_field::borrow_mut<EMODE_KEY, Emode>(&mut UID, EMODE_KEY): &mut Emode
+	45: StLoc[5](loc2: &mut Emode)
+	46: CopyLoc[5](loc2: &mut Emode)
+	47: ImmBorrowField[39](Emode.next_emode_id: u64)
+	48: ReadRef
+	49: StLoc[7](loc4: u64)
+	50: ImmBorrowLoc[1](Arg1: EmodeAsset)
+	51: ImmBorrowField[35](EmodeAsset.assetId: u8)
+	52: ReadRef
+	53: StLoc[3](loc0: u8)
+	54: ImmBorrowLoc[2](Arg2: EmodeAsset)
+	55: ImmBorrowField[35](EmodeAsset.assetId: u8)
+	56: ReadRef
+	57: StLoc[4](loc1: u8)
+	58: MoveLoc[1](Arg1: EmodeAsset)
+	59: MoveLoc[2](Arg2: EmodeAsset)
+	60: LdTrue
+	61: Pack[11](EmodeConfig)
+	62: StLoc[6](loc3: EmodeConfig)
+	63: CopyLoc[5](loc2: &mut Emode)
+	64: MutBorrowField[40](Emode.emodes_pair: Table<u64, EmodeConfig>)
+	65: CopyLoc[7](loc4: u64)
+	66: MoveLoc[6](loc3: EmodeConfig)
+	67: Call table::add<u64, EmodeConfig>(&mut Table<u64, EmodeConfig>, u64, EmodeConfig)
+	68: CopyLoc[7](loc4: u64)
+	69: LdU64(1)
+	70: Add
+	71: MoveLoc[5](loc2: &mut Emode)
+	72: MutBorrowField[39](Emode.next_emode_id: u64)
+	73: WriteRef
+	74: MoveLoc[0](Arg0: &mut Storage)
+	75: FreezeRef
+	76: Call get_market_id(&Storage): u64
+	77: StLoc[8](loc5: u64)
+	78: MoveLoc[7](loc4: u64)
+	79: MoveLoc[3](loc0: u8)
+	80: MoveLoc[4](loc1: u8)
+	81: MoveLoc[8](loc5: u64)
+	82: Call event::emit_emode_pair_created(u64, u8, u8, u64)
+	83: Ret
+}
+
+public(friend) set_emode_config_active(Arg0: &mut Storage, Arg1: u64, Arg2: bool) {
+L3:	loc0: &mut EmodeConfig
+L4:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[3](Storage.id: UID)
+	5: LdFalse
+	6: Pack[27](EMODE_KEY)
+	7: Call dynamic_field::borrow_mut<EMODE_KEY, Emode>(&mut UID, EMODE_KEY): &mut Emode
+	8: MutBorrowField[40](Emode.emodes_pair: Table<u64, EmodeConfig>)
+	9: CopyLoc[1](Arg1: u64)
+	10: Call table::borrow_mut<u64, EmodeConfig>(&mut Table<u64, EmodeConfig>, u64): &mut EmodeConfig
+	11: StLoc[3](loc0: &mut EmodeConfig)
+	12: CopyLoc[2](Arg2: bool)
+	13: MoveLoc[3](loc0: &mut EmodeConfig)
+	14: MutBorrowField[41](EmodeConfig.isActive: bool)
+	15: WriteRef
+	16: MoveLoc[0](Arg0: &mut Storage)
+	17: FreezeRef
+	18: Call get_market_id(&Storage): u64
+	19: StLoc[4](loc1: u64)
+	20: MoveLoc[1](Arg1: u64)
+	21: MoveLoc[2](Arg2: bool)
+	22: MoveLoc[4](loc1: u64)
+	23: Call event::emit_emode_active_set(u64, bool, u64)
+	24: Ret
+}
+
+public(friend) set_emode_asset_lt(Arg0: &mut Storage, Arg1: u64, Arg2: u8, Arg3: u256) {
+L4:	loc0: &mut EmodeAsset
+L5:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[0](Arg0: &mut Storage)
+	4: CopyLoc[1](Arg1: u64)
+	5: CopyLoc[2](Arg2: u8)
+	6: Call get_emode_asset_mut(&mut Storage, u64, u8): &mut EmodeAsset
+	7: StLoc[4](loc0: &mut EmodeAsset)
+	8: CopyLoc[3](Arg3: u256)
+	9: Call percentage_ray_validation(u256)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[4](loc0: &mut EmodeAsset)
+	12: MutBorrowField[37](EmodeAsset.lt: u256)
+	13: WriteRef
+	14: MoveLoc[0](Arg0: &mut Storage)
+	15: FreezeRef
+	16: Call get_market_id(&Storage): u64
+	17: StLoc[5](loc1: u64)
+	18: MoveLoc[1](Arg1: u64)
+	19: MoveLoc[2](Arg2: u8)
+	20: MoveLoc[3](Arg3: u256)
+	21: LdConst[12](vector<u8>: "lt"..)
+	22: Call ascii::string(vector<u8>): String
+	23: MoveLoc[5](loc1: u64)
+	24: Call event::emit_emode_param_set(u64, u8, u256, String, u64)
+	25: Ret
+}
+
+public(friend) set_emode_asset_ltv(Arg0: &mut Storage, Arg1: u64, Arg2: u8, Arg3: u256) {
+L4:	loc0: &mut EmodeAsset
+L5:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[0](Arg0: &mut Storage)
+	4: CopyLoc[1](Arg1: u64)
+	5: CopyLoc[2](Arg2: u8)
+	6: Call get_emode_asset_mut(&mut Storage, u64, u8): &mut EmodeAsset
+	7: StLoc[4](loc0: &mut EmodeAsset)
+	8: CopyLoc[3](Arg3: u256)
+	9: Call percentage_ray_validation(u256)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[4](loc0: &mut EmodeAsset)
+	12: MutBorrowField[36](EmodeAsset.ltv: u256)
+	13: WriteRef
+	14: MoveLoc[0](Arg0: &mut Storage)
+	15: FreezeRef
+	16: Call get_market_id(&Storage): u64
+	17: StLoc[5](loc1: u64)
+	18: MoveLoc[1](Arg1: u64)
+	19: MoveLoc[2](Arg2: u8)
+	20: MoveLoc[3](Arg3: u256)
+	21: LdConst[2](vector<u8>: "ltv..)
+	22: Call ascii::string(vector<u8>): String
+	23: MoveLoc[5](loc1: u64)
+	24: Call event::emit_emode_param_set(u64, u8, u256, String, u64)
+	25: Ret
+}
+
+public(friend) set_emode_asset_liquidation_bonus(Arg0: &mut Storage, Arg1: u64, Arg2: u8, Arg3: u256) {
+L4:	loc0: &mut EmodeAsset
+L5:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[0](Arg0: &mut Storage)
+	4: CopyLoc[1](Arg1: u64)
+	5: CopyLoc[2](Arg2: u8)
+	6: Call get_emode_asset_mut(&mut Storage, u64, u8): &mut EmodeAsset
+	7: StLoc[4](loc0: &mut EmodeAsset)
+	8: CopyLoc[3](Arg3: u256)
+	9: Call percentage_ray_validation(u256)
+	10: CopyLoc[3](Arg3: u256)
+	11: MoveLoc[4](loc0: &mut EmodeAsset)
+	12: MutBorrowField[38](EmodeAsset.liquidation_bonus: u256)
+	13: WriteRef
+	14: MoveLoc[0](Arg0: &mut Storage)
+	15: FreezeRef
+	16: Call get_market_id(&Storage): u64
+	17: StLoc[5](loc1: u64)
+	18: MoveLoc[1](Arg1: u64)
+	19: MoveLoc[2](Arg2: u8)
+	20: MoveLoc[3](Arg3: u256)
+	21: LdConst[10](vector<u8>: "liq..)
+	22: Call ascii::string(vector<u8>): String
+	23: MoveLoc[5](loc1: u64)
+	24: Call event::emit_emode_param_set(u64, u8, u256, String, u64)
+	25: Ret
+}
+
+public(friend) enter_emode(Arg0: &mut Storage, Arg1: u64, Arg2: address) {
+L3:	loc0: &mut Emode
+L4:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[0](Arg0: &mut Storage)
+	4: FreezeRef
+	5: Call when_not_paused(&Storage)
+	6: CopyLoc[0](Arg0: &mut Storage)
+	7: MutBorrowField[3](Storage.id: UID)
+	8: LdFalse
+	9: Pack[27](EMODE_KEY)
+	10: Call dynamic_field::borrow_mut<EMODE_KEY, Emode>(&mut UID, EMODE_KEY): &mut Emode
+	11: StLoc[3](loc0: &mut Emode)
+	12: CopyLoc[3](loc0: &mut Emode)
+	13: ImmBorrowField[40](Emode.emodes_pair: Table<u64, EmodeConfig>)
+	14: CopyLoc[1](Arg1: u64)
+	15: Call table::borrow<u64, EmodeConfig>(&Table<u64, EmodeConfig>, u64): &EmodeConfig
+	16: ImmBorrowField[41](EmodeConfig.isActive: bool)
+	17: ReadRef
+	18: BrFalse(20)
+B1:
+	19: Branch(26)
+B2:
+	20: MoveLoc[0](Arg0: &mut Storage)
+	21: Pop
+	22: MoveLoc[3](loc0: &mut Emode)
+	23: Pop
+	24: Call error::emode_is_not_active(): u64
+	25: Abort
+B3:
+	26: CopyLoc[3](loc0: &mut Emode)
+	27: ImmBorrowField[42](Emode.user_emode_id: Table<address, u64>)
+	28: CopyLoc[2](Arg2: address)
+	29: Call table::contains<address, u64>(&Table<address, u64>, address): bool
+	30: Not
+	31: BrFalse(33)
+B4:
+	32: Branch(39)
+B5:
+	33: MoveLoc[0](Arg0: &mut Storage)
+	34: Pop
+	35: MoveLoc[3](loc0: &mut Emode)
+	36: Pop
+	37: Call error::duplicate_emode(): u64
+	38: Abort
+B6:
+	39: MoveLoc[3](loc0: &mut Emode)
+	40: MutBorrowField[42](Emode.user_emode_id: Table<address, u64>)
+	41: CopyLoc[2](Arg2: address)
+	42: CopyLoc[1](Arg1: u64)
+	43: Call table::add<address, u64>(&mut Table<address, u64>, address, u64)
+	44: MoveLoc[0](Arg0: &mut Storage)
+	45: FreezeRef
+	46: Call get_market_id(&Storage): u64
+	47: StLoc[4](loc1: u64)
+	48: MoveLoc[2](Arg2: address)
+	49: MoveLoc[1](Arg1: u64)
+	50: LdTrue
+	51: MoveLoc[4](loc1: u64)
+	52: Call event::emit_emode_user_state_changed(address, u64, bool, u64)
+	53: Ret
+}
+
+public(friend) exit_emode(Arg0: &mut Storage, Arg1: address) {
+L2:	loc0: &mut Emode
+L3:	loc1: u64
+L4:	loc2: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[0](Arg0: &mut Storage)
+	4: FreezeRef
+	5: Call when_not_paused(&Storage)
+	6: CopyLoc[0](Arg0: &mut Storage)
+	7: MutBorrowField[3](Storage.id: UID)
+	8: LdFalse
+	9: Pack[27](EMODE_KEY)
+	10: Call dynamic_field::borrow_mut<EMODE_KEY, Emode>(&mut UID, EMODE_KEY): &mut Emode
+	11: StLoc[2](loc0: &mut Emode)
+	12: CopyLoc[2](loc0: &mut Emode)
+	13: ImmBorrowField[42](Emode.user_emode_id: Table<address, u64>)
+	14: CopyLoc[1](Arg1: address)
+	15: Call table::contains<address, u64>(&Table<address, u64>, address): bool
+	16: BrFalse(18)
+B1:
+	17: Branch(24)
+B2:
+	18: MoveLoc[0](Arg0: &mut Storage)
+	19: Pop
+	20: MoveLoc[2](loc0: &mut Emode)
+	21: Pop
+	22: Call error::not_in_emode(): u64
+	23: Abort
+B3:
+	24: CopyLoc[2](loc0: &mut Emode)
+	25: ImmBorrowField[42](Emode.user_emode_id: Table<address, u64>)
+	26: CopyLoc[1](Arg1: address)
+	27: Call table::borrow<address, u64>(&Table<address, u64>, address): &u64
+	28: ReadRef
+	29: StLoc[3](loc1: u64)
+	30: MoveLoc[2](loc0: &mut Emode)
+	31: MutBorrowField[42](Emode.user_emode_id: Table<address, u64>)
+	32: CopyLoc[1](Arg1: address)
+	33: Call table::remove<address, u64>(&mut Table<address, u64>, address): u64
+	34: Pop
+	35: MoveLoc[0](Arg0: &mut Storage)
+	36: FreezeRef
+	37: Call get_market_id(&Storage): u64
+	38: StLoc[4](loc2: u64)
+	39: MoveLoc[1](Arg1: address)
+	40: MoveLoc[3](loc1: u64)
+	41: LdFalse
+	42: MoveLoc[4](loc2: u64)
+	43: Call event::emit_emode_user_state_changed(address, u64, bool, u64)
+	44: Ret
+}
+
+public verify_emode_support(Arg0: &Storage, Arg1: address, Arg2: u8, Arg3: bool, Arg4: bool) {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: MoveLoc[1](Arg1: address)
+	2: MoveLoc[2](Arg2: u8)
+	3: MoveLoc[3](Arg3: bool)
+	4: MoveLoc[4](Arg4: bool)
+	5: Call is_passed_emode_restrictions(&Storage, address, u8, bool, bool): bool
+	6: BrFalse(8)
+B1:
+	7: Branch(10)
+B2:
+	8: Call error::ineligible_for_emode(): u64
+	9: Abort
+B3:
+	10: Ret
+}
+
+public is_passed_emode_restrictions(Arg0: &Storage, Arg1: address, Arg2: u8, Arg3: bool, Arg4: bool): bool {
+L5:	loc0: bool
+L6:	loc1: bool
+L7:	loc2: &Emode
+L8:	loc3: &EmodeAsset
+L9:	loc4: u64
+B0:
+	0: CopyLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[27](EMODE_KEY)
+	4: Call dynamic_field::borrow<EMODE_KEY, Emode>(&UID, EMODE_KEY): &Emode
+	5: StLoc[7](loc2: &Emode)
+	6: CopyLoc[7](loc2: &Emode)
+	7: ImmBorrowField[42](Emode.user_emode_id: Table<address, u64>)
+	8: CopyLoc[1](Arg1: address)
+	9: Call table::contains<address, u64>(&Table<address, u64>, address): bool
+	10: Not
+	11: BrFalse(18)
+B1:
+	12: MoveLoc[0](Arg0: &Storage)
+	13: Pop
+	14: MoveLoc[7](loc2: &Emode)
+	15: Pop
+	16: LdTrue
+	17: Ret
+B2:
+	18: MoveLoc[7](loc2: &Emode)
+	19: ImmBorrowField[42](Emode.user_emode_id: Table<address, u64>)
+	20: MoveLoc[1](Arg1: address)
+	21: Call table::borrow<address, u64>(&Table<address, u64>, address): &u64
+	22: ReadRef
+	23: StLoc[9](loc4: u64)
+	24: MoveLoc[0](Arg0: &Storage)
+	25: MoveLoc[9](loc4: u64)
+	26: MoveLoc[2](Arg2: u8)
+	27: Call get_emode_asset(&Storage, u64, u8): &EmodeAsset
+	28: StLoc[8](loc3: &EmodeAsset)
+	29: MoveLoc[3](Arg3: bool)
+	30: BrFalse(37)
+B3:
+	31: CopyLoc[8](loc3: &EmodeAsset)
+	32: ImmBorrowField[43](EmodeAsset.isCollateral: bool)
+	33: ReadRef
+	34: Not
+	35: StLoc[5](loc0: bool)
+	36: Branch(39)
+B4:
+	37: LdFalse
+	38: StLoc[5](loc0: bool)
+B5:
+	39: MoveLoc[5](loc0: bool)
+	40: BrFalse(45)
+B6:
+	41: MoveLoc[8](loc3: &EmodeAsset)
+	42: Pop
+	43: LdFalse
+	44: Ret
+B7:
+	45: MoveLoc[4](Arg4: bool)
+	46: BrFalse(53)
+B8:
+	47: MoveLoc[8](loc3: &EmodeAsset)
+	48: ImmBorrowField[44](EmodeAsset.isDebt: bool)
+	49: ReadRef
+	50: Not
+	51: StLoc[6](loc1: bool)
+	52: Branch(57)
+B9:
+	53: MoveLoc[8](loc3: &EmodeAsset)
+	54: Pop
+	55: LdFalse
+	56: StLoc[6](loc1: bool)
+B10:
+	57: MoveLoc[6](loc1: bool)
+	58: BrFalse(61)
+B11:
+	59: LdFalse
+	60: Ret
+B12:
+	61: LdTrue
+	62: Ret
+}
+
+public is_in_emode(Arg0: &Storage, Arg1: address): bool {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[27](EMODE_KEY)
+	4: Call dynamic_field::borrow<EMODE_KEY, Emode>(&UID, EMODE_KEY): &Emode
+	5: ImmBorrowField[42](Emode.user_emode_id: Table<address, u64>)
+	6: MoveLoc[1](Arg1: address)
+	7: Call table::contains<address, u64>(&Table<address, u64>, address): bool
+	8: Ret
+}
+
+public get_user_emode_id(Arg0: &Storage, Arg1: address): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[27](EMODE_KEY)
+	4: Call dynamic_field::borrow<EMODE_KEY, Emode>(&UID, EMODE_KEY): &Emode
+	5: ImmBorrowField[42](Emode.user_emode_id: Table<address, u64>)
+	6: MoveLoc[1](Arg1: address)
+	7: Call table::borrow<address, u64>(&Table<address, u64>, address): &u64
+	8: ReadRef
+	9: Ret
+}
+
+public get_emode_info(Arg0: &Storage, Arg1: u64): u256 * u256 * u256 * bool * bool * u256 * u256 * u256 * bool * bool * bool {
+L2:	loc0: &EmodeConfig
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[27](EMODE_KEY)
+	4: Call dynamic_field::borrow<EMODE_KEY, Emode>(&UID, EMODE_KEY): &Emode
+	5: ImmBorrowField[40](Emode.emodes_pair: Table<u64, EmodeConfig>)
+	6: MoveLoc[1](Arg1: u64)
+	7: Call table::borrow<u64, EmodeConfig>(&Table<u64, EmodeConfig>, u64): &EmodeConfig
+	8: StLoc[2](loc0: &EmodeConfig)
+	9: CopyLoc[2](loc0: &EmodeConfig)
+	10: ImmBorrowField[45](EmodeConfig.assetA: EmodeAsset)
+	11: ImmBorrowField[36](EmodeAsset.ltv: u256)
+	12: ReadRef
+	13: CopyLoc[2](loc0: &EmodeConfig)
+	14: ImmBorrowField[45](EmodeConfig.assetA: EmodeAsset)
+	15: ImmBorrowField[37](EmodeAsset.lt: u256)
+	16: ReadRef
+	17: CopyLoc[2](loc0: &EmodeConfig)
+	18: ImmBorrowField[45](EmodeConfig.assetA: EmodeAsset)
+	19: ImmBorrowField[38](EmodeAsset.liquidation_bonus: u256)
+	20: ReadRef
+	21: CopyLoc[2](loc0: &EmodeConfig)
+	22: ImmBorrowField[45](EmodeConfig.assetA: EmodeAsset)
+	23: ImmBorrowField[43](EmodeAsset.isCollateral: bool)
+	24: ReadRef
+	25: CopyLoc[2](loc0: &EmodeConfig)
+	26: ImmBorrowField[45](EmodeConfig.assetA: EmodeAsset)
+	27: ImmBorrowField[44](EmodeAsset.isDebt: bool)
+	28: ReadRef
+	29: CopyLoc[2](loc0: &EmodeConfig)
+	30: ImmBorrowField[46](EmodeConfig.assetB: EmodeAsset)
+	31: ImmBorrowField[36](EmodeAsset.ltv: u256)
+	32: ReadRef
+	33: CopyLoc[2](loc0: &EmodeConfig)
+	34: ImmBorrowField[46](EmodeConfig.assetB: EmodeAsset)
+	35: ImmBorrowField[37](EmodeAsset.lt: u256)
+	36: ReadRef
+	37: CopyLoc[2](loc0: &EmodeConfig)
+	38: ImmBorrowField[46](EmodeConfig.assetB: EmodeAsset)
+	39: ImmBorrowField[38](EmodeAsset.liquidation_bonus: u256)
+	40: ReadRef
+	41: CopyLoc[2](loc0: &EmodeConfig)
+	42: ImmBorrowField[46](EmodeConfig.assetB: EmodeAsset)
+	43: ImmBorrowField[43](EmodeAsset.isCollateral: bool)
+	44: ReadRef
+	45: CopyLoc[2](loc0: &EmodeConfig)
+	46: ImmBorrowField[46](EmodeConfig.assetB: EmodeAsset)
+	47: ImmBorrowField[44](EmodeAsset.isDebt: bool)
+	48: ReadRef
+	49: MoveLoc[2](loc0: &EmodeConfig)
+	50: ImmBorrowField[41](EmodeConfig.isActive: bool)
+	51: ReadRef
+	52: Ret
+}
+
+public get_emode_asset_info(Arg0: &Storage, Arg1: u64, Arg2: u8): u256 * u256 * u256 {
+L3:	loc0: &EmodeAsset
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: MoveLoc[1](Arg1: u64)
+	2: MoveLoc[2](Arg2: u8)
+	3: Call get_emode_asset(&Storage, u64, u8): &EmodeAsset
+	4: StLoc[3](loc0: &EmodeAsset)
+	5: CopyLoc[3](loc0: &EmodeAsset)
+	6: ImmBorrowField[36](EmodeAsset.ltv: u256)
+	7: ReadRef
+	8: CopyLoc[3](loc0: &EmodeAsset)
+	9: ImmBorrowField[37](EmodeAsset.lt: u256)
+	10: ReadRef
+	11: MoveLoc[3](loc0: &EmodeAsset)
+	12: ImmBorrowField[38](EmodeAsset.liquidation_bonus: u256)
+	13: ReadRef
+	14: Ret
+}
+
+get_emode_asset(Arg0: &Storage, Arg1: u64, Arg2: u8): &EmodeAsset {
+L3:	loc0: &EmodeAsset
+L4:	loc1: &EmodeConfig
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[27](EMODE_KEY)
+	4: Call dynamic_field::borrow<EMODE_KEY, Emode>(&UID, EMODE_KEY): &Emode
+	5: ImmBorrowField[40](Emode.emodes_pair: Table<u64, EmodeConfig>)
+	6: MoveLoc[1](Arg1: u64)
+	7: Call table::borrow<u64, EmodeConfig>(&Table<u64, EmodeConfig>, u64): &EmodeConfig
+	8: StLoc[4](loc1: &EmodeConfig)
+	9: CopyLoc[4](loc1: &EmodeConfig)
+	10: ImmBorrowField[45](EmodeConfig.assetA: EmodeAsset)
+	11: ImmBorrowField[35](EmodeAsset.assetId: u8)
+	12: ReadRef
+	13: CopyLoc[2](Arg2: u8)
+	14: Eq
+	15: BrFalse(20)
+B1:
+	16: MoveLoc[4](loc1: &EmodeConfig)
+	17: ImmBorrowField[45](EmodeConfig.assetA: EmodeAsset)
+	18: StLoc[3](loc0: &EmodeAsset)
+	19: Branch(35)
+B2:
+	20: CopyLoc[4](loc1: &EmodeConfig)
+	21: ImmBorrowField[46](EmodeConfig.assetB: EmodeAsset)
+	22: ImmBorrowField[35](EmodeAsset.assetId: u8)
+	23: ReadRef
+	24: MoveLoc[2](Arg2: u8)
+	25: Eq
+	26: BrFalse(28)
+B3:
+	27: Branch(32)
+B4:
+	28: MoveLoc[4](loc1: &EmodeConfig)
+	29: Pop
+	30: Call error::not_in_emode(): u64
+	31: Abort
+B5:
+	32: MoveLoc[4](loc1: &EmodeConfig)
+	33: ImmBorrowField[46](EmodeConfig.assetB: EmodeAsset)
+	34: StLoc[3](loc0: &EmodeAsset)
+B6:
+	35: MoveLoc[3](loc0: &EmodeAsset)
+	36: Ret
+}
+
+get_emode_asset_mut(Arg0: &mut Storage, Arg1: u64, Arg2: u8): &mut EmodeAsset {
+L3:	loc0: &mut EmodeAsset
+L4:	loc1: &mut EmodeConfig
+B0:
+	0: MoveLoc[0](Arg0: &mut Storage)
+	1: MutBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[27](EMODE_KEY)
+	4: Call dynamic_field::borrow_mut<EMODE_KEY, Emode>(&mut UID, EMODE_KEY): &mut Emode
+	5: MutBorrowField[40](Emode.emodes_pair: Table<u64, EmodeConfig>)
+	6: MoveLoc[1](Arg1: u64)
+	7: Call table::borrow_mut<u64, EmodeConfig>(&mut Table<u64, EmodeConfig>, u64): &mut EmodeConfig
+	8: StLoc[4](loc1: &mut EmodeConfig)
+	9: CopyLoc[4](loc1: &mut EmodeConfig)
+	10: ImmBorrowField[45](EmodeConfig.assetA: EmodeAsset)
+	11: ImmBorrowField[35](EmodeAsset.assetId: u8)
+	12: ReadRef
+	13: CopyLoc[2](Arg2: u8)
+	14: Eq
+	15: BrFalse(20)
+B1:
+	16: MoveLoc[4](loc1: &mut EmodeConfig)
+	17: MutBorrowField[45](EmodeConfig.assetA: EmodeAsset)
+	18: StLoc[3](loc0: &mut EmodeAsset)
+	19: Branch(35)
+B2:
+	20: CopyLoc[4](loc1: &mut EmodeConfig)
+	21: ImmBorrowField[46](EmodeConfig.assetB: EmodeAsset)
+	22: ImmBorrowField[35](EmodeAsset.assetId: u8)
+	23: ReadRef
+	24: MoveLoc[2](Arg2: u8)
+	25: Eq
+	26: BrFalse(28)
+B3:
+	27: Branch(32)
+B4:
+	28: MoveLoc[4](loc1: &mut EmodeConfig)
+	29: Pop
+	30: Call error::not_in_emode(): u64
+	31: Abort
+B5:
+	32: MoveLoc[4](loc1: &mut EmodeConfig)
+	33: MutBorrowField[46](EmodeConfig.assetB: EmodeAsset)
+	34: StLoc[3](loc0: &mut EmodeAsset)
+B6:
+	35: MoveLoc[3](loc0: &mut EmodeAsset)
+	36: Ret
+}
+
+public init_for_main_market(Arg0: &StorageAdminCap, Arg1: &mut Storage) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: Call init_main_market(&mut Storage)
+	2: Ret
+}
+
+init_main_market(Arg0: &mut Storage) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: ImmBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[28](MARKET_KEY)
+	4: Call dynamic_field::exists_<MARKET_KEY>(&UID, MARKET_KEY): bool
+	5: Not
+	6: BrFalse(8)
+B1:
+	7: Branch(12)
+B2:
+	8: MoveLoc[0](Arg0: &mut Storage)
+	9: Pop
+	10: Call error::invalid_function_call(): u64
+	11: Abort
+B3:
+	12: MoveLoc[0](Arg0: &mut Storage)
+	13: MutBorrowField[3](Storage.id: UID)
+	14: LdFalse
+	15: Pack[28](MARKET_KEY)
+	16: LdU64(0)
+	17: LdU64(0)
+	18: LdTrue
+	19: Pack[13](MarketInfo)
+	20: Call dynamic_field::add<MARKET_KEY, MarketInfo>(&mut UID, MARKET_KEY, MarketInfo)
+	21: Ret
+}
+
+public(friend) create_new_market(Arg0: &mut Storage, Arg1: &mut TxContext) {
+L2:	loc0: &mut MarketInfo
+L3:	loc1: MarketInfo
+L4:	loc2: u64
+L5:	loc3: Storage
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: MoveLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[3](Storage.id: UID)
+	5: LdFalse
+	6: Pack[28](MARKET_KEY)
+	7: Call dynamic_field::borrow_mut<MARKET_KEY, MarketInfo>(&mut UID, MARKET_KEY): &mut MarketInfo
+	8: StLoc[2](loc0: &mut MarketInfo)
+	9: CopyLoc[2](loc0: &mut MarketInfo)
+	10: ImmBorrowField[47](MarketInfo.is_main_market: bool)
+	11: ReadRef
+	12: BrFalse(14)
+B1:
+	13: Branch(20)
+B2:
+	14: MoveLoc[2](loc0: &mut MarketInfo)
+	15: Pop
+	16: MoveLoc[1](Arg1: &mut TxContext)
+	17: Pop
+	18: Call error::invalid_function_call(): u64
+	19: Abort
+B3:
+	20: CopyLoc[1](Arg1: &mut TxContext)
+	21: Call object::new(&mut TxContext): UID
+	22: Call version::this_version(): u64
+	23: LdFalse
+	24: CopyLoc[1](Arg1: &mut TxContext)
+	25: Call table::new<u8, ReserveData>(&mut TxContext): Table<u8, ReserveData>
+	26: LdU8(0)
+	27: VecPack(57, 0)
+	28: CopyLoc[1](Arg1: &mut TxContext)
+	29: Call table::new<address, UserInfo>(&mut TxContext): Table<address, UserInfo>
+	30: Pack[2](Storage)
+	31: StLoc[5](loc3: Storage)
+	32: MutBorrowLoc[5](loc3: Storage)
+	33: CopyLoc[1](Arg1: &mut TxContext)
+	34: Call init_protected_liquidation_fields(&mut Storage, &mut TxContext)
+	35: MutBorrowLoc[5](loc3: Storage)
+	36: CopyLoc[1](Arg1: &mut TxContext)
+	37: Call init_emode_fields(&mut Storage, &mut TxContext)
+	38: MutBorrowLoc[5](loc3: Storage)
+	39: MoveLoc[1](Arg1: &mut TxContext)
+	40: Call init_borrow_weight_fields(&mut Storage, &mut TxContext)
+	41: CopyLoc[2](loc0: &mut MarketInfo)
+	42: ImmBorrowField[48](MarketInfo.last_market_id: u64)
+	43: ReadRef
+	44: LdU64(1)
+	45: Add
+	46: LdU64(0)
+	47: LdFalse
+	48: Pack[13](MarketInfo)
+	49: StLoc[3](loc1: MarketInfo)
+	50: ImmBorrowLoc[3](loc1: MarketInfo)
+	51: ImmBorrowField[4](MarketInfo.market_id: u64)
+	52: ReadRef
+	53: StLoc[4](loc2: u64)
+	54: MutBorrowLoc[5](loc3: Storage)
+	55: MutBorrowField[3](Storage.id: UID)
+	56: LdFalse
+	57: Pack[28](MARKET_KEY)
+	58: MoveLoc[3](loc1: MarketInfo)
+	59: Call dynamic_field::add<MARKET_KEY, MarketInfo>(&mut UID, MARKET_KEY, MarketInfo)
+	60: MoveLoc[5](loc3: Storage)
+	61: Call transfer::share_object<Storage>(Storage)
+	62: MoveLoc[4](loc2: u64)
+	63: Call event::emit_market_created(u64)
+	64: CopyLoc[2](loc0: &mut MarketInfo)
+	65: ImmBorrowField[48](MarketInfo.last_market_id: u64)
+	66: ReadRef
+	67: LdU64(1)
+	68: Add
+	69: MoveLoc[2](loc0: &mut MarketInfo)
+	70: MutBorrowField[48](MarketInfo.last_market_id: u64)
+	71: WriteRef
+	72: Ret
+}
+
+public get_market_id(Arg0: &Storage): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[28](MARKET_KEY)
+	4: Call dynamic_field::borrow<MARKET_KEY, MarketInfo>(&UID, MARKET_KEY): &MarketInfo
+	5: ImmBorrowField[4](MarketInfo.market_id: u64)
+	6: ReadRef
+	7: Ret
+}
+
+public get_storage_market_info(Arg0: &Storage): u64 * u64 * bool {
+L1:	loc0: &MarketInfo
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[28](MARKET_KEY)
+	4: Call dynamic_field::borrow<MARKET_KEY, MarketInfo>(&UID, MARKET_KEY): &MarketInfo
+	5: StLoc[1](loc0: &MarketInfo)
+	6: CopyLoc[1](loc0: &MarketInfo)
+	7: ImmBorrowField[4](MarketInfo.market_id: u64)
+	8: ReadRef
+	9: CopyLoc[1](loc0: &MarketInfo)
+	10: ImmBorrowField[48](MarketInfo.last_market_id: u64)
+	11: ReadRef
+	12: MoveLoc[1](loc0: &MarketInfo)
+	13: ImmBorrowField[47](MarketInfo.is_main_market: bool)
+	14: ReadRef
+	15: Ret
+}
+
+public verify_market_storage_pool<Ty0>(Arg0: &Storage, Arg1: &Pool<Ty0>) {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: Call get_market_id(&Storage): u64
+	2: MoveLoc[1](Arg1: &Pool<Ty0>)
+	3: Call pool::get_market_id<Ty0>(&Pool<Ty0>): u64
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: Call error::unmatched_market_id(): u64
+	8: Abort
+B3:
+	9: Ret
+}
+
+public init_borrow_weight_for_main_market(Arg0: &StorageAdminCap, Arg1: &mut Storage, Arg2: &mut TxContext) {
+B0:
+	0: MoveLoc[1](Arg1: &mut Storage)
+	1: MoveLoc[2](Arg2: &mut TxContext)
+	2: Call init_borrow_weight_fields(&mut Storage, &mut TxContext)
+	3: Ret
+}
+
+init_borrow_weight_fields(Arg0: &mut Storage, Arg1: &mut TxContext) {
+L2:	loc0: Table<u8, u64>
+B0:
+	0: MoveLoc[1](Arg1: &mut TxContext)
+	1: Call table::new<u8, u64>(&mut TxContext): Table<u8, u64>
+	2: StLoc[2](loc0: Table<u8, u64>)
+	3: MoveLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[3](Storage.id: UID)
+	5: LdFalse
+	6: Pack[29](BORROW_WEIGHT_KEY)
+	7: MoveLoc[2](loc0: Table<u8, u64>)
+	8: Call dynamic_field::add<BORROW_WEIGHT_KEY, Table<u8, u64>>(&mut UID, BORROW_WEIGHT_KEY, Table<u8, u64>)
+	9: Ret
+}
+
+public(friend) set_borrow_weight(Arg0: &mut Storage, Arg1: u8, Arg2: u64) {
+L3:	loc0: u8
+L4:	loc1: &mut Table<u8, u64>
+L5:	loc2: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[2](Arg2: u64)
+	4: LdU64(10)
+	5: Call constants::percentage_benchmark(): u64
+	6: Mul
+	7: Le
+	8: BrFalse(10)
+B1:
+	9: Branch(14)
+B2:
+	10: MoveLoc[0](Arg0: &mut Storage)
+	11: Pop
+	12: Call error::invalid_value(): u64
+	13: Abort
+B3:
+	14: CopyLoc[2](Arg2: u64)
+	15: Call constants::percentage_benchmark(): u64
+	16: Ge
+	17: BrFalse(19)
+B4:
+	18: Branch(23)
+B5:
+	19: MoveLoc[0](Arg0: &mut Storage)
+	20: Pop
+	21: Call error::invalid_value(): u64
+	22: Abort
+B6:
+	23: CopyLoc[0](Arg0: &mut Storage)
+	24: MutBorrowField[3](Storage.id: UID)
+	25: LdFalse
+	26: Pack[29](BORROW_WEIGHT_KEY)
+	27: Call dynamic_field::borrow_mut<BORROW_WEIGHT_KEY, Table<u8, u64>>(&mut UID, BORROW_WEIGHT_KEY): &mut Table<u8, u64>
+	28: StLoc[4](loc1: &mut Table<u8, u64>)
+	29: CopyLoc[4](loc1: &mut Table<u8, u64>)
+	30: CopyLoc[1](Arg1: u8)
+	31: StLoc[3](loc0: u8)
+	32: FreezeRef
+	33: MoveLoc[3](loc0: u8)
+	34: Call table::contains<u8, u64>(&Table<u8, u64>, u8): bool
+	35: Not
+	36: BrFalse(42)
+B7:
+	37: MoveLoc[4](loc1: &mut Table<u8, u64>)
+	38: CopyLoc[1](Arg1: u8)
+	39: CopyLoc[2](Arg2: u64)
+	40: Call table::add<u8, u64>(&mut Table<u8, u64>, u8, u64)
+	41: Branch(47)
+B8:
+	42: CopyLoc[2](Arg2: u64)
+	43: MoveLoc[4](loc1: &mut Table<u8, u64>)
+	44: CopyLoc[1](Arg1: u8)
+	45: Call table::borrow_mut<u8, u64>(&mut Table<u8, u64>, u8): &mut u64
+	46: WriteRef
+B9:
+	47: MoveLoc[0](Arg0: &mut Storage)
+	48: FreezeRef
+	49: Call get_market_id(&Storage): u64
+	50: StLoc[5](loc2: u64)
+	51: MoveLoc[1](Arg1: u8)
+	52: MoveLoc[2](Arg2: u64)
+	53: MoveLoc[5](loc2: u64)
+	54: Call event::emit_borrow_weight_set(u8, u64, u64)
+	55: Ret
+}
+
+public(friend) remove_borrow_weight(Arg0: &mut Storage, Arg1: u8) {
+L2:	loc0: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut Storage)
+	1: FreezeRef
+	2: Call version_verification(&Storage)
+	3: CopyLoc[0](Arg0: &mut Storage)
+	4: MutBorrowField[3](Storage.id: UID)
+	5: LdFalse
+	6: Pack[29](BORROW_WEIGHT_KEY)
+	7: Call dynamic_field::borrow_mut<BORROW_WEIGHT_KEY, Table<u8, u64>>(&mut UID, BORROW_WEIGHT_KEY): &mut Table<u8, u64>
+	8: CopyLoc[1](Arg1: u8)
+	9: Call table::remove<u8, u64>(&mut Table<u8, u64>, u8): u64
+	10: Pop
+	11: MoveLoc[0](Arg0: &mut Storage)
+	12: FreezeRef
+	13: Call get_market_id(&Storage): u64
+	14: StLoc[2](loc0: u64)
+	15: MoveLoc[1](Arg1: u8)
+	16: MoveLoc[2](loc0: u64)
+	17: Call event::emit_borrow_weight_removed(u8, u64)
+	18: Ret
+}
+
+public get_borrow_weight(Arg0: &Storage, Arg1: u8): u64 {
+L2:	loc0: u64
+L3:	loc1: &Table<u8, u64>
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[3](Storage.id: UID)
+	2: LdFalse
+	3: Pack[29](BORROW_WEIGHT_KEY)
+	4: Call dynamic_field::borrow<BORROW_WEIGHT_KEY, Table<u8, u64>>(&UID, BORROW_WEIGHT_KEY): &Table<u8, u64>
+	5: StLoc[3](loc1: &Table<u8, u64>)
+	6: CopyLoc[3](loc1: &Table<u8, u64>)
+	7: CopyLoc[1](Arg1: u8)
+	8: Call table::contains<u8, u64>(&Table<u8, u64>, u8): bool
+	9: BrFalse(16)
+B1:
+	10: MoveLoc[3](loc1: &Table<u8, u64>)
+	11: MoveLoc[1](Arg1: u8)
+	12: Call table::borrow<u8, u64>(&Table<u8, u64>, u8): &u64
+	13: ReadRef
+	14: StLoc[2](loc0: u64)
+	15: Branch(20)
+B2:
+	16: MoveLoc[3](loc1: &Table<u8, u64>)
+	17: Pop
+	18: Call constants::percentage_benchmark(): u64
+	19: StLoc[2](loc0: u64)
+B3:
+	20: MoveLoc[2](loc0: u64)
+	21: Ret
+}
+
+public get_reserve_for_testing(Arg0: &Storage, Arg1: u8): &ReserveData {
+B0:
+	0: MoveLoc[0](Arg0: &Storage)
+	1: ImmBorrowField[2](Storage.reserves: Table<u8, ReserveData>)
+	2: MoveLoc[1](Arg1: u8)
+	3: Call table::borrow<u8, ReserveData>(&Table<u8, ReserveData>, u8): &ReserveData
+	4: Ret
+}
+
+Constants [
+	0 => vector<u8>: "supply_cap_ceiling" // interpreted as UTF8 string
+	1 => vector<u8>: "borrow_cap_ceiling" // interpreted as UTF8 string
+	2 => vector<u8>: "ltv" // interpreted as UTF8 string
+	3 => vector<u8>: "treasury_factor" // interpreted as UTF8 string
+	4 => vector<u8>: "base_rate" // interpreted as UTF8 string
+	5 => vector<u8>: "multiplier" // interpreted as UTF8 string
+	6 => vector<u8>: "jump_rate_multiplier" // interpreted as UTF8 string
+	7 => vector<u8>: "reserve_factor" // interpreted as UTF8 string
+	8 => vector<u8>: "optimal_utilization" // interpreted as UTF8 string
+	9 => vector<u8>: "liquidation_ratio" // interpreted as UTF8 string
+	10 => vector<u8>: "liquidation_bonus" // interpreted as UTF8 string
+	11 => vector<u8>: "liquidation_threshold" // interpreted as UTF8 string
+	12 => vector<u8>: "lt" // interpreted as UTF8 string
+]
+}
