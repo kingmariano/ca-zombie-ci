@@ -1,0 +1,148 @@
+{
+  "finding": "H2-05 / L2-23",
+  "title": "STRATO (BlockApps STRATO Mercata L1) — $16.19M DefiLlama TVL verified on a public chain; no unprivileged extraction path found",
+  "date": "2026-10-10",
+  "chain": "strato (STRATO Mercata / upquark mainnet, BlockApps)",
+  "chain_id": 123354377739506,
+  "chain_id_hex": "0x7030addddcf2",
+  "net_version": "33056204878082667",
+  "rpc_public_verified": true,
+  "rpc_endpoints": [
+    "https://noderpc.strato.nexus/rpc",
+    "https://app.strato.nexus/rpc"
+  ],
+  "explorer": "https://stratoscan.strato.nexus",
+  "indexer": "https://app.strato.nexus/cirrus/search",
+  "latest_block": 622692,
+  "snapshot_utc": "2026-10-10T16:32Z",
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "medium-high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 10641259.86,
+    "P": 16190997.36,
+    "S": 0.0
+  },
+  "category_notes": {
+    "E-U": "No external-unprivileged value-moving path found. 17/17 admin-gating simulations and 8/8 free-money simulations from a random address reverted. Behavioral verification only (SolidVM sources not published).",
+    "H-O": "SaveUSDSTVault redeemable 1,706,189.05 + CDP net equity (collateral 13,620,821.92 minus debt 4,699,119.41 = 8,921,702.51) + CollateralVault 11,093.46 + SafetyModule 2,274.84. Excludes overlapping bridge custody (~1.97M) and staking (954,505.39 STRATO, tracked separately by DefiLlama).",
+    "P": "All core contracts owned by AdminRegistry 0x...100c (3 admin EOAs, 60% vote threshold) and upgradeable via setLogicContract; oracle/mints/pauses/bridges function-scoped via a 143-entry whitelist. P amount = full DefiLlama TVL at snapshot; bridge protocol TVL 1,397,709.56 additional.",
+    "S": "No material stuck funds; dust only."
+  },
+  "tvl_verified_usd": 16190997.36,
+  "borrowed_usd": 4699119.41,
+  "usdst_total_supply": 4973804.676083004,
+  "cdp_global_collateral_ratio": 2.88,
+  "key_addresses": {
+    "usdst_token": "0x937efa7e3a77e20bbdbd7c0d32b6514f368c1010",
+    "admin_registry": "0x000000000000000000000000000000000000100c",
+    "price_oracle": "0x0000000000000000000000000000000000001002",
+    "cdp_registry": "0x0000000000000000000000000000000000001012",
+    "cdp_engine": "0x0000000000000000000000000000000000001011",
+    "cdp_vault": "0x0000000000000000000000000000000000001013",
+    "lending_pool": "0x0000000000000000000000000000000000001005",
+    "pool_factory": "0x000000000000000000000000000000000000100a",
+    "pool_v3_factory": "0x5d630126d908b46bcf8d00bc15e591a459375809",
+    "direct_mint_psm": "0xb1efdc86eecfbedf83d0295671214fee451786f3",
+    "save_usdst_vault": "0x22550671fcad04a213697ac7ae4f4366e96446ed",
+    "safety_module": "0x0000000000000000000000000000000000001015",
+    "strato_staking": "0xf30a022ce83bed7adeafc286c719388dcc3b3988",
+    "mercata_bridge": "0x0000000000000000000000000000000000001008",
+    "strato_native_bridge": "0x4d9e9c39180a75091b9c35bbb9064d67c7fdde5a",
+    "native_custody_vault": "0xdb967ac5c497e6a2bd6f89036d2b63851760318f",
+    "goldst": "0xcdc93d30182125e05eec985b631c7c61b3f63ff0",
+    "silvst": "0x2c59ef92d08efde71fe1a1cb5b45f4f6d48fcc94"
+  },
+  "admins_eoa": {
+    "count": 3,
+    "vote_threshold_bps": 6000,
+    "addresses": [
+      "0x7630b673862a2807583834908f10192e00c58b00",
+      "0x292dd9591f506845ef05a9f3b8116e641cbcb4bb",
+      "0xf1ba16a6cfb2a17fb34ad477eaaf0c76eac64f14"
+    ],
+    "all_eoa": true
+  },
+  "whitelisted_roles": {
+    "price_oracle_updaters": ["0x523fef378674d39363aa8b6ac5122e301c528432", "0x96714c4a2163a3ee55356e20bc23fe8ea5e7aaf0"],
+    "bridge_operator": "0x882f3d3a7b97ea24ab5aeae6996a695b26ea9089",
+    "bridge_guardian": "0x292dd9591f506845ef05a9f3b8116e641cbcb4bb",
+    "vault_bot_executor": "0x3f5c7de300b7940e46459ed9a8b098f9a8cc2dfb",
+    "usdst_minters": [
+      "0x0000000000000000000000000000000000001008",
+      "0x0000000000000000000000000000000000001011",
+      "0xb1efdc86eecfbedf83d0295671214fee451786f3",
+      "0x390ba7f7807c97f134f25c8462c65c353e55c177"
+    ]
+  },
+  "oracle_prices_usd_at_snapshot": {
+    "GOLDST": 4184.4407,
+    "SILVST": 60.8245,
+    "USDST": 1.0,
+    "ETH": 2505.9131,
+    "WBTC": 82784.8137,
+    "defillama_GOLDST": 4199.095,
+    "defillama_SILVST": 60.83,
+    "defillama_USDST": 0.99905453
+  },
+  "pauses": {
+    "usdst_paused": false,
+    "lending_pool_paused": false,
+    "psm_mint_paused": false,
+    "psm_burn_paused": false,
+    "cdp_engine_global_paused": false,
+    "mercata_bridge_deposits_paused": false,
+    "mercata_bridge_withdrawals_paused": false,
+    "native_bridge_deposits_paused": false,
+    "native_bridge_withdrawals_paused": false,
+    "save_vault_paused": false,
+    "bot_vault_paused": false
+  },
+  "claim_provenance": {
+    "corpus": "zombie_hunt/ZOMBIE-HUNT-II.md L2-23 and H2-05 ('STRATO $16M unverified native-contract chain')",
+    "origin": "DefiLlama protocols list: protocol 'strato' id 7862, chain Strato, category CDP, tvl 16190997.36, listedAt 1778867007; siblings 'strato-bridge' id 8626 (1397709.56), 'strato-odds' id 8760 (935.98)",
+    "correction": "STRATO is BlockApps' public STRATO Mercata L1 (public keyless RPC + explorer + Cirrus index), not a permissioned/enterprise chain and not unreachable. Public source code unavailable (SolidVM), which is likely why it was labeled 'unverified'; ABIs and full state are public."
+  },
+  "tests": {
+    "gating_sims_admin_functions": {"total": 17, "reverted": 17, "passed": 0},
+    "free_money_sims": {"total": 8, "reverted": 8, "passed": 0},
+    "file": "raw/gating_tests_randomsender.json, raw/freemoney_sims.json"
+  },
+  "key_facts": [
+    "STRATO Mercata by BlockApps; chain ID 123354377739506; solidity-on-SolidVM (eth_getCode=0x01 for contracts); 17 validators; PBFT.",
+    "DefiLlama TVL $16,190,997 (2026-10-10) = GOLDST $13.49M + USDST $2.01M + SILVST $0.21M + ETH/WBTC/USDC/etc.; reconciled against live balances (block 622,692).",
+    "CDP vault 0x...1013 holds 3,134.6331 GOLDST (≈$13.12M) against 4,564,577.74 USDST GOLDST-backed debt; totalDebtAll 4,699,119.41; CR ≈ 2.88x.",
+    "All core contracts owned by AdminRegistry 0x...100c (3 admin EOAs, 60% threshold); setLogicContract upgradeability everywhere; 143-entry function-scoped whitelist.",
+    "Oracle writes, token mints, pauses, bridge confirmations all revert for a random sender; borrow/redeem/unstake/CDP-mint without a position all revert."
+  ],
+  "caveats": [
+    "Behavioral verification only — SolidVM source code is not published (explorer serves ABIs, not sources); a logic bug outside tested call paths cannot be fully excluded.",
+    "USD values point-in-time; tokenized-metal valuation (GOLDST/SILVST) relies on issuer/Mercata custody + oracle; GOLDST is largely chain-native (on-chain oracle and DefiLlama agree within ~0.4%).",
+    "Exfiltration off STRATO depends on operator-confirmed bridges or DEX exit liquidity even if value were extractable on-chain.",
+    "Governance/key risk (P): 2-of-3 admin EOAs or the whitelisted price-updater EOA compromise is the dominant tail risk; no E-U path."
+  ],
+  "evidence_files": [
+    "fetch_evidence.py",
+    "raw/rpc_probes.json",
+    "raw/snapshot_block.json",
+    "raw/llama_protocol_strato.json",
+    "raw/llama_protocol_strato_bridge.json",
+    "raw/llama_protocols_matches.json",
+    "raw/llama_prices_strato.json",
+    "raw/adapter_strato.js",
+    "raw/adapter_strato_bridge.js",
+    "raw/state_components.json",
+    "raw/cdp_params.json",
+    "raw/oracle_reads.json",
+    "raw/cirrus_holder_balances.json",
+    "raw/cirrus_token_meta_full.json",
+    "raw/value_table.json",
+    "raw/cirrus_admins_100c.json",
+    "raw/cirrus_whitelist_100c.json",
+    "raw/code_types.json",
+    "raw/gating_tests_randomsender.json",
+    "raw/freemoney_sims.json",
+    "raw/abis/"
+  ],
+  "one_liner": "STRATO is BlockApps' public mercata L1; its $16.19M DefiLlama TVL (mostly gold-backed CDP collateral) is fully verifiable on-chain but no external-unprivileged extraction path was found ($0 E-U); the residual risk is the 2-of-3 admin EOA governance and whitelisted price-bot key."
+}

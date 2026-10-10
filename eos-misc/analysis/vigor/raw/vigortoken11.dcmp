@@ -1,0 +1,2548 @@
+memory M_a(initial: 1, max: 0);
+
+global g_a:int = 8192;
+global g_b:int = 9638;
+global g_c:int = 9638;
+
+table T_a:funcref(min: 1, max: 1);
+
+data d_failedtoallocatepagesinvalid(offset: 8220) =
+"failed to allocate pages\00invalid symbol name\00";
+data d_invalidsupply(offset: 8265) = "invalid supply\00";
+data d_maxsupplymustbepositive(offset: 8280) = "max-supply must be positive\00";
+data d_tokenwithsymbolalreadyexists(offset: 8308) =
+"token with symbol already exists\00";
+data d_memohasmorethan256bytes(offset: 8341) = "memo has more than 256 bytes\00";
+data d_tokenwithsymboldoesnotexistc(offset: 8370) =
+"token with symbol does not exist, create token before issue\00";
+data d_tokenscanonlybeissuedtoissue(offset: 8430) =
+"tokens can only be issued to issuer account\00";
+data d_invalidquantity(offset: 8474) = "invalid quantity\00";
+data d_mustissuepositivequantity(offset: 8491) = "must issue positive quantity\00";
+data d_symbolprecisionmismatch(offset: 8520) = "symbol precision mismatch\00";
+data d_quantityexceedsavailablesupp(offset: 8546) =
+"quantity exceeds available supply\00";
+data d_tokenwithsymboldoesnotexist(offset: 8580) =
+"token with symbol does not exist\00";
+data d_mustretirepositivequantity(offset: 8613) = "must retire positive quantity\00";
+data d_cannottransfertoself(offset: 8643) = "cannot transfer to self\00";
+data d_toaccountdoesnotexist(offset: 8667) = "to account does not exist\00";
+data d_unabletofindkey(offset: 8693) = "unable to find key\00";
+data d_musttransferpositivequantity(offset: 8712) =
+"must transfer positive quantity\00";
+data d_nobalanceobjectfound(offset: 8744) = "no balance object found\00";
+data d_overdrawnbalance(offset: 8768) = "overdrawn balance\00";
+data d_owneraccountdoesnotexist(offset: 8786) = "owner account does not exist\00";
+data d_symboldoesnotexist(offset: 8815) = "symbol does not exist\00";
+data d_Balancerowalreadydeletedorne(offset: 8837) =
+  "Balance row already deleted or never existed. Action won't have any ef"
+  "fect.\00";
+data d_Cannotclosebecausethebalance(offset: 8913) =
+"Cannot close because the balance is not zero.\00";
+data d_objectpassedtoiterator_toisn(offset: 8959) =
+"object passed to iterator_to is not in multi_index\00";
+data d_errorreadingiterator(offset: 9010) = "error reading iterator\00";
+data d_cannotcreateobjectsintableof(offset: 9033) =
+"cannot create objects in table of another contract\00";
+data d_write(offset: 9084) = "write\00";
+data d_objectpassedtomodifyisnotinm(offset: 9090) =
+"object passed to modify is not in multi_index\00";
+data d_cannotmodifyobjectsintableof(offset: 9136) =
+"cannot modify objects in table of another contract\00";
+data d_updatercannotchangeprimaryke(offset: 9187) =
+"updater cannot change primary key when modifying an object\00";
+data d_attempttoaddassetwithdiffere(offset: 9246) =
+"attempt to add asset with different symbol\00";
+data d_additionunderflow(offset: 9289) = "addition underflow\00";
+data d_additionoverflow(offset: 9308) = "addition overflow\00";
+data d_attempttosubtractassetwithdi(offset: 9326) =
+"attempt to subtract asset with different symbol\00";
+data d_subtractionunderflow(offset: 9374) = "subtraction underflow\00";
+data d_subtractionoverflow(offset: 9396) = "subtraction overflow\00";
+data d_cannotpassenditeratortoerase(offset: 9417) =
+"cannot pass end iterator to erase\00";
+data d_cannotincrementenditerator(offset: 9451) = "cannot increment end iterator\00";
+data d_objectpassedtoeraseisnotinmu(offset: 9481) =
+"object passed to erase is not in multi_index\00";
+data d_cannoteraseobjectsintableofa(offset: 9526) =
+"cannot erase objects in table of another contract\00";
+data d_attempttoremoveobjectthatwas(offset: 9576) =
+"attempt to remove object that was not in multi_index\00";
+data d_pa(offset: 9629) = "read\00";
+data d_qa(offset: 9634) = "get\00";
+data d_ra(offset: 0) = "\a8%\00\00";
+
+import function env_require_auth(a:long);
+
+import function env_eosio_assert(a:int, b:int);
+
+import function env_db_find_i64(a:long, b:long, c:long, d:long):int;
+
+import function env_current_receiver():long;
+
+import function env_abort();
+
+import function env_memset(a:int, b:int, c:int):int;
+
+import function env_db_store_i64(a:long, b:long, c:long, d:long, e:int, f:int):int;
+
+import function env_db_update_i64(a:int, b:long, c:int, d:int);
+
+import function env_memcpy(a:int, b:int, c:int):int;
+
+import function env_is_account(a:long):int;
+
+import function env_require_recipient(a:long);
+
+import function env_has_auth(a:long):int;
+
+import function env_db_next_i64(a:int, b:int):int;
+
+import function env_action_data_size():int;
+
+import function env_read_action_data(a:int, b:int):int;
+
+import function env_memmove(a:int, b:int, c:int):int;
+
+import function env_extendsftf2(a:int, b:float);
+
+import function env_floatsitf(a:int, b:int);
+
+import function env_multf3(a:int, b:long, c:long, d:long, e:long);
+
+import function env_floatunsitf(a:int, b:int);
+
+import function env_divtf3(a:int, b:long, c:long, d:long, e:long);
+
+import function env_addtf3(a:int, b:long, c:long, d:long, e:long);
+
+import function env_extenddftf2(a:int, b:double);
+
+import function env_eqtf2(a:long, b:long, c:long, d:long):int;
+
+import function env_letf2(a:long, b:long, c:long, d:long):int;
+
+import function env_netf2(a:long, b:long, c:long, d:long):int;
+
+import function env_subtf3(a:int, b:long, c:long, d:long, e:long);
+
+import function env_trunctfdf2(a:long, b:long):double;
+
+import function env_getf2(a:long, b:long, c:long, d:long):int;
+
+import function env_trunctfsf2(a:long, b:long):float;
+
+import function env_prints_l(a:int, b:int);
+
+import function env_unordtf2(a:long, b:long, c:long, d:long):int;
+
+import function env_fixunstfsi(a:long, b:long):int;
+
+import function env_fixtfsi(a:long, b:long):int;
+
+import function env_eosio_assert_code(a:int, b:long);
+
+import function env_db_get_i64(a:int, b:int, c:int):int;
+
+import function env_db_remove_i64(a:int);
+
+function f_la() {
+  f_pa()
+}
+
+export function apply(a:long, b:long, c:long) {
+  f_la();
+  if (a == b) {
+    if (5031766152489992192L == c) {
+      f_zb(a, b)
+    } else {
+      if (8516769789752901632L == c) {
+        f_ac(a, b)
+      } else {
+        if (-4993669930013425664L == c) {
+          f_dc(a, b)
+        } else {
+          if (-3617168760277827584L == c) {
+            f_ec(a, b)
+          } else {
+            if (-6533262907872903168L == c) {
+              f_fc(a, b)
+            } else {
+              if (4929617502180212736L == c) {
+                f_gc(a, b)
+              } else {
+                if (a != 6138663577826885632L) {
+                  env_eosio_assert_code(0, 8000000000000000000L)
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  } else {
+    if (6138663577826885632L == b) {
+      if (-6569208335818555392L == c) {
+        env_eosio_assert_code(0, 8000000000000000001L)
+      }
+    }
+  }
+  f_db(0);
+}
+
+function f_na(a:int):int {
+  var b:int;
+  var c:int;
+  var d:int;
+  if (eqz(a)) goto B_d;
+  0[2051]:int = (c = 0[2051]:int + (b = a >> 16));
+  0[2049]:int = (a = (d = 0[2049]:int) + a + 7 & -8);
+  if (c << 16 <= a) goto B_c;
+  if (memory_grow(b) == -1) goto B_b;
+  goto B_a;
+  label B_d:
+  return 0;
+  label B_c:
+  0[2051]:int = c + 1;
+  if (memory_grow(b + 1) != -1) goto B_a;
+  label B_b:
+  env_eosio_assert(0, 8220);
+  return d;
+  label B_a:
+  return d;
+}
+
+function f_oa(a:int) {
+}
+
+function f_pa() {
+  var a:int_ptr = g_a - 16;
+  a[3] = 0;
+  0[2049]:int = (a = (a[3])[0]:int + 7 & -8);
+  0[2048]:int = a;
+  0[2051]:int = memory_size();
+}
+
+function f_qa():int {
+  return 8208
+}
+
+function f_ra(a:int, b:int):int {
+  var d:int_ptr;
+  var h:int;
+  var c:int = 0;
+  d = 0 - a;
+  if ((d & a) != a) goto B_b;
+  if (a > 16) goto B_a;
+  return f_na(b);
+  label B_b:
+  f_qa()[0]:int = 22;
+  return 0;
+  label B_a:
+  var e:int = a + -1;
+  a = f_na(e + b);
+  if (eqz(a)) goto B_e;
+  if (a == (c = e + a & d)) goto B_d;
+  d = a + -4;
+  e = d[0];
+  b = e & 7;
+  if (eqz(b)) goto B_c;
+  e = a + (e & -8);
+  var f:int_ptr = e + -8;
+  var g:int = f[0];
+  d[0] = b | (h = c - a);
+  (c + -4)[0]:int = (d = e - c) | b;
+  (c + -8)[0]:int = (b = g & 7) | h;
+  f[0] = b | d;
+  f_oa(a);
+  label B_e:
+  return c;
+  label B_d:
+  return a;
+  label B_c:
+  (c + -8)[0]:int = (a + -8)[0]:int + (a = c - a);
+  (c + -4)[0]:int = d[0] - a;
+  return c;
+}
+
+function f_sa(a:int_ptr, b:int, c:int):int {
+  var d:int = 22;
+  if (b < 4) goto B_b;
+  b = f_ra(b, c);
+  if (eqz(b)) goto B_a;
+  a[0] = b;
+  d = 0;
+  label B_b:
+  return d;
+  label B_a:
+  return f_qa()[0]:int;
+}
+
+function f_ta(a:int):int {
+  var b:int = select_if(a, 1, a);
+  a = f_na(b);
+  if (a) goto B_a;
+  loop L_b {
+    a = 0;
+    var c:int = 0[2054]:int;
+    if (eqz(c)) goto B_a;
+    call_indirect(c);
+    a = f_na(b);
+    if (eqz(a)) continue L_b;
+  }
+  label B_a:
+  return a;
+}
+
+function f_ua(a:int):int {
+  return f_ta(a)
+}
+
+function f_va(a:int) {
+  if (eqz(a)) goto B_a;
+  f_oa(a);
+  label B_a:
+}
+
+function f_wa(a:int) {
+  f_va(a)
+}
+
+function f_xa(a:int, b:int):int {
+  var d:int;
+  var c:int_ptr = g_a - 16;
+  g_a = c;
+  if (
+    eqz(f_sa(c + 12, b = select_if(b, 4, b > 4), d = select_if(a, 1, a)))) goto B_a;
+  loop L_c {
+    a = 0[2054]:int;
+    if (eqz(a)) goto B_b;
+    call_indirect(a);
+    if (f_sa(c + 12, b, d)) continue L_c;
+    goto B_a;
+  }
+  label B_b:
+  c[3] = 0;
+  label B_a:
+  a = c[3];
+  g_a = c + 16;
+  return a;
+}
+
+function f_ya(a:int, b:int):int {
+  return f_xa(a, b)
+}
+
+function f_za(a:int, b:int) {
+  if (eqz(a)) goto B_a;
+  f_oa(a);
+  label B_a:
+}
+
+function f_ab(a:int, b:int) {
+  f_za(a, b)
+}
+
+function f_bb(a:int) {
+  env_abort();
+  unreachable;
+}
+
+function f_cb(a:int, b:int) {
+  var c:int;
+  var d:int;
+  var e:int;
+  var i:int;
+  var g:int;
+  var h:int;
+  var f:int;
+  if (b >= -16) goto B_d;
+  c = a[0]:ubyte;
+  if (c & 1) goto B_f;
+  d = c >> 1;
+  e = 10;
+  goto B_e;
+  label B_f:
+  c = a[0]:int;
+  e = (c & -2) + -1;
+  d = a[1]:int;
+  label B_e:
+  f = 10;
+  b = select_if(d, b, d > b);
+  if (b < 11) goto B_g;
+  f = (b + 16 & -16) + -1;
+  label B_g:
+  if (f == e) goto B_j;
+  if (f != 10) goto B_k;
+  g = 1;
+  b = a + 1;
+  e = a[2]:int;
+  h = 0;
+  i = 1;
+  if (c & 1) goto B_h;
+  goto B_c;
+  label B_k:
+  b = f_ta(f + 1);
+  if (f > e) goto B_i;
+  if (b) goto B_i;
+  label B_j:
+  return ;
+  label B_i:
+  c = a[0]:ubyte;
+  if (c & 1) goto B_l;
+  h = 1;
+  e = a + 1;
+  g = 0;
+  i = 1;
+  if (eqz(c & 1)) goto B_c;
+  goto B_h;
+  label B_l:
+  e = a[2]:int;
+  g = 1;
+  h = 1;
+  i = 1;
+  if (eqz(c & 1)) goto B_c;
+  label B_h:
+  c = a[1]:int + 1;
+  if (eqz(c)) goto B_a;
+  goto B_b;
+  label B_d:
+  env_abort();
+  unreachable;
+  label B_c:
+  c = ((c & 254) >> i) + 1;
+  if (eqz(c)) goto B_a;
+  label B_b:
+  env_memcpy(b, e, c);
+  label B_a:
+  if (eqz(g)) goto B_m;
+  f_va(e);
+  label B_m:
+  if (eqz(h)) goto B_n;
+  a[1]:int = d;
+  a[2]:int = b;
+  a[0]:int = f + 1 | 1;
+  return ;
+  label B_n:
+  a[0]:byte = d << 1;
+}
+
+function f_db(a:int) {
+}
+
+function f_eb(a:int) {
+  env_abort();
+  unreachable;
+}
+
+function f_fb(a:long_ptr, b:long_ptr, c:int) {
+  var i:int;
+  var j:int;
+  var h:long;
+  var k:long;
+  var d:int = g_a - 128;
+  g_a = d;
+  env_require_auth(a[0]);
+  var e:int = 0;
+  var f:long = c[1]:long >> 8L;
+  var g:long = f;
+  loop L_c {
+    if ((i32_wrap_i64(g) << 24) + -1073741825 > 452984830) goto B_b;
+    h = g >> 8L;
+    if ((g & 65280L) == 0L) goto B_d;
+    g = h;
+    i = e;
+    e = i + 1;
+    if (i < 6) continue L_c;
+    goto B_a;
+    label B_d:
+    g = h;
+    loop L_e {
+      if ((g & 65280L) != 0L) goto B_b;
+      g = g >> 8L;
+      i = e < 6;
+      j = e + 1;
+      e = j;
+      if (i) continue L_e;
+    }
+    e = j + 1;
+    if (j < 6) continue L_c;
+    goto B_a;
+  }
+  label B_b:
+  env_eosio_assert(0, 8245);
+  label B_a:
+  k = c[0]:long;
+  if (k + 4611686018427387903L > 9223372036854775806L) goto B_g;
+  g = (c + 8)[0]:long >> 8L;
+  e = 0;
+  loop L_h {
+    if ((i32_wrap_i64(g) << 24) + -1073741825 > 452984830) goto B_g;
+    h = g >> 8L;
+    if ((g & 65280L) == 0L) goto B_i;
+    g = h;
+    i = e;
+    e = i + 1;
+    if (i < 6) continue L_h;
+    goto B_f;
+    label B_i:
+    g = h;
+    loop L_j {
+      if ((g & 65280L) != 0L) goto B_g;
+      g = g >> 8L;
+      i = e < 6;
+      j = e + 1;
+      e = j;
+      if (i) continue L_j;
+    }
+    e = j + 1;
+    if (j < 6) continue L_h;
+    goto B_f;
+  }
+  label B_g:
+  env_eosio_assert(0, 8265);
+  k = c[0]:long;
+  label B_f:
+  if (k > 0L) goto B_k;
+  env_eosio_assert(0, 8280);
+  label B_k:
+  (d + 40)[0]:int = 0;
+  d[3]:long = -1L;
+  d[4]:long = 0L;
+  d[1]:long = (g = a[0]);
+  d[2]:long = f;
+  e = env_db_find_i64(g, f, -4157508551318700032L, f);
+  if (e < 0) goto B_l;
+  if (f_gb(d + 8, e)[10]:int == d + 8) goto B_m;
+  env_eosio_assert(0, 8959);
+  label B_m:
+  env_eosio_assert(0, 8308);
+  label B_l:
+  h = a[0];
+  if (env_current_receiver() == d[1]:long) goto B_n;
+  env_eosio_assert(0, 9033);
+  label B_n:
+  e = f_ta(56);
+  e[2]:long = 0L;
+  e[0]:long = 0L;
+  e[3]:long = 0L;
+  e[10]:int = d + 8;
+  e[1]:long = (g = (c + 8)[0]:long);
+  e[2]:long = c[0]:long;
+  e[3]:long = g;
+  e[4]:long = b[0];
+  d[24]:int = d + 48 + 40;
+  d[23]:int = d + 48;
+  d[22]:int = d + 48;
+  d[26]:int = d + 88;
+  d[29]:int = e + 16;
+  d[28]:int = e;
+  d[30]:int = e + 32;
+  f_hb(d + 112, d + 104);
+  e[11]:int =
+    (j = env_db_store_i64((d + 8 + 8)[0]:long,
+                          -4157508551318700032L,
+                          h,
+                          g = e[1]:long >> 8L,
+                          d + 48,
+                          40));
+  if (g < (i = d + 8 + 16)[0]:long) goto B_o;
+  i[0]:long = g + 1L;
+  label B_o:
+  d[28]:int = e;
+  d[6]:long = (g = (e + 8)[0]:long >> 8L);
+  d[22]:int = j;
+  c = d + 36;
+  i = c[0]:int;
+  if (i >= (d + 8 + 32)[0]:int) goto B_r;
+  i[1]:long = g;
+  i[4]:int = j;
+  d[28]:int = 0;
+  i[0]:int = e;
+  c[0]:int = i + 24;
+  e = d[28]:int;
+  d[28]:int = 0;
+  if (e) goto B_q;
+  goto B_p;
+  label B_r:
+  f_ib(d + 32, d + 112, d + 48, d + 88);
+  e = d[28]:int;
+  d[28]:int = 0;
+  if (eqz(e)) goto B_p;
+  label B_q:
+  f_va(e);
+  label B_p:
+  j = d[8]:int;
+  if (eqz(j)) goto B_s;
+  c = d + 36;
+  e = c[0]:int;
+  if (e == j) goto B_u;
+  loop L_v {
+    e = e + -24;
+    i = e[0]:int;
+    e[0]:int = 0;
+    if (eqz(i)) goto B_w;
+    f_va(i);
+    label B_w:
+    if (j != e) continue L_v;
+  }
+  e = (d + 32)[0]:int;
+  goto B_t;
+  label B_u:
+  e = j;
+  label B_t:
+  c[0]:int = j;
+  f_va(e);
+  label B_s:
+  g_a = d + 128;
+}
+
+function f_gb(a:int_ptr, b:int):int {
+  var f:{ a:long, b:long, c:long, d:long, e:long, f:int, g:int }
+  var e:int;
+  var h:long;
+  var g:int;
+  var c:{ a:int, b:long, c:int } = g_a - 48;
+  var d:int = c;
+  g_a = c;
+  e = a[6];
+  if (e == (f = (a + 28)[0]:int)) goto B_a;
+  loop L_c {
+    if ((f + -8)[0]:int == b) goto B_b;
+    if (e != (f = f + -24)) continue L_c;
+    goto B_a;
+  }
+  label B_b:
+  if (e == f) goto B_a;
+  f = (f + -24)[0]:int;
+  g_a = d + 48;
+  return f;
+  label B_a:
+  f = env_db_get_i64(b, 0, 0);
+  if (f <= -1) goto B_f;
+  if (f >= 513) goto B_e;
+  e = c - (f + 15 & -16);
+  g_a = e;
+  g = 0;
+  goto B_d;
+  label B_f:
+  env_eosio_assert(0, 9010);
+  label B_e:
+  e = f_na(f);
+  g = 1;
+  label B_d:
+  env_db_get_i64(b, e, f);
+  d[3]:int = e;
+  d[2]:int = e;
+  d[4]:int = e + f;
+  f = f_ta(56);
+  f.b = 0L;
+  f.a = 0L;
+  f.c = 0L;
+  f.d = 0L;
+  f.e = 0L;
+  f.f = a;
+  d[6]:int = d + 8;
+  d[9]:int = f + 16;
+  d[8]:int = f;
+  d[10]:int = f + 32;
+  f_hc(d + 32, d + 24);
+  f.g = b;
+  d[6]:int = f;
+  d[4]:long = (h = f.b >> 8L);
+  d[1]:int = b;
+  var i:int_ptr = a + 28;
+  c = i[0];
+  if (c >= (a + 32)[0]:int) goto B_i;
+  c.b = h;
+  c.c = b;
+  d[6]:int = 0;
+  c.a = f;
+  i[0] = c + 24;
+  if (g) goto B_h;
+  goto B_g;
+  label B_i:
+  f_ib(a + 24, d + 24, d + 32, d + 4);
+  if (eqz(g)) goto B_g;
+  label B_h:
+  f_oa(e);
+  label B_g:
+  b = d[6]:int;
+  d[6]:int = 0;
+  if (eqz(b)) goto B_j;
+  f_va(b);
+  label B_j:
+  g_a = d + 48;
+  return f;
+}
+
+function f_hb(a:{ a:int, b:int, c:int }, b:int_ptr) {
+  var f:int_ptr;
+  var e:{ a:int, b:int, c:int }
+  var g:int;
+  var c:long_ptr = g_a - 16;
+  g_a = c;
+  var d:long_ptr = a.a;
+  e = b[0];
+  if (e.c - (f = e.b) > 7) goto B_a;
+  env_eosio_assert(0, 9084);
+  f = (e + 4)[0]:int;
+  label B_a:
+  env_memcpy(f, d, 8);
+  f = e + 4;
+  f[0] = (g = f[0] + 8);
+  c[1] = d[1];
+  if ((e + 8)[0]:int - g > 7) goto B_b;
+  env_eosio_assert(0, 9084);
+  g = f[0];
+  label B_b:
+  env_memcpy(g, c + 8, 8);
+  f[0] = f[0] + 8;
+  d = a.b;
+  e = b[0];
+  if (e.c - (f = e.b) > 7) goto B_c;
+  env_eosio_assert(0, 9084);
+  f = (e + 4)[0]:int;
+  label B_c:
+  env_memcpy(f, d, 8);
+  f = e + 4;
+  f[0] = (g = f[0] + 8);
+  c[1] = d[1];
+  if ((e + 8)[0]:int - g > 7) goto B_d;
+  env_eosio_assert(0, 9084);
+  g = f[0];
+  label B_d:
+  env_memcpy(g, c + 8, 8);
+  f[0] = f[0] + 8;
+  a = a.c;
+  e = b[0];
+  if (e.c - (f = e.b) > 7) goto B_e;
+  env_eosio_assert(0, 9084);
+  f = (e + 4)[0]:int;
+  label B_e:
+  env_memcpy(f, a, 8);
+  e = e + 4;
+  e.a = e.a + 8;
+  g_a = c + 16;
+}
+
+function f_ib(a:{ a:int, b:int, c:int }, b:{ a:int, b:long, c:int }, c:long_ptr, d:int_ptr) {
+  var e:int_ptr;
+  var f:int;
+  var i:int;
+  var g:int;
+  var h:int_ptr;
+  f = (a.b - (e = a.a)) / 24;
+  g = f + 1;
+  if (g >= 178956971) goto B_b;
+  h = 178956970;
+  e = (a.c - e) / 24;
+  if (e > 89478484) goto B_d;
+  h = select_if(g, h = e << 1, h < g);
+  if (eqz(h)) goto B_c;
+  label B_d:
+  e = f_ta(h * 24);
+  goto B_a;
+  label B_c:
+  h = 0;
+  e = 0;
+  goto B_a;
+  label B_b:
+  f_eb(a);
+  unreachable;
+  label B_a:
+  g = b.a;
+  b.a = 0;
+  b = e + (i = f * 24);
+  b.a = g;
+  b.b = c[0];
+  b.c = d[0];
+  f = e + h * 24;
+  g = b + 24;
+  c = (a + 4)[0]:int;
+  if (c == (h = a.a)) goto B_f;
+  b = e + i + -24;
+  loop L_g {
+    e = c + -24;
+    d = e[0];
+    e[0] = 0;
+    b.a = d;
+    (b + 16)[0]:int = (c + -8)[0]:int;
+    (b + 8)[0]:long = (c + -16)[0]:long;
+    b = b + -24;
+    c = e;
+    if (h != e) continue L_g;
+  }
+  b = b + 24;
+  h = (a + 4)[0]:int;
+  c = a.a;
+  goto B_e;
+  label B_f:
+  c = h;
+  label B_e:
+  a.a = b;
+  (a + 4)[0]:int = g;
+  (a + 8)[0]:int = f;
+  if (h == c) goto B_h;
+  loop L_i {
+    h = h + -24;
+    b = h[0];
+    h[0] = 0;
+    if (eqz(b)) goto B_j;
+    f_va(b);
+    label B_j:
+    if (c != h) continue L_i;
+  }
+  label B_h:
+  if (eqz(c)) goto B_k;
+  f_va(c);
+  label B_k:
+}
+
+function f_jb(a:long_ptr, b:long_ptr, c:int, d:int) {
+  var j:int;
+  var k:int;
+  var i:long;
+  var e:int = g_a - 48;
+  g_a = e;
+  var f:int_ptr = 0;
+  var g:long = c[1]:long >> 8L;
+  var h:long = g;
+  loop L_d {
+    if ((i32_wrap_i64(h) << 24) + -1073741825 > 452984830) goto B_c;
+    i = h >> 8L;
+    if ((h & 65280L) == 0L) goto B_f;
+    h = i;
+    j = f;
+    f = j + 1;
+    if (j < 6) continue L_d;
+    goto B_e;
+    label B_f:
+    h = i;
+    loop L_g {
+      if ((h & 65280L) != 0L) goto B_c;
+      h = h >> 8L;
+      j = f < 6;
+      k = f + 1;
+      f = k;
+      if (j) continue L_g;
+    }
+    f = k + 1;
+    if (k < 6) continue L_d;
+    label B_e:
+  }
+  if (eqz(d[0]:ubyte & 1)) goto B_a;
+  goto B_b;
+  label B_c:
+  env_eosio_assert(0, 8245);
+  if (eqz(d[0]:ubyte & 1)) goto B_a;
+  label B_b:
+  if (d[1]:int < 257) goto B_a;
+  env_eosio_assert(0, 8341);
+  label B_a:
+  d = 0;
+  (e + 40)[0]:int = 0;
+  e[3]:long = -1L;
+  e[4]:long = 0L;
+  e[1]:long = (h = a[0]);
+  e[2]:long = g;
+  f = env_db_find_i64(h, g, -4157508551318700032L, g);
+  if (f < 0) goto B_j;
+  d = f_gb(e + 8, f);
+  if (d[10]:int == e + 8) goto B_k;
+  env_eosio_assert(0, 8959);
+  label B_k:
+  h = b[0];
+  if (h == d[4]:long) goto B_h;
+  goto B_i;
+  label B_j:
+  env_eosio_assert(0, 8370);
+  h = b[0];
+  if (h == 0[4]:long) goto B_h;
+  label B_i:
+  env_eosio_assert(0, 8430);
+  h = d[4]:long;
+  label B_h:
+  env_require_auth(h);
+  g = c[0]:long;
+  if (g + 4611686018427387903L > 9223372036854775806L) goto B_m;
+  h = (c + 8)[0]:long >> 8L;
+  f = 0;
+  loop L_n {
+    if ((i32_wrap_i64(h) << 24) + -1073741825 > 452984830) goto B_m;
+    i = h >> 8L;
+    if ((h & 65280L) == 0L) goto B_o;
+    h = i;
+    j = f;
+    f = j + 1;
+    if (j < 6) continue L_n;
+    goto B_l;
+    label B_o:
+    h = i;
+    loop L_p {
+      if ((h & 65280L) != 0L) goto B_m;
+      h = h >> 8L;
+      j = f < 6;
+      k = f + 1;
+      f = k;
+      if (j) continue L_p;
+    }
+    f = k + 1;
+    if (k < 6) continue L_n;
+    goto B_l;
+  }
+  label B_m:
+  env_eosio_assert(0, 8474);
+  g = c[0]:long;
+  label B_l:
+  if (g > 0L) goto B_q;
+  env_eosio_assert(0, 8491);
+  label B_q:
+  if ((c + 8)[0]:long == d[1]:long) goto B_r;
+  env_eosio_assert(0, 8520);
+  label B_r:
+  f = d + 32;
+  if (c[0]:long <= d[2]:long - d[0]:long) goto B_s;
+  env_eosio_assert(0, 8546);
+  label B_s:
+  e[0]:int = c;
+  f_kb(e + 8, d, e);
+  f_lb(a, f, c, f);
+  k = e[8]:int;
+  if (eqz(k)) goto B_t;
+  c = e + 36;
+  f = c[0]:int;
+  if (f == k) goto B_v;
+  loop L_w {
+    f = f + -24;
+    j = f[0];
+    f[0] = 0;
+    if (eqz(j)) goto B_x;
+    f_va(j);
+    label B_x:
+    if (k != f) continue L_w;
+  }
+  f = (e + 32)[0]:int;
+  goto B_u;
+  label B_v:
+  f = k;
+  label B_u:
+  c[0]:int = k;
+  f_va(f);
+  label B_t:
+  g_a = e + 48;
+}
+
+function f_kb(a:long_ptr, b:int, c:int) {
+  var f:long;
+  var g:long;
+  var d:int = g_a - 48;
+  var e:int_ptr = d;
+  g_a = d;
+  if (b[10]:int == a) goto B_a;
+  env_eosio_assert(0, 9090);
+  label B_a:
+  if (env_current_receiver() == a[0]) goto B_b;
+  env_eosio_assert(0, 9136);
+  label B_b:
+  c = c[0]:int;
+  if (c[1]:long == (f = b[1]:long)) goto B_c;
+  env_eosio_assert(0, 9246);
+  label B_c:
+  b[0]:long = (g = b[0]:long + c[0]:long);
+  if (g > -4611686018427387904L) goto B_d;
+  env_eosio_assert(0, 9289);
+  g = b[0]:long;
+  label B_d:
+  f = f >> 8L;
+  if (g < 4611686018427387904L) goto B_e;
+  env_eosio_assert(0, 9308);
+  label B_e:
+  if (f == (b + 8)[0]:long >> 8L) goto B_f;
+  env_eosio_assert(0, 9187);
+  label B_f:
+  c = d;
+  d = c + -48;
+  g_a = d;
+  e[3] = d;
+  e[2] = d;
+  e[4] = c + -8;
+  e[6] = e + 8;
+  e[8] = b;
+  e[9] = b + 16;
+  e[10] = b + 32;
+  f_hb(e + 32, e + 24);
+  env_db_update_i64(b[11]:int, 0L, d, 40);
+  if (f < a[2]) goto B_g;
+  (a + 16)[0]:long = f + 1L;
+  label B_g:
+  g_a = e + 48;
+}
+
+function f_lb(a:long_ptr, b:int, c:int, d:int) {
+  var f:long;
+  var g:long;
+  var e:int = g_a - 80;
+  g_a = e;
+  (e + 32)[0]:int = 0;
+  e[2]:long = -1L;
+  e[3]:long = 0L;
+  e[0]:long = (f = a[0]);
+  e[1]:long = (g = b[0]:long);
+  b = env_db_find_i64(f, g, 3607749779137757184L, c[1]:long >> 8L);
+  if (b < 0) goto B_c;
+  b = f_mb(e, b);
+  if (b[4]:int == e) goto B_d;
+  env_eosio_assert(0, 8959);
+  label B_d:
+  e[12]:int = c;
+  f_nb(e, b, e + 48);
+  a = e[6]:int;
+  if (a) goto B_b;
+  goto B_a;
+  label B_c:
+  g = d[0]:long;
+  if (env_current_receiver() == e[0]:long) goto B_e;
+  env_eosio_assert(0, 9033);
+  label B_e:
+  b = f_ta(32);
+  b[4]:int = e;
+  b[1]:long = (c + 8)[0]:long;
+  b[0]:long = c[0]:long;
+  env_memcpy(e + 48, b, 8);
+  e[9]:long = b[1]:long;
+  env_memcpy(e + 48 | 8, e + 72, 8);
+  b[5]:int =
+    (a = env_db_store_i64((e + 8)[0]:long,
+                          3607749779137757184L,
+                          g,
+                          f = b[1]:long >> 8L,
+                          e + 48,
+                          16));
+  if (f < (c = e + 16)[0]:long) goto B_f;
+  c[0]:long = f + 1L;
+  label B_f:
+  e[18]:int = b;
+  e[6]:long = (f = (b + 8)[0]:long >> 8L);
+  e[11]:int = a;
+  d = e + 28;
+  c = d[0]:int;
+  if (c >= (e + 32)[0]:int) goto B_i;
+  c[1]:long = f;
+  c[4]:int = a;
+  e[18]:int = 0;
+  c[0]:int = b;
+  d[0]:int = c + 24;
+  b = e[18]:int;
+  e[18]:int = 0;
+  if (b) goto B_h;
+  goto B_g;
+  label B_i:
+  f_ob(e + 24, e + 72, e + 48, e + 44);
+  b = e[18]:int;
+  e[18]:int = 0;
+  if (eqz(b)) goto B_g;
+  label B_h:
+  f_va(b);
+  label B_g:
+  a = e[6]:int;
+  if (eqz(a)) goto B_a;
+  label B_b:
+  d = e + 28;
+  b = d[0]:int;
+  if (b == a) goto B_k;
+  loop L_l {
+    b = b + -24;
+    c = b[0]:int;
+    b[0]:int = 0;
+    if (eqz(c)) goto B_m;
+    f_va(c);
+    label B_m:
+    if (a != b) continue L_l;
+  }
+  b = (e + 24)[0]:int;
+  goto B_j;
+  label B_k:
+  b = a;
+  label B_j:
+  d[0]:int = a;
+  f_va(b);
+  label B_a:
+  g_a = e + 80;
+}
+
+function f_mb(a:int_ptr, b:int):int {
+  var f:{ a:long, b:long, c:int, d:int }
+  var e:{ a:int, b:long, c:int }
+  var i:long;
+  var g:int;
+  var c:int = g_a - 32;
+  var d:int = c;
+  g_a = c;
+  e = a[6];
+  if (e == (f = (a + 28)[0]:int)) goto B_a;
+  loop L_c {
+    if ((f + -8)[0]:int == b) goto B_b;
+    if (e != (f = f + -24)) continue L_c;
+    goto B_a;
+  }
+  label B_b:
+  if (e == f) goto B_a;
+  f = (f + -24)[0]:int;
+  g_a = d + 32;
+  return f;
+  label B_a:
+  e = env_db_get_i64(b, 0, 0);
+  if (e <= -1) goto B_f;
+  if (e >= 513) goto B_e;
+  c = c - (e + 15 & -16);
+  g_a = c;
+  g = 0;
+  goto B_d;
+  label B_f:
+  env_eosio_assert(0, 9010);
+  label B_e:
+  c = f_na(e);
+  g = 1;
+  label B_d:
+  env_db_get_i64(b, c, e);
+  f = f_ta(32);
+  f.b = 0L;
+  f.a = 0L;
+  f.c = a;
+  if (e > 7) goto B_g;
+  env_eosio_assert(0, 9629);
+  label B_g:
+  env_memcpy(f, c, 8);
+  d[3]:long = 0L;
+  var h:int_ptr = c + 8;
+  if ((e & -8) != 8) goto B_h;
+  env_eosio_assert(0, 9629);
+  label B_h:
+  env_memcpy(d + 24, h, 8);
+  (f + 8)[0]:long = (i = d[3]:long);
+  f.d = b;
+  d[4]:int = f;
+  d[3]:long = (i = i >> 8L);
+  d[3]:int = b;
+  h = a + 28;
+  e = h[0];
+  if (e >= (a + 32)[0]:int) goto B_k;
+  e.b = i;
+  e.c = b;
+  d[4]:int = 0;
+  e.a = f;
+  h[0] = e + 24;
+  if (g) goto B_j;
+  goto B_i;
+  label B_k:
+  f_ob(a + 24, d + 16, d + 24, d + 12);
+  if (eqz(g)) goto B_i;
+  label B_j:
+  f_oa(c);
+  label B_i:
+  b = d[4]:int;
+  d[4]:int = 0;
+  if (eqz(b)) goto B_l;
+  f_va(b);
+  label B_l:
+  g_a = d + 32;
+  return f;
+}
+
+function f_nb(a:long_ptr, b:{ a:long, b:long, c:int, d:int }, c:int) {
+  var f:long;
+  var g:long;
+  var d:int = g_a - 16;
+  var e:long_ptr = d;
+  g_a = d;
+  if (b.c == a) goto B_a;
+  env_eosio_assert(0, 9090);
+  label B_a:
+  if (env_current_receiver() == a[0]) goto B_b;
+  env_eosio_assert(0, 9136);
+  label B_b:
+  c = c[0]:int;
+  if (c[1]:long == (f = b.b)) goto B_c;
+  env_eosio_assert(0, 9246);
+  label B_c:
+  b.a = (g = b.a + c[0]:long);
+  if (g > -4611686018427387904L) goto B_d;
+  env_eosio_assert(0, 9289);
+  g = b.a;
+  label B_d:
+  f = f >> 8L;
+  if (g < 4611686018427387904L) goto B_e;
+  env_eosio_assert(0, 9308);
+  label B_e:
+  if (f == (c = b + 8)[0]:long >> 8L) goto B_f;
+  env_eosio_assert(0, 9187);
+  label B_f:
+  var h:int = d;
+  d = h + -16;
+  g_a = d;
+  env_memcpy(d, b, 8);
+  e[1] = c[0]:long;
+  env_memcpy(h + -8, e + 8, 8);
+  env_db_update_i64(b.d, 0L, d, 16);
+  if (f < a[2]) goto B_g;
+  (a + 16)[0]:long = f + 1L;
+  label B_g:
+  g_a = e + 16;
+}
+
+function f_ob(a:{ a:int, b:int, c:int }, b:{ a:int, b:long, c:int }, c:long_ptr, d:int_ptr) {
+  var e:int_ptr;
+  var f:int;
+  var i:int;
+  var g:int;
+  var h:int_ptr;
+  f = (a.b - (e = a.a)) / 24;
+  g = f + 1;
+  if (g >= 178956971) goto B_b;
+  h = 178956970;
+  e = (a.c - e) / 24;
+  if (e > 89478484) goto B_d;
+  h = select_if(g, h = e << 1, h < g);
+  if (eqz(h)) goto B_c;
+  label B_d:
+  e = f_ta(h * 24);
+  goto B_a;
+  label B_c:
+  h = 0;
+  e = 0;
+  goto B_a;
+  label B_b:
+  f_eb(a);
+  unreachable;
+  label B_a:
+  g = b.a;
+  b.a = 0;
+  b = e + (i = f * 24);
+  b.a = g;
+  b.b = c[0];
+  b.c = d[0];
+  f = e + h * 24;
+  g = b + 24;
+  c = (a + 4)[0]:int;
+  if (c == (h = a.a)) goto B_f;
+  b = e + i + -24;
+  loop L_g {
+    e = c + -24;
+    d = e[0];
+    e[0] = 0;
+    b.a = d;
+    (b + 16)[0]:int = (c + -8)[0]:int;
+    (b + 8)[0]:long = (c + -16)[0]:long;
+    b = b + -24;
+    c = e;
+    if (h != e) continue L_g;
+  }
+  b = b + 24;
+  h = (a + 4)[0]:int;
+  c = a.a;
+  goto B_e;
+  label B_f:
+  c = h;
+  label B_e:
+  a.a = b;
+  (a + 4)[0]:int = g;
+  (a + 8)[0]:int = f;
+  if (h == c) goto B_h;
+  loop L_i {
+    h = h + -24;
+    b = h[0];
+    h[0] = 0;
+    if (eqz(b)) goto B_j;
+    f_va(b);
+    label B_j:
+    if (c != h) continue L_i;
+  }
+  label B_h:
+  if (eqz(c)) goto B_k;
+  f_va(c);
+  label B_k:
+}
+
+function f_pb(a:long_ptr, b:int, c:int) {
+  var i:int;
+  var j:int;
+  var h:long;
+  var d:int = g_a - 48;
+  g_a = d;
+  var e:int_ptr = 0;
+  var f:long = b[1]:long >> 8L;
+  var g:long = f;
+  loop L_d {
+    if ((i32_wrap_i64(g) << 24) + -1073741825 > 452984830) goto B_c;
+    h = g >> 8L;
+    if ((g & 65280L) == 0L) goto B_f;
+    g = h;
+    i = e;
+    e = i + 1;
+    if (i < 6) continue L_d;
+    goto B_e;
+    label B_f:
+    g = h;
+    loop L_g {
+      if ((g & 65280L) != 0L) goto B_c;
+      g = g >> 8L;
+      i = e < 6;
+      j = e + 1;
+      e = j;
+      if (i) continue L_g;
+    }
+    e = j + 1;
+    if (j < 6) continue L_d;
+    label B_e:
+  }
+  if (eqz(c[0]:ubyte & 1)) goto B_a;
+  goto B_b;
+  label B_c:
+  env_eosio_assert(0, 8245);
+  if (eqz(c[0]:ubyte & 1)) goto B_a;
+  label B_b:
+  if (c[1]:int < 257) goto B_a;
+  env_eosio_assert(0, 8341);
+  label B_a:
+  c = 0;
+  (d + 40)[0]:int = 0;
+  d[3]:long = -1L;
+  d[4]:long = 0L;
+  d[1]:long = (g = a[0]);
+  d[2]:long = f;
+  e = env_db_find_i64(g, f, -4157508551318700032L, f);
+  if (e < 0) goto B_i;
+  c = f_gb(d + 8, e);
+  if (c[10]:int == d + 8) goto B_h;
+  env_eosio_assert(0, 8959);
+  goto B_h;
+  label B_i:
+  env_eosio_assert(0, 8580);
+  label B_h:
+  env_require_auth(c[4]:long);
+  f = b[0]:long;
+  if (f + 4611686018427387903L > 9223372036854775806L) goto B_k;
+  g = (b + 8)[0]:long >> 8L;
+  e = 0;
+  loop L_l {
+    if ((i32_wrap_i64(g) << 24) + -1073741825 > 452984830) goto B_k;
+    h = g >> 8L;
+    if ((g & 65280L) == 0L) goto B_m;
+    g = h;
+    i = e;
+    e = i + 1;
+    if (i < 6) continue L_l;
+    goto B_j;
+    label B_m:
+    g = h;
+    loop L_n {
+      if ((g & 65280L) != 0L) goto B_k;
+      g = g >> 8L;
+      i = e < 6;
+      j = e + 1;
+      e = j;
+      if (i) continue L_n;
+    }
+    e = j + 1;
+    if (j < 6) continue L_l;
+    goto B_j;
+  }
+  label B_k:
+  env_eosio_assert(0, 8474);
+  f = b[0]:long;
+  label B_j:
+  if (f > 0L) goto B_o;
+  env_eosio_assert(0, 8613);
+  label B_o:
+  if ((b + 8)[0]:long == c[1]:long) goto B_p;
+  env_eosio_assert(0, 8520);
+  label B_p:
+  d[0]:int = b;
+  f_qb(d + 8, c, d);
+  f_rb(a, c + 32, b);
+  j = d[8]:int;
+  if (eqz(j)) goto B_q;
+  b = d + 36;
+  e = b[0]:int;
+  if (e == j) goto B_s;
+  loop L_t {
+    e = e + -24;
+    i = e[0];
+    e[0] = 0;
+    if (eqz(i)) goto B_u;
+    f_va(i);
+    label B_u:
+    if (j != e) continue L_t;
+  }
+  e = (d + 32)[0]:int;
+  goto B_r;
+  label B_s:
+  e = j;
+  label B_r:
+  b[0]:int = j;
+  f_va(e);
+  label B_q:
+  g_a = d + 48;
+}
+
+function f_qb(a:long_ptr, b:int, c:int) {
+  var f:long;
+  var g:long;
+  var d:int = g_a - 48;
+  var e:int_ptr = d;
+  g_a = d;
+  if (b[10]:int == a) goto B_a;
+  env_eosio_assert(0, 9090);
+  label B_a:
+  if (env_current_receiver() == a[0]) goto B_b;
+  env_eosio_assert(0, 9136);
+  label B_b:
+  c = c[0]:int;
+  if (c[1]:long == (f = b[1]:long)) goto B_c;
+  env_eosio_assert(0, 9326);
+  label B_c:
+  b[0]:long = (g = b[0]:long - c[0]:long);
+  if (g > -4611686018427387904L) goto B_d;
+  env_eosio_assert(0, 9374);
+  g = b[0]:long;
+  label B_d:
+  f = f >> 8L;
+  if (g < 4611686018427387904L) goto B_e;
+  env_eosio_assert(0, 9396);
+  label B_e:
+  if (f == (b + 8)[0]:long >> 8L) goto B_f;
+  env_eosio_assert(0, 9187);
+  label B_f:
+  c = d;
+  d = c + -48;
+  g_a = d;
+  e[3] = d;
+  e[2] = d;
+  e[4] = c + -8;
+  e[6] = e + 8;
+  e[8] = b;
+  e[9] = b + 16;
+  e[10] = b + 32;
+  f_hb(e + 32, e + 24);
+  env_db_update_i64(b[11]:int, 0L, d, 40);
+  if (f < a[2]) goto B_g;
+  (a + 16)[0]:long = f + 1L;
+  label B_g:
+  g_a = e + 48;
+}
+
+function f_rb(a:int, b:long_ptr, c:int) {
+  var f:long;
+  var g:long;
+  var d:int = g_a - 48;
+  g_a = d;
+  var e:int = 0;
+  (d + 40)[0]:int = 0;
+  d[3]:long = -1L;
+  d[4]:long = 0L;
+  d[1]:long = (f = a[0]:long);
+  d[2]:long = (g = b[0]);
+  a = env_db_find_i64(f, g, 3607749779137757184L, c[1]:long >> 8L);
+  if (a < 0) goto B_c;
+  e = f_mb(d + 8, a);
+  if (e[4]:int == d + 8) goto B_d;
+  env_eosio_assert(0, 8959);
+  label B_d:
+  if (e[0]:long >= c[0]:long) goto B_a;
+  goto B_b;
+  label B_c:
+  env_eosio_assert(0, 8744);
+  if (d_ra[0]:long >= c[0]:long) goto B_a;
+  label B_b:
+  env_eosio_assert(0, 8768);
+  label B_a:
+  f = b[0];
+  d[0]:int = c;
+  f_sb(d + 8, e, f, d);
+  b = d[8]:int;
+  if (eqz(b)) goto B_e;
+  a = d + 36;
+  c = a[0]:int;
+  if (c == b) goto B_g;
+  loop L_h {
+    c = c + -24;
+    e = c[0]:int;
+    c[0]:int = 0;
+    if (eqz(e)) goto B_i;
+    f_va(e);
+    label B_i:
+    if (b != c) continue L_h;
+  }
+  c = (d + 32)[0]:int;
+  goto B_f;
+  label B_g:
+  c = b;
+  label B_f:
+  a[0]:int = b;
+  f_va(c);
+  label B_e:
+  g_a = d + 48;
+}
+
+function f_sb(a:long_ptr, b:{ a:long, b:long, c:int, d:int }, c:long, d:int) {
+  var g:long;
+  var h:long;
+  var e:int = g_a - 16;
+  var f:long_ptr = e;
+  g_a = e;
+  if (b.c == a) goto B_a;
+  env_eosio_assert(0, 9090);
+  label B_a:
+  if (env_current_receiver() == a[0]) goto B_b;
+  env_eosio_assert(0, 9136);
+  label B_b:
+  d = d[0]:int;
+  if (d[1]:long == (g = b.b)) goto B_c;
+  env_eosio_assert(0, 9326);
+  label B_c:
+  b.a = (h = b.a - d[0]:long);
+  if (h > -4611686018427387904L) goto B_d;
+  env_eosio_assert(0, 9374);
+  h = b.a;
+  label B_d:
+  g = g >> 8L;
+  if (h < 4611686018427387904L) goto B_e;
+  env_eosio_assert(0, 9396);
+  label B_e:
+  if (g == (d = b + 8)[0]:long >> 8L) goto B_f;
+  env_eosio_assert(0, 9187);
+  label B_f:
+  var i:int = e;
+  e = i + -16;
+  g_a = e;
+  env_memcpy(e, b, 8);
+  f[1] = d[0]:long;
+  env_memcpy(i + -8, f + 8, 8);
+  env_db_update_i64(b.d, c, e, 16);
+  if (g < a[2]) goto B_g;
+  (a + 16)[0]:long = g + 1L;
+  label B_g:
+  g_a = f + 16;
+}
+
+function f_tb(a:long_ptr, b:long_ptr, c:long_ptr, d:int, e:{ a:ubyte, b:int }) {
+  var g:long;
+  var l:int;
+  var m:int;
+  var i:long;
+  var j:int_ptr;
+  var f:int = g_a - 48;
+  g_a = f;
+  g = b[0];
+  if (g != c[0]) goto B_a;
+  env_eosio_assert(0, 8643);
+  g = b[0];
+  label B_a:
+  env_require_auth(g);
+  if (env_is_account(c[0])) goto B_b;
+  env_eosio_assert(0, 8667);
+  label B_b:
+  g = d[1]:long;
+  (f + 40)[0]:int = 0;
+  f[3]:long = -1L;
+  f[4]:long = 0L;
+  f[1]:long = a[0];
+  f[2]:long = (g = g >> 8L);
+  var h:long_ptr = f_ub(f + 8, g, 8693);
+  env_require_recipient(b[0]);
+  env_require_recipient(c[0]);
+  i = d[0]:long;
+  if (i + 4611686018427387903L > 9223372036854775806L) goto B_d;
+  g = (d + 8)[0]:long >> 8L;
+  j = 0;
+  loop L_e {
+    if ((i32_wrap_i64(g) << 24) + -1073741825 > 452984830) goto B_d;
+    var k:long = g >> 8L;
+    if ((g & 65280L) == 0L) goto B_f;
+    g = k;
+    l = j;
+    j = l + 1;
+    if (l < 6) continue L_e;
+    goto B_c;
+    label B_f:
+    g = k;
+    loop L_g {
+      if ((g & 65280L) != 0L) goto B_d;
+      g = g >> 8L;
+      l = j < 6;
+      m = j + 1;
+      j = m;
+      if (l) continue L_g;
+    }
+    j = m + 1;
+    if (m < 6) continue L_e;
+    goto B_c;
+  }
+  label B_d:
+  env_eosio_assert(0, 8474);
+  i = d[0]:long;
+  label B_c:
+  if (i > 0L) goto B_h;
+  env_eosio_assert(0, 8712);
+  label B_h:
+  if ((d + 8)[0]:long == h[1]) goto B_i;
+  env_eosio_assert(0, 8520);
+  label B_i:
+  if (eqz(e.a & 1)) goto B_j;
+  if (e.b < 257) goto B_j;
+  env_eosio_assert(0, 8341);
+  label B_j:
+  f[0]:long = select_if(c, b, env_has_auth(c[0]))[0]:long;
+  f_rb(a, b, d);
+  f_lb(a, c, d, f);
+  m = f[8]:int;
+  if (eqz(m)) goto B_k;
+  d = f + 36;
+  j = d[0]:int;
+  if (j == m) goto B_m;
+  loop L_n {
+    j = j + -24;
+    l = j[0];
+    j[0] = 0;
+    if (eqz(l)) goto B_o;
+    f_va(l);
+    label B_o:
+    if (m != j) continue L_n;
+  }
+  j = (f + 32)[0]:int;
+  goto B_l;
+  label B_m:
+  j = m;
+  label B_l:
+  d[0]:int = m;
+  f_va(j);
+  label B_k:
+  g_a = f + 48;
+}
+
+function f_ub(a:int, b:long, c:int):int {
+  var e:int;
+  var g:int;
+  var f:int_ptr;
+  var d:int = a[6]:int;
+  if (d == (e = (a + 28)[0]:int)) goto B_b;
+  loop L_d {
+    f = e + -24;
+    g = f[0];
+    if (g[1]:long >> 8L == b) goto B_c;
+    e = f;
+    if (d != f) continue L_d;
+    goto B_b;
+  }
+  label B_c:
+  if (d == e) goto B_b;
+  if (g[10]:int == a) goto B_a;
+  env_eosio_assert(0, 8959);
+  return g;
+  label B_b:
+  g = 0;
+  f = env_db_find_i64(a[0]:long, a[1]:long, -4157508551318700032L, b);
+  if (f < 0) goto B_e;
+  g = f_gb(a, f);
+  if (g[10]:int == a) goto B_a;
+  env_eosio_assert(0, 8959);
+  return g;
+  label B_e:
+  env_eosio_assert(0, c);
+  label B_a:
+  return g;
+}
+
+function f_vb(a:int, b:long_ptr, c:int, d:int) {
+  var g:long;
+  var h:long;
+  var e:int = g_a - 128;
+  g_a = e;
+  env_require_auth(d[0]:long);
+  if (env_is_account(b[0])) goto B_a;
+  env_eosio_assert(0, 8786);
+  label B_a:
+  var f:long = c[0]:long;
+  (e + 48 + 32)[0]:int = 0;
+  e[7]:long = (f = f >> 8L);
+  e[8]:long = -1L;
+  e[9]:long = 0L;
+  e[6]:long = a[0]:long;
+  if (f_ub(e + 48, f, 8815)[1]:long == c[0]:long) goto B_b;
+  env_eosio_assert(0, 8520);
+  label B_b:
+  (e + 8 + 32)[0]:int = 0;
+  e[3]:long = -1L;
+  e[4]:long = 0L;
+  e[1]:long = (g = a[0]:long);
+  e[2]:long = (h = b[0]);
+  a = env_db_find_i64(g, h, 3607749779137757184L, f);
+  if (a < 0) goto B_f;
+  if (f_mb(e + 8, a)[4]:int == e + 8) goto B_e;
+  env_eosio_assert(0, 8959);
+  b = e[8]:int;
+  if (b) goto B_d;
+  goto B_c;
+  label B_f:
+  f = d[0]:long;
+  e[0]:int = c;
+  e[15]:long = f;
+  if (env_current_receiver() == e[1]:long) goto B_g;
+  env_eosio_assert(0, 9033);
+  label B_g:
+  e[25]:int = e;
+  e[24]:int = e + 8;
+  e[26]:int = e + 120;
+  c = f_ta(32);
+  c[1]:long = 0L;
+  c[0]:long = 0L;
+  c[4]:int = e + 8;
+  f_wb(e + 96, c);
+  e[28]:int = c;
+  e[12]:long = (f = c[1]:long >> 8L);
+  e[23]:int = (b = c[5]:int);
+  d = e + 36;
+  a = d[0]:int;
+  if (a >= (e + 8 + 32)[0]:int) goto B_i;
+  a[1]:long = f;
+  a[4]:int = b;
+  e[28]:int = 0;
+  a[0]:int = c;
+  d[0]:int = a + 24;
+  c = e[28]:int;
+  e[28]:int = 0;
+  if (c) goto B_h;
+  goto B_e;
+  label B_i:
+  f_ob(e + 32, e + 112, e + 96, e + 92);
+  c = e[28]:int;
+  e[28]:int = 0;
+  if (eqz(c)) goto B_e;
+  label B_h:
+  f_va(c);
+  label B_e:
+  b = e[8]:int;
+  if (eqz(b)) goto B_c;
+  label B_d:
+  d = e + 36;
+  c = d[0]:int;
+  if (c == b) goto B_k;
+  loop L_l {
+    c = c + -24;
+    a = c[0]:int;
+    c[0]:int = 0;
+    if (eqz(a)) goto B_m;
+    f_va(a);
+    label B_m:
+    if (b != c) continue L_l;
+  }
+  c = (e + 32)[0]:int;
+  goto B_j;
+  label B_k:
+  c = b;
+  label B_j:
+  d[0]:int = b;
+  f_va(c);
+  label B_c:
+  b = e[18]:int;
+  if (eqz(b)) goto B_n;
+  d = e + 76;
+  c = d[0]:int;
+  if (c == b) goto B_p;
+  loop L_q {
+    c = c + -24;
+    a = c[0]:int;
+    c[0]:int = 0;
+    if (eqz(a)) goto B_r;
+    f_va(a);
+    label B_r:
+    if (b != c) continue L_q;
+  }
+  c = (e + 72)[0]:int;
+  goto B_o;
+  label B_p:
+  c = b;
+  label B_o:
+  d[0]:int = b;
+  f_va(c);
+  label B_n:
+  g_a = e + 128;
+}
+
+function f_wb(a:{ a:int, b:int, c:int }, b:int) {
+  var j:int;
+  var k:int;
+  var c:int = g_a - 16;
+  var d:long_ptr = c;
+  g_a = c;
+  var e:long = (a.b[0]:int)[0]:long;
+  var f:long = e >> 8L;
+  var g:long_ptr = a.a;
+  var h:int = 0;
+  loop L_c {
+    if ((i32_wrap_i64(f) << 24) + -1073741825 > 452984830) goto B_b;
+    var i:long = f >> 8L;
+    if ((f & 65280L) == 0L) goto B_d;
+    f = i;
+    j = h;
+    h = j + 1;
+    if (j < 6) continue L_c;
+    goto B_a;
+    label B_d:
+    f = i;
+    loop L_e {
+      if ((f & 65280L) != 0L) goto B_b;
+      f = f >> 8L;
+      j = h < 6;
+      k = h + 1;
+      h = k;
+      if (j) continue L_e;
+    }
+    h = k + 1;
+    if (k < 6) continue L_c;
+    goto B_a;
+  }
+  label B_b:
+  env_eosio_assert(0, 8245);
+  label B_a:
+  b[1]:long = e;
+  b[0]:long = 0L;
+  j = c;
+  h = j + -16;
+  g_a = h;
+  env_memcpy(h, b, 8);
+  d[1] = b[1]:long;
+  env_memcpy(j + -8, d + 8, 8);
+  b[5]:int =
+    env_db_store_i64(g[1],
+                     3607749779137757184L,
+                     a.c[0]:long,
+                     f = b[1]:long >> 8L,
+                     h,
+                     16);
+  if (f < g[2]) goto B_f;
+  (g + 16)[0]:long = f + 1L;
+  label B_f:
+  g_a = d + 16;
+}
+
+function f_xb(a:int, b:long_ptr, c:long_ptr) {
+  var f:long;
+  var g:long;
+  var d:int = g_a - 48;
+  g_a = d;
+  env_require_auth(b[0]);
+  var e:int = 0;
+  (d + 32)[0]:int = 0;
+  d[2]:long = -1L;
+  d[3]:long = 0L;
+  d[0]:long = (f = a[0]:long);
+  d[1]:long = (g = b[0]);
+  b = env_db_find_i64(f, g, 3607749779137757184L, c[0] >> 8L);
+  if (b <= -1) goto B_c;
+  e = f_mb(d, b);
+  if (e[4]:int == d) goto B_d;
+  env_eosio_assert(0, 8959);
+  label B_d:
+  if (eqz(e[0]:long)) goto B_a;
+  goto B_b;
+  label B_c:
+  env_eosio_assert(0, 8837);
+  if (eqz(d_ra[0]:long)) goto B_a;
+  label B_b:
+  env_eosio_assert(0, 8913);
+  label B_a:
+  if (e) goto B_e;
+  env_eosio_assert(0, 9417);
+  env_eosio_assert(0, 9451);
+  label B_e:
+  b = env_db_next_i64(e[5]:int, d + 40);
+  if (b < 0) goto B_f;
+  f_mb(d, b);
+  label B_f:
+  f_yb(d, e);
+  c = d[6]:int;
+  if (eqz(c)) goto B_g;
+  a = d + 28;
+  e = a[0]:int;
+  if (e == c) goto B_i;
+  loop L_j {
+    e = e + -24;
+    b = e[0]:int;
+    e[0]:int = 0;
+    if (eqz(b)) goto B_k;
+    f_va(b);
+    label B_k:
+    if (c != e) continue L_j;
+  }
+  e = (d + 24)[0]:int;
+  goto B_h;
+  label B_i:
+  e = c;
+  label B_h:
+  a[0]:int = c;
+  f_va(e);
+  label B_g:
+  g_a = d + 48;
+}
+
+function f_yb(a:int, b:int) {
+  var d:int_ptr;
+  var e:int;
+  var g:long;
+  var c:int_ptr;
+  var f:int_ptr;
+  var j:int_ptr;
+  var i:int_ptr;
+  var h:int;
+  if (b[4]:int == a) goto B_a;
+  env_eosio_assert(0, 9481);
+  label B_a:
+  if (env_current_receiver() == a[0]:long) goto B_b;
+  env_eosio_assert(0, 9526);
+  label B_b:
+  c = a[6]:int;
+  if (c == (e = (d = a + 28)[0])) goto B_h;
+  f = e;
+  if ((((e + -24)[0]:int)[1]:long ^ (g = b[1]:long)) < 256L) goto B_i;
+  h = c + 24;
+  i = e;
+  loop L_j {
+    if (h == i) goto B_h;
+    j = i + -48;
+    f = i + -24;
+    i = f;
+    if (((j[0])[1]:long ^ g) >= 256L) continue L_j;
+  }
+  label B_i:
+  if (c == f) goto B_g;
+  j = -24;
+  if (f == e) goto B_f;
+  goto B_e;
+  label B_h:
+  f = c;
+  label B_g:
+  env_eosio_assert(0, 9576);
+  j = -24;
+  if (f != (e = d[0])) goto B_e;
+  label B_f:
+  h = f + j;
+  goto B_d;
+  label B_e:
+  i = f;
+  loop L_k {
+    h = i[0];
+    i[0] = 0;
+    c = i + j;
+    f = c[0];
+    c[0] = h;
+    if (eqz(f)) goto B_l;
+    f_va(f);
+    label B_l:
+    (i + -8)[0]:int = (i + 16)[0]:int;
+    (i + -16)[0]:long = (i + 8)[0]:long;
+    if (e != (i = i + 24)) continue L_k;
+  }
+  h = i + -24;
+  f = (a + 28)[0]:int;
+  if (f + 24 == i) goto B_c;
+  label B_d:
+  loop L_m {
+    f = f + j;
+    i = f[0];
+    f[0] = 0;
+    if (eqz(i)) goto B_n;
+    f_va(i);
+    label B_n:
+    if (h != f) continue L_m;
+  }
+  label B_c:
+  (a + 28)[0]:int = h;
+  env_db_remove_i64(b[5]:int);
+}
+
+function f_zb(a:long, b:long) {
+  var e:int;
+  var g:int;
+  var c:int = g_a - 64;
+  var d:int = c;
+  g_a = c;
+  e = env_action_data_size();
+  if (eqz(e)) goto B_d;
+  if (e < 512) goto B_c;
+  c = f_na(e);
+  goto B_b;
+  label B_d:
+  c = 0;
+  goto B_a;
+  label B_c:
+  c = c - (e + 15 & -16);
+  g_a = c;
+  label B_b:
+  env_read_action_data(c, e);
+  label B_a:
+  d[7]:long = 0L;
+  if (e > 7) goto B_e;
+  env_eosio_assert(0, 9629);
+  label B_e:
+  env_memcpy(d + 56, c, 8);
+  d[6]:long = 0L;
+  d[5]:long = 0L;
+  var f:int = c + 8;
+  g = e & -8;
+  if (g != 8) goto B_f;
+  env_eosio_assert(0, 9629);
+  label B_f:
+  e = c + e;
+  env_memcpy(d + 40, f, 8);
+  d[1]:long = 0L;
+  f = c + 16;
+  if (g != 16) goto B_g;
+  env_eosio_assert(0, 9629);
+  label B_g:
+  env_memcpy(d + 8, f, 8);
+  (d + 40 + 8)[0]:long = d[1]:long;
+  (d + 8 + 24)[0]:int = e;
+  d[6]:int = c;
+  (d + 28)[0]:int = c + 24;
+  d[2]:long = b;
+  d[1]:long = a;
+  f_fb(d + 8, d + 56, d + 40);
+  g_a = d + 64;
+}
+
+function f_ac(a:long, b:long) {
+  var e:int_ptr;
+  var f:int;
+  var c:int_ptr = g_a - 144;
+  var d:int = c;
+  g_a = c;
+  e = env_action_data_size();
+  if (eqz(e)) goto B_d;
+  if (e < 512) goto B_c;
+  c = f_na(e);
+  goto B_b;
+  label B_d:
+  c = 0;
+  goto B_a;
+  label B_c:
+  c = c - (e + 15 & -16);
+  g_a = c;
+  label B_b:
+  env_read_action_data(c, e);
+  label B_a:
+  d[25]:int = c;
+  d[24]:int = c;
+  d[26]:int = (f = c + e);
+  d[11]:long = 0L;
+  if (e > 7) goto B_e;
+  env_eosio_assert(0, 9629);
+  f = (d + 104)[0]:int;
+  c = d[25]:int;
+  label B_e:
+  env_memcpy(d + 88, c, 8);
+  d[25]:int = (c = c + 8);
+  d[10]:long = 0L;
+  d[9]:long = 0L;
+  if (f - c > 7) goto B_f;
+  env_eosio_assert(0, 9629);
+  f = (d + 96 + 8)[0]:int;
+  c = d[25]:int;
+  label B_f:
+  env_memcpy(d + 72, c, 8);
+  d[25]:int = (c = c + 8);
+  d[3]:long = 0L;
+  if (f - c > 7) goto B_g;
+  env_eosio_assert(0, 9629);
+  c = d[25]:int;
+  label B_g:
+  env_memcpy(d + 24, c, 8);
+  (d + 72 + 8)[0]:long = d[3]:long;
+  d[25]:int = c + 8;
+  d[16]:int = 0;
+  d[7]:long = 0L;
+  f_bc(d + 96, d + 56);
+  c = d + 8 + 8;
+  c[0] = (d + 96 + 8)[0]:int;
+  d[1]:long = d[12]:long;
+  e = d + 112 + 8;
+  e[0] = c[0];
+  d[14]:long = d[1]:long;
+  (d + 128 + 8)[0]:int = (c = e[0]);
+  (d + 48)[0]:int = c;
+  d[3]:long = a;
+  d[4]:long = b;
+  d[5]:long = (a = d[14]:long);
+  d[16]:long = a;
+  f_jb(d + 24, d + 88, d + 72, d + 56);
+  if (eqz(d[56]:ubyte & 1)) goto B_h;
+  f_va((d + 56 + 8)[0]:int);
+  label B_h:
+  g_a = d + 144;
+}
+
+function f_bc(a:int, b:int):int {
+  var d:int;
+  var e:int;
+  var f:int;
+  var g:byte_ptr;
+  var c:int = g_a - 32;
+  g_a = c;
+  c[6]:int = 0;
+  c[2]:long = 0L;
+  f_cc(a, c + 16);
+  e = c[5]:int - (d = c[4]:int);
+  if (eqz(e)) goto B_h;
+  (c + 8)[0]:int = 0;
+  c[0]:long = 0L;
+  if (e >= -16) goto B_c;
+  if (e > 10) goto B_g;
+  c[0]:byte = e << 1;
+  f = c | 1;
+  goto B_f;
+  label B_h:
+  if (b[0]:ubyte & 1) goto B_e;
+  b[0]:short = 0;
+  d = b + 8;
+  goto B_d;
+  label B_g:
+  g = e + 16 & -16;
+  f = f_ta(g);
+  c[0]:int = g | 1;
+  c[2]:int = f;
+  c[1]:int = e;
+  label B_f:
+  var h:int = e;
+  g = f;
+  loop L_i {
+    g[0] = d[0]:ubyte;
+    g = g + 1;
+    d = d + 1;
+    h = h + -1;
+    if (h) continue L_i;
+  }
+  (f + e)[0]:byte = 0;
+  if (b[0]:ubyte & 1) goto B_k;
+  b[0]:short = 0;
+  goto B_j;
+  label B_k:
+  (b[2]:int)[0]:byte = 0;
+  b[1]:int = 0;
+  label B_j:
+  f_cb(b, 0);
+  (b + 8)[0]:int = (c + 8)[0]:int;
+  b[0]:long@4 = c[0]:long;
+  d = c[4]:int;
+  if (eqz(d)) goto B_a;
+  goto B_b;
+  label B_e:
+  (b[2]:int)[0]:byte = 0;
+  b[1]:int = 0;
+  d = b + 8;
+  label B_d:
+  f_cb(b, 0);
+  d[0]:int = 0;
+  b[0]:long@4 = 0L;
+  d = c[4]:int;
+  if (d) goto B_b;
+  goto B_a;
+  label B_c:
+  f_bb(c);
+  unreachable;
+  label B_b:
+  c[5]:int = d;
+  f_va(d);
+  label B_a:
+  g_a = c + 32;
+  return a;
+}
+
+function f_cc(a:int_ptr, b:{ a:int, b:int }):int {
+  var i:int;
+  var h:int;
+  var c:int = a[1];
+  var d:long = 0L;
+  var e:int_ptr = a + 8;
+  var f:int_ptr = a + 4;
+  var g:int = 0;
+  loop L_a {
+    if (c < e[0]) goto B_b;
+    env_eosio_assert(0, 9634);
+    c = f[0];
+    label B_b:
+    h = c[0]:ubyte;
+    f[0] = (i = c + 1);
+    d = d | i64_extend_i32_u((h & 127) << (c = g & 255));
+    g = c + 7;
+    c = i;
+    if (h & 128) continue L_a;
+  }
+  h = b.b;
+  f = h - (c = b.a);
+  if (f >= (g = i32_wrap_i64(d))) goto B_d;
+  f_ic(b, g - f);
+  i = (a + 4)[0]:int;
+  h = (b + 4)[0]:int;
+  c = b.a;
+  goto B_c;
+  label B_d:
+  if (f <= g) goto B_c;
+  (b + 4)[0]:int = (h = c + g);
+  label B_c:
+  if ((a + 8)[0]:int - i >= (h = h - c)) goto B_e;
+  env_eosio_assert(0, 9629);
+  i = (a + 4)[0]:int;
+  label B_e:
+  env_memcpy(c, i, h);
+  c = a + 4;
+  c[0]:int = c[0]:int + h;
+  return a;
+}
+
+function f_dc(a:long, b:long) {
+  var e:int_ptr;
+  var f:int;
+  var c:int_ptr = g_a - 128;
+  var d:int = c;
+  g_a = c;
+  e = env_action_data_size();
+  if (eqz(e)) goto B_d;
+  if (e < 512) goto B_c;
+  c = f_na(e);
+  goto B_b;
+  label B_d:
+  c = 0;
+  goto B_a;
+  label B_c:
+  c = c - (e + 15 & -16);
+  g_a = c;
+  label B_b:
+  env_read_action_data(c, e);
+  label B_a:
+  d[21]:int = c;
+  d[20]:int = c;
+  d[22]:int = (f = c + e);
+  d[9]:long = 0L;
+  d[8]:long = 0L;
+  if (e > 7) goto B_e;
+  env_eosio_assert(0, 9629);
+  f = (d + 88)[0]:int;
+  c = d[21]:int;
+  label B_e:
+  env_memcpy(d + 64, c, 8);
+  d[21]:int = (c = c + 8);
+  d[2]:long = 0L;
+  if (f - c > 7) goto B_f;
+  env_eosio_assert(0, 9629);
+  c = d[21]:int;
+  label B_f:
+  env_memcpy(d + 16, c, 8);
+  (d + 64 + 8)[0]:long = d[2]:long;
+  d[21]:int = c + 8;
+  d[14]:int = 0;
+  d[6]:long = 0L;
+  f_bc(d + 80, d + 48);
+  c = d + 8;
+  c[0] = (d + 80 + 8)[0]:int;
+  d[0]:long = d[10]:long;
+  e = d + 96 + 8;
+  e[0] = c[0];
+  d[12]:long = d[0]:long;
+  (d + 112 + 8)[0]:int = (c = e[0]);
+  (d + 40)[0]:int = c;
+  d[2]:long = a;
+  d[3]:long = b;
+  d[4]:long = (a = d[12]:long);
+  d[14]:long = a;
+  f_pb(d + 16, d + 64, d + 48);
+  if (eqz(d[48]:ubyte & 1)) goto B_g;
+  f_va((d + 56)[0]:int);
+  label B_g:
+  g_a = d + 128;
+}
+
+function f_ec(a:long, b:long) {
+  var e:int;
+  var f:int_ptr;
+  var c:int_ptr = g_a - 144;
+  var d:int = c;
+  g_a = c;
+  e = env_action_data_size();
+  if (eqz(e)) goto B_d;
+  if (e < 512) goto B_c;
+  c = f_na(e);
+  goto B_b;
+  label B_d:
+  c = 0;
+  goto B_a;
+  label B_c:
+  c = c - (e + 15 & -16);
+  g_a = c;
+  label B_b:
+  env_read_action_data(c, e);
+  label B_a:
+  d[25]:int = c;
+  d[24]:int = c;
+  d[26]:int = (f = c + e);
+  d[11]:long = 0L;
+  if (e > 7) goto B_e;
+  env_eosio_assert(0, 9629);
+  f = (d + 104)[0]:int;
+  c = d[25]:int;
+  label B_e:
+  env_memcpy(d + 88, c, 8);
+  d[25]:int = (c = c + 8);
+  d[10]:long = 0L;
+  if (f - c > 7) goto B_f;
+  env_eosio_assert(0, 9629);
+  f = (d + 96 + 8)[0]:int;
+  c = d[25]:int;
+  label B_f:
+  env_memcpy(d + 80, c, 8);
+  d[25]:int = (c = c + 8);
+  d[9]:long = 0L;
+  d[8]:long = 0L;
+  if (f - c > 7) goto B_g;
+  env_eosio_assert(0, 9629);
+  f = (d + 104)[0]:int;
+  c = d[25]:int;
+  label B_g:
+  env_memcpy(d + 64, c, 8);
+  d[25]:int = (c = c + 8);
+  d[2]:long = 0L;
+  if (f - c > 7) goto B_h;
+  env_eosio_assert(0, 9629);
+  c = d[25]:int;
+  label B_h:
+  env_memcpy(d + 16, c, 8);
+  (d + 64 + 8)[0]:long = d[2]:long;
+  d[25]:int = c + 8;
+  d[14]:int = 0;
+  d[6]:long = 0L;
+  f_bc(d + 96, d + 48);
+  c = d + 8;
+  c[0] = (d + 96 + 8)[0]:int;
+  d[0]:long = d[12]:long;
+  f = d + 112 + 8;
+  f[0] = c[0];
+  d[14]:long = d[0]:long;
+  (d + 128 + 8)[0]:int = (c = f[0]);
+  (d + 40)[0]:int = c;
+  d[2]:long = a;
+  d[3]:long = b;
+  d[4]:long = (a = d[14]:long);
+  d[16]:long = a;
+  f_tb(d + 16, d + 88, d + 80, d + 64, d + 48);
+  if (eqz(d[48]:ubyte & 1)) goto B_i;
+  f_va((d + 56)[0]:int);
+  label B_i:
+  g_a = d + 144;
+}
+
+function f_fc(a:long, b:long) {
+  var e:int;
+  var g:int;
+  var c:int = g_a - 64;
+  var d:int = c;
+  g_a = c;
+  e = env_action_data_size();
+  if (eqz(e)) goto B_d;
+  if (e < 512) goto B_c;
+  c = f_na(e);
+  goto B_b;
+  label B_d:
+  c = 0;
+  goto B_a;
+  label B_c:
+  c = c - (e + 15 & -16);
+  g_a = c;
+  label B_b:
+  env_read_action_data(c, e);
+  label B_a:
+  d[7]:long = 0L;
+  if (e > 7) goto B_e;
+  env_eosio_assert(0, 9629);
+  label B_e:
+  env_memcpy(d + 56, c, 8);
+  d[6]:long = 0L;
+  d[1]:long = 0L;
+  var f:int = c + 8;
+  g = e & -8;
+  if (g != 8) goto B_f;
+  env_eosio_assert(0, 9629);
+  label B_f:
+  e = c + e;
+  env_memcpy(d + 8, f, 8);
+  d[6]:long = d[1]:long;
+  d[5]:long = 0L;
+  f = c + 16;
+  if (g != 16) goto B_g;
+  env_eosio_assert(0, 9629);
+  label B_g:
+  env_memcpy(d + 40, f, 8);
+  (d + 8 + 24)[0]:int = e;
+  d[6]:int = c;
+  (d + 28)[0]:int = c + 24;
+  d[2]:long = b;
+  d[1]:long = a;
+  f_vb(d + 8, d + 56, d + 48, d + 40);
+  g_a = d + 64;
+}
+
+function f_gc(a:long, b:long) {
+  var e:int;
+  var c:int = g_a - 48;
+  var d:int = c;
+  g_a = c;
+  e = env_action_data_size();
+  if (eqz(e)) goto B_d;
+  if (e < 512) goto B_c;
+  c = f_na(e);
+  goto B_b;
+  label B_d:
+  c = 0;
+  goto B_a;
+  label B_c:
+  c = c - (e + 15 & -16);
+  g_a = c;
+  label B_b:
+  env_read_action_data(c, e);
+  label B_a:
+  d[5]:long = 0L;
+  if (e > 7) goto B_e;
+  env_eosio_assert(0, 9629);
+  label B_e:
+  var f:int = c + e;
+  env_memcpy(d + 40, c, 8);
+  d[4]:long = 0L;
+  d[0]:long = 0L;
+  var g:int = c + 8;
+  if ((e & -8) != 8) goto B_f;
+  env_eosio_assert(0, 9629);
+  label B_f:
+  env_memcpy(d, g, 8);
+  d[4]:long = d[0]:long;
+  (d + 24)[0]:int = f;
+  d[4]:int = c;
+  (d + 20)[0]:int = c + 16;
+  d[1]:long = b;
+  d[0]:long = a;
+  f_xb(d, d + 40, d + 32);
+  g_a = d + 48;
+}
+
+function f_hc(a:{ a:int, b:int, c:int }, b:int_ptr) {
+  var f:int_ptr;
+  var e:{ a:int, b:int, c:int }
+  var g:int;
+  var c:long_ptr = g_a - 16;
+  g_a = c;
+  var d:long_ptr = a.a;
+  e = b[0];
+  if (e.c - (f = e.b) > 7) goto B_a;
+  env_eosio_assert(0, 9629);
+  f = (e + 4)[0]:int;
+  label B_a:
+  env_memcpy(d, f, 8);
+  f = e + 4;
+  f[0] = (g = f[0] + 8);
+  c[1] = 0L;
+  if ((e + 8)[0]:int - g > 7) goto B_b;
+  env_eosio_assert(0, 9629);
+  g = f[0];
+  label B_b:
+  env_memcpy(c + 8, g, 8);
+  d[1] = c[1];
+  f[0] = f[0] + 8;
+  d = a.b;
+  e = b[0];
+  if (e.c - (f = e.b) > 7) goto B_c;
+  env_eosio_assert(0, 9629);
+  f = (e + 4)[0]:int;
+  label B_c:
+  env_memcpy(d, f, 8);
+  f = e + 4;
+  f[0] = (g = f[0] + 8);
+  c[1] = 0L;
+  if ((e + 8)[0]:int - g > 7) goto B_d;
+  env_eosio_assert(0, 9629);
+  g = f[0];
+  label B_d:
+  env_memcpy(c + 8, g, 8);
+  d[1] = c[1];
+  f[0] = f[0] + 8;
+  a = a.c;
+  e = b[0];
+  if (e.c - (f = e.b) > 7) goto B_e;
+  env_eosio_assert(0, 9629);
+  f = (e + 4)[0]:int;
+  label B_e:
+  env_memcpy(a, f, 8);
+  e = e + 4;
+  e.a = e.a + 8;
+  g_a = c + 16;
+}
+
+function f_ic(a:{ a:int, b:int, c:int }, b:int) {
+  var d:byte_ptr;
+  var e:int;
+  var c:int;
+  var h:int;
+  var f:int;
+  var g:int_ptr;
+  c = a.c;
+  if (c - (d = a.b) >= b) goto B_e;
+  f = d - (e = a.a);
+  g = f + b;
+  if (g <= -1) goto B_c;
+  h = 2147483647;
+  c = c - e;
+  if (c > 1073741822) goto B_f;
+  h = select_if(g, c = c << 1, c < g);
+  if (eqz(h)) goto B_d;
+  label B_f:
+  c = f_ta(h);
+  goto B_b;
+  label B_e:
+  a = a + 4;
+  loop L_g {
+    d[0] = 0;
+    a.a = (d = a.a + 1);
+    b = b + -1;
+    if (b) continue L_g;
+    goto B_a;
+  }
+  label B_d:
+  h = 0;
+  c = 0;
+  goto B_b;
+  label B_c:
+  f_eb(a);
+  unreachable;
+  label B_b:
+  h = c + h;
+  e = d + b - e;
+  f = c + f;
+  d = f;
+  loop L_h {
+    d[0] = 0;
+    d = d + 1;
+    b = b + -1;
+    if (b) continue L_h;
+  }
+  e = c + e;
+  c = f - (d = (g = a + 4)[0] - (b = a.a));
+  if (d < 1) goto B_i;
+  env_memcpy(c, b, d);
+  b = a.a;
+  label B_i:
+  a.a = c;
+  g[0] = e;
+  (a + 8)[0]:int = h;
+  if (eqz(b)) goto B_a;
+  f_va(b);
+  return ;
+  label B_a:
+}
+

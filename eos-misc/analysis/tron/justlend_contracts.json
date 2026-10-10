@@ -1,0 +1,1403 @@
+{
+  "$schema": "https://docs.justlend.org/developers/contracts.schema.json",
+  "_meta": {
+    "generated_by": "scripts/generate_contracts_json.py",
+    "source_of_truth": "https://github.com/justlend/mcp-server-justlend/blob/main/src/core/chains.ts",
+    "last_generated": "2026-06-26",
+    "schema_version": "1.2.0",
+    "schema_version_policy": "Semantic versioning. MAJOR = breaking field rename or removal. MINOR = additive field (e.g. new role keys, new networks). PATCH = address corrections within an existing structure. Consumers should pin a MAJOR.",
+    "address_formats": {
+      "base58": "TRON Base58Check, T-prefixed, 34 chars — for wallets, Tronscan, TronWeb display, and end-user prompts.",
+      "hex_evm": "EVM-style 0x-prefixed hex of the 20-byte address body — for cross-chain bridges, EVM-side tooling, Etherscan-like indexers, and byte-address comparison.",
+      "hex_tron": "TRON-internal 41-prefixed hex (21 bytes = 0x41 + EVM addr) — for TronGrid / TronWeb low-level APIs that expect TRON-internal hex."
+    },
+    "status_values": {
+      "active": "Market is open for new supply and borrow. Use for new positions.",
+      "legacy": "Market is closed to new supply and borrow. Contract is still queryable so existing positions can be unwound, but do not direct new deposits to it."
+    },
+    "comment": "All addresses are returned in three equivalent formats (see address_formats above). Network is recorded per record so consumers can mix Mainnet + Nile in one pass without context loss. Each entry under `networks.*.jtokens` carries an explicit `status` field (see status_values above) so consumers can filter `active` vs `legacy` without parsing prose elsewhere.",
+    "last_verified": "2026-08-19",
+    "verification_sources": [
+      "https://app.justlend.org/",
+      "https://openapi.just.network/lend/jtoken",
+      "https://github.com/justlend/mcp-server-justlend/blob/main/src/core/chains.ts"
+    ]
+  },
+  "networks": {
+    "mainnet": {
+      "comptroller": {
+        "unitroller_proxy": {
+          "label": "Unitroller (Comptroller proxy)",
+          "address": {
+            "base58": "TGjYzgCyPobsNS9n6WcbdLVR9dH7mWqFx7",
+            "hex_evm": "0x4a33bf2666f2e75f3d6ad3b9ad316685d5c668d4",
+            "hex_tron": "0x414a33bf2666f2e75f3d6ad3b9ad316685d5c668d4"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TGjYzgCyPobsNS9n6WcbdLVR9dH7mWqFx7",
+          "role": "entrypoint"
+        },
+        "comptroller_impl": {
+          "label": "Comptroller implementation",
+          "address": {
+            "base58": "TB23wYojvAsSx6gR8ebHiBqwSeABiBMPAr",
+            "hex_evm": "0x0b81cf71fc58313e1b379797cf39afab33d3f7ab",
+            "hex_tron": "0x410b81cf71fc58313e1b379797cf39afab33d3f7ab"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TB23wYojvAsSx6gR8ebHiBqwSeABiBMPAr",
+          "role": "implementation"
+        }
+      },
+      "price_oracle": {
+        "proxy": {
+          "label": "PriceOracleProxy",
+          "address": {
+            "base58": "TCKp2AzuhzV4B4Ahx1ej4mvQgHZ1kH7F7k",
+            "hex_evm": "0x19d5cda987533693ffbd7a5eb77acd209042acbb",
+            "hex_tron": "0x4119d5cda987533693ffbd7a5eb77acd209042acbb"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TCKp2AzuhzV4B4Ahx1ej4mvQgHZ1kH7F7k",
+          "role": "entrypoint"
+        },
+        "implementation": {
+          "label": "PriceOracle",
+          "address": {
+            "base58": "TMiNCmvD3zdsv6mk7niBU6NPBzVNjYMQTV",
+            "hex_evm": "0x80d2f390957701fb7c80de8767203ea1673f83db",
+            "hex_tron": "0x4180d2f390957701fb7c80de8767203ea1673f83db"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TMiNCmvD3zdsv6mk7niBU6NPBzVNjYMQTV",
+          "role": "implementation"
+        }
+      },
+      "governance": {
+        "governor_delegator": {
+          "label": "GovernorBravoDelegator",
+          "address": {
+            "base58": "TEqiF5JbhDPD77yjEfnEMncGRZNDt2uogD",
+            "hex_evm": "0x356db5ff7599825aff31a25f8177f390304c93b8",
+            "hex_tron": "0x41356db5ff7599825aff31a25f8177f390304c93b8"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TEqiF5JbhDPD77yjEfnEMncGRZNDt2uogD",
+          "role": "entrypoint"
+        },
+        "governor_delegate": {
+          "label": "GovernorBravoDelegate",
+          "address": {
+            "base58": "TCiQTkxhzwSeXhRsNdHCvrxHRAvpjQn5Dt",
+            "hex_evm": "0x1e1bb45c692a6aff872decabd6bd6e3559aa4b81",
+            "hex_tron": "0x411e1bb45c692a6aff872decabd6bd6e3559aa4b81"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TCiQTkxhzwSeXhRsNdHCvrxHRAvpjQn5Dt",
+          "role": "implementation"
+        },
+        "timelock": {
+          "label": "Timelock",
+          "address": {
+            "base58": "TRWNvb15NmfNKNLhQpxefFz7cNjrYjEw7x",
+            "hex_evm": "0xaa6f10960ed9f7fe44aacc3aa33dd8f7da108c23",
+            "hex_tron": "0x41aa6f10960ed9f7fe44aacc3aa33dd8f7da108c23"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TRWNvb15NmfNKNLhQpxefFz7cNjrYjEw7x"
+        },
+        "jst": {
+          "label": "JST token",
+          "address": {
+            "base58": "TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9",
+            "hex_evm": "0x18fd0626daf3af02389aef3ed87db9c33f638ffa",
+            "hex_tron": "0x4118fd0626daf3af02389aef3ed87db9c33f638ffa"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9"
+        },
+        "wjst": {
+          "label": "WJST (voting wrapper)",
+          "address": {
+            "base58": "TXk9LnTnLN7oH96H3sKxJayMxLxR9M4ZD6",
+            "hex_evm": "0xeeda4dfab78d92917f11df192f9b460715d7f67b",
+            "hex_tron": "0x41eeda4dfab78d92917f11df192f9b460715d7f67b"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TXk9LnTnLN7oH96H3sKxJayMxLxR9M4ZD6"
+        }
+      },
+      "strx": {
+        "staked_trx": {
+          "label": "StakedTRX (sTRX)",
+          "address": {
+            "base58": "TU3kjFuhtEo42tsCBtfYUAZxoqQ4yuSLQ5",
+            "hex_evm": "0xc64e69acde1c7b16c2a3efcdbbdaa96c3644c2b3",
+            "hex_tron": "0x41c64e69acde1c7b16c2a3efcdbbdaa96c3644c2b3"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TU3kjFuhtEo42tsCBtfYUAZxoqQ4yuSLQ5"
+        },
+        "energy_rental": {
+          "label": "EnergyRental",
+          "address": {
+            "base58": "TU2MJ5Veik1LRAgjeSzEdvmDYx7mefJZvd",
+            "hex_evm": "0xc60a6f5c81431c97ed01b61698b6853557f3afd4",
+            "hex_tron": "0x41c60a6f5c81431c97ed01b61698b6853557f3afd4"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TU2MJ5Veik1LRAgjeSzEdvmDYx7mefJZvd"
+        }
+      },
+      "jtokens": {
+        "jTRX": {
+          "symbol": "jTRX",
+          "status": "active",
+          "underlying_symbol": "TRX",
+          "decimals": 8,
+          "underlying_decimals": 6,
+          "delegator": {
+            "label": "jTRX CErc20Delegator",
+            "address": {
+              "base58": "TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP",
+              "hex_evm": "0x2c7c9963111905d29eb8da37d28b0f53a7bb5c28",
+              "hex_tron": "0x412c7c9963111905d29eb8da37d28b0f53a7bb5c28"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP",
+            "role": "entrypoint"
+          },
+          "underlying": {
+            "label": "TRX native",
+            "note": "TRX is the native chain asset, no TRC20 contract."
+          }
+        },
+        "jUSDT": {
+          "symbol": "jUSDT",
+          "status": "active",
+          "underlying_symbol": "USDT",
+          "decimals": 8,
+          "underlying_decimals": 6,
+          "delegator": {
+            "label": "jUSDT CErc20Delegator",
+            "address": {
+              "base58": "TXJgMdjVX5dKiQaUi9QobwNxtSQaFqccvd",
+              "hex_evm": "0xea09611b57e89d67fbb33a516eb90508ca95a3e5",
+              "hex_tron": "0x41ea09611b57e89d67fbb33a516eb90508ca95a3e5"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TXJgMdjVX5dKiQaUi9QobwNxtSQaFqccvd",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jUSDT CErc20Delegate",
+            "address": {
+              "base58": "TLjn59xNM7VEK6VZ3VQ8Y1ipxsdsFka5wZ",
+              "hex_evm": "0x761f2a87105fef1e84fd5279e333e69f1e49cc58",
+              "hex_tron": "0x41761f2a87105fef1e84fd5279e333e69f1e49cc58"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TLjn59xNM7VEK6VZ3VQ8Y1ipxsdsFka5wZ",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "USDT TRC20",
+            "address": {
+              "base58": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+              "hex_evm": "0xa614f803b6fd780986a42c78ec9c7f77e6ded13c",
+              "hex_tron": "0x41a614f803b6fd780986a42c78ec9c7f77e6ded13c"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+            "role": "underlying"
+          }
+        },
+        "jUSDD": {
+          "symbol": "jUSDD",
+          "status": "active",
+          "underlying_symbol": "USDD",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jUSDD CErc20Delegator",
+            "address": {
+              "base58": "TKFRELGGoRgiayhwJTNNLqCNjFoLBh3Mnf",
+              "hex_evm": "0x65c9fede72ba73cd1b0dca2a974c070153dc6fcb",
+              "hex_tron": "0x4165c9fede72ba73cd1b0dca2a974c070153dc6fcb"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TKFRELGGoRgiayhwJTNNLqCNjFoLBh3Mnf",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jUSDD CErc20Delegate",
+            "address": {
+              "base58": "TLrEfG4QCbax8MTYgZzmjj4gE8RPVNvUn4",
+              "hex_evm": "0x7757db40bf220b27ef234bdc481a9948ae580e17",
+              "hex_tron": "0x417757db40bf220b27ef234bdc481a9948ae580e17"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TLrEfG4QCbax8MTYgZzmjj4gE8RPVNvUn4",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "USDD TRC20",
+            "address": {
+              "base58": "TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz",
+              "hex_evm": "0xe91a7411e56ce79e83570570f49b9fc35b7727c5",
+              "hex_tron": "0x41e91a7411e56ce79e83570570f49b9fc35b7727c5"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz",
+            "role": "underlying"
+          }
+        },
+        "jUSD1": {
+          "symbol": "jUSD1",
+          "status": "active",
+          "underlying_symbol": "USD1",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jUSD1 CErc20Delegator",
+            "address": {
+              "base58": "TBEKggwqFkrc4KckQVR9BLucAmQugafEZf",
+              "hex_evm": "0x0dd3f1b2e5781688d5cf8c350050c5c236535642",
+              "hex_tron": "0x410dd3f1b2e5781688d5cf8c350050c5c236535642"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TBEKggwqFkrc4KckQVR9BLucAmQugafEZf",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jUSD1 CErc20Delegate",
+            "address": {
+              "base58": "TRo2exz6ZHn6W3Ey3G93FnzhWvjLPUcR2B",
+              "hex_evm": "0xad9537561e4cfb774e9b5596b043ed618c7ebf9f",
+              "hex_tron": "0x41ad9537561e4cfb774e9b5596b043ed618c7ebf9f"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TRo2exz6ZHn6W3Ey3G93FnzhWvjLPUcR2B",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "USD1 TRC20",
+            "address": {
+              "base58": "TPFqcBAaaUMCSVRCqPaQ9QnzKhmuoLR6Rc",
+              "hex_evm": "0x91bed8e784249c91611e61c4585c40e21fd0ace2",
+              "hex_tron": "0x4191bed8e784249c91611e61c4585c40e21fd0ace2"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TPFqcBAaaUMCSVRCqPaQ9QnzKhmuoLR6Rc",
+            "role": "underlying"
+          }
+        },
+        "jTUSD": {
+          "symbol": "jTUSD",
+          "status": "active",
+          "underlying_symbol": "TUSD",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jTUSD CErc20Delegator",
+            "address": {
+              "base58": "TSXv71Fy5XdL3Rh2QfBoUu3NAaM4sMif8R",
+              "hex_evm": "0xb5b1a24c3067f985ac2da2f6bce0fa685bf8ec06",
+              "hex_tron": "0x41b5b1a24c3067f985ac2da2f6bce0fa685bf8ec06"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TSXv71Fy5XdL3Rh2QfBoUu3NAaM4sMif8R",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jTUSD CErc20Delegate",
+            "address": {
+              "base58": "THbrSjDsDA2KJRxx8K73tN7vLgaXSUNQFk",
+              "hex_evm": "0x53b71c5095dfa5a1874d20874e26ec3f6078014a",
+              "hex_tron": "0x4153b71c5095dfa5a1874d20874e26ec3f6078014a"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/THbrSjDsDA2KJRxx8K73tN7vLgaXSUNQFk",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "TUSD TRC20",
+            "address": {
+              "base58": "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4",
+              "hex_evm": "0xcebde71077b830b958c8da17bcddeeb85d0bcf25",
+              "hex_tron": "0x41cebde71077b830b958c8da17bcddeeb85d0bcf25"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4",
+            "role": "underlying"
+          }
+        },
+        "jwstUSDT": {
+          "symbol": "jwstUSDT",
+          "status": "active",
+          "underlying_symbol": "wstUSDT",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jwstUSDT CErc20Delegator",
+            "address": {
+              "base58": "TD5SdLw5scR6mXgyMK2xKrFJpauDjpKqrW",
+              "hex_evm": "0x22163f4926c1b7e1d22dbbc76fbef7f54d364d87",
+              "hex_tron": "0x4122163f4926c1b7e1d22dbbc76fbef7f54d364d87"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TD5SdLw5scR6mXgyMK2xKrFJpauDjpKqrW",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jwstUSDT CErc20Delegate",
+            "address": {
+              "base58": "TUx4cV8FQNR5W4FhtF7mHZwaJMoco2464o",
+              "hex_evm": "0xd032f8925bb418283eab4852c5e3d7b80fe13fcc",
+              "hex_tron": "0x41d032f8925bb418283eab4852c5e3d7b80fe13fcc"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TUx4cV8FQNR5W4FhtF7mHZwaJMoco2464o",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "wstUSDT TRC20",
+            "address": {
+              "base58": "TGkxzkDKyMeq2T7edKnyjZoFypyzjkkssq",
+              "hex_evm": "0x4a7832a4c51dfbc423cf562cfcd534b88ffd4624",
+              "hex_tron": "0x414a7832a4c51dfbc423cf562cfcd534b88ffd4624"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TGkxzkDKyMeq2T7edKnyjZoFypyzjkkssq",
+            "role": "underlying"
+          }
+        },
+        "jsTRX": {
+          "symbol": "jsTRX",
+          "status": "active",
+          "underlying_symbol": "sTRX",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jsTRX CErc20Delegator",
+            "address": {
+              "base58": "TJQ9rbVe9ei3nNtyGgBL22Fuu2xYjZaLAQ",
+              "hex_evm": "0x5c78c77bbad44c3ebd2088e6b7b5d5f01bb0a8f5",
+              "hex_tron": "0x415c78c77bbad44c3ebd2088e6b7b5d5f01bb0a8f5"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TJQ9rbVe9ei3nNtyGgBL22Fuu2xYjZaLAQ",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jsTRX CErc20Delegate",
+            "address": {
+              "base58": "TCyNbCipGbAybb8rG4aatEoEnfuYpVYCPP",
+              "hex_evm": "0x20f061af8d5e5417b87000792dd7dc27b8c22213",
+              "hex_tron": "0x4120f061af8d5e5417b87000792dd7dc27b8c22213"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TCyNbCipGbAybb8rG4aatEoEnfuYpVYCPP",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "sTRX TRC20",
+            "address": {
+              "base58": "TU3kjFuhtEo42tsCBtfYUAZxoqQ4yuSLQ5",
+              "hex_evm": "0xc64e69acde1c7b16c2a3efcdbbdaa96c3644c2b3",
+              "hex_tron": "0x41c64e69acde1c7b16c2a3efcdbbdaa96c3644c2b3"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TU3kjFuhtEo42tsCBtfYUAZxoqQ4yuSLQ5",
+            "role": "underlying"
+          }
+        },
+        "jBTC": {
+          "symbol": "jBTC",
+          "status": "active",
+          "underlying_symbol": "BTC",
+          "decimals": 8,
+          "underlying_decimals": 8,
+          "delegator": {
+            "label": "jBTC CErc20Delegator",
+            "address": {
+              "base58": "TLeEu311Cbw63BcmMHDgDLu7fnk9fqGcqT",
+              "hex_evm": "0x7513102bc947f138b88f4bcc6acf73acb8d4d087",
+              "hex_tron": "0x417513102bc947f138b88f4bcc6acf73acb8d4d087"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TLeEu311Cbw63BcmMHDgDLu7fnk9fqGcqT",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jBTC CErc20Delegate",
+            "address": {
+              "base58": "TVsKSRgRoMcCp798qqRGesXRfzy2MzRjkR",
+              "hex_evm": "0xda4564bf9d88c91c323878c041e7d25400694eb3",
+              "hex_tron": "0x41da4564bf9d88c91c323878c041e7d25400694eb3"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TVsKSRgRoMcCp798qqRGesXRfzy2MzRjkR",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "BTC TRC20",
+            "address": {
+              "base58": "TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9",
+              "hex_evm": "0x84716914c0fdf7110a44030d04d0c4923504d9cc",
+              "hex_tron": "0x4184716914c0fdf7110a44030d04d0c4923504d9cc"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9",
+            "role": "underlying"
+          }
+        },
+        "jWBTC": {
+          "symbol": "jWBTC",
+          "status": "active",
+          "underlying_symbol": "WBTC",
+          "decimals": 8,
+          "underlying_decimals": 8,
+          "delegator": {
+            "label": "jWBTC CErc20Delegator",
+            "address": {
+              "base58": "TVyvpmaVmz25z2GaXBDDjzLZi5iR5dBzGd",
+              "hex_evm": "0xdb856d6b452971e16b9fc85169b14b781aa5d442",
+              "hex_tron": "0x41db856d6b452971e16b9fc85169b14b781aa5d442"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TVyvpmaVmz25z2GaXBDDjzLZi5iR5dBzGd",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jWBTC CErc20Delegate",
+            "address": {
+              "base58": "TDwUJqxB1962DSfKHWMnEu1sWMGGRvHDB5",
+              "hex_evm": "0x2b8c72d4e4a0cf843c35491394a673c3070ab286",
+              "hex_tron": "0x412b8c72d4e4a0cf843c35491394a673c3070ab286"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TDwUJqxB1962DSfKHWMnEu1sWMGGRvHDB5",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "WBTC TRC20",
+            "address": {
+              "base58": "TYhWwKpw43ENFWBTGpzLHn3882f2au7SMi",
+              "hex_evm": "0xf95335a4d42db4b70a9688a393279f2c90fa1025",
+              "hex_tron": "0x41f95335a4d42db4b70a9688a393279f2c90fa1025"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TYhWwKpw43ENFWBTGpzLHn3882f2au7SMi",
+            "role": "underlying"
+          }
+        },
+        "jETH": {
+          "symbol": "jETH",
+          "status": "active",
+          "underlying_symbol": "ETH",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jETH CErc20Delegator",
+            "address": {
+              "base58": "TR7BUFRQeq1w5jAZf1FKx85SHuX6PfMqsV",
+              "hex_evm": "0xa60befaf69b18090b762a83177f09831773967ea",
+              "hex_tron": "0x41a60befaf69b18090b762a83177f09831773967ea"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TR7BUFRQeq1w5jAZf1FKx85SHuX6PfMqsV",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jETH CErc20Delegate",
+            "address": {
+              "base58": "TQBvTVisiceDvsQVbLbcYyWQGWP7wtaQnc",
+              "hex_evm": "0x9bf95bab4a9ea3fa4f305a1836ee1438f87eea1f",
+              "hex_tron": "0x419bf95bab4a9ea3fa4f305a1836ee1438f87eea1f"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TQBvTVisiceDvsQVbLbcYyWQGWP7wtaQnc",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "ETH TRC20",
+            "address": {
+              "base58": "THb4CqiFdwNHsWsQCs4JhzwjMWys4aqCbF",
+              "hex_evm": "0x53908308f4aa220fb10d778b5d1b34489cd6edfc",
+              "hex_tron": "0x4153908308f4aa220fb10d778b5d1b34489cd6edfc"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/THb4CqiFdwNHsWsQCs4JhzwjMWys4aqCbF",
+            "role": "underlying"
+          }
+        },
+        "jETHB": {
+          "symbol": "jETHB",
+          "status": "active",
+          "underlying_symbol": "ETHB",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jETHB CErc20Delegator",
+            "address": {
+              "base58": "TWBxQMb6RD3qmkXUXpNwVCYbL8SHNreru6",
+              "hex_evm": "0xddcbbcb2f17db034fc970fbd87ffa7da51bebbfc",
+              "hex_tron": "0x41ddcbbcb2f17db034fc970fbd87ffa7da51bebbfc"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TWBxQMb6RD3qmkXUXpNwVCYbL8SHNreru6",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jETHB CErc20Delegate",
+            "address": {
+              "base58": "TS9fVh58y2RMDnpucGXkbfZhAJxmGafGqe",
+              "hex_evm": "0xb17c49b79e30aa7f3c7ec1b1faf0c332e6189d3b",
+              "hex_tron": "0x41b17c49b79e30aa7f3c7ec1b1faf0c332e6189d3b"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TS9fVh58y2RMDnpucGXkbfZhAJxmGafGqe",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "ETHB TRC20",
+            "address": {
+              "base58": "TRFe3hT5oYhjSZ6f3ji5FJ7YCfrkWnHRvh",
+              "hex_evm": "0xa7a572f6d8b4ca291b9353cf26580abed74f3e31",
+              "hex_tron": "0x41a7a572f6d8b4ca291b9353cf26580abed74f3e31"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TRFe3hT5oYhjSZ6f3ji5FJ7YCfrkWnHRvh",
+            "role": "underlying"
+          }
+        },
+        "jSUN": {
+          "symbol": "jSUN",
+          "status": "active",
+          "underlying_symbol": "SUN",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jSUN CErc20Delegator",
+            "address": {
+              "base58": "TPXDpkg9e3eZzxqxAUyke9S4z4pGJBJw9e",
+              "hex_evm": "0x94a7a1e585a77e2edfd834005be9f545fe1f3c97",
+              "hex_tron": "0x4194a7a1e585a77e2edfd834005be9f545fe1f3c97"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TPXDpkg9e3eZzxqxAUyke9S4z4pGJBJw9e",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jSUN CErc20Delegate",
+            "address": {
+              "base58": "TM82erAZJSP7NKc17JdTnzVC8WKJHismWB",
+              "hex_evm": "0x7a547d2359e1d7c4b37d2d5099954d44574cef0e",
+              "hex_tron": "0x417a547d2359e1d7c4b37d2d5099954d44574cef0e"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TM82erAZJSP7NKc17JdTnzVC8WKJHismWB",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "SUN TRC20",
+            "address": {
+              "base58": "TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S",
+              "hex_evm": "0xb4a428ab7092c2f1395f376ce297033b3bb446c1",
+              "hex_tron": "0x41b4a428ab7092c2f1395f376ce297033b3bb446c1"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S",
+            "role": "underlying"
+          }
+        },
+        "jJST": {
+          "symbol": "jJST",
+          "status": "active",
+          "underlying_symbol": "JST",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jJST CErc20Delegator",
+            "address": {
+              "base58": "TWQhCXaWz4eHK4Kd1ErSDHjMFPoPc9czts",
+              "hex_evm": "0xe03473f8720297d9bf887f2d7e4ec2efc70c3460",
+              "hex_tron": "0x41e03473f8720297d9bf887f2d7e4ec2efc70c3460"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TWQhCXaWz4eHK4Kd1ErSDHjMFPoPc9czts",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jJST CErc20Delegate",
+            "address": {
+              "base58": "TQ2sbnmxtR7jrNk4nxz2A8f9sneCqmk6SB",
+              "hex_evm": "0x9a433ac207ae693e3231cacb5aabdbad0bc31a3d",
+              "hex_tron": "0x419a433ac207ae693e3231cacb5aabdbad0bc31a3d"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TQ2sbnmxtR7jrNk4nxz2A8f9sneCqmk6SB",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "JST TRC20",
+            "address": {
+              "base58": "TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9",
+              "hex_evm": "0x18fd0626daf3af02389aef3ed87db9c33f638ffa",
+              "hex_tron": "0x4118fd0626daf3af02389aef3ed87db9c33f638ffa"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9",
+            "role": "underlying"
+          }
+        },
+        "jWIN": {
+          "symbol": "jWIN",
+          "status": "active",
+          "underlying_symbol": "WIN",
+          "decimals": 8,
+          "underlying_decimals": 6,
+          "delegator": {
+            "label": "jWIN CErc20Delegator",
+            "address": {
+              "base58": "TRg6MnpsFXc82ymUPgf5qbj59ibxiEDWvv",
+              "hex_evm": "0xac456571ac5a383b77c65d9fdcd66d8ac2ed62bb",
+              "hex_tron": "0x41ac456571ac5a383b77c65d9fdcd66d8ac2ed62bb"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TRg6MnpsFXc82ymUPgf5qbj59ibxiEDWvv",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jWIN CErc20Delegate",
+            "address": {
+              "base58": "TW3GyD3hYkKwzSGytWwWGXpe2a93zCpRzJ",
+              "hex_evm": "0xdc277dee947f0f217189ef057476bc7f178bc55a",
+              "hex_tron": "0x41dc277dee947f0f217189ef057476bc7f178bc55a"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TW3GyD3hYkKwzSGytWwWGXpe2a93zCpRzJ",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "WIN TRC20",
+            "address": {
+              "base58": "TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7",
+              "hex_evm": "0x74472e7d35395a6b5add427eecb7f4b62ad2b071",
+              "hex_tron": "0x4174472e7d35395a6b5add427eecb7f4b62ad2b071"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7",
+            "role": "underlying"
+          }
+        },
+        "jBTT": {
+          "symbol": "jBTT",
+          "status": "active",
+          "underlying_symbol": "BTT",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jBTT CErc20Delegator",
+            "address": {
+              "base58": "TUaUHU9Dy8x5yNi1pKnFYqHWojot61Jfto",
+              "hex_evm": "0xcc1d948f9397db4c047de179eb74ca013529022a",
+              "hex_tron": "0x41cc1d948f9397db4c047de179eb74ca013529022a"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TUaUHU9Dy8x5yNi1pKnFYqHWojot61Jfto",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jBTT CErc20Delegate",
+            "address": {
+              "base58": "TH3x5EqLnPduHNX41MaCCb2UfnfFMLuYwe",
+              "hex_evm": "0x4dae7fc469ec6f92dfbe479db17659973a27b648",
+              "hex_tron": "0x414dae7fc469ec6f92dfbe479db17659973a27b648"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TH3x5EqLnPduHNX41MaCCb2UfnfFMLuYwe",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "BTT TRC20",
+            "address": {
+              "base58": "TAFjULxiVgT4qWk6UZwjqwZXTSaGaqnVp4",
+              "hex_evm": "0x032017411f4663b317fe77c257d28d5cd1b26e3d",
+              "hex_tron": "0x41032017411f4663b317fe77c257d28d5cd1b26e3d"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TAFjULxiVgT4qWk6UZwjqwZXTSaGaqnVp4",
+            "role": "underlying"
+          }
+        },
+        "jNFT": {
+          "symbol": "jNFT",
+          "status": "active",
+          "underlying_symbol": "NFT",
+          "decimals": 8,
+          "underlying_decimals": 6,
+          "delegator": {
+            "label": "jNFT CErc20Delegator",
+            "address": {
+              "base58": "TFpPyDCKvNFgos3g3WVsAqMrdqhB81JXHE",
+              "hex_evm": "0x40262ab2a177fb3fc6d2709a816db3b1a10bc78e",
+              "hex_tron": "0x4140262ab2a177fb3fc6d2709a816db3b1a10bc78e"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TFpPyDCKvNFgos3g3WVsAqMrdqhB81JXHE",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jNFT CErc20Delegate",
+            "address": {
+              "base58": "TLkUdtDBLMfJdXni2iTa4u2DKM53XmDJHi",
+              "hex_evm": "0x7641070927868fddf7ca0c7cec52c7e0a1ea2bb8",
+              "hex_tron": "0x417641070927868fddf7ca0c7cec52c7e0a1ea2bb8"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TLkUdtDBLMfJdXni2iTa4u2DKM53XmDJHi",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "NFT TRC20",
+            "address": {
+              "base58": "TFczxzPhnThNSqr5by8tvxsdCFRRz6cPNq",
+              "hex_evm": "0x3dfe637b2b9ae4190a458b5f3efc1969afe27819",
+              "hex_tron": "0x413dfe637b2b9ae4190a458b5f3efc1969afe27819"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TFczxzPhnThNSqr5by8tvxsdCFRRz6cPNq",
+            "role": "underlying"
+          }
+        },
+        "jHTX": {
+          "symbol": "jHTX",
+          "status": "active",
+          "underlying_symbol": "HTX",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jHTX CErc20Delegator",
+            "address": {
+              "base58": "TDA1mWPyAjTRATMGA55UTswGAHhV2itEXR",
+              "hex_evm": "0x22f39357b77c4a2459e362ae4c6a822028dbeacc",
+              "hex_tron": "0x4122f39357b77c4a2459e362ae4c6a822028dbeacc"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TDA1mWPyAjTRATMGA55UTswGAHhV2itEXR",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jHTX CErc20Delegate",
+            "address": {
+              "base58": "TJD7nb5Wq1P1rRi3Se2vLpLhksALdW8adb",
+              "hex_evm": "0x5a6279f980f9fc34aba9ec181c8de19ec4d5d360",
+              "hex_tron": "0x415a6279f980f9fc34aba9ec181c8de19ec4d5d360"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TJD7nb5Wq1P1rRi3Se2vLpLhksALdW8adb",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "HTX TRC20",
+            "address": {
+              "base58": "TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6",
+              "hex_evm": "0xca0303e8b9a738121777116dcea419fe524f271a",
+              "hex_tron": "0x41ca0303e8b9a738121777116dcea419fe524f271a"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6",
+            "role": "underlying"
+          }
+        },
+        "jU": {
+          "symbol": "jU",
+          "status": "active",
+          "underlying_symbol": "U",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jU CErc20Delegator",
+            "address": {
+              "base58": "TMz7vmyqoq4WKDiztrZpjAZPnzE9XgXaK4",
+              "hex_evm": "0x83cdb09fe143998ab7fe4ad59075443a3fdac1f9",
+              "hex_tron": "0x4183cdb09fe143998ab7fe4ad59075443a3fdac1f9"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TMz7vmyqoq4WKDiztrZpjAZPnzE9XgXaK4",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jU CErc20Delegate",
+            "address": {
+              "base58": "TTb3TxobUaSHpPBa4J98Wtg71mN9qJuFm4",
+              "hex_evm": "0xc141270f886f14621dcde7bd74ae228713be7e77",
+              "hex_tron": "0x41c141270f886f14621dcde7bd74ae228713be7e77"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TTb3TxobUaSHpPBa4J98Wtg71mN9qJuFm4",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "U TRC20",
+            "address": {
+              "base58": "TFNirp6PbqYE1ZTtWuCMUKJWLNZkoCoeFJ",
+              "hex_evm": "0x3b4b1ebe9bb36d199f06305235e15f4f505c472b",
+              "hex_tron": "0x413b4b1ebe9bb36d199f06305235e15f4f505c472b"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TFNirp6PbqYE1ZTtWuCMUKJWLNZkoCoeFJ",
+            "role": "underlying"
+          }
+        },
+        "jUSDCOLD": {
+          "symbol": "jUSDCOLD",
+          "status": "legacy",
+          "underlying_symbol": "USDCOLD",
+          "decimals": 8,
+          "underlying_decimals": 6,
+          "delegator": {
+            "label": "jUSDCOLD CErc20Delegator",
+            "address": {
+              "base58": "TNSBA6KvSvMoTqQcEgpVK7VhHT3z7wifxy",
+              "hex_evm": "0x88bb336c70a33fe2506240a19826c2ad487ae6d8",
+              "hex_tron": "0x4188bb336c70a33fe2506240a19826c2ad487ae6d8"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TNSBA6KvSvMoTqQcEgpVK7VhHT3z7wifxy",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jUSDCOLD CErc20Delegate",
+            "address": {
+              "base58": "THQY8YX19jLFSFg1xhthM5wb7xZvKLCzgq",
+              "hex_evm": "0x51933f66d0272140c930821d938fda9561e7e3db",
+              "hex_tron": "0x4151933f66d0272140c930821d938fda9561e7e3db"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/THQY8YX19jLFSFg1xhthM5wb7xZvKLCzgq",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "USDCOLD TRC20",
+            "address": {
+              "base58": "TLZSucJRjnqBKwvQz6n5hd29gbS4P7u7w8",
+              "hex_evm": "0x742b023b58488b4be587bba63ed11134b02217b3",
+              "hex_tron": "0x41742b023b58488b4be587bba63ed11134b02217b3"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TLZSucJRjnqBKwvQz6n5hd29gbS4P7u7w8",
+            "role": "underlying"
+          }
+        },
+        "jUSDDOLD": {
+          "symbol": "jUSDDOLD",
+          "status": "legacy",
+          "underlying_symbol": "USDDOLD",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jUSDDOLD CErc20Delegator",
+            "address": {
+              "base58": "TX7kybeP6UwTBRHLNPYmswFESHfyjm9bAS",
+              "hex_evm": "0xe7f8a90ede3d84c7c0166bd84a4635e4675accfc",
+              "hex_tron": "0x41e7f8a90ede3d84c7c0166bd84a4635e4675accfc"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TX7kybeP6UwTBRHLNPYmswFESHfyjm9bAS",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jUSDDOLD CErc20Delegate",
+            "address": {
+              "base58": "TFdTqrMyb6PMMqTa9vnhmQHDFDU2oUhw9W",
+              "hex_evm": "0x3e14d306e506eadb6f51bf271af3969bb8c9802f",
+              "hex_tron": "0x413e14d306e506eadb6f51bf271af3969bb8c9802f"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TFdTqrMyb6PMMqTa9vnhmQHDFDU2oUhw9W",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "USDDOLD TRC20",
+            "address": {
+              "base58": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+              "hex_evm": "0x94f24e992ca04b49c6f2a2753076ef8938ed4daa",
+              "hex_tron": "0x4194f24e992ca04b49c6f2a2753076ef8938ed4daa"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+            "role": "underlying"
+          }
+        },
+        "jBUSDOLD": {
+          "symbol": "jBUSDOLD",
+          "status": "legacy",
+          "underlying_symbol": "BUSDOLD",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jBUSDOLD CErc20Delegator",
+            "address": {
+              "base58": "TLHASseQymmpGQdfAyNjkMXFTJh8nzR2x2",
+              "hex_evm": "0x71169cc742905196d4ae1b6330e5366b5459a3dc",
+              "hex_tron": "0x4171169cc742905196d4ae1b6330e5366b5459a3dc"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TLHASseQymmpGQdfAyNjkMXFTJh8nzR2x2",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jBUSDOLD CErc20Delegate",
+            "address": {
+              "base58": "TNRUqbYfYv4iizWa1b2kd6ZBaoh5zrg3yk",
+              "hex_evm": "0x88998b5a8d1df5df950274c56107ce1a4c8cf26b",
+              "hex_tron": "0x4188998b5a8d1df5df950274c56107ce1a4c8cf26b"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TNRUqbYfYv4iizWa1b2kd6ZBaoh5zrg3yk",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "BUSDOLD TRC20",
+            "address": {
+              "base58": "TMz2SWatiAtZVVcH2ebpsbVtYwUPT9EdjH",
+              "hex_evm": "0x83c91bfde3e6d130e286a3722f171ae49fb25047",
+              "hex_tron": "0x4183c91bfde3e6d130e286a3722f171ae49fb25047"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TMz2SWatiAtZVVcH2ebpsbVtYwUPT9EdjH",
+            "role": "underlying"
+          }
+        },
+        "jSUNOLD": {
+          "symbol": "jSUNOLD",
+          "status": "legacy",
+          "underlying_symbol": "SUNOLD",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jSUNOLD CErc20Delegator",
+            "address": {
+              "base58": "TGBr8uh9jBVHJhhkwSJvQN2ZAKzVkxDmno",
+              "hex_evm": "0x4434beca3ac7d96e2b4eef1974cf9bddcb7a328b",
+              "hex_tron": "0x414434beca3ac7d96e2b4eef1974cf9bddcb7a328b"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TGBr8uh9jBVHJhhkwSJvQN2ZAKzVkxDmno",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jSUNOLD CErc20Delegate",
+            "address": {
+              "base58": "TSCpzKvJfXHj1HW5jKg9dZA8z9aMxxGLd8",
+              "hex_evm": "0xb21575f6acee0a23ccae51bd9afcf6106219776f",
+              "hex_tron": "0x41b21575f6acee0a23ccae51bd9afcf6106219776f"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TSCpzKvJfXHj1HW5jKg9dZA8z9aMxxGLd8",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "SUNOLD TRC20",
+            "address": {
+              "base58": "TKkeiboTkxXKJpbmVFbv4a8ov5rAfRDMf9",
+              "hex_evm": "0x6b5151320359ec18b08607c70a3b7439af626aa3",
+              "hex_tron": "0x416b5151320359ec18b08607c70a3b7439af626aa3"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TKkeiboTkxXKJpbmVFbv4a8ov5rAfRDMf9",
+            "role": "underlying"
+          }
+        },
+        "jUSDJ": {
+          "symbol": "jUSDJ",
+          "status": "legacy",
+          "underlying_symbol": "USDJ",
+          "decimals": 8,
+          "underlying_decimals": 18,
+          "delegator": {
+            "label": "jUSDJ CErc20Delegator",
+            "address": {
+              "base58": "TL5x9MtSnDy537FXKx53yAaHRRNdg9TkkA",
+              "hex_evm": "0x6ef7c4870977c6a2543b0e8cf4f659af883c96dc",
+              "hex_tron": "0x416ef7c4870977c6a2543b0e8cf4f659af883c96dc"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TL5x9MtSnDy537FXKx53yAaHRRNdg9TkkA",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jUSDJ CErc20Delegate",
+            "address": {
+              "base58": "TYSHTEq9NFSgst94saeRvt6rAYgWkqMFbj",
+              "hex_evm": "0xf671b6cb4c3d8063f97779fe039027c9a00dce0a",
+              "hex_tron": "0x41f671b6cb4c3d8063f97779fe039027c9a00dce0a"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TYSHTEq9NFSgst94saeRvt6rAYgWkqMFbj",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "USDJ TRC20",
+            "address": {
+              "base58": "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT",
+              "hex_evm": "0x834295921a488d9d42b4b3021ed1a3c39fb0f03e",
+              "hex_tron": "0x41834295921a488d9d42b4b3021ed1a3c39fb0f03e"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT",
+            "role": "underlying"
+          }
+        },
+        "jWBTT": {
+          "symbol": "jWBTT",
+          "status": "legacy",
+          "underlying_symbol": "WBTT",
+          "decimals": 8,
+          "underlying_decimals": 6,
+          "delegator": {
+            "label": "jWBTT CErc20Delegator",
+            "address": {
+              "base58": "TUY54PVeH6WCcYCd6ZXXoBDsHytN9V5PXt",
+              "hex_evm": "0xcba95c5726a36046503570496e2c5a457ed7c008",
+              "hex_tron": "0x41cba95c5726a36046503570496e2c5a457ed7c008"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TUY54PVeH6WCcYCd6ZXXoBDsHytN9V5PXt",
+            "role": "entrypoint"
+          },
+          "delegate": {
+            "label": "jWBTT CErc20Delegate",
+            "address": {
+              "base58": "TV4WWBqBfn1kd4KmpYeSJpVAfybfrxEN9L",
+              "hex_evm": "0xd16b146ec5d540a36672ce3c50f70b1e57b5d324",
+              "hex_tron": "0x41d16b146ec5d540a36672ce3c50f70b1e57b5d324"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TV4WWBqBfn1kd4KmpYeSJpVAfybfrxEN9L",
+            "role": "implementation"
+          },
+          "underlying": {
+            "label": "WBTT TRC20",
+            "address": {
+              "base58": "TKfjV9RNKJJCqPvBtK8L7Knykh7DNWvnYt",
+              "hex_evm": "0x6a6337ae47a09aea0bbd4faeb23ca94349c7b774",
+              "hex_tron": "0x416a6337ae47a09aea0bbd4faeb23ca94349c7b774"
+            },
+            "network": "mainnet",
+            "tronscan": "https://tronscan.org/#/contract/TKfjV9RNKJJCqPvBtK8L7Knykh7DNWvnYt",
+            "role": "underlying"
+          }
+        }
+      },
+      "interest_rate_models": {
+        "WhitePaperModelTRX": {
+          "label": "WhitePaperModelTRX",
+          "address": {
+            "base58": "TF8B4iysAGfrssdQhMJGYsdd9SZoxGsH7M",
+            "hex_evm": "0x388ac17d28badf28b5f0b7bd9aa2e0ba3cf390be",
+            "hex_tron": "0x41388ac17d28badf28b5f0b7bd9aa2e0ba3cf390be"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TF8B4iysAGfrssdQhMJGYsdd9SZoxGsH7M",
+          "role": "WhitePaperInterestRateModel"
+        },
+        "WhitePaperModelBTC": {
+          "label": "WhitePaperModelBTC",
+          "address": {
+            "base58": "TYJi9q4qLQWoBiKmMQY3Mn81tmhw7SeCmh",
+            "hex_evm": "0xf5030135c97723693478f18c58d9d77ef9e7adee",
+            "hex_tron": "0x41f5030135c97723693478f18c58d9d77ef9e7adee"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TYJi9q4qLQWoBiKmMQY3Mn81tmhw7SeCmh",
+          "role": "WhitePaperInterestRateModel"
+        },
+        "jumpRateTRX": {
+          "label": "jumpRateTRX",
+          "address": {
+            "base58": "TMca13trZmVvVttrGWJyUSm33qZdohDDuh",
+            "hex_evm": "0x7fba4dd351739cc89c28966022972e131caeff5c",
+            "hex_tron": "0x417fba4dd351739cc89c28966022972e131caeff5c"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TMca13trZmVvVttrGWJyUSm33qZdohDDuh",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateUSDDOLD": {
+          "label": "jumpRateUSDDOLD",
+          "address": {
+            "base58": "TDoB7y9HHj6bXTwEe6BhfAkdETjQR2He6u",
+            "hex_evm": "0x29fac600cc9d66b12665b8d6c292fcbffb2d2bdc",
+            "hex_tron": "0x4129fac600cc9d66b12665b8d6c292fcbffb2d2bdc"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TDoB7y9HHj6bXTwEe6BhfAkdETjQR2He6u",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateUSDT": {
+          "label": "jumpRateUSDT",
+          "address": {
+            "base58": "TTetZxp98wcPaciyBMHYvQkS735RZ3tyXY",
+            "hex_evm": "0xc1fb63d49b539dcff1c243db500b1863dda022e3",
+            "hex_tron": "0x41c1fb63d49b539dcff1c243db500b1863dda022e3"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TTetZxp98wcPaciyBMHYvQkS735RZ3tyXY",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRatewstUSDT": {
+          "label": "jumpRatewstUSDT",
+          "address": {
+            "base58": "TPqKsaTnSKEU3aGHanpVFNU3cE8SmJsAYz",
+            "hex_evm": "0x98142b3dc46eaf464686e969415148f7bea17a20",
+            "hex_tron": "0x4198142b3dc46eaf464686e969415148f7bea17a20"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TPqKsaTnSKEU3aGHanpVFNU3cE8SmJsAYz",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRatesTRX": {
+          "label": "jumpRatesTRX",
+          "address": {
+            "base58": "TW4fpkc98kzVbdiPhutCg2uivwVJ9MDa2P",
+            "hex_evm": "0xdc6afc515c6b2e5c10ade08d95d708b55ad56715",
+            "hex_tron": "0x41dc6afc515c6b2e5c10ade08d95d708b55ad56715"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TW4fpkc98kzVbdiPhutCg2uivwVJ9MDa2P",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateSUN": {
+          "label": "jumpRateSUN",
+          "address": {
+            "base58": "THCVC3DHgZ5qmUcJPutw7TrMMfj1h2bvkZ",
+            "hex_evm": "0x4f4bcd595b69a9bd0adcc772c83588f3dadfebd3",
+            "hex_tron": "0x414f4bcd595b69a9bd0adcc772c83588f3dadfebd3"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/THCVC3DHgZ5qmUcJPutw7TrMMfj1h2bvkZ",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateBTT": {
+          "label": "jumpRateBTT",
+          "address": {
+            "base58": "TQ9zMkrqgej7GjLdMrpNuURozg8J2fSXsW",
+            "hex_evm": "0x9b9bc857fe9f8c21e2e85eb66fe312c50c2db6bf",
+            "hex_tron": "0x419b9bc857fe9f8c21e2e85eb66fe312c50c2db6bf"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TQ9zMkrqgej7GjLdMrpNuURozg8J2fSXsW",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateNFT": {
+          "label": "jumpRateNFT",
+          "address": {
+            "base58": "TBE9tkWYdZPEHLNeKC6Xn44YFLpieiM3xq",
+            "hex_evm": "0x0dcbc5288151de3b7229ae8eb82c532fd36c3eb8",
+            "hex_tron": "0x410dcbc5288151de3b7229ae8eb82c532fd36c3eb8"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TBE9tkWYdZPEHLNeKC6Xn44YFLpieiM3xq",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateJST": {
+          "label": "jumpRateJST",
+          "address": {
+            "base58": "TMNXjQTa8x4wNHBa3X647KRnkRQpSuXBRT",
+            "hex_evm": "0x7d1295fa3c4886c73c2c05d8617af5ef641e102c",
+            "hex_tron": "0x417d1295fa3c4886c73c2c05d8617af5ef641e102c"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TMNXjQTa8x4wNHBa3X647KRnkRQpSuXBRT",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateWIN": {
+          "label": "jumpRateWIN",
+          "address": {
+            "base58": "TBtChPo34CGJkb1QVEwPhxS8HQE2Xp7ir2",
+            "hex_evm": "0x14fdeae23b9adea3c747ee3e46189f1c25afb799",
+            "hex_tron": "0x4114fdeae23b9adea3c747ee3e46189f1c25afb799"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TBtChPo34CGJkb1QVEwPhxS8HQE2Xp7ir2",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateUSDJ": {
+          "label": "jumpRateUSDJ",
+          "address": {
+            "base58": "TLScd7kpWnKADtH7ZXKzrJHAxJUnjiiExq",
+            "hex_evm": "0x72e0350b4ecf08d0a168ee8cdcd60be24ab150d3",
+            "hex_tron": "0x4172e0350b4ecf08d0a168ee8cdcd60be24ab150d3"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TLScd7kpWnKADtH7ZXKzrJHAxJUnjiiExq",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateTUSD": {
+          "label": "jumpRateTUSD",
+          "address": {
+            "base58": "TLY3wRNGrQpJCZrYKu9VjntMj2kNxisAL2",
+            "hex_evm": "0x73e76b5d7436af189e3ea83c6814c524107e35d8",
+            "hex_tron": "0x4173e76b5d7436af189e3ea83c6814c524107e35d8"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TLY3wRNGrQpJCZrYKu9VjntMj2kNxisAL2",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateBTC": {
+          "label": "jumpRateBTC",
+          "address": {
+            "base58": "TYJi9q4qLQWoBiKmMQY3Mn81tmhw7SeCmh",
+            "hex_evm": "0xf5030135c97723693478f18c58d9d77ef9e7adee",
+            "hex_tron": "0x41f5030135c97723693478f18c58d9d77ef9e7adee"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TYJi9q4qLQWoBiKmMQY3Mn81tmhw7SeCmh",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateETHB": {
+          "label": "jumpRateETHB",
+          "address": {
+            "base58": "TD5wmR7NfBM2JdSGSTTq1MgMARX2k5KE2b",
+            "hex_evm": "0x222e924512c49143920213910a2f1bfaca6308e0",
+            "hex_tron": "0x41222e924512c49143920213910a2f1bfaca6308e0"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TD5wmR7NfBM2JdSGSTTq1MgMARX2k5KE2b",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateWBTT": {
+          "label": "jumpRateWBTT",
+          "address": {
+            "base58": "TJAfCJdJZa44pG5adQGLMLh27hJqPeLxod",
+            "hex_evm": "0x59eb72896d2af8ea81fd96a2f1efc49e44a436df",
+            "hex_tron": "0x4159eb72896d2af8ea81fd96a2f1efc49e44a436df"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TJAfCJdJZa44pG5adQGLMLh27hJqPeLxod",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateBUSD": {
+          "label": "jumpRateBUSD",
+          "address": {
+            "base58": "TUSGt1WAYeJSV94M5muFi2KvtE6EquZPUC",
+            "hex_evm": "0xca90bb8ee0b9b93a9168079b42d622ba788cabd8",
+            "hex_tron": "0x41ca90bb8ee0b9b93a9168079b42d622ba788cabd8"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TUSGt1WAYeJSV94M5muFi2KvtE6EquZPUC",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateSUNOLD": {
+          "label": "jumpRateSUNOLD",
+          "address": {
+            "base58": "TK7WVRz34wUVRCpsgbW1wUCPmh5bSnCqg1",
+            "hex_evm": "0x644b0f1977df7c9f68183549a10ef3f68b444f55",
+            "hex_tron": "0x41644b0f1977df7c9f68183549a10ef3f68b444f55"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TK7WVRz34wUVRCpsgbW1wUCPmh5bSnCqg1",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateETH": {
+          "label": "jumpRateETH",
+          "address": {
+            "base58": "TCiKn6EFBsNrNCFQXWaEuAxr8Su3y4Rx9D",
+            "hex_evm": "0x1e17cb6a34621acee3e18d3d0d0fb5d3f3c420f8",
+            "hex_tron": "0x411e17cb6a34621acee3e18d3d0d0fb5d3f3c420f8"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TCiKn6EFBsNrNCFQXWaEuAxr8Su3y4Rx9D",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateUSDC": {
+          "label": "jumpRateUSDC",
+          "address": {
+            "base58": "TDECE4PZFEkmTyFk9sJMya9PY99BapHpyP",
+            "hex_evm": "0x23bdf8188e17487015dc10fe7739b4261701727c",
+            "hex_tron": "0x4123bdf8188e17487015dc10fe7739b4261701727c"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TDECE4PZFEkmTyFk9sJMya9PY99BapHpyP",
+          "role": "JumpRateModelV2"
+        },
+        "jumpRateUSD1": {
+          "label": "jumpRateUSD1",
+          "address": {
+            "base58": "TKgX5vEds8UW8bd5fSDGHpTT4UwmVz4yPS",
+            "hex_evm": "0x6a894835ec2e906a808df178113842c194304cf3",
+            "hex_tron": "0x416a894835ec2e906a808df178113842c194304cf3"
+          },
+          "network": "mainnet",
+          "tronscan": "https://tronscan.org/#/contract/TKgX5vEds8UW8bd5fSDGHpTT4UwmVz4yPS",
+          "role": "JumpRateModelV2"
+        }
+      }
+    },
+    "nile": {
+      "comptroller": {
+        "unitroller_proxy": {
+          "label": "Unitroller (Comptroller proxy)",
+          "address": {
+            "base58": "TJUCStq3WqfKqZLuZje5v7z6Ua6iBry1P6",
+            "hex_evm": "0x5d3c9b325b7224695fb23db4165ab0090ea0d4ea",
+            "hex_tron": "0x415d3c9b325b7224695fb23db4165ab0090ea0d4ea"
+          },
+          "network": "nile",
+          "tronscan": "https://tronscan.org/#/contract/TJUCStq3WqfKqZLuZje5v7z6Ua6iBry1P6",
+          "role": "entrypoint"
+        }
+      },
+      "governance": {
+        "governor_delegator": {
+          "label": "GovernorBravoDelegator",
+          "address": {
+            "base58": "TYCNENqt2oJK7eiwubi6YXXt8RHR1BnzBs",
+            "hex_evm": "0xf3cfe116a3ff9d77b3bd74b5baedfaa399652d21",
+            "hex_tron": "0x41f3cfe116a3ff9d77b3bd74b5baedfaa399652d21"
+          },
+          "network": "nile",
+          "tronscan": "https://tronscan.org/#/contract/TYCNENqt2oJK7eiwubi6YXXt8RHR1BnzBs",
+          "role": "entrypoint"
+        },
+        "jst": {
+          "label": "JST token (testnet)",
+          "address": {
+            "base58": "TJqk3ChKSjmpoNm3gaqSEatNsueD37NGDK",
+            "hex_evm": "0x614fb673e5c3c3987f465a1136dbd0f6d39751e0",
+            "hex_tron": "0x41614fb673e5c3c3987f465a1136dbd0f6d39751e0"
+          },
+          "network": "nile",
+          "tronscan": "https://tronscan.org/#/contract/TJqk3ChKSjmpoNm3gaqSEatNsueD37NGDK"
+        },
+        "wjst": {
+          "label": "WJST (testnet)",
+          "address": {
+            "base58": "TCxA1eNhsAV3gvUwLjLtREW9f775V4h1h7",
+            "hex_evm": "0x20b5772e726d8a4f4f9443c6839b00b1e199005f",
+            "hex_tron": "0x4120b5772e726d8a4f4f9443c6839b00b1e199005f"
+          },
+          "network": "nile",
+          "tronscan": "https://tronscan.org/#/contract/TCxA1eNhsAV3gvUwLjLtREW9f775V4h1h7"
+        }
+      },
+      "strx": {
+        "staked_trx": {
+          "label": "StakedTRX proxy (testnet)",
+          "address": {
+            "base58": "TZ8du1HkatTWDbS6FLZei4dQfjfpSm9mxp",
+            "hex_evm": "0xfe136b239af7f16a7eb7b0748a98c0d338fa90bd",
+            "hex_tron": "0x41fe136b239af7f16a7eb7b0748a98c0d338fa90bd"
+          },
+          "network": "nile",
+          "tronscan": "https://tronscan.org/#/contract/TZ8du1HkatTWDbS6FLZei4dQfjfpSm9mxp"
+        }
+      },
+      "note": "Nile testnet addresses are sourced from @justlend/mcp-server-justlend src/core/chains.ts. Most non-jToken contracts on Nile are stub/placeholder addresses — call MCP `get_supported_networks`/`get_supported_markets` for runtime ground truth."
+    }
+  }
+}

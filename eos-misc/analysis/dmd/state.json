@@ -1,0 +1,70 @@
+{
+  "protocol": "DMD Finance",
+  "chain": "eos",
+  "head_block": 524644740,
+  "head_block_time": "2026-10-10T11:57:10.000",
+  "contracts": {
+    "eosdmdpool11": {
+      "created": "2020-09-03T15:55:23.500",
+      "balance": "44728.4875 EOS",
+      "token_contract": "eosio.token",
+      "code_sha256": "80d2195e3d30371d46ffa68a4c5bf6c607a22e72fc823192f667bf423051629b",
+      "active": "self@eosio.code only (no keys)",
+      "owner": {"threshold": 22, "weights": {"eosdefiadmin": 20, "eosnationftw": 1, "itokenpocket": 1, "slowmistiobp": 1}},
+      "stakepool_total_staked": "44728.4875 EOS"
+    },
+    "eosdmdpool12": {
+      "created": "2020-09-04T00:50:13.500",
+      "balance": "135410.8398 USDT",
+      "token_contract": "tethertether",
+      "code_sha256": "d878289aecc6a8581bfcf16776b206dd302eee7bb8f97f8fd2f8004ffedd0dbb",
+      "active": "self@eosio.code only (no keys)",
+      "owner": {"threshold": 22, "weights": {"eosdefiadmin": 20, "eosnationftw": 1, "itokenpocket": 1, "slowmistiobp": 1}},
+      "stakepool_total_staked": "135410.8398 USDT"
+    },
+    "eosdmdpool13": {
+      "created": "2020-09-04T00:50:28.500",
+      "balance": "75235.9113 OGX (+2000.1001 CCC, 68 DION)",
+      "token_contract": "organixtoken",
+      "code_sha256": "4f9527b706c525ba8dd991dd535cddc279d4ff3ad63037b4d5bca0c0a6591858",
+      "active": "self@eosio.code only (no keys)",
+      "owner": {"threshold": 22, "weights": {"eosdefiadmin": 20, "eosnationftw": 1, "itokenpocket": 1, "slowmistiobp": 1}},
+      "stakepool_total_staked": "75235.9113 OGX"
+    }
+  },
+  "abi_actions": ["init", "claim(from:name)", "exit(from:name)", "harvest(nonce:uint32)", "harvest2(nonce:uint32,count:uint32)"],
+  "auth_map": {
+    "exit(from)": "require_auth(from) [handler func27, table[3]]",
+    "claim(from)": "require_auth(from) [handler func25, table[6]]",
+    "init": "require_auth(eosdmdworker)",
+    "harvest": "require_auth(eosdmdworker)",
+    "harvest2": "require_auth(eosdmdworker)",
+    "transfer notification": "deposit credit only from code in {tethertether, eosio.token, organixtoken} and action==transfer"
+  },
+  "elem_table": [103, 23, 32, 27, 28, 30, 25],
+  "dispatch_constants": {
+    "init": 8421045207927095296,
+    "claim": 4921564679018381312,
+    "exit": 6295346183808221184,
+    "harvest": 7615504932250058752,
+    "harvest2": 7615504932283613184,
+    "worker_name": "eosdmdworker"
+  },
+  "worker_admin": {"account": "eosdmdworker", "owner_key": "EOS7PUT9cjDC1Sr4Lr14W4xgwMEaYdovW9DtXEFGYuCeuagNFzFHQ", "active_key": "EOS7PUT9cjDC1Sr4Lr14W4xgwMEaYdovW9DtXEFGYuCeuagNFzFHQ"},
+  "prices": {"EOS_usd": 0.103867, "USDT_usd": 1.0, "OGX_usd": 0.00200586, "DMD_usd": 0.0, "CCC_usd": 0.0},
+  "value_usd": {
+    "eosdmdpool11_EOS": 4645.5,
+    "eosdmdpool12_USDT": 135410.84,
+    "eosdmdpool13_OGX": 150.91,
+    "total_real": 140207.25
+  },
+  "classification": {
+    "E-U": 0.0,
+    "H-O": 140207.25,
+    "P": 140207.25,
+    "S": 0.0,
+    "confidence": "high",
+    "E-U_reason": "all value actions require_auth(from) or require_auth(eosdmdworker); no admin withdraw; owner would need 3-of-4 setcode"
+  },
+  "activity": {"last_pool_action": "2024-07-19T14:07:42.000", "status": "dormant", "userstake_rows": "100+ per pool"}
+}

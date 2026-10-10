@@ -1,0 +1,69 @@
+{
+  "target": "JustLend V2 (TRON) - Moolah Morpho-Blue fork (MoolahProxy)",
+  "finding": "H2-05 / JustLend V2 $1.69M AccessControl-gated",
+  "chain": "tron",
+  "latest_block": 86991223,
+  "block_range_reads": [86991072, 86991223],
+  "block_time_utc": "2026-10-10 15:34",
+  "contracts": {
+    "proxy": {"addr": "TDH4dhmVQQNc1ZNudJwWzBcs2h6ahhWrpp", "name": "MoolahProxy", "is_proxy": true, "verified": false},
+    "implementation": {"addr": "TKEiKtSaqUboeBmZxcSp8Z2CJUDGk4BT3a", "name": "Moolah", "verified": false, "abi_entries": 105, "creator": "TQaT4wfxmA4n4b4ihjucyctNgtFU94MzpN"},
+    "proxy_creator": "TFm8zsJWupMKbeXhFFAWKwc41igiFJ9nHb",
+    "created_ms": 1775534787000,
+    "oracle_all_markets": "TUDXEUA6hNiWPm54cMifoxCZU28zRu6bPc",
+    "irm_all_markets": "TSsuwbvUKAVgRmSghXT7i38PgHWpW12wQ1",
+    "fee_recipient": "TMzGb5Ma85oYMcnmVFjhvS1HYr6MRSspmE",
+    "liquidator_whitelist": ["TKX8nUY8otA4d9qV1tDuN5BLSrxkr9pWa6", "TGDuQaHtvadVL5z9PMM874CaehQnwf3qJi"]
+  },
+  "paused": false,
+  "default_market_fee_1e18": "0.1e18",
+  "roles": {
+    "DEFAULT_ADMIN_ROLE": ["TZJVQuU3CJqBScwoxhRtkxQ7JjsNNrpEag"],
+    "MANAGER": ["TTY7rV1BpKXNnZCuRTqpM19tyZJW5ExXMa", "TKKX9qYdRvnTmAaxEYv8VfFpzXzt3PEe2w"],
+    "OPERATOR": ["TTY7rV1BpKXNnZCuRTqpM19tyZJW5ExXMa", "TKKX9qYdRvnTmAaxEYv8VfFpzXzt3PEe2w"],
+    "PAUSER": ["TTY7rV1BpKXNnZCuRTqpM19tyZJW5ExXMa"]
+  },
+  "tvl": {
+    "measured_proxy_token_value_usd": 1699173.53,
+    "defillama_justlend_v2_tvl_usd": 1698609.42,
+    "defillama_borrowed_usd": 515329.63,
+    "measured_borrow_usd": 515216.45,
+    "composition_usd": {
+      "sTRX": 735009.59,
+      "BTC": 425764.98,
+      "WTRX": 326185.28,
+      "USDT": 128543.75,
+      "USDD": 83669.92
+    },
+    "prices_source": "coins.llama.fi/prices/current ts 1791645775-1791646378"
+  },
+  "markets": [
+    {"id": "55e29973d468bf8d5122bf3121eccf691e1db40751c9866551d32294ec73c1a4", "loan": "WTRX", "coll": "sTRX", "lltv": 0.8, "supply_usd": 44097.89, "borrow_usd": 19693.46},
+    {"id": "7903ec42a7e2e1569a3960e38a79a95ce0724ddc90fa1689d803219eece9a6fa", "loan": "USDT", "coll": "BTC", "lltv": 0.8, "supply_usd": 122412.74, "borrow_usd": 110545.52},
+    {"id": "6f0d54e85241649488f31cc6816c51f113d8be1df570cd636a553b2885e69dd2", "loan": "USDT", "coll": "WTRX", "lltv": 0.8, "supply_usd": 133742.08, "borrow_usd": 116952.57},
+    {"id": "646a4772e629c9a6d16315931335ef355983a9572e4be7a4dec81decdca9ed6d", "loan": "USDT", "coll": "sTRX", "lltv": 0.8, "supply_usd": 131473.71, "borrow_usd": 123571.98},
+    {"id": "92355a00c4958500c6971ddde82f8a6f7e42db8a29e3853383910bbcc9ee603b", "loan": "USDD", "coll": "sTRX", "lltv": 0.8, "supply_usd": 108677.43, "borrow_usd": 97468.89},
+    {"id": "7ad8b9c73e6b4eafd2aebdd9e41da067d8fb2b569f63e60064bff32c0b19d853", "loan": "WTRX", "coll": "USDT", "lltv": 0.8, "supply_usd": 33166.22, "borrow_usd": 26371.88},
+    {"id": "0a9b9d2d1b4c6985dcdab7d4056b3269d8a6ac92c594ffd72bec0e31bef04a18", "loan": "USDD", "coll": "WTRX", "lltv": 0.8, "supply_usd": 92227.66, "borrow_usd": 20378.67},
+    {"id": "5f06384a9e0878b5f18a6ee3535eef380c6c089345d1a80c5892c15a67a8c82c", "loan": "WTRX", "coll": "USDD", "lltv": 0.8, "supply_usd": 28934.51, "borrow_usd": 233.48}
+  ],
+  "markets_note": "9 unique marketParams reconstructed from 771 recent proxy txs; 8 with full live reads; all share one oracle+IRM, LLTV 80%",
+  "verdict": {
+    "E-U": {"usd": 0, "confidence": "medium", "reason": "liquidate() whitelist-gated to 2 liquidator contracts; user flows move only caller positions (standard Morpho accounting); no empty-market asymmetry; not paused; no unguarded rescue path in live ABI"},
+    "H-O": {"usd": 1699173.53, "confidence": "medium", "reason": "depositor self-service withdraw/repay/withdrawCollateral unpaused; proxy holds tokens"},
+    "P": {"usd": null, "confidence": "high", "reason": "AccessControl roles + feeRecipient can pause/set fees/whitelists/markets"},
+    "S": {"usd": 0, "confidence": "medium"}
+  },
+  "blockers": [
+    "proxy and implementation source unverified on TronScan (verify_status 0); ABI metadata partial (105 entries, does not decode 4 hottest calldata selectors)",
+    "oracle TUDXEUA6... not reviewed - single oracle risk across all 9 markets; manipulation path unquantified",
+    "PublicLiquidatorProxy may be a permissionless liquidation-execution lane (standard liquidation bonus only, unreviewed)",
+    "per-position health / liquidation capacity not enumerated (no state-changing simulations performed)"
+  ],
+  "verification": {
+    "method": "read-only triggerconstantcontract + TronScan tx/calldata reconstruction + DefiLlama prices",
+    "no_transactions_sent": true,
+    "raw_files": ["getcontract_proxy.json", "getcontract_impl.json", "market_reads.json", "markets_decoded.json", "state_raw.json", "state_raw2.json", "all_market_params.json", "llama_prices.json", "getnowblock_final.json", "ts_txs_proxy.json"]
+  },
+  "one_liner": "JustLend V2 = MoolahProxy (Morpho-Blue fork, $1.699M held, block 86,991,223); unprivileged E-U $0 because liquidations are whitelist-gated to 2 liquidator contracts and user flows are standard self-service accounting; $1.699M is H-O (depositors), admin roles are P; no stuck value."
+}

@@ -1,0 +1,69 @@
+{
+  "finding": "H2-05",
+  "title": "EOS / misc custody with key or trust risk — WhaleEx, DMD Finance, CHATEAU, Vigor, JustLend V2 (Moolah), STRATO/Mercata, Vena Finance",
+  "chains": ["eos", "plasma", "tron", "fluent", "strato"],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 21775751.62,
+    "P": 20104993.47,
+    "S": 14002.0
+  },
+  "latest_block": 524656003,
+  "block_numbers": {
+    "eos": 524656003,
+    "eos_final_read": 524655491,
+    "plasma": 34691115,
+    "plasma_recheck": 34696221,
+    "tron": 86991223,
+    "fluent": 17863118,
+    "fluent_recheck": 17867714,
+    "strato": 622692
+  },
+  "targets_checked": 7,
+  "live_targets": 7,
+  "closed_reasons": [
+    "WhaleEx/whaleextrust (EOS): trust contract's only action clearextsym(account) is require_auth(account) and moves no value; tokens.wal/whaleextoken transfer requires require_auth(from); issue/retire/recreate require require_auth(stat.issuer); whaleextrust grants no eosio.code on active/owner and has zero linkauth actions ever (full 10k-action history scan) -> the staking delegation to eosdefiproxy cannot move tokens. Value is key-controlled (P).",
+    "DMD Finance pools 11/12/13 (EOS): decompiled WASM proves exit(from) and claim(from) handlers begin with require_auth(from); init/harvest/harvest2 require require_auth(eosdmdworker); deposits credited only via genuine token-transfer notifications from whitelisted token contracts; payout inline transfer goes to the authenticated from and the stake row is removed (no double-withdraw); no admin withdraw exists (owner 3-of-4 would need setcode).",
+    "CHATEAU chUSD (Plasma): chUSD mint() minter-gated; ChateauMinting.mint/redeem/transferToCustody revert missing AccessControl roles for unprivileged callers (live eth_call sims); no sweep/rescue selector; only on-chain USDT0 an attacker could ever reach is $77.24.",
+    "Vigor (EOS): bailout/bailoutup/kick/returncol/returnins/cleanbailout/doupdate/setconfig etc. all require_auth(vigorlending) (decompiled + all 11 bailouts/2 kicks since 2026-08-25 authorized [vigorlending@active]); only tick is permissionless (no caller value); assetout/acctstake self-auth; liquidate self-or-contract. Frozen-oracle borrow path is pool-capacity-bounded (<= ~$150 net, low-medium confidence, not demonstrated).",
+    "JustLend V2 / Moolah (TRON): Morpho-Blue fork (9 markets, LLTV 80%); liquidate() is whitelist-gated to exactly 2 liquidator contracts (LiquidatorProxy TKX8nUY8...Wa6, PublicLiquidatorProxy TGDuQaH...qJi) proven live via getLiquidationWhitelist(bytes32) on market 55e29973...c1a4; user flows move only caller positions (standard Morpho accounting); no empty-market asymmetry; not paused; no unguarded rescue in the 105-entry ABI.",
+    "STRATO/Mercata: 17/17 admin-function gating simulations and 8/8 free-money simulations from a random address revert ('Only an admin or a whitelisted account...' / Insufficient collateral / SM:not holder / Minting disabled / asset missing / unsupported); public L1 (chain 123354377739506), behavior fully readable via RPC/explorer/Cirrus despite unpublished source.",
+    "Vena Finance (Fluent): stock Aave-v3 fork; oracle = Pyth-Lazer adapters (updatePrices onlyRole + signature verification + 60s staleness); ACL roles on TimelockController/Safe; rescueTokens onlyPoolAdmin; no custom unprivileged value mover found."
+  ],
+  "poc": {
+    "tests_passed": 65,
+    "tests_total": 65,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38064813864",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38056256559",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38056143181",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38056003865",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38055808301",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38054029072"
+    ]
+  },
+  "key_facts": [
+    "WhaleEx: whaleextrust holds 2,426,381.86411885 USDT + 14.80068211 BTC on tokens.wal (face ~$3.65M) plus 48 other tokens; tokens.wal holds only 216.52 USDT + 0.100001 BTC of real backing -> the IOUs are custodial claims on a dormant exchange (last activity 2025-08-17). Single master owner key EOS5GF3Uzz... is owner of 13 WhaleEx accounts incl. tokens.wal/whaleextoken/gates/debit/eosdefiproxy; whaleextrust owner=active=EOS58SzHx... single key (rotated 2025-02-16).",
+    "DMD: pools hold 135,410.8398 USDT (tethertether) + 44,728.4875 EOS + 75,235.9113 OGX (total ~$140,207); userstake census 187/33/4 users sums exactly to contract balances; active permission has no keys (self@eosio.code only); owner = threshold 22 = 3-of-4 (eosdefiadmin 20 + 2 of eosnationftw/itokenpocket/slowmistiobp); dormant since 2024-07-19.",
+    "CHATEAU: chUSD totalSupply 1,024,692.236 vs 77.307860 USDT0 collateral at ChateauMinting -> on-chain shortfall $1,024,102.65 (99.99%); operator-submitted redemption (REDEEMER_ROLE); last redemption 2026-09-08.",
+    "Vigor: live tokens $123,424.71 (vigorlending $113,233.53 + vigorstaking $10,191.17); H-O $119,635; S ~$14,002 nominal (EOS claims 0.05% backed); oracle frozen at 2025-04-03T14:10:11Z (eosusd 8204) with live borrows through it; DAC authority dacauth11111 = 4-of-7 custodians.",
+    "JustLend V2 (Moolah): located value $1,699,173.53 = sTRX $735,009.59 + BTC $425,764.98 + WTRX $326,185.28 + USDT $128,543.75 + USDD $83,669.92 (DefiLlama $1,698,609.42, delta 0.03%); borrows $515,216; roles ADMIN 1 EOA / MANAGER-OPERATOR 2 / PAUSER 1; fee 10%; core not paused.",
+    "STRATO/Mercata: DefiLlama TVL $16,190,997.36 verified line-by-line at block 622,692 (CDP vault ~$13.62M dominated by 3,134.63 GOLDST = $13.12M; SaveVault $1.71M; PSM $91k; debt $4.70M; CDP global CR 2.88x); AdminRegistry 0x...100c = 3 admin EOAs @60% threshold, every contract upgradeable via setLogicContract.",
+    "Vena: custody in aTokens 545,341.40 USDnr + 8,457,557.20 sUSDnr (+dust WETH) = $9,175,475.67 (matches DefiLlama ~$9.18M); independently re-verified by the parent at block 17,863,118.",
+    "Total external-unprivileged extraction found across all 7 targets: $0.00 (one conditional exception: Vigor frozen-oracle borrow bounded to <= ~$150 net, low-medium confidence, not demonstrated)."
+  ],
+  "caveats": [
+    "Per-target confidence: high for WhaleEx/DMD/CHATEAU/Vigor (decompiled auth maps + protocol require_auth semantics + live history), medium-high for STRATO (behavioral verification; source unpublished), medium for JustLend V2 (source unverified/partial ABI, oracle unaudited) and Vena (fork not byte-diffed vs upstream Aave v3).",
+    "Category sums overlap by construction: P is the per-protocol total under privileged control (upgradeable systems), which supersets H-O where the same funds are holder-withdrawable (STRATO P $16.19M vs H-O $10.64M; DMD/Vigor latent P). E-U is the headline (0).",
+    "WhaleEx IOUs are ~unbacked on-chain and the exchange is dormant -> the $3.65M face P value may not be realizable; it is a key-compromise exposure (single master owner key across the infrastructure), not an E-U path.",
+    "EOSIO has no public dry-run endpoint; EOS negative results are proven by pinned-WASM decompilation + the protocol rule that require_auth(X) forces X@active|owner (plus live action-history authorization checks).",
+    "DMD/Vigor H-O realization is self-service and capacity/utilization-bound; DMD pools dormant since 2024-07-19; DMD/CCC/DION reward tokens priced $0.",
+    "STRATO key-governance tail risk: 3 admin EOAs (60% threshold) can upgrade any contract via setLogicContract; bridges have operator-gated exits. JustLend V2 oracle (TUDXEUA6...) unaudited; PublicLiquidatorProxy permissionless lane unreviewed.",
+    "Incident (data integrity): at ~16:27 local the folder root files and analysis/{whaleex,dmd,plasma_fluent,vigor} were unexpectedly deleted by an unidentified process; everything was recovered byte-for-byte from the public CI branch kingmariano/ca-zombie-ci@eos-misc and the final child outputs were preserved; no secrets affected; root cause undetermined.",
+    "Prices 2026-10-10: BTC $82,760-82,817, EOS $0.1038, OGX $0.002006, TRX $0.331013, USDD $0.998, USDT $1.",
+    "Read-only; no transactions signed or sent on any chain; no secrets stored in the folder."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from all seven H2-05 targets: every value path is gated (EOS require_auth(from)/issuer/contract; TRON liquidation-whitelist + self-scoped Morpho accounting; STRATO 17/17 admin + 8/8 free-money sims revert; Plasma/Fluent AccessControl/Pyth-gated), the suspicious DMD exit(from)/claim(from) lead was fully decompiled (both handlers require_auth(from)); residual value is holder self-service (H-O ~$21.78M) or privileged/key-controlled (P ~$20.10M, incl. WhaleEx single-key custody and STRATO's upgradeable suite)."
+}

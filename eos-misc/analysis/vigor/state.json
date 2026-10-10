@@ -1,0 +1,138 @@
+{
+  "finding": "H2-05",
+  "target": "Vigor (EOS)",
+  "title": "Vigor (EOS) - bailout/kick gated; frozen-oracle borrow arbitrage capacity-throttled",
+  "chains": ["eos"],
+  "snapshot": {
+    "date_utc": "2026-10-10",
+    "head_block": 524653327,
+    "head_block_time": "2026-10-10T13:08:44.000",
+    "earlier_pass_block": 524642876,
+    "lib": 524653325
+  },
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "headline_note": "No direct external-unprivileged value mover exists; conditional frozen-oracle borrow arb is bounded to <= ~$150 net (low-medium confidence) and not demonstrated end-to-end.",
+  "categories": {
+    "E-U": 0.0,
+    "E-U_conditional_max_estimate": 150.0,
+    "H-O": 119635.07,
+    "P": 122424.71,
+    "S": 14002.02
+  },
+  "live_value": {
+    "vigorlending_physical_usd": 113233.53,
+    "vigorstaking_physical_usd": 10191.17,
+    "total_physical_usd": 123424.71,
+    "breakdown_usd": {
+      "PBTC": 89490.39,
+      "PETH": 11970.61,
+      "USDT_total": 12567.1,
+      "VIGOR_total": 5027.91,
+      "VIG_total": 638.44,
+      "EOS_total": 3313.52,
+      "IQ": 416.72,
+      "GEN": 0.0
+    }
+  },
+  "prices": {
+    "EOS_usd": 0.105194,
+    "USDT_usd": 0.999254,
+    "IQ_usd": 0.00083829,
+    "BTC_usd": 82784.0,
+    "ETH_usd": 2495.83,
+    "VIG_usd": 2.478e-06,
+    "VIGOR_usd": 0.0993,
+    "source": "CoinGecko + Defibox swap.defi pairs 11/76 live 2026-10-10"
+  },
+  "contracts": {
+    "vigorlending": {
+      "exists": true,
+      "role": "CDP + lending engine, VIGOR issuer",
+      "wasm_sha256_prefix": "63e8641ffbc23d62",
+      "physical_usd": 113233.53,
+      "verdict": "H-O dominated; E-U 0 direct; S unbacked EOS claims",
+      "ho_usd": 109456.0,
+      "s_unbacked_nominal_usd": 12402.22
+    },
+    "vigorstaking": {
+      "exists": true,
+      "role": "staking vault (EOS/USDT/VIG/VIGOR)",
+      "physical_usd": 10191.17,
+      "verdict": "H-O (fully backed user stakes, withdrawals proven); S/P 1600 phantom row",
+      "ho_usd": 10179.06,
+      "s_usd": 1599.8
+    },
+    "vigortoken11": {
+      "exists": true,
+      "role": "VIGOR token (issuer vigorlending, supply 63363.9554)",
+      "verdict": "standard eosio.token; issue issuer-gated"
+    },
+    "vig111111111": {
+      "exists": true,
+      "role": "VIG token (issuer self, supply 1e9 = max)",
+      "verdict": "standard eosio.token; no further mint"
+    },
+    "vigoraclehub": {"exists": true, "role": "oracle; feeds FROZEN at 2025-04-03T14:10:11Z"},
+    "dactoken1111": {"exists": true, "role": "DAC token + members registry; memberreg self-auth (account gate key)"},
+    "daccustodia1": {"exists": true, "role": "DAC custodian contract"},
+    "dacauth11111": {"exists": true, "role": "authority hub; 4-of-7 custodian constellation; owner via daccustodia1@eosio.code"},
+    "nonexistent_checked": ["vigorvaults", "vigortoken", "vigtoken", "vigorstats", "vigortoken111", "vigorlock", "vigor", "vigordao", "vigorswap"]
+  },
+  "auth_gates": {
+    "bailout": "require_auth(vigorlending) - contract only (P)",
+    "bailoutup": "require_auth(vigorlending) - contract only (P)",
+    "kick": "require_auth(vigorlending) - contract only (P)",
+    "liquidate": "has_auth(vigorlending) || has_auth(usern) - self/contract only; self-variant disabled by config flags",
+    "liquidateup": "same as liquidate",
+    "returncol": "require_auth(vigorlending) (P)",
+    "returnins": "require_auth(vigorlending) (P)",
+    "cleanbailout": "require_auth(vigorlending) (P)",
+    "doupdate": "require_auth(vigorlending); triggered permissionlessly via tick inline",
+    "tick": "NO AUTH - permissionless cron trigger, no caller value",
+    "assetout": "require_auth(usern) - self-service withdraw/borrow",
+    "doassetout": "require_auth(vigorlending) - queued continuation",
+    "openaccount": "has_auth(owner)||has_auth(contract) + DAC members row + latest terms hash",
+    "acctstake": "require_auth(owner)",
+    "deleteacnt": "require_auth(owner)",
+    "dodeleteacnt": "require_auth(vigorlending) (queued)",
+    "inline_value_mover": "single send_inline site (f_ye); all transfers/issue contract-authorized"
+  },
+  "empirical_proofs": [
+    "All kick/bailout actions 2026-08-25..2026-09-11 executed with authorization [{actor: vigorlending, permission: active}]",
+    "sagittariusa borrowed 1+49 VIGOR on 2026-09-11 via assetout(memo=borrow): issue->transfer, proving live borrows accept frozen prices",
+    "1vgvgvgvgvg1 memberreg 2025-10-28T19:03:56 -> openaccount 2025-10-28T19:05:09 (permissionless account acquisition)",
+    "vigorstaking withdraw history incl. prospectgold 2456.4756 EOS 2024-07-28; dltoneeosone 4624.2676 EOS + 5.08M VIG + 474.85 VIGOR 2024-04-04 (H-O proven)"
+  ],
+  "frozen_oracle": {
+    "oracle_timestamp": "2025-04-03T14:10:11.000",
+    "eosusd_oracle": 0.8204,
+    "eosusd_market": 0.105194,
+    "ratio": 7.8,
+    "eosvigor_oracle": "1.1457 VIGOR/EOS -> VIGOR $0.7161",
+    "eosvigor_real_vigor_usd": 0.0993,
+    "vigeos_oracle": "6901e-8 EOS/VIG -> $5.66e-5",
+    "vigeos_real_usd": 2.478e-06,
+    "note": "real/oracle gaps: VIG 22.7x overvalued, EOS 7.8x, VIGOR 7.2x, IQ 4.6x; PETH undervalued 0.71x, PBTC ~1.0x"
+  },
+  "conditional_eu": {
+    "vector": "frozen-oracle mispriced borrow via self-authorized assetout(memo=borrow)",
+    "usdt_available_lendable_minus_lentpct": 164.3,
+    "net_after_collateral_cost_usd": 138.1,
+    "vigor_direction_capacity_usd": 14.6,
+    "practical_bound_usd": 150.0,
+    "confidence": "low-medium",
+    "not_demonstrated_reasons": [
+      "cannot dry-run on EOS public nodes",
+      "pool lentpct table may be stale",
+      "mining drip throttles VIGOR lending (observed 0.006-0.2 VIGOR per update)"
+    ]
+  },
+  "caveats": [
+    "pToken redeemability into BTC/ETH not verified; priced at BTC/ETH equivalents",
+    "Defibox PBTC pools thin/skewed; $89k not liquidatable at spot",
+    "H-O is first-come-first-served with protocol settle/daily caps",
+    "recap/recapsaver liquidation book (bailout table id 11013, 10k+ entries) not fully reverse-engineered"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live (bailout/kick/liquidate and all value movers are require_auth(vigorlending) or self-gated); $123.4k of live tokens are user-claimable H-O ($119.6k) with $14.0k unbacked stuck claims; a frozen-Apr-2025-oracle borrow arbitrage exists but is capacity-throttled to <= ~$150 net (low-medium confidence)."
+}

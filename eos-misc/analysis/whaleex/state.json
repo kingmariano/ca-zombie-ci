@@ -1,0 +1,69 @@
+{
+  "protocol": "WhaleEx / whaleextrust",
+  "chain": "eos",
+  "head_block": 524644740,
+  "head_block_time": "2026-10-10T11:57:10.000",
+  "accounts": {
+    "whaleextrust": {
+      "created": "2018-07-15T10:19:08.500",
+      "last_code_update": "2025-04-18T15:28:23.000",
+      "owner_key": "EOS58SzHxGtcxNyWhKGmEuhDhiN8spS8re5CA9XN3rghNowkFZWaL",
+      "active_key": "EOS58SzHxGtcxNyWhKGmEuhDhiN8spS8re5CA9XN3rghNowkFZWaL",
+      "active_eosio_code": [],
+      "extra_permission": "staking -> eosdefiproxy@eosio.code",
+      "code_sha256": "e1f01c19d2a1539da73e2ff5926727d7003a279d5ca963bd1844b90e22dfea8b",
+      "actions": ["clearextsym"],
+      "auth": "clearextsym(account): require_auth(account); deletes extsymbolref rows; no token movement"
+    },
+    "tokens.wal": {
+      "owner_key": "EOS5GF3Uzzrm99skHn1JyxkBzs4bRNcmQzd3buj7rrB1eRw1qv4Ec",
+      "active_key": "EOS6JrUS7TQQ5gjKN434XTYfF2YtyvHKsf8i48PgWm34RwYg6y8Uo",
+      "active_eosio_code": ["namebid.wal", "tianshu.eos", "tokens.wal", "whaleexdebit", "whaleexgate4", "whaleexgate5"],
+      "code_sha256": "a866784930cd7bf62620debfc8bd31645c777c4ccbe2a955fc1a13159da9e5a4",
+      "transfer_auth": "require_auth(from)",
+      "issue_auth": "require_auth(stat.issuer)",
+      "retire_auth": "require_auth(stat.issuer)",
+      "stat": {
+        "USDT": {"supply": "2537116.65971396 USDT", "issuer": "tokens.wal"},
+        "BTC": {"supply": "14.94248742 BTC", "issuer": "tokens.wal"}
+      }
+    },
+    "whaleextoken": {
+      "code_sha256": "a866784930cd7bf62620debfc8bd31645c777c4ccbe2a955fc1a13159da9e5a4",
+      "note": "byte-identical to tokens.wal"
+    }
+  },
+  "balances_whaleextrust": {
+    "USDT_tokens.wal": "2426381.86411885",
+    "BTC_tokens.wal": "14.80068211",
+    "EOS_liquid": "10.0441",
+    "staked_EOS": "0",
+    "WAL_whaleextoken": "718772298.731",
+    "other_tokens": 48
+  },
+  "backing": {
+    "tokens.wal_real_USDT_tethertether": "216.51974688",
+    "tokens.wal_real_BTC_eosiorealbtc": "0.100001",
+    "whaleexgate5_USDT": "61.3007",
+    "tianshu.eos_USDT": "1074.0503",
+    "note": "IOUs have negligible on-chain backing; real reserves off-chain"
+  },
+  "prices": {"BTC_usd": 82817, "USDT_usd": 1.0, "EOS_usd": 0.103867},
+  "classification": {
+    "E-U": 0.0,
+    "H-O": 0.0,
+    "P": 3652071.86,
+    "S": 0.0,
+    "confidence": "high",
+    "E-U_reason": "no unauthenticated value mover; trust contract has no token movement; token transfer requires auth(from); issue/retire require issuer (single key + WhaleEx gate contracts)"
+  },
+  "activity": {
+    "whaleextrust_last_action": "2025-08-15T17:34:39.000",
+    "tokens.wal_last_action": "2025-08-17T15:12:16.000",
+    "status": "dormant"
+  },
+  "master_owner_key": {
+    "key": "EOS5GF3Uzzrm99skHn1JyxkBzs4bRNcmQzd3buj7rrB1eRw1qv4Ec",
+    "owns": ["tokens.wal", "whaleextoken", "whaleexdebit", "whaleexgate4", "whaleexgate5", "namebid.wal", "tianshu.eos", "eosdefiproxy"]
+  }
+}

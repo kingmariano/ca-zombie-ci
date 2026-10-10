@@ -1,0 +1,154 @@
+{
+  "task": "H2-05 deep-dive (child subagent) \u2014 plasma_fluent",
+  "date": "2026-10-10",
+  "read_only": true,
+  "chains": {
+    "plasma": {
+      "chain_id": 9745,
+      "rpc": "https://rpc.plasma.to",
+      "block": 34691115,
+      "block_ts": 1791632439,
+      "explorer": "plasmascan.to / etherscan-v2 chainid=9745"
+    },
+    "fluent": {
+      "chain_id": 25363,
+      "rpc": "https://rpc.fluent.xyz",
+      "block": 17863118,
+      "block_ts": 1791632951,
+      "explorer": "fluentscan.xyz"
+    }
+  },
+  "headline_extractable_unprivileged_usd": 0.0,
+  "headline_confidence": "high",
+  "protocols": [
+    {
+      "name": "CHATEAU chUSD",
+      "chain": "plasma",
+      "classification": {
+        "E-U": 0.0,
+        "H-O": 0.0,
+        "P": 77.24,
+        "S": 0.0
+      },
+      "confidence": "high",
+      "nominal_holder_exposure_usd": 1024179.89,
+      "onchain_collateral_usd": 77.24,
+      "shortfall_usd": 1024102.65,
+      "addresses": {
+        "chUSD": "0x22222215d4EdC5510d23D0886133E7ece7F5fdC1",
+        "ChateauMinting": "0xEA6709C29d4D4B5162d8C55D0c28C5CED6cd7296",
+        "schUSD": "0x888888bAB58A7bd3068110749bC7b63B62CE874D",
+        "chUSDSilo": "0x14E445182C2E281cF839eb0E9A12359653525658",
+        "owner_safe": "0x478F78c416dDBEEA6BF36512c8ddD563F65DE668",
+        "USDT0": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb",
+        "operator_EOAs": [
+          "0xa0fd0bd36bf8174ab2cc547049648703bb4e72af",
+          "0xfbdfcadc912e0219fb03f7ee1ecdd9d244e40ba6"
+        ],
+        "top_chUSD_holder_EOA": "0x9616042c61f08284f8f0d3a3931aadbc987aa2c6"
+      },
+      "key_facts": [
+        "chUSD totalSupply 1,024,692.236150956 @ plasma block 34691115 (minter = ChateauMinting; owner = 2-of-3 Safe)",
+        "USDT0 balance of ChateauMinting = 77.307860 ($ 77.24); nominal supply USD $ 1024179.89; on-chain shortfall $ 1024102.65",
+        "chUSD.mint() source-verified: msg.sender must equal minter; ERC20Burnable (no third-party burn); setMinter onlyOwner",
+        "redeem(order,sig) live eth_call from unprivileged addr reverts AccessControl missing REDEEMER_ROLE 0x44ac9762...",
+        "mint(order,route,sig) live eth_call from unprivileged addr reverts missing MINTER_ROLE 0x9f2df0fe...",
+        "transferToCustody reverts missing role 0x85e8f2d6... (held by the Safe); no withdraw/sweep/rescue in 42-selector dispatch",
+        "lifetime USDT0 flow through mint contract: IN 431,243.64692 / OUT 431,166.33906 (net +77.30786); last activity 2026-09-08 (blk 31,927,212)",
+        "94.0% of chUSD supply (963,014.68) sits in a single plain EOA 0x9616042c...; silo 12,301.57 chUSD; schUSD vault 2,604.84 chUSD"
+      ],
+      "gates": [
+        "minter-gated mint (chUSD)",
+        "REDEEMER_ROLE on redeem",
+        "MINTER_ROLE on mint",
+        "custody role on transferToCustody",
+        "DEFAULT_ADMIN = EOA 0xD9911E44 (Safe owner)",
+        "Safe 2-of-3 owner for setMinter"
+      ],
+      "caveats": [
+        "ChateauMinting + chUSDSilo unverified (ABI reconstructed via heimdall + selector resolution + live sims)",
+        "redemption/settlement is operator-submitted; off-chain fund/custodian trust risk; on-chain redeem liquidity only $77.24",
+        "$1.02M nominal exposure is not attacker-extractable"
+      ]
+    },
+    {
+      "name": "Vena Finance",
+      "chain": "fluent",
+      "classification": {
+        "E-U": 0.0,
+        "H-O": 9175475.67,
+        "P": 0.0,
+        "S": 0.0
+      },
+      "confidence": "medium",
+      "custody_usd": 9175475.67,
+      "addresses": {
+        "Pool_proxy": "0xD6E69976C8Aea2A4075Bc637fE8881672FF14013",
+        "Pool_impl": "0xd5443A545cD467d0F5F64d5E88d7b4c94C7E5753",
+        "PoolAddressesProvider": "0xf5569e98BB2FC78Af813B65C124aa63a5b141983",
+        "ACLManager": "0x18797a361C79fD7b6d8C62d7eDe244353a7369Bf",
+        "PriceOracle": "0xC3Be4DDD4354Cd83FcfB3bE67686387b42A353Db",
+        "ProtocolDataProvider": "0xb6eEF266933382661827E36fE3f936396e80166E",
+        "timelock_admin": "0x2799ea13D3643BBa0e2d97E9877290d5e27B4f0c",
+        "emergency_admin_safe": "0x07f8b1e372e1df19948c63408e3d51b3714cfdd3",
+        "VenaPythPrices": "0xc93Dd12974e0Df7aF91bd28A6B4B34786EA3b905",
+        "aUSDnr": "0x3Ebf3cfcCDCd96edC1C506907C17eec2BdC31008",
+        "asUSDnr": "0x3161bF68Bc6e582D682458F8766b219E8e2821Ed",
+        "aWETH": "0x8e2Ea47F850E2F899EB02f8a69f3635c73599a3a",
+        "USDnr": "0xD48e565561416dE59DA1050ED70b8d75e8eF28f9",
+        "sUSDnr": "0xFa9b3B45587f9fcdE14759121C3868C2733DCbf4",
+        "WETH": "0x927C469E58Daab257Ea60B2D8c37bEDD2a203A54"
+      },
+      "custody": [
+        {
+          "asset": "USDnr",
+          "holder": "aUSDnr",
+          "amount": 545341.402995,
+          "usd": 545463.77
+        },
+        {
+          "asset": "sUSDnr",
+          "holder": "asUSDnr",
+          "amount": 8457557.196359,
+          "usd": 8630010.94
+        },
+        {
+          "asset": "WETH",
+          "holder": "aWETH",
+          "amount": 0.000388339932866218,
+          "usd": 0.97
+        }
+      ],
+      "loans_outstanding": {
+        "USDnr": 2094096.798098,
+        "WETH": 0.07258288,
+        "sUSDnr": 0.0
+      },
+      "key_facts": [
+        "Standard Aave v3 fork; Pool/ACL/Oracle/Provider verified on fluentscan; funds held in aToken contracts (Aave v3 design)",
+        "custody $ 9175475.67 (545341.4 USDnr + 8457557.2 sUSDnr + dust WETH) matches DefiLlama ~$9.18M",
+        "oracle = Pyth Lazer adapters; updatePrices = onlyRole(PRICE_UPDATER_ROLE) + i_pythLazer.verifyUpdate (signature-verified); staleness 60s",
+        "ACL: POOL/ASSET_LISTING/DEFAULT admin = TimelockController 0x2799ea13...; EMERGENCY_ADMIN = SafeProxy 0x07f8b1e3...",
+        "Pool.rescueTokens = onlyPoolAdmin; no custom value-moving function found; standard Aave v3 reserve list (WETH, sUSDnr, USDnr)",
+        "sUSDnr ~fully liquid; USDnr available liquidity $545,463.77 vs 2.64M claims (utilization-bound, normal money-market)"
+      ],
+      "gates": [
+        "Pyth Lazer signature verification",
+        "PRICE_UPDATER_ROLE on updatePrices",
+        "TimelockController/Safe admin roles",
+        "onlyPoolAdmin rescueTokens",
+        "proxy upgrade via provider/timelock"
+      ],
+      "caveats": [
+        "fork not byte-for-byte diffed against upstream Aave in this pass",
+        "PRICE_UPDATER_ROLE holder not identified (gate verified regardless)",
+        "USDnr full exit depends on borrower repayment (79% utilization)"
+      ]
+    }
+  ],
+  "blockers": [
+    "ChateauMinting + chUSDSilo unverified bytecode (reconstructed ABI)",
+    "no local fork PoC required \u2014 live eth_call revert proofs used; no transactions sent"
+  ],
+  "evidence_dir": "/home/heisenberg/CA/eos-misc/analysis/plasma_fluent"
+}
