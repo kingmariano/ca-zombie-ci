@@ -1,0 +1,44 @@
+{
+  "finding": "C2-51",
+  "title": "Troves/STRKFarm retired vaults (Starknet) — $24.9k unclaimed user recovery balances; no unprivileged extraction",
+  "chains": ["starknet"],
+  "headline_extractable_usd": 0.00,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0.00, "H-O": 24966.19, "P": 0.00, "S": 0.00},
+  "latest_block": 16154146,
+  "block_numbers": {"starknet": 16154146},
+  "targets_checked": 6,
+  "live_targets": 6,
+  "closed_reasons": [
+    "withdraw_zklend pays only the caller's own recorded position, exactly once ('Zklend::Already claimed' replay guard); non-holders get no transfer",
+    "claim_zklend/set_batch_amount/transfer/register_zklend/swap/unwind_dapp2/unpause/set_settings/upgrade are owner-only ('Caller is not the owner')",
+    "Sensei withdraw/rebalance/harvest are pause-gated ('Pausable: paused'); all four Sensei vaults is_paused()=1",
+    "AutoCompounding harvest is permissionless but dead: Ekubo distributor has no claim for the vaults (revert 'Removed')",
+    "receiver parameter does not pay the receiver's position when the caller has none (caller-based claims proven by simulation)"
+  ],
+  "poc": {
+    "tests_passed": 18,
+    "tests_total": 18,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38017926416",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38018391041"
+    ]
+  },
+  "key_facts": [
+    "DefiLlama strkfarm adapter hard-codes retiredBalance=0 for AutoCompounding (2) and Sensei (4) vaults; Troves = renamed STRKFarm (protocol id 4952)",
+    "Six retired vaults hold live funds at blocks 16,154,131-16,154,146: 15,720.450411 USDC + 2.668048629 ETH + 34,878.685553 STRK = $24,966.19 (DefiLlama 2026-10-10)",
+    "Vaults upgraded to the recovery class at blocks 1,242,433/1,243,009 and 1,273,089-1,273,097 (~2025-03-28, zkLend recovery claim launch)",
+    "Claim simulation: withdraw_zklend(1, own) transfers exactly zklend_position(own,1) — e.g. 826,786,388,187,987 STRK and 2,368 USDC for address 0x3495dd1e...; second call reverts 'Zklend::Already claimed'",
+    "Non-holder withdraw_zklend from unprivileged senders: SUCCESS with zero token transfers on AC and Sensei vaults",
+    "Receiver-basis test (random caller, receiver=position-holder): SUCCESS with zero transfers -> claims are caller-based, no third-party payout",
+    "Owners are single-owner Braavos accounts (class 0x36078334...527f), no timelock; upgrade could sweep the same H-O funds (P risk)",
+    "zkLend zTokens held (331,565.68 zSTRK + 1,115,739.03 zUSDC + 615.31 zETH) have no redemption path today; future recovery distributions would flow through the owner-register + user-withdraw pipeline"
+  ],
+  "caveats": [
+    "Vault Cairo source is not public; gates proven behaviourally via starknet_call/starknet_simulateTransactions traces and decoded revert strings, not source review",
+    "H-O amount is point-in-time (block 16,154,146) and excludes the unquantified open Nostra legs (get_nostra_amount: 9,522.31 / 15,444.99 / 1.1253 / 0.3532 receipt units) and the zkLend zTokens",
+    "AutoCompounding harvest is permissionless and takes a caller-supplied Avnu swap route; dead today ('Removed') but would re-arm if a new Ekubo claim is allocated; old-class beneficiary guard could not be exercised",
+    "Owner (P) upgrade power applies to the same $24.97k and is not double-counted in the categories"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0.00 live from the Troves/STRKFarm retired vaults; the ~$24.9k is unclaimed user zkLend-recovery balances (H-O) withdrawable only by each recorded claimant once, with all admin/swap/harvest paths owner-gated, paused, or dead."
+}
