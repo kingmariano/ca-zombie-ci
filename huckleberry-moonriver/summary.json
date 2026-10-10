@@ -1,0 +1,36 @@
+{
+  "finding": "C2-56",
+  "title": "Huckleberry / Moonriver cohort — Moonriver chain frozen since 2026-08-10; all cohort custody stuck (S)",
+  "chains": ["moonriver"],
+  "headline_extractable_usd": 0.00,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0.00, "H-O": 0.00, "P": 0.00, "S": 375705.19},
+  "latest_block": 17381654,
+  "block_numbers": {"moonriver": 17381654},
+  "targets_checked": 943,
+  "live_targets": 0,
+  "closed_reasons": [
+    "Moonriver head frozen at 17,381,654 (2026-08-10T08:27:48Z), identical hash across two probes 32 min apart on two independent RPCs (onfinality, drpc); eth_syncing=false",
+    "Maintenance Mode from block 17,269,716 (2026-08-01T00:00:00Z): all transactions rejected; zero non-empty blocks from maintenance start to head (2000-block sweep)",
+    "Last transaction-bearing block 17,268,165 (2026-07-31T21:06:48Z) — no tx has executed since; no mempool/no block production means no call path can execute for anyone (E-U=H-O=P=$0)",
+    "MOVR migrated 1:1 to Base 2026-07-31 (bridge deadline); chain wound down by Moonbeam Foundation"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": []},
+  "key_facts": [
+    "Huckleberry Lending comptroller 0xcffef313b69d83cb9ba35d9c0f882b027b846ddc — 11 markets, cash $8,447.60 at frozen head",
+    "Huckleberry oracle 0xef502fb85311065aeb1ebe6b179400b03de2d9a5 returns anomalous prices: BTC.m ~$8.116e9/BTC (~1e5x high), ETH.m ~6.1e20, USDT.m ~$3.68M, USDC.m ~$5.62M, DOT.m ~$2.58e9, USDC ~$0.0306, KSM ~2.59e11 — latent drain if the chain ever restarts",
+    "Moonswap factory 0x056973f631a5533470143bb7010c9229c19c04d2 — 816/816 pairs enumerated; stables: DAI 236,104.99 + USDC 83,550.96 + USDT 40,507.63 + BUSD 2,454.10 + MIM 1,226.36 + FRAX 401.75 + miMatic 23.80 = $363,040.64 paper ($364,269.59 nominal $1)",
+    "Excluded fake 9-dec 'DAI' 0xe7a534f34f6ba18a03e0e09ade4a9d6628aa69da (11,339,893.42 units; pair holds 0.0000025 WMOVR; totalSupply 1e12 units)",
+    "Huckleberry AMM factory 0x017603c8f29f7f6394737628a93c57ffba1b7256 — 113/113 pairs; stables $4,216.94 (USDT.m 2,619.71, USDC.m 1,410.88, MIM 1,065.94, USDC 135.63, FRAX 18.10)",
+    "Wave-2 report figures reproduced: Moonswap $358.7k ≈ USDC+USDT+DAI $360,163.58 nominal (within 0.4%); Huckleberry ~$8.6k ≈ $8,447.60 cash at current prices",
+    "Bridged-asset caveat: Moonriver USDC/USDT/DAI are Multichain-era bridged tokens (2023 collapse), BTC.m/ETH.m/USDC.m/USDT.m are '@moonriver' bridge-wrapped — nominal marks overstate real value",
+    "Re-arm condition: any Moonriver restart above block 17,381,654 — would instantly re-arm the Huckleberry oracle anomaly and every stale Moonriver protocol"
+  ],
+  "caveats": [
+    "Paper marks at DefiLlama prices 2026-10-10 (BTC $82,513.33, ETH $2,490.56, MOVR $1.8066, MIM $0.03301); TOM=$0 (no market)",
+    "Stranded old-chain MOVR cannot be bridged anymore; the migration token lives on Base (0x43fEB74608334DDa8c1a6500D185cFC3Ea962B83)",
+    "Rest of Moonriver ecosystem (Solarbeam, Moonwell Apollo, Zenlink, …) not re-measured — equally frozen (S) by the same chain-halt gate; Moonwell Moonriver covered by prior campaign C-28/C-32",
+    "Read-only research; no transactions; state cannot change unless the chain restarts"
+  ],
+  "one_liner": "External unprivileged attacker can extract $0 live from the Huckleberry/Moonswap Moonriver cohort: the chain is frozen at block 17,381,654 (2026-08-10) and rejects all transactions since 2026-08-01, so ~$375.7k of paper custody (Huckleberry lending $8.4k with live oracle anomalies + AMM $4.2k + Moonswap stables $363.0k) is stuck (S) for everyone; re-arms only if the chain ever restarts."
+}
