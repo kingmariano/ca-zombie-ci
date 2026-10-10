@@ -1,0 +1,567 @@
+[
+ {
+  "label": "read getProtocolStakerContract",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x4a34a6f0",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x00000000000000000000000000000000000000000000000000005374616b6572",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 1837,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "E1 unstake(other token) attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x2e17de78000000000000000000000000000000000000000000000000000000000000a8c3",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0xea93ab6d0000000000000000000000000000000000000000000000000000000000000001",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 5940,
+    "reverted": true,
+    "vmError": "execution reverted"
+   }
+  ]
+ },
+ {
+  "label": "E2 delegate(other token) attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x08bbb824000000000000000000000000000000000000000000000000000000000000a8c30000000000000000000000001e5b7e7b833f493347287f17bec6c836dc757948",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0xea93ab6d0000000000000000000000000000000000000000000000000000000000000001",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 5917,
+    "reverted": true,
+    "vmError": "execution reverted"
+   }
+  ]
+ },
+ {
+  "label": "E3 requestDelegationExit(other) attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x69e79b7d000000000000000000000000000000000000000000000000000000000000a8c3",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0xea93ab6d0000000000000000000000000000000000000000000000000000000000000001",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 6248,
+    "reverted": true,
+    "vmError": "execution reverted"
+   }
+  ]
+ },
+ {
+  "label": "E4 migrateAndDelegate(legacy 1) attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x584a983f00000000000000000000000000000000000000000000000000000000000000010000000000000000000000001e5b7e7b833f493347287f17bec6c836dc757948",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0xea93ab6d0000000000000000000000000000000000000000000000000000000000000001",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 8566,
+    "reverted": true,
+    "vmError": "execution reverted"
+   }
+  ]
+ },
+ {
+  "label": "E5 claimRewards(other token 45385) attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x0962ef79000000000000000000000000000000000000000000000000000000000000b149",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 25132,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "E6 upgradeToAndCall attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x4f1ef286000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0xe2517d3f0000000000000000000000000000000000000000000000000000000000000001189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 3207,
+    "reverted": true,
+    "vmError": "execution reverted"
+   }
+  ]
+ },
+ {
+  "label": "E7 NFT.transferBalance(1) attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7",
+     "data": "0x8a60c4c10000000000000000000000000000000000000000000000000000000000000001",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0xe2517d3f00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 3057,
+    "reverted": true,
+    "vmError": "execution reverted"
+   }
+  ]
+ },
+ {
+  "label": "E8 NFT.mint(1,attacker) attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7",
+     "data": "0x7bf75f6c00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0xd86ad9cf0000000000000000000000000000000000000000000000000000000000000001",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 2883,
+    "reverted": true,
+    "vmError": "execution reverted"
+   }
+  ]
+ },
+ {
+  "label": "E9 NFT.burn(43203) attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7",
+     "data": "0x42966c68000000000000000000000000000000000000000000000000000000000000a8c3",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0xd86ad9cf0000000000000000000000000000000000000000000000000000000000000001",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 2273,
+    "reverted": true,
+    "vmError": "execution reverted"
+   }
+  ]
+ },
+ {
+  "label": "E10 NFT.boost(other token) attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7",
+     "data": "0x1b55d19e000000000000000000000000000000000000000000000000000000000000a8c3",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x55ce4bd3000000000000000000000000000000000000000000000000000000000000a8c3",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 9772,
+    "reverted": true,
+    "vmError": "execution reverted"
+   }
+  ]
+ },
+ {
+  "label": "E11 Staker.withdrawDelegation(37920) attacker",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x00000000000000000000000000005374616b6572",
+     "data": "0xdf0e307a0000000000000000000000000000000000000000000000000000000000009420",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000157374616b65723a6f6e6c792064656c656761746f720000000000000000000000",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 1668,
+    "reverted": true,
+    "vmError": "execution reverted"
+   }
+  ]
+ },
+ {
+  "label": "E12 Staker.withdrawDelegation(37920) caller=StarGate",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x00000000000000000000000000005374616b6572",
+     "data": "0xdf0e307a0000000000000000000000000000000000000000000000000000000000009420",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x",
+    "events": [
+     {
+      "address": "0x00000000000000000000000000005374616b6572",
+      "topics": [
+       "0x0841064fa7f404b1ce2629504bda6d18463bb267aafc387ef9146f5bd0376dfc",
+       "0x0000000000000000000000000000000000000000000000000000000000009420"
+      ],
+      "data": "0x00000000000000000000000000000000000000000000021e19e0c9bab2400000"
+     }
+    ],
+    "transfers": [
+     {
+      "sender": "0x00000000000000000000000000005374616b6572",
+      "recipient": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+      "amount": "0x21e19e0c9bab2400000"
+     }
+    ],
+    "gasUsed": 31246,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "R1 hasRole(UPGRADER, admin 0xba04) ",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x91d14854189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e3000000000000000000000000ba04313060012a2c8623b2b3cb6d4c5e2b1becea",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 2414,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "R2 hasRole(UPGRADER, deployer 0x7850)",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x91d14854189ab7a9244df0848122154315af71fe140f3db0fe014031783b0946b8c9d2e300000000000000000000000078508681ee16a0973b6c03ec7ac9987cdf81a404",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 2414,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "R3 hasRole(ADMIN(0), 0xba04)",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x91d148540000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ba04313060012a2c8623b2b3cb6d4c5e2b1becea",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 2414,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "V1 claimableRewards(45385)",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x9835fc7e000000000000000000000000000000000000000000000000000000000000b149",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 54388,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "V2 getDelegationStatus(43203)",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0xf4655cd1000000000000000000000000000000000000000000000000000000000000a8c3",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000003",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 19260,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "V3 NFT.getStargate()",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7",
+     "data": "0x736f9035",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x00000000000000000000000003c557be98123fdb6fad325328ac6eb77de7248c",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 2547,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "V4 NFT.paused()",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7",
+     "data": "0x5c975abb",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 2330,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "V5 SG.paused()",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0x5c975abb",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 1934,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ },
+ {
+  "label": "V6 SG.getMaxClaimablePeriods()",
+  "request": {
+   "clauses": [
+    {
+     "to": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+     "data": "0xb0d76cad",
+     "value": "0x0"
+    }
+   ],
+   "caller": "0x0000000000000000000000000000000000000001",
+   "gas": 30000000,
+   "gasPrice": "0x0"
+  },
+  "response": [
+   {
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000340",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 2237,
+    "reverted": false,
+    "vmError": ""
+   }
+  ]
+ }
+]

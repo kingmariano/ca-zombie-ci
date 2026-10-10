@@ -1,0 +1,29 @@
+staking.getExchangeRate	PASS	1435	143586254 [1.435e8] 
+staking.totalSupply	PASS	27039345636300414	27039345636300414 [2.703e16] 
+staking.paused=false	PASS	false	false 
+staking.isStakePaused=false	PASS	false	false 
+staking.isUnstakePaused=false	PASS	false	false 
+staking.nodeStakingActive=false	PASS	false	false 
+staking.withdrawQueue.length==0(slot4)	PASS	0x0000000000000000000000000000000000000000000000000000000000000000	0x0000000000000000000000000000000000000000000000000000000000000000 
+staking.timelockOwner==0x1ad3eb(slot5)	PASS	0x00000000000000000000000000000000000000000000000000000000001ad3eb	0x00000000000000000000000000000000000000000000000000000000001ad3eb 
+staking.owner()==0xcb935	PASS	0x00000000000000000000000000000000000Cb935	0x00000000000000000000000000000000000Cb935 
+ATTACK queueAllFunds -> invalidOwner	PASS	0x83632027	Error: server returned an error response: error code 3: [Request ID: abbab1e6-7fde-4b04-bfa0-c28cb068e419] execution reverted: CONTRACT_REVERT_EXECUTED, data: "0x83632027" 
+ATTACK queuePartialFunds -> invalidOwner	PASS	0x83632027	Error: server returned an error response: error code 3: [Request ID: 48c3e791-d6f1-4325-896c-0e4e5611f3e4] execution reverted: CONTRACT_REVERT_EXECUTED, data: "0x83632027" 
+ATTACK withdraw(0) -> invalidIndex	PASS	0x8a581ab7	Error: server returned an error response: error code 3: [Request ID: bce8a185-2cb0-4866-8be1-66ee58e160b8] execution reverted: CONTRACT_REVERT_EXECUTED, data: "0x8a581ab7" 
+ATTACK cancelWithdraw(0) -> invalidOwner	PASS	0x83632027	Error: server returned an error response: error code 3: [Request ID: de798099-19d4-4d3d-bb1d-90485acf1551] execution reverted: CONTRACT_REVERT_EXECUTED, data: "0x83632027" 
+ATTACK updateNodeStakingActive -> onlyOwner	PASS	caller is not the owner	Error: server returned an error response: error code 3: [Request ID: f2eed289-44dd-4b1c-b09e-64d2c92b0302] execution reverted: Ownable: caller is not the owner, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000204f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572" 
+ATTACK pause -> onlyOwner	PASS	caller is not the owner	Error: server returned an error response: error code 3: [Request ID: 2b1ebdb3-e217-434a-9d41-ad86526d3936] execution reverted: Ownable: caller is not the owner, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000204f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572" 
+ATTACK updateUnStakeIsPaused -> onlyOwner	PASS	caller is not the owner	Error: server returned an error response: error code 3: [Request ID: 1930c3b3-e46b-4a7f-80bf-8c71c68ea695] execution reverted: Ownable: caller is not the owner, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000204f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572" 
+ATTACK stakeWithNodes -> invalidOperator	PASS	0xb25a821e	Error: server returned an error response: error code 3: [Request ID: a42aadfb-acce-4e51-b996-60991563dbc6] execution reverted: CONTRACT_REVERT_EXECUTED, data: "0xb25a821e" 
+ATTACK collectRewards -> invalidOperator	PASS	0xb25a821e	Error: server returned an error response: error code 3: [Request ID: e5174ffc-83b0-423a-bca5-517336b802a3] execution reverted: CONTRACT_REVERT_EXECUTED, data: "0xb25a821e" 
+ATTACK unStake(1e8) -> transfer fails	PASS	0xd96e4d38	Error: server returned an error response: error code 3: [Request ID: 269a383b-9fb3-41e2-8528-999c0feca8ba] execution reverted: CONTRACT_REVERT_EXECUTED, INSUFFICIENT_TOKEN_BALANCE, data: "0xd96e4d38" 
+ATTACK V3 undel undelegate -> only staking	PASS	Only staking contract can undelegate	Error: server returned an error response: error code 3: [Request ID: 1c3d4eb9-c591-459d-9924-ade397eb0369] execution reverted: Only staking contract can undelegate, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000244f6e6c79207374616b696e6720636f6e74726163742063616e20756e64656c6567617465000000000000000000
+ATTACK V3 undel withdraw(0) -> Panic(0x32)	PASS	0x4e487b71	Error: server returned an error response: error code 3: [Request ID: 85848d6f-dcff-4846-b654-9cb8222bf172] execution reverted: CONTRACT_REVERT_EXECUTED, data: "0x4e487b710000000000000000000000000000000000000000000000000000000000000032" 
+ATTACK V2 undel withdraw(0) -> Panic(0x32)	PASS	0x4e487b71	Error: server returned an error response: error code 3: [Request ID: d605987a-ac0b-4bbb-8b00-ab3a2780f603] execution reverted: CONTRACT_REVERT_EXECUTED, data: "0x4e487b710000000000000000000000000000000000000000000000000000000000000032" 
+permissionless Rewards.distributeStakingRewards succeeds	PASS	0x	0x 
+staking_balance_wei	388247836915426260000000000
+staking_balance_mirror_tinybar	38824783691542626
+hbarx_token_total_supply	27039345636300414
+staking_totalSupply	27039345636300414
+hbarx_supply_key	0a0418979b56
+hbarx_wipe_key	null

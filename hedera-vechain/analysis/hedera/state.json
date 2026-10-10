@@ -1,0 +1,55 @@
+{
+  "chain": "hedera",
+  "protocol": "Stader HBARX (H2-06)",
+  "read_only": true,
+  "block_numbers": {
+    "hedera_evm_block": 100952989,
+    "mirror_timestamp_price": 1791631079
+  },
+  "price": {"HBAR_usd": 0.09212996414711659, "source": "DefiLlama coins API", "ts": 1791631079},
+  "contracts": {
+    "v3_staking": {"id": "0.0.1412503", "evm": "0x0000000000000000000000000000000000158d97", "hbar": 388247836.91542625, "usd": 35769259.30, "verified": "sourcify match contracts/V3/Staking.sol"},
+    "v3_undelegation": {"id": "0.0.1412465", "evm": "0x0000000000000000000000000000000000158d71", "hbar": 4493210.00823861, "usd": 413959.28, "verified": "sourcify match contracts/V3/Undelegation.sol", "unbonding_time_s": 86400},
+    "v2_undelegation": {"id": "0.0.1027587", "evm": "0x00000000000000000000000000000000000fae03", "hbar": 2339387.82465309, "usd": 215527.72, "verified": "unverified; selector-set equivalent to V3 Undelegation", "staking_contract": "0.0.1027588"},
+    "v3_rewards": {"id": "0.0.1412524", "evm": "0x0000000000000000000000000000000000158dac", "hbar": 16438854.7085, "usd": 1514511.09, "emission_rate_tinybar_s": 59027777, "dao_fees_pct": 12, "dao_address": "0.0.833842"},
+    "v2_staking_dead": {"id": "0.0.1027588", "evm": "0x00000000000000000000000000000000000fae04", "hbar": 0, "note": "balance 0; not HTS supply-key holder"},
+    "hbarx_token": {"id": "0.0.834116", "evm": "0x00000000000000000000000000000000000cba44", "decimals": 8, "total_supply": "27039345636300414", "supply_key": "contract 0.0.1412503", "admin_key": "3-of-5 ED25519 KeyList", "wipe_freeze_kyc_pause_keys": "absent"},
+    "node_proxies": {"count": 26, "listed": 8, "total_hbar": 1.0004, "note": "all empty; nodeStakingActive=false"}
+  },
+  "roles": {
+    "owner": {"id": "0.0.833845", "key": "2-of-3 ED25519 KeyList"},
+    "timelock_owner": {"id": "0.0.1758187", "key": "3-of-5 ED25519 KeyList (same key bytes as HBARX admin)"},
+    "operator": {"id": "0.0.1375147", "key": "single ED25519"},
+    "timelock_owner_candidate": {"id": "0.0.1758187", "note": "already accepted"}
+  },
+  "live_state": {
+    "paused": false,
+    "isStakePaused": false,
+    "isUnstakePaused": false,
+    "nodeStakingActive": false,
+    "exchange_rate_e8": 143586254,
+    "exchange_rate": 1.43586254,
+    "locked_period_s": 14400,
+    "withdraw_queue_length": 0,
+    "min_deposit_tinybar": 100000000,
+    "max_deposit_tinybar": "100000000000000000000",
+    "balanceBefore_tinybar": "38824639151071461"
+  },
+  "attack_simulations": [
+    {"call": "queueAllFunds(attacker)", "from": "0x1111111111111111111111111111111111111111", "result": "revert 0x83632027 invalidOwner"},
+    {"call": "queuePartialFunds(attacker,1e18)", "result": "revert 0x83632027 invalidOwner"},
+    {"call": "withdraw(0)", "result": "revert 0x8a581ab7 invalidIndex (queue empty)"},
+    {"call": "cancelWithdraw(0)", "result": "revert 0x83632027 invalidOwner"},
+    {"call": "updateNodeStakingActive()", "result": "revert Ownable: caller is not the owner"},
+    {"call": "pause()", "result": "revert Ownable: caller is not the owner"},
+    {"call": "stakeWithNodes([],0)", "result": "revert 0xb25a821e invalidOperator"},
+    {"call": "collectRewards([0])", "result": "revert 0xb25a821e invalidOperator"},
+    {"call": "unStake(1e8)", "result": "revert 0xd96e4d38 hbarXTransferFailed / INSUFFICIENT_TOKEN_BALANCE"},
+    {"call": "V3 Undelegation undelegate(attacker) value=1", "result": "revert 'Only staking contract can undelegate'"},
+    {"call": "V3 Undelegation withdraw(0)", "result": "Panic 0x32 (sender-scoped OOB)"},
+    {"call": "V2 Undelegation withdraw(0)", "result": "Panic 0x32 (sender-scoped OOB)"},
+    {"call": "Rewards distributeStakingRewards()", "result": "success (permissionless, pays fixed staking/dao)"}
+  ],
+  "classification": {"E-U": 0.0, "H-O": 37913257.38, "P": 0.0, "S": 0.0, "P_latent_overhang_usd": 35769259.30},
+  "verdict": "E-U $0.00 high confidence; no unprivileged extraction path. Custody 411,519,289 HBAR ~= $37.91M is H-O with a latent 3-of-5 multisig timelock-owner drain overhang (P)."
+}

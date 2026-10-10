@@ -1,0 +1,282 @@
+{
+ "verifier": "independent child verification subagent",
+ "date": "2026-10-10",
+ "chain": "hedera",
+ "chain_id": 295,
+ "mode": "read-only; keyless endpoints only",
+ "endpoints": {
+  "evm_rpc": "https://mainnet.hashio.io/api",
+  "mirror": "https://mainnet-public.mirrornode.hedera.com",
+  "sourcify": "https://sourcify.dev/server/v2/contract/295/<addr>"
+ },
+ "blocks": {
+  "evm_reads": "100954251-100954792",
+  "latest_ts": 1791637793
+ },
+ "price": {
+  "HBAR_usd": 0.09280944178736515,
+  "source": "DefiLlama coingecko:hedera-hashgraph",
+  "ts": 1791637385,
+  "confidence": 0.99
+ },
+ "verdict": {
+  "E-U_usd": 0.0,
+  "confidence": "high",
+  "parent_verdict": "CONFIRMED",
+  "net_custody_hbar": 411519291.45682883,
+  "net_custody_usd": 38192875.72
+ },
+ "sourcify": {
+  "staking": {
+   "match": "match",
+   "matchId": 26806079,
+   "verifiedAt": "2026-03-25T11:16:59Z",
+   "isProxy": false,
+   "compiler": "0.8.9+commit.e5eed63a"
+  },
+  "undelegation": {
+   "match": "exact_match",
+   "matchId": 26566544,
+   "verifiedAt": "2026-03-24T17:17:03Z",
+   "isProxy": false
+  },
+  "rewards": {
+   "match": "exact_match",
+   "matchId": 26567390,
+   "verifiedAt": "2026-03-24T17:19:07Z",
+   "isProxy": false
+  },
+  "nodeproxy_158d72": {
+   "match": "exact_match",
+   "verifiedAt": "2026-03-24T17:14:32Z"
+  }
+ },
+ "bytecode": {
+  "staking": {
+   "live_keccak": "0x6e681bbb5f26ff95f435a7b61752f3d8b92fef1693394fab4105a4e930dd04a4",
+   "sourcify_onchain_keccak": "0x6e681bbb5f26ff95f435a7b61752f3d8b92fef1693394fab4105a4e930dd04a4",
+   "equal_onchain": true,
+   "recompiled_diff": "CBOR metadata only at byte 21787"
+  },
+  "undelegation": {
+   "live_keccak": "0xdb1ec281a3fa2386ab3f8e0499095231ba71f0002039e8a2fbb920cd9d2638af",
+   "equal": true
+  },
+  "rewards": {
+   "live_keccak": "0x2cf5e3b88ac2d85d6511b3d6ebf06e1161d649f19294fe685a531dede9cca070",
+   "equal": true
+  }
+ },
+ "staking_0x158d97": {
+  "balance_weibar": "388247836915426260000000000",
+  "balance_tinybar": 38824783691542626,
+  "balance_hbar": 388247836.91542625,
+  "mirror_snapshot_tinybar": 38824783691542620,
+  "mirror_snapshot_ts": "1791619740.472155298",
+  "mirror_vs_evm_delta_tinybar": 6,
+  "slots": {
+   "0": "0x1 ReentrancyGuard._status=1",
+   "1": "0x...cb93500 _paused=false|_owner=0.0.833845",
+   "2": "0x...cb935 _ownerCandidate",
+   "3": "14400 lockedPeriod",
+   "4": "0 withdrawQueue.length=0 (empty; delete-kn-eeps-length => never used)",
+   "5": "0x...1ad3eb timelockOwner",
+   "6": "0x...1ad3eb timelockOwnerCandidate | isStakePaused=0 | isUnstakePaused=0 | nodeStakingActive=0",
+   "7": "1e8 minDeposit",
+   "8": "1e20 maxDeposit",
+   "9": "27039345636300414 totalSupply",
+   "10": "38824639151071461 balanceBefore",
+   "11": "0x...158dac rewardsContractAddress",
+   "12": "0x...cba44 hbarxAddress",
+   "13": "0x...14fbab operator",
+   "14": "0x...158d71 undelegationContractAddress",
+   "15": "26 nodeProxyAddresses.length"
+  },
+  "getters": {
+   "owner": "0x...Cb935",
+   "timelockOwnerNewCandidate": "0x...1AD3EB",
+   "getExchangeRate": 143586254,
+   "paused": false,
+   "isStakePaused": false,
+   "isUnstakePaused": false,
+   "nodeStakingActive": false,
+   "minDeposit": 100000000,
+   "maxDeposit": 100000000000000000000,
+   "hbarxAddress": "0x...cbA44",
+   "undelegationContractAddress": "0x...158d71"
+  }
+ },
+ "undelegation_0x158d71": {
+  "balance_tinybar": 449321000823861,
+  "balance_hbar": 4493210.00823861,
+  "slots": {
+   "0": "owner=0xcb935",
+   "1": "ownerCandidate=0xcb935|paused=0",
+   "2": "_status=1",
+   "3": "unbondingTime=86400",
+   "4": "stakingContractAddress=0x158d97",
+   "5": "undelegationsMap"
+  },
+  "live_pending_entry_demo": {
+   "user_low": "0x...5990ae",
+   "index": 83,
+   "timestamp": 1791619740,
+   "amount_tinybar": 100510378282,
+   "amount_hbar": 1005.10378282,
+   "note": "matches a 700 HBARX unStake at rate 1.43586254; stranger withdraw(83) -> Panic 0x32"
+  }
+ },
+ "v2_legacy": {
+  "v2_undelegation": {
+   "id": "0.0.1027587",
+   "evm": "0x...fae03",
+   "balance_hbar": 2339387.82465309,
+   "stakingContractAddress": "0x...fae04",
+   "unbondingTime": 86400,
+   "paused": false,
+   "owner": "0x...cb935",
+   "unknown_extras": "none (15 selectors == V3 Undelegation design)"
+  },
+  "v2_staking": {
+   "id": "0.0.1027588",
+   "evm": "0x...fae04",
+   "balance_hbar": 0,
+   "paused": true,
+   "totalSupply_stale": 117394347321542295,
+   "supply_key_holder": false,
+   "unknown_selectors": [
+    "0xd18ab923"
+   ],
+   "note": "Pausable: paused on stake/unStake; withdraw -> No funds to withdraw; queue length 3 with zeroed entries (historical)"
+  }
+ },
+ "rewards_0x158dac": {
+  "balance_tinybar": 1643885470851088,
+  "balance_hbar": 16438854.70851088,
+  "emissionRate": 59027777,
+  "epoch": 1433,
+  "daoFeesPercentage": 12,
+  "stakerAddress": "0x...158d97",
+  "daoAddress": "0x...cb932",
+  "paused": false,
+  "permissionless_sim": "distributeStakingRewards() from attacker -> success (0x)",
+  "correction": "recipients owner-changeable (setStakerAddress/setDaoAddress onlyOwner); parent wrote 'constructor-fixed (no setters)'"
+ },
+ "hbarx_token_0.0.834116": {
+  "decimals": 8,
+  "total_supply": "27039345636300414",
+  "treasury": "0.0.1412503",
+  "supply_key": "0a0418979b56 -> contract 0.0.1412503 only",
+  "admin_key": "threshold 3-of-5 ED25519",
+  "wipe_key": null,
+  "freeze_key": null,
+  "kyc_key": null,
+  "pause_key": null,
+  "fee_schedule_key": null,
+  "pause_status": "NOT_APPLICABLE",
+  "custom_fees": []
+ },
+ "node_proxies": {
+  "count": 26,
+  "array_base_check": "keccak256(15)+i matches getter for i=0,1,25",
+  "balances_hbar": {
+   "0.0.1412476": 1.0,
+   "0.0.1412488": 1.0,
+   "others": 0
+  },
+  "total_hbar": 2.0,
+  "owner": "0x...c1cb9 (0.0.793785)",
+  "stakerAddress": "0x...158d97",
+  "gates": "receiveFunds/transferFund onlyStakingContract; lockStakingContract onlyOwner+set-once; no owner withdraw",
+  "parent_discrepancy": "parent said <=1.0004 HBAR; actual 2.0"
+ },
+ "attack_sims": {
+  "attacker_primary": "0.0.10912431 0x...0a682af",
+  "attacker_secondary": "0.0.10912430 0x...0a682ae",
+  "results": [
+   {
+    "call": "queueAllFunds(attacker)",
+    "result": "revert 0x83632027 invalidOwner"
+   },
+   {
+    "call": "queuePartialFunds(attacker,1e8)",
+    "result": "revert 0x83632027"
+   },
+   {
+    "call": "withdraw(0), withdraw(1)",
+    "result": "revert 0x8a581ab7 invalidIndex"
+   },
+   {
+    "call": "cancelWithdraw(0)",
+    "result": "revert 0x83632027"
+   },
+   {
+    "call": "updateNodeStakingActive/pause/etc",
+    "result": "revert Ownable: caller is not the owner"
+   },
+   {
+    "call": "acceptOwnership/cancelOwnerProposal",
+    "result": "revert You are not the owner"
+   },
+   {
+    "call": "proposeTimelockOwner/acceptTimelockOwnership/cancelTimelockOwnerProposal",
+    "result": "revert 0x83632027"
+   },
+   {
+    "call": "stakeWithNodes/collectRewards/withdrawFromNodes",
+    "result": "revert 0xb25a821e invalidOperator"
+   },
+   {
+    "call": "unStake(1e8)",
+    "result": "revert 0xd96e4d38 hbarXTransferFailed (TOKEN_NOT_ASSOCIATED)"
+   },
+   {
+    "call": "undelegate(attacker) value=1",
+    "result": "revert 'Only staking contract can undelegate'"
+   },
+   {
+    "call": "withdraw(0/1/2) on V3+V2 undel",
+    "result": "Panic 0x4e487b71...32"
+   },
+   {
+    "call": "rewards distributeStakingRewards()",
+    "result": "success 0x (pays fixed/owner-set recipients only)"
+   },
+   {
+    "call": "unStake(1e8) from operator (holder)",
+    "result": "success, returns exactly 143586254 tinybar fair rate"
+   },
+   {
+    "call": "stake() from fresh account",
+    "result": "reaches HTS, fails at association in eth_call (sim artifact); real txs: 28 stake()/26 unStake() in last 100 staking calls"
+   }
+  ]
+ },
+ "attack_math": {
+  "round_trip_stake_unstake_net": "<= -1 tinybar for all tested magnitudes (1e8+1 .. 1e20)",
+  "donation_net": "(x-1)*d < 0 for x<1",
+  "jit_pending_rewards": {
+   "pending_hbar": 28170.42,
+   "fraction_of_pool": 7.256e-05,
+   "roi": "negative (0.0073% of cost to capture 100%)"
+  }
+ },
+ "discrepancies": [
+  "Rewards recipients are owner-settable (parent said constructor-fixed)",
+  "Node proxy dust is exactly 2.0 HBAR (parent said <=1.0004)",
+  "Mirror staking balance lags EVM by 6 tinybar (immaterial)",
+  "V2 staking dead also via paused=true (stronger than balance/supply-key reason)",
+  "Rewards directly Sourcify-verified (parent described as bundle match)",
+  "NodeProxy owner is 0.0.793785, not 0xcb935 (no fund impact)",
+  "Hashio eth_call requires existing sender account (parent's 0x1111 resolves; generic addresses fail)"
+ ],
+ "classification": {
+  "E-U": 0.0,
+  "H-O": 38192875.72,
+  "P_counted": 0.0,
+  "S": 0.0,
+  "P_latent_overhang_usd": 36033065.02
+ },
+ "confidence": "high",
+ "what_would_change_verdict": "compromise of 2-of-3 owner or 3-of-5 timelock/admin keys; or new unprivileged code path in a future (non-existent) upgrade"
+}

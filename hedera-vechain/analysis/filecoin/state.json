@@ -1,0 +1,66 @@
+{
+  "finding": "H2-06",
+  "sub_scope": "filecoin (HashKing / FILLiquid)",
+  "title": "HashKing & FILLiquid (Filecoin FEVM) — live unprivileged extraction audit",
+  "chains": ["filecoin-fevm-314"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 494406.15,
+    "P": 3265.81,
+    "S": 0.0
+  },
+  "categories_notes": {
+    "H-O": "HashKing nFIL holders' 1:1 claim: 439,772.2145 FIL = $493,232.95 (idle 9,414.2036 FIL = $10,558.64 immediately redeemable + validator bookkeeping 430,358.01 FIL = $482,674.31 contingent on SP releases) + FILLiquid FIGStaking dividend pool 1,046.0345 FIL = $1,173.20 (staker-scoped withdraw).",
+    "P": "FILLiquid feeReceiver 2,911.831 FIL = $3,265.81 (owner 0x6dc515B288Acd46102CCcf0300B4e14cC30751Ac). Also privileged: HashKing 3-signer weighted multisig can upgrade vault+nFIL; STFIL proxy admin 0xc55e4097...; FILLiquid governance contract.",
+    "S": "FILLiquid FIT 235,933.03 (phantom 254,531.90 FIL / $285,474 on-chain = 0); STFIL 5,541,237.27 token supply with no on-chain FIL backing."
+  },
+  "latest_block": 6444339,
+  "block_numbers": {
+    "filecoin": 6444339,
+    "filecoin_first_sweep": 6444162,
+    "filecoin_sep3_event": 6337055,
+    "filecoin_hashking_last_tx": 5637556
+  },
+  "fil_price_usd": 1.1215645956922842,
+  "fil_price_source": "coins.llama.fi coingecko:filecoin @1791636408",
+  "targets_checked": 12,
+  "live_targets": 5,
+  "closed_reasons": [
+    "FILLiquid pool cash = 0 FIL since 2026-09-03 sweep (verified on glif + ankr + Blockscout); availableFIL() still reports 254,531.90 (phantom); redeem() from real FIT holders reverts at payout transfer",
+    "HashKing vault unstake burns caller nFIL first; arbitrary addresses revert 'ERC20: burn amount exceeds balance'",
+    "HashKing/nFIL UUPS proxies already initialized; upgradeTo/upgradeToAndCall owner-only (3-signer weighted multisig)",
+    "nFIL whiteListMint/whiteListBurn restricted to vault contract ('Not allowed to touch funds')",
+    "FILLiquid feeReceiver transfer/transferAll owner-gated ('Not owner')",
+    "FILLiquid FIGStaking withdraw() staker-scoped (stranger -> 0); unStake() -> 'Invalid staker'",
+    "STFIL legacy token/pool hold 0 FIL (dead since 2024 incident)",
+    "wFIL is a 1:1 wrapped-FIL with no privileged mint"
+  ],
+  "poc": {
+    "type": "read-only eth_call simulations (no fork, no transactions)",
+    "simulations_run": 27,
+    "script": "scripts/negative_proofs.sh",
+    "recorded_outputs": "evidence/negatives_output.txt"
+  },
+  "key_facts": [
+    "FILLiquid pool 0xFD669BDDfbb0d085135cBd92521785C39c95bA4b: tx 0x0041111742c27b6f1e6706dc8399fff0a68ec1ff387d7631edb7050bcb4fe7be (block 6337055, 2026-09-03) moved 254,877.20017925594 FIL out (15 Borrow events summing 252,328.428177 FIL to worker 0xc18787B51E8f69Aaca908AF9775Ad902051CcCF5 + 2,548.7719 FIL 1% fees to the real foundation 0x7201166F...), by executor EOA 0x005C3c4e041Af89E7009F7ddc23D6CA34Cb28672 via operator-run recovery contracts (coordinator 0x2F57c9e9703f6b04A711206e0CAB4eB42408987c, hard-coded executor check + block window 6336900-6337200); proceeds bridged off Filecoin via SquidRouterProxy 0xce16F69375520ab01377ce7b88f5ba8c48f8d666",
+    "FILLiquid accounting was not written down after the sweep: availableFIL()=254,531.900214 while pool balance=0; FIT supply 235,933.03; exchangeRate 1.078831",
+    "HashKing vault 0xe012F3957226894B1a2a44b3ef5070417a069dC2 (UUPS) holds 9,414.203551 FIL idle, frozen since 2026-01-03; unstake is nFIL-burn-gated and paid 126,200.723 FIL 1:1 on 2026-01-03; POSITIVE simulation: real nFIL holder unstake(1,000 FIL) succeeds, unstake(10,000 FIL) reverts 'Address: insufficient balance' (redeemable depth == idle balance)",
+    "nFIL (Node FIL) 0x84B038DB0fCde4fae528108603c7376695dc217f supply 439,772.214541 FIL == vault idle 9,414.2036 + validators sum(totalStakingFil) 430,358.01 (bookkeeping solvent)",
+    "HashKing owner = weighted multisig 0x0AaD51Ed6d3b75C7852D5D620402a6D85cd26f6e with signers 0x26D3A7D12ae76270B7F71f8BFe481aA61169D777, 0x130C05EcD94f93C56010a02Bd9a9e673F7E83Eb2, 0x3CC5aDAb361e61e938018581891ae2e270fD63f5",
+    "wFIL 0xD9A724840a46370c01a50C1E511087ab3a07FB53: totalSupply == balance == 2,969.948512 FIL (plain 1:1 wrapper)",
+    "FILLiquid feeReceiver holds 2,911.831042 FIL owner-gated; FIGStaking holds 1,046.034486 FIL staker-gated",
+    "STFIL legacy 0x3C3501E6c353DbaEDDFA90376975Ce7aCe4Ac7a8 (supply 5.54M) holds 0 FIL; Aave-style impl 0xf1eca87ac159a1132554124a89f4778100cc0ecc; admin 0xc55e40977a782a0ea221812b9f01203effac71a1",
+    "campaign 12,358.8 FIL figure == HashKing vault + wFIL native balances (12,384.152 FIL today); excludes 430,358.01 FIL of validator bookkeeping",
+    "DefiLlama FILLiquid TVL (~$285k) is phantom post-2026-09-03"
+  ],
+  "caveats": [
+    "Sep-3 'recovery' interpretation (operator wind-down vs unauthorized) cannot be cryptographically proven on-chain; the pattern (hardcoded executor, pre-set block window, invariant checks, fees to the real foundation, public FIT-holder registration process) strongly suggests operator action",
+    "Archive state unavailable on public endpoints; pre-sweep numbers reconstructed from Blockscout balance history + event logs (tx hash recorded)",
+    "The 430,358.01 FIL validator bookkeeping is unverifiable as to underlying SP custody (off-chain)",
+    "USD at FIL $1.1216 (block 6,444,339 read); FIL moves",
+    "Blockscout /smart-contracts returns unrelated verified-twin source for some unverified addresses; decompilation used and saved"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from HashKing/FILLiquid: FILLiquid's 254.5k FIL pool was swept off-chain on 2026-09-03 through an executor-gated 'recovery' workflow (FIT redemption now reverts on-chain) and HashKing's 439.8k FIL nFIL claims are correctly burn-gated and multisig-administered; nothing is open to an arbitrary address (high confidence, all paths simulated)."
+}

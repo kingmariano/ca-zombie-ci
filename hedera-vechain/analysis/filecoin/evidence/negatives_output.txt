@@ -1,0 +1,98 @@
+# H2-06 Filecoin — recorded negative/closure proofs
+# Session: 2026-10-10, chain 314 (FEVM), block 6,444,339 (later probes 6,444,33x–6,444,4xx)
+# All lines below are eth_call simulations (read-only). Re-runnable via scripts/negative_proofs.sh.
+# Verbatim harness outputs (trimmed to the revert reason / value):
+
+## FIL price (coins.llama.fi, coingecko:filecoin)
+{"price":1.1255857223801655,"timestamp":1791634312,"confidence":0.99}
+# second read 12:50 UTC: 1.1215645956922842
+
+## FILLiquid pool 0xFD669BDDfbb0d085135cBd92521785C39c95bA4b
+eth_getBalance → 0.0 FIL                    (glif, ankr, Blockscout — all three agree)
+availableFIL() → 254531900214018997111598   (phantom: not backed by cash)
+utilizedLiquidity() → 0
+getTVL() (via 0xA25F892cF2731ba89b88750423Fc618De0959C43) → 254531900214018997111598
+exchangeRate() → 1078831
+FIT totalSupply → 235933029732600659508274
+
+redeem(1e18, 0) from random 0x1111..1111:
+  revert [Error(ERC20: burn amount exceeds balance)]  (caller holds no FIT)
+redeem(1e18, 0) from 0xD48CF590228dcC9Dc3661eA00728127a6949477A (holds 7,875.99 FIT):
+  revert at PC 1978 with EMPTY revert data  (= failed native FIL transfer, pool balance 0)
+redeem(1e18, 0) from 0xB153Cb3efF3e7330DDF4962c22aA8DC63B7fa952 (FITStake, 208,537 FIT):
+  revert at PC 1978 with EMPTY revert data  (same)
+
+## FILLiquid feeReceiver 0x7201166FAD30f26f27c36842209b1A35e9f6f0d3  (2,911.831042 FIL)
+getFactors() → 0x6dc515B288Acd46102CCcf0300B4e14cC30751Ac  (owner; 6,977-byte contract)
+transferAll(0x1111..) from 0x1111.. → revert [Error(Not owner)]
+transfer(0x1111.., 1e18) from 0x1111.. → revert [Error(Not owner)]
+
+## FILLiquid FIGStaking 0xD44bfE4523f1B2703DDE9C7dBc010Ad39EF668f7  (1,046.034486 FIL)
+withdraw() from 0x1111.. → returns 0   (no revert, no payout to non-stakers)
+unStake(1e18) from 0x1111.. → revert [Error(Invalid staker)]
+
+## HashKing KingHash vault 0xe012F3957226894B1a2a44b3ef5070417a069dC2  (9,414.203551 FIL)
+initialize(0x1111..) → revert [Error(Initializable: contract is already initialized)]
+upgradeTo(0x1111..) → revert [Error(Ownable: caller is not the owner)]
+upgradeToAndCall(0x1111.., 0x) → revert [Error(Ownable: caller is not the owner)]
+transferOwnership(0x1111..) → revert [Error(Ownable: caller is not the owner)]
+renounceOwnership() → revert [Error(Ownable: caller is not the owner)]
+setGovernance(0x1111..) → revert [Error(Ownable: caller is not the owner)]
+setHubPool(0x1111..) → revert [Error(Ownable: caller is not the owner)]
+addBeneficiary(0x1111..) → revert [Error(caller is not allow)]
+delBeneficiary(0x1111..) → revert [Error(caller is not allow)]
+setTotalPoolFilLimit(1) → revert [Error(caller is not allow)]
+depositFil(1e18) → revert [Error(invalid beneficiary)]
+0xcebbfa44(unstake)(1e18) → revert [Error(ERC20: burn amount exceeds balance)]   (nFIL-gated)
+0xc3178389(1e18) → revert [Error(ERC20: burn amount exceeds balance)]            (nFIL-gated)
+0x88f9184f(0x1111..) → revert [Error(caller is not hubpool)]
+0x0e6878a3(1) (claim path) → revert [Error(invalid beneficiary)]
+owner() → 0x0AaD51Ed6d3b75C7852D5D620402a6D85cd26f6e (custom multisig, signers below)
+governance() → 0x43bf226b4A1A4f7adDFd637f3f1346acDa639Ab1
+hubPool() → 0xfeB16A48dbBB0E637F68215b19B4DF5b12449676
+EIP-1967 impl → 0x73D1Ef868bd977292151B6E309e389D4035ACA9C ; admin slot 0x0 (UUPS)
+
+## HashKing owner multisig 0x0AaD51Ed6d3b75C7852D5D620402a6D85cd26f6e
+signers() → [0x26D3A7D12ae76270B7F71f8BFe481aA61169D777,
+             0x130C05EcD94f93C56010a02Bd9a9e673F7E83Eb2,
+             0x3CC5aDAb361e61e938018581891ae2e270fD63f5]
+functions present: sign(bytes32) / execute(bytes32) / cancel / proposals / canSign / mulsignweight /
+                   setThreshold / setMinDelay / getTimeExecute / ban(unban(bytes4) (weighted-multisig with timelock)
+
+## nFIL (Node FIL) 0x84B038DB0fCde4fae528108603c7376695dc217f — supply 439,772.214541 FIL
+whiteListMint(1e18, 0x1111..) from 0x1111.. → revert [Error(Not allowed to touch funds)]
+whiteListBurn(1e18, 0x1111..) from 0x1111.. → revert [Error(Not allowed to touch funds)]
+initialize() → revert [Error(Initializable: contract is already initialized)]
+upgradeTo(0x1111..) → revert [Error(Ownable: caller is not the owner)]
+setLiquidStaking(0x1111..) → revert [Error(Ownable: caller is not the owner)]
+owner() → 0x0AaD51Ed6d3b75C7852D5D620402a6D85cd26f6e (same multisig)
+liquidStakingContractAddress() → 0xe012F3957226894B1a2a44b3ef5070417a069dC2 (mint/burn source)
+
+## wFIL 0xD9A724840a46370c01a50C1E511087ab3a07FB53
+totalSupply() → 2969948511754825727216 ; eth_getBalance → 2969.9485117548256 (supply == balance, 1:1)
+(no owner/mint/burn selectors in runtime: plain wrapped-FIL: deposit() payable, withdraw(uint256), ERC-20)
+
+## FILLiquid Sep-3 2026 sweep — the only large FIL movement in the window
+tx 0x0041111742c27b6f1e6706dc8399fff0a68ec1ff387d7631edb7050bcb4fe7be, block 6,337,055
+pre pool balance 254,877.20017925594 FIL → post 0 FIL (delta = -254,877.20017925594)
+internal transfers out: 16 × pool→worker (Σ 252,328.428177) + 15 × pool→foundation (Σ 2,548.7719)
+worker→executor 252,338.428177 ; executor→Squid 0xce16F69375… + EOA 0xE757683a51CfD0… ≈ 299k FIL bridged in 14 txs
+events: 15 × Borrow (Σ 252,328.428177), 15 × Payback (Σ principals 254,877.200179), 1 × UncollateralizingMiner
+miner f03825752 ; final state: utilizedLiquidity 0, badDebt 0, minerWithBorrows 0
+executor EOA remaining dust at capture: 339.067669644279818364 FIL
+
+## HashKing vault last activity
+last tx 2026-01-03 (block 5,637,556): unstake 126,200.723 FIL paid to 0x8afA55E469d677aEfd8FcFF53A6998210467bb6B
+balance unchanged at 9,414.203551 since then (Blockscout coin-balance-history).
+
+## HashKing vault: POSITIVE proof of the H-O redemption path
+unstake(1 FIL)     from real nFIL holder 0xD98673532035b029d4a3a0dB26481781C5373E6F (181,795.95 nFIL)
+  -> 0x  (SUCCESS, no revert)
+unstake(1,000 FIL) from same holder -> 0x  (SUCCESS)
+unstake(10,000 FIL) from same holder -> revert [Error(Address: insufficient balance)]
+  (vault idle = 9,414.203551 FIL, so payouts are bounded by idle liquidity exactly)
+nFIL balanceOf checks: 0xD9867353 = 181,795.954432076549623734 ; hubPool 0xfeB16A48 = 3,905.514718005828
+  (Blockscout's holder list is partly stale: several listed holders now read 0 on-chain)
+
+## Note on SFT Protocol (adjacent, FINDINGS.md L-2 row `sft-protocol`)
+pool 0x147122D1EBdA76E4910ccdC53aEb6a58605Eb58E balance 53.786226 FIL at capture; not in H2-06 scope.

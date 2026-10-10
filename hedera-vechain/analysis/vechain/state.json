@@ -1,0 +1,157 @@
+{
+  "campaign": "H2-06",
+  "scope": "VeChain StarGate staking protocol",
+  "agent": "child subagent (vechain scope)",
+  "date_utc": "2026-10-10",
+  "disclaimer": "READ-ONLY analysis. No transaction was signed or sent. All contract interactions are Thor clause *simulations* (keyless public endpoints) or RPC reads. No secrets used.",
+  "chain": {
+    "name": "VeChain mainnet (VeChainThor)",
+    "chain_id": 100009,
+    "genesis_id": "0x00000000851caf3cfdb6e899cf5958bfb1ac3413d346d43539627e6be7ec1b4a",
+    "first_best_block": 26109881,
+    "pinned_block": 26110363,
+    "latest_block_seen": 26110364
+  },
+  "addresses": {
+    "stargate_proxy": "0x03c557be98123fdb6fad325328ac6eb77de7248c",
+    "stargate_proxy_type": "StargateProxy (OZ ERC1967Proxy fork), EIP-1967 slot 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
+    "stargate_impl_live": "0x987f2ebfd1c0e3490962b270488dc94a7d687a0f",
+    "stargate_impl_verified_bytecode": "keccak(runtime) = 0x5f0357ff8866531fd555cf084f72a03d0b35ac8c599d34de90af12965671c078 (== compile of vechain/stargate-contracts commit b8b695b Stargate.sol, solc 0.8.20 opt runs=1 paris)",
+    "stargate_impl_history": [
+      {"impl": "0xccfe678b63bdfca67fadc09e43c43763cb2273fb", "block": 23415257, "ts": 1764683280, "note": "v1 deploy"},
+      {"impl": "0xcd2d50c191e7a8fa87b16f89cb031fce66539a7f", "block": 23543191, "ts": 1765962640, "note": "v2 (Sourcify exact match 10956162)"},
+      {"impl": "0x987f2ebfd1c0e3490962b270488dc94a7d687a0f", "block": 23805346, "ts": 1768584220, "note": "v1-hotfix (F-2026-14785 double-claim fix); live"}
+    ],
+    "stargate_clock_library_live_link": "0xc251f6f5aaf7ec62807eb398399105e0ae307b6e",
+    "stargate_nft_proxy": "0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7",
+    "stargate_nft_impl_live": "0xce31931f42099cb5b0a19f565d976084785cde2f",
+    "stargate_nft_impl_note": "Sourcify exact match 10612847; live code keccak 0xf87d75161530d3eb9a441e90b3ac7cd450dd8ea0ffc43a24c6472dbbc6446fe4; byte-identical to verified onchain code",
+    "vtho_token": "0x0000000000000000000000000000456E65726779",
+    "protocol_staker_native": "0x00000000000000000000000000005374616b6572",
+    "legacy_vechain_nodes": "0xb81E9C5f9644Dec9e5e3Cac86b4461A222072302",
+    "admin_eoa": "0xba04313060012a2c8623b2b3cb6d4c5e2b1becea",
+    "deployer_eoa": "0x78508681ee16a0973b6c03ec7ac9987cdf81a404"
+  },
+  "balances_pinned_block_26110363": {
+    "method": "eth_getBalance + eth_call VTHO.balanceOf via keyless https://rpc-mainnet.vechain.energy",
+    "stargate_contract": {"vet_wei": "0x241be8a5e5e35ba4f400000", "vet": 698450000.0, "vtho": 1041201128.9848},
+    "stargate_nft_contract": {"vet": 0.0, "vtho": 20864.1423, "note": "no function can move this VTHO -> stuck (S)"},
+    "stargate_impl": {"vet": 0.0, "vtho": 0.0},
+    "nft_impl": {"vet": 0.0, "vtho": 0.0},
+    "protocol_staker_total_vet": 14875126538.0,
+    "native_staker_totalStake_vet": 14404756538.0,
+    "native_staker_queuedStake_vet": 28060000.0,
+    "native_staker_active_validators": 101
+  },
+  "delegated_stake_via_stargate": {
+    "method": "exact reconciliation of StarGate proxy events: sum(DelegationInitiated.amount) - sum(DelegationWithdrawn.amount) per delegationId (live = no matching withdrawal)",
+    "delegation_initiated_events": 41703,
+    "delegation_initiated_total_vet": 16415040000.0,
+    "delegation_withdrawn_events": 23113,
+    "delegation_withdrawn_total_vet": 9524440000.0,
+    "live_delegations": 18590,
+    "delegated_vet_current": 6890600000.0,
+    "stake_size_histogram_top": {"10000": 8525, "49999.99999999999": 4639, "199999.99999999997": 2959, "1000000": 1358, "1599999.9999999998": 403, "600000": 232, "5000000": 232, "5600000": 108, "15600000": 108, "15000000": 26}
+  },
+  "nft_supply": {"total_supply": 20745, "current_token_id_highwater": 49600},
+  "roles_live": {
+    "stargate_proxy": {
+      "DEFAULT_ADMIN_ROLE_holders": ["0xba04313060012a2c8623b2b3cb6d4c5e2b1becea"],
+      "PAUSER_ROLE_holders": ["0xba04313060012a2c8623b2b3cb6d4c5e2b1becea"],
+      "UPGRADER_ROLE_holders": [],
+      "note": "deployer 0x7850... renounced all roles; UPGRADER unassigned at rest (admin can grant)"
+    },
+    "stargate_nft_proxy": {
+      "DEFAULT_ADMIN_ROLE_holders": ["0xba04313060012a2c8623b2b3cb6d4c5e2b1becea"],
+      "PAUSER_ROLE_holders": ["0xba04313060012a2c8623b2b3cb6d4c5e2b1becea"],
+      "UPGRADER_ROLE_holders": [],
+      "MANAGER_ROLE_holders": [],
+      "TOKEN_MANAGER_MIGRATOR_ROLE_holders": [],
+      "LEVEL_OPERATOR_ROLE_holders": []
+    },
+    "paused_stargate": false,
+    "paused_nft": false,
+    "max_claimable_periods": 832
+  },
+  "extraction_audit": {
+    "candidate_paths": [
+      {"path": "unstake(tokenId)", "gate": "onlyTokenOwner (ownerOf == msg.sender)", "sim_attacker_result": "revert UnauthorizedUser(0x..01) selector 0xea93ab6d", "category": "H-O"},
+      {"path": "delegate(tokenId,validator)", "gate": "onlyTokenOwner", "sim_attacker_result": "revert UnauthorizedUser", "category": "H-O"},
+      {"path": "requestDelegationExit(tokenId)", "gate": "onlyTokenOwner", "sim_attacker_result": "revert UnauthorizedUser", "category": "H-O"},
+      {"path": "migrateAndDelegate(legacyId,validator)", "gate": "onlyLegacyTokenOwner (legacy idToOwner == msg.sender)", "sim_attacker_result": "revert UnauthorizedUser", "category": "H-O"},
+      {"path": "claimRewards(tokenId)", "gate": "none (permissionless) BUT payout = VTHO_TOKEN.safeTransfer(ownerOf(tokenId))", "sim_attacker_result": "success; VTHO transfer StarGate->owner 975,116.83 VTHO (token 48863) + DelegationRewardsClaimed(receiver=owner)", "category": "H-O (trigger-only)"},
+      {"path": "native Staker.withdrawDelegation(delegationId)", "gate": "native caller == delegator", "sim_attacker_result": "revert Error('staker:only delegator'); caller=StarGate -> success", "category": "H-O (via StarGate only)"},
+      {"path": "upgradeToAndCall(impl,data)", "gate": "UUPS + UPGRADER_ROLE", "sim_attacker_result": "revert AccessControlUnauthorizedAccount(0x..01, UPGRADER_ROLE) 0xe2517d3f", "category": "P"},
+      {"path": "NFT.transferBalance(amount)", "gate": "DEFAULT_ADMIN_ROLE", "sim_attacker_result": "revert AccessControlUnauthorizedAccount", "category": "P"},
+      {"path": "NFT.mint / NFT.burn", "gate": "onlyStargate", "sim_attacker_result": "revert UnauthorizedCaller 0xd86ad9cf", "category": "P"},
+      {"path": "NFT.boost(tokenId)", "gate": "pays own VTHO from caller; no owner check (selfless/griefing-only)", "sim_attacker_result": "revert MaturityPeriodEnded(tokenId) for matured token; immature -> requires caller VTHO balance+allowance", "category": "H-O/grief"},
+      {"path": "initialize(...)", "gate": "initializer", "sim_attacker_result": "revert InvalidInitialization() 0xf92ee8a9", "category": "P"},
+      {"path": "receive() forced VET", "gate": "only from NFT or protocol staker", "sim_result": "revert OnlyStargateNFTAndProtocolStaker for others", "category": "-"}
+    ],
+    "known_vulnerability_history": {
+      "id": "F-2026-14785",
+      "name": "Rewards Drain due to Invalid Last Claimed Period Update",
+      "mechanism": "pre-fix _claimRewards() set lastClaimedPeriod=0 when lastClaimablePeriod==0 (nothing claimable), allowing repeated re-claims of already-claimed periods; claimRewards() is permissionless and pays ownerOf(tokenId)",
+      "vulnerable_window": {"from_block": 23415257, "to_block_exclusive": 23805346, "dates": "2025-12-02 .. 2026-01-16"},
+      "observed_exploitation": {
+        "regression_claim_events": 58,
+        "regression_groups": 53,
+        "extra_vtho_estimated": 1672220.57,
+        "extra_vtho_upper_bound": 1673320.88,
+        "usd_at_price": 1178.57,
+        "largest_examples": [
+          {"token": 6087, "delegation": 5548, "block": 23601167, "range": "1..2", "extra_vtho": 881523.89, "tx": "0x590472146c0e08cfdbdfe8874f6dcd709acf0cca9a2190dfd91f9bdd4123f317", "origin": "0x2bb20ea457c9f2dcec67f74e0031fecaea5db7c9"},
+          {"token": 3815, "delegation": 2815, "block": 23777314, "range": "1..5", "extra_vtho": 588667.90, "tx": "0xc3a5d5c5e3db78c6e882f980cf4e66ef03d42b23843ac9cd70477fd7350e0991", "origin": "0x1d0543743d49eb67b70e6c55e3d9ee1463e569a9"},
+          {"token": 15712, "delegation": 3067, "block": 23777314, "range": "1..5", "extra_vtho": 51453.51},
+          {"token": 15711, "delegation": 3062, "block": 23777314, "range": "1..5", "extra_vtho": 44880.95},
+          {"token": 15593, "delegation": 5574, "block": 23601167, "range": "1..2", "extra_vtho": 21798.41},
+          {"token": 15600, "delegation": 2892, "block": 23601167, "range": "1..2", "extra_vtho": 21743.86}
+        ]
+      },
+      "fix_verification": "live impl bytecode == compile(b8b695b) keccak-exact; contains early-return `if (lastClaimablePeriod == 0) return;`; post-fix claims scanned: 107996 events (blocks 23805347..26000000), regressions = 0"
+    },
+    "verdict": {
+      "EU_usd": 0.0,
+      "EU_confidence": "high",
+      "HO_usd": 59777248.18,
+      "HO_breakdown": {
+        "vet_in_stargate_contract": {"amount": 698450000.0, "usd": 5433996.65},
+        "vet_delegated_in_protocol": {"amount": 6890600000.0, "usd": 53609416.99},
+        "vtho_claim_pool_in_stargate": {"amount": 1041201128.9848, "usd": 733834.54}
+      },
+      "P_usd": 59777262.87,
+      "P_note": "admin EOA 0xba04... can pause + grant UPGRADER and upgrade both UUPS proxies -> entire custody is one (privileged) upgrade away from arbitrary logic",
+      "S_usd": 14.7,
+      "S_note": "20,864.14 VTHO sitting on StargateNFT contract; no code path can move it"
+    }
+  },
+  "prices": {
+    "source": "https://coins.llama.fi/prices/current/coingecko:vechain,coingecko:vethor-token",
+    "fetched_utc": "2026-10-10T12:21:33Z",
+    "VET_usd": 0.007780079671758719,
+    "VTHO_usd": 0.0007047961392074626
+  },
+  "evidence_files": {
+    "raw/live_gate_simulations.json": "raw request/response of 25 live clause simulations (paths E1..E12, roles, views)",
+    "raw/state_snapshot.json": "RPC pinned-block balances",
+    "raw/claims_vuln_all.jsonl.gz": "24190 DelegationRewardsClaimed events in vulnerable window (minimal fields)",
+    "raw/claims_fixed_all.jsonl.gz": "101000 claim events post-fix (blocks 23805347..24813467)",
+    "raw/claims_fixed_b.jsonl.gz": "6996 claim events post-fix (blocks 24813468..26000000)",
+    "raw/ev_initiated.jsonl.gz": "41703 DelegationInitiated events",
+    "raw/ev_withdrawn.jsonl.gz": "23113 DelegationWithdrawn events",
+    "raw/sourcify_v2_sg.json": "Sourcify v2 (proxy) full verified record",
+    "raw/sourcify_0xcd2d50c1.json": "Sourcify v2 impl exact match 10956162 + stdJsonInput",
+    "raw/sourcify_nft_impl.json": "Sourcify NFT impl exact match 10612847",
+    "raw/live_source/": "Stargate.sol/StargateNFT.sol/MintingLogic.sol/interfaces matching deployed bytecode (from repo commit b8b695b)",
+    "raw/impl_code.json.code": "live Stargate impl runtime bytecode",
+    "raw/proxy_code.json.code": "live proxy runtime bytecode",
+    "raw/unstake_owner_sim.json": "owner-side unstake simulation (H-O proof)",
+    "scripts/verify_bytecode.py": "bytecode/source match prover (toolchain validated on verified v2; solc download in header)"
+  },
+  "caveats": [
+    "claim-window scans cover 23805347..26000000 for the post-fix period (last ~110k blocks not scanned); source-level fix + zero observed regressions.",
+    "The event-based delegated total (6.89B VET) counts open DelegationInitiated records without a matching DelegationWithdrawn; native staker returns stake to StarGate on withdrawal (simulated), consistent.",
+    "All simulations executed at 'latest' block; block numbers recorded per artifact.",
+    "Historical exploit attribution: duplicate payouts went to token owners (receivers in events); whether triggered by owners or third parties, pool overpayment = 1,672,220.57 VTHO."
+  ]
+}
