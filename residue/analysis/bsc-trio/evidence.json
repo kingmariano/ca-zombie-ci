@@ -1,0 +1,187 @@
+{
+  "task": "H2-03 bsc-trio: live extractable value (E-U = external unprivileged) for SKYDAO controller, FIST, MSN on BSC",
+  "campaign": "zombie-hunt II / H2-03 deep-dive (child subagent bsc-trio)",
+  "generated_at": "2026-10-10T14:25:00Z",
+  "chain": {"name": "bsc", "chain_id": 56},
+  "status": "read-only; no mainnet transactions; behavioural tests on local anvil fork only; no secrets in artifacts",
+  "pricing": {
+    "usdt_address": "0x55d398326f99059fF775485246999027B3197955",
+    "usdt_price_usd": 0.9992725850746348,
+    "source": "https://coins.llama.fi/prices/current/bsc:0x55d398326f99059fF775485246999027B3197955",
+    "price_timestamp": 1791638276,
+    "confidence": 0.99
+  },
+  "latest_block_reads": 126834398,
+  "additional_read_blocks": [126828153, 126833981, 126832930],
+  "items": [
+    {
+      "id": "skydao_controller",
+      "label": "SKYDAO pool controller (post-exploit USDT residue)",
+      "contract": "0xEe5fDff6364dDe0A3C66dD38A4303cDd3D10730c",
+      "contract_verified": false,
+      "runtime_code_hex_len": 40298,
+      "usdt_balance_raw": "29774225000000000000292",
+      "usdt_balance": 29774.225000000000000292,
+      "usdt_usd": 29752.57,
+      "balance_blocks": {
+        "126828153": "29774225000000000000292",
+        "126834398": "29774225000000000000292",
+        "124932859_archive_goldrush": "29774.225000 (present since 2026-09-30 15:30 UTC; last USDT activity of the controller)"
+      },
+      "related": {
+        "token": "0x7eBa33c7a0e555D115277BA4Af04DFbB4F4Fa70c",
+        "token_verified": true,
+        "config_contract": "0x85870c50677c142f5e37930915d8984cce7623e1",
+        "config_verified": false,
+        "config_entries_count": 27,
+        "pair": "0x096e08ddA1E18625fFdfBae4BB65a414Aa7eC2c8",
+        "pair_reserves_latest": {"usdt": "21813338981526994699", "skydao_wei": "1"},
+        "owner_eoa": "0x6390ef00953dd0e0c5b15c50b28da36c2944d5d9",
+        "owner_eip7702_delegate": "0x63c0c19a282a1b52b07dd5a65b58948a07dae32b",
+        "owner_delegate_contract_name": "EIP7702StatelessDeleGator (MetaMask, verified)",
+        "owner_delegate_gates": ["execute -> onlyEntryPointOrSelf", "executeFromExecutor -> onlyDelegationManager"],
+        "exploit_tx": "0x8e3016674ea8e5d2ad3af422ae5328f5a1f448e6b5a93d5d773e358bd2e440eb",
+        "exploit_block": 124921242,
+        "exploit_date": "2026-09-30"
+      },
+      "functions_moving_usdt": [
+        {
+          "selector": "0x473a9ad9",
+          "signature": "sellToken(uint256,bool)",
+          "gate": "msg.sender == config[1] (token) OR config[25] (0xa210a12e4417ce53b3cd745e865e62b361d0796d)",
+          "behavior_summary": "swaps 35%*arg0 tax SKYDAO for USDT via Pancake router, distributes swap output to fixed config addresses weights/35: [16] pair=15, [6]=10, [14]=3, [21]=3, [19]=2, [4]=2; then token.controlburn(2*arg0) and pair.sync(); never uses balanceOf; never touches residue",
+          "evidence": ["raw/controller_0xEe5f_disasm.txt", "raw/probe_full_results.json", "raw/controller_usdt_ledger.json"]
+        },
+        {
+          "selector": "0x6d705ebb",
+          "signature": "register(address,uint256)",
+          "gate": "msg.sender == config[1] (token)",
+          "behavior_summary": "triggered by token.register() after pulling user deposit; distributes fixed % of deposit: 5%->cfg[5], 3%->cfg[14], 2%->cfg[15], 2%->cfg[4], 0.5%->cfg[19], 65%->pair, remainder retained; deposit-based, never balance-based",
+          "evidence": ["debug_traceTransaction of 0xcd436d2bb19b5704a3c148e5936c6bdb2f4a5542a65930eeeebdbd1c2de61dd1 (fork, reverted)", "raw/probe_full_results.json"]
+        }
+      ],
+      "attacker_probe_summary": {
+        "selectors_total": 43,
+        "selectors_probed_from_fresh_eoa": 43,
+        "usdt_moved_by_any_probe": "0",
+        "owner_functions_tested": ["fa302aec", "f4c6aa92", "53fe7d7e", "87d8d643"],
+        "owner_functions_usdt_moved": "0",
+        "result": "$0 extractable by external unprivileged attacker"
+      },
+      "sell_path_status": "bricked: token.controlburn(2*arg0) requires pair SKYDAO >= ~1.65*arg0; pair holds 1 wei; all sells revert (fork tx 0xba50bcd08e9e7627aba01dff1aea52074785deac1b6dd99cd0caaacece327c06c)",
+      "allowances_from_controller": {"pancake_router": 0, "pair": 0, "fstswap_router": 0},
+      "classification": {"E-U": 0, "H-O": 0, "P": 0, "S": 29774.225, "denomination": "USDT"},
+      "headline_conclusion": "E-U $0 (high confidence). Whole-fund mover: none demonstrated (S, medium-high); owner-side operational path not positively excluded but no owner-reachable USDT transfer path exists in the selector set.",
+      "what_would_change": [
+        "a future mainnet tx from owner EOA 0x6390ef00953dd0e0c5b15c50b28da36c2944d5d9 moving controller USDT (would make it P)",
+        "SKYDAO liquidity/trading revival (only affects new flow, not residue)",
+        "discovery of a USDT transfer site reachable from a public function outside the mapped 26 sites (disassembly indicates none)"
+      ],
+      "confidence": {"eu_zero": "high", "whole_fund_stuck": "medium-high"}
+    },
+    {
+      "id": "fist_token",
+      "label": "FIST token contract (FstSwap ecosystem) USDT locked",
+      "contract": "0xc9882def23bc42d53895b8361d0b1edc7570bc6a",
+      "contract_verified": true,
+      "contract_name": "FistStandard",
+      "symbol": "FIST",
+      "decimals": 6,
+      "total_supply_raw": "200000000000000",
+      "owner": "0x0000000000000000000000000000000000000000",
+      "owner_renounced": true,
+      "usdt_balance_raw": "152672621511870269780419",
+      "usdt_balance": 152672.621511870269780419,
+      "usdt_usd": 152561.57,
+      "balance_blocks": {"126833981": "152672621511870269780419", "126834398": "152672621511870269780419"},
+      "code_audit": {
+        "functions": ["transfer", "transferFrom", "approve", "allowance", "balanceOf", "decimals", "symbol", "name", "totalSupply", "increaseAllowance", "decreaseAllowance", "owner", "getOwner", "renounceOwnership", "transferOwnership"],
+        "external_calls": "none",
+        "usdt_interface": "absent",
+        "rescue_or_withdraw": "absent",
+        "bytecode_contains_usdt_address": false,
+        "selector_scan_matches_abi": true
+      },
+      "usdt_history_note": "GoldRush transfers_v2 returned empty payloads and Etherscan V2 free tier excludes BSC token transfers; inflow provenance not enumerated. Immaterial: contract code cannot move USDT.",
+      "classification": {"E-U": 0, "H-O": 0, "P": 0, "S": 152672.621511, "denomination": "USDT"},
+      "headline_conclusion": "USDT permanently stuck (S). E-U $0 (high). Only a protocol-level intervention on BSC-USD could change this; contract not upgradeable and cannot call USDT.",
+      "what_would_change": ["protocol-level/issuer intervention (not in attacker model)"],
+      "confidence": "high"
+    },
+    {
+      "id": "msn_token",
+      "label": "MSN token contract (FstSwap ecosystem) USDT locked",
+      "contract": "0xd8b3ef86afce18edba91fed481abe22f173597c1",
+      "contract_verified": true,
+      "contract_name": "MSNToken",
+      "symbol": "MSN",
+      "decimals": 18,
+      "total_supply_raw": "5000000000000000000000",
+      "owner": "0x0000000000000000000000000000000000000000",
+      "owner_renounced": true,
+      "usdt_balance_raw": "3762282749482632647712",
+      "usdt_balance": 3762.282749482632647712,
+      "usdt_usd": 3759.55,
+      "balance_blocks": {"126833981": "3762282749482632647712", "126834398": "3762282749482632647712"},
+      "usdt_history": {
+        "legs": 13,
+        "in": 13,
+        "out": 0,
+        "sum_in": 3762.282749482632647712,
+        "note": "all incoming plain transfers from unrelated EOAs (user mistakes); no outgoing transfer ever",
+        "source": "GoldRush bsc-mainnet transfers_v2 (raw/gr_*.json)"
+      },
+      "code_audit": {
+        "usdt_interface": "absent",
+        "generic_or_lowlevel_calls": "absent",
+        "rescue_or_withdraw": "absent",
+        "bytecode_contains_usdt_address": false,
+        "child_lpbonus_handles": "FIST only",
+        "owner_gated_functions_dead_due_to_renounce": ["OpenAddLiquidity", "CreatePair", "setWhiteList", "setStartTradeTime", "setNoTradeLp"],
+        "permissionless_functions_usdt_capability": "none"
+      },
+      "classification": {"E-U": 0, "H-O": 0, "P": 0, "S": 3762.282749, "denomination": "USDT"},
+      "headline_conclusion": "USDT permanently stuck (S). E-U $0 (high).",
+      "what_would_change": ["nothing available on-chain (non-upgradeable, no USDT code path)"],
+      "confidence": "high",
+      "sibling_observation": {
+        "contract": "0xaf51951df5782fa6eb529c173b10a973e4871f92",
+        "note": "different MSN token; holds 6297.097599 USDT; rescueToken(address,uint256) is onlyOwner but owner()=0x0 (renounced); donateDust(address,uint256) is onlyDever (private deployer address, no getter) => at most P, out of scope",
+        "usdt_balance": 6297.097598779258442827
+      }
+    }
+  ],
+  "totals": {
+    "eu_usd": 0,
+    "ho_usd": 0,
+    "p_usd": 0,
+    "s_usd": 186073.68,
+    "nominal_usdt_checked": 186209.129260947,
+    "headline": "external unprivileged attacker can extract $0 live from SKYDAO controller / FIST / MSN; all three balances are stuck (S): SKYDAO controller has no reachable balance-based USDT path (flow distributions to fixed addresses only; sells bricked), FIST and MSN contracts have no USDT-capable code and renounced owners"
+  },
+  "evidence_files": [
+    "raw/final_balances.json",
+    "raw/config_getAllConfig_126828153.json",
+    "raw/config_array.json",
+    "raw/controller_0xEe5f_disasm.txt",
+    "raw/controller_4byte_map.json",
+    "raw/sel2body.json",
+    "raw/controller_callgraph.json",
+    "raw/probe_full_results.json",
+    "raw/gate_matrix.json",
+    "raw/controller_usdt_ledger.json",
+    "raw/gr_ctrl_p0.json",
+    "raw/gr_ctrl_p1.json",
+    "raw/controller_usdt_goldrush.json",
+    "raw/0xc9882def23bc42d53895b8361d0b1edc7570bc6a_source.txt",
+    "raw/0xd8b3ef86afce18edba91fed481abe22f173597c1_source.txt",
+    "raw/heimdall_controller2/decompiled.sol"
+  ],
+  "probe_scripts": ["probe_controller.py", "probe_full.py"],
+  "caveats": [
+    "SKYDAO controller is unverified; analysis combines disassembly, decompiler cross-checks and fork behaviour.",
+    "Fork probes ran at block ~126,832,930; balance reads at 126,828,153/126,833,981/126,834,398; all consistent.",
+    "Public RPC rate limits caused transient 'failed to get storage' errors in some fork probes; affected probes were repeated through the caller-gate matrix and pass/fail edges were confirmed.",
+    "FIST/MSN USDT inflow provenance partially unavailable (GoldRush endpoint and Etherscan V2 free tier); classification rests on code-level impossibility of USDT transfers."
+  ]
+}

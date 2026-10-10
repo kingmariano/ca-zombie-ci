@@ -1,0 +1,197 @@
+{
+  "finding": "H2-03-cozy",
+  "title": "Cozy Finance v2 Set (CSET) residual on Optimism — live extractability",
+  "chain": "optimism",
+  "chain_id": 10,
+  "analysis_date": "2026-10-10",
+  "method": "read-only eth_call / archive eth_call; public RPCs (optimism-rpc.publicnode.com, mainnet.optimism.io); no transactions sent",
+  "blocks": {
+    "state_snapshot": 158019927,
+    "simulations": 158020077,
+    "probe_battery": 158018981,
+    "attack_tx1": 156364035,
+    "attack_tx2": 156580507,
+    "pause_tx": 156595428
+  },
+  "verdict": {
+    "E-U": 0.0,
+    "E-U_confidence": "high",
+    "H-O_total": 5318.68961,
+    "H-O_live_cpt_claims": 2222.419203,
+    "H-O_pause_gated": 3096.270407,
+    "P": 0.112934,
+    "S": 0.0,
+    "usd_note": "USDC.e = $0.9997232244811342 (DefiLlama, 2026-10-10); total residual 5318.802544 USDC.e ~= $5317.33"
+  },
+  "key_contracts": {
+    "usdce": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+    "uma_oov2": "0x255483434aba5a75dc60c1391bB162BCd9DE2882",
+    "attacker_eoa": "0x003FE7359A4E03C85Ac2f521eC699ED84C7c5ccB",
+    "attacker_helper1": "0x9E47C805587362eF36F2cAB9d1E4E7D546f953d4",
+    "attacker_helper2": "0xeF9886f4C8823Dc9457267A7b76A55Db2C2f5F8d",
+    "attacker_bridge_out": "0xeb2d41bcb3c3be8be5d74942fa2deb601448e240",
+    "set_impl_1167": "0x17aFF89bf88B4eB56a1bCB256ff49FA1910E8410",
+    "ptoken_impl_1167": "0xbfc907920a9D9E11A356727F43b6c56ae2774add",
+    "manager_gen2": "0x7eDfAd1b566657a236C8422bA6997536BC647a29",
+    "factory_gen2": "0xDebE19B57e8B7Eb6eA6EBEa67B12153E011E6447",
+    "ptoken_factory_gen2": "0x20433C2FB6CD1C9472147452183B32c3c746989E",
+    "backstop": "0xCB4c5190017CB106803d6d5225E21A06231B11ff",
+    "manager_gen1": "0xA81Ebc382a5d591BC07FFeeBdC404ECa487c00E7"
+  },
+  "sets_incident": [
+    {
+      "role": "victim_main",
+      "set": "0x17705474203F7ff7ba8a940c433AB43D1F58E249",
+      "cset_symbol": "CSET",
+      "cset_name": "Cozy Set",
+      "cset_supply": 155914837419,
+      "usdce_balance_at_158019927": 4168126922,
+      "usdce_note": "4.168126922e9 raw = 4168.126922 USDC.e",
+      "setState": 1,
+      "setState_meaning": "PAUSED",
+      "owner": "0xB471F352A61D0C7F7805b93d9d574C69Fd9644F5",
+      "pauser": "0xB471F352A61D0C7F7805b93d9d574C69Fd9644F5",
+      "manager": "0x7eDfAd1b566657a236C8422bA6997536BC647a29",
+      "totalCollateralAvailable": 120901199,
+      "accounting": {
+        "assetBalance": 4168126922,
+        "accruedSetOwnerFees": 112934,
+        "accruedCozyReserveFees": 0,
+        "accruedCozyBackstopFees": 0,
+        "totalPurchasesFees": 1683196833,
+        "totalSalesFees": 154597129,
+        "assetsPendingRedemption": 842737
+      },
+      "residual_decomposition": {
+        "cpt_claims_triggered_markets": 2208476090,
+        "supplier_fee_pools": 1837793962,
+        "cset_share_collateral": 120901199,
+        "pending_redemption": 842737,
+        "set_owner_fees": 112934,
+        "sum": 4168126922,
+        "sum_note": "exact match to assetBalance"
+      },
+      "markets": {
+        "0": {"ptoken": "0xFa1c5663aCeC49aD17422d2E846eA113534a8abf", "trigger": "0xaCD105FEEa362D5c27CAAbA0B45F53D91B92dE27", "query": "Did Curve get hacked?", "state": 2, "activeProtection": 1166682325},
+        "1": {"ptoken": "0x43726e171E3f199d4A6d308Ab64F56441D29c2Fe", "trigger": "0xb634BF771915f1A22f26498098620f19340C06b0", "query": "Was Uniswap v3 hacked?", "state": 0, "activeProtection": 303908437},
+        "2": {"ptoken": "0x44401755a3a6f809242d83c9E38f3Ea389ddB3A1", "trigger": "0xD8eeD4970A0F021Ba87FDa6F95b9B9c17eD19944", "state": 0, "activeProtection": 1419502194},
+        "3": {"ptoken": "0x3b548fbADC2d926AdB7e5A5d44d824a1c7F3614d", "trigger": "0xDc3e70904e88198903FbeE6C81cf90d0490D32B4", "state": 0, "activeProtection": 125551738721},
+        "4": {"ptoken": "0x11C9205bcE8E5cEf63a18d854b87d8B9fE1B72b2", "trigger": "0xeaADbc9eDeB1F398AE603227A7EB508eF7e39392", "query": "Did dYdX get hacked?", "state": 0, "activeProtection": 702128103},
+        "5": {"ptoken": "0xC1304c0Db0bb2001e11E5c45ecb4F3D0e7158655", "trigger": "0xeB6613FAC35fED17c276e3FE45D67Da67685f1eF", "query": "Did Aave v2 get hacked?", "state": 2, "activeProtection": 1041793765},
+        "6": {"ptoken": "0xdf27897dB00623234f88AaA5350715Ce31437813", "trigger": "0x221ea1500Ca3C7be762753Cb73686a3BcF367C8d", "state": 0, "activeProtection": 2310934688}
+      },
+      "remainingProtection_all_markets": 0
+    },
+    {
+      "role": "victim_rabbithole",
+      "set": "0x426713c9E9522Bd840b8506BC14a3fE761A5fBd8",
+      "usdce_balance_at_158019927": 1150675622,
+      "usdce_note": "1150.675622 USDC.e",
+      "setState": 1,
+      "owner": "0xbb83D92c8D2b1523b6Be79C822c20865D70321cC",
+      "cset_supply": 10012047690,
+      "totalCollateralAvailable": 1136732509,
+      "accounting": {"assetBalance": 1150675622, "accruedSetOwnerFees": 0, "accruedCozyReserveFees": 0, "accruedCozyBackstopFees": 0, "totalPurchasesFees": 0, "totalSalesFees": 0, "assetsPendingRedemption": 0},
+      "markets": {
+        "0": {"ptoken": "0x2086DcfB21761183ed0b20812F61F0984096AF99", "trigger": "0x41701936CD5F4B8F5284dB0C68f0c2B9dF3B1618", "query": "Did Rabbithole Quests get hacked?", "state": 2, "activeProtection": 13943113, "remainingProtection": 1122789396}
+      }
+    },
+    {"role": "emptied", "set": "0x1a684C688AcA00944B22B9380219c7bBbC3B7fB9", "usdce_balance_at_158019927": 0, "setState": 1, "cset_supply": 0},
+    {"role": "emptied", "set": "0xfB8b6E5b35b70324701adE10dafbdEFb8D0EB276", "usdce_balance_at_158019927": 0, "setState": 1, "cset_supply": 0}
+  ],
+  "cpt_tokens": {
+    "0xC1304c0Db0bb2001e11E5c45ecb4F3D0e7158655": {"set": "0x17705474203F7ff7ba8a940c433AB43D1F58E249", "market": 5, "totalSupply": 10436945579, "top_holder": "0x18AA2A4aB4af7058f536173df904f649455306ac", "top_holder_balance": 10075128256, "attacker_helper_dust": 894327},
+    "0xFa1c5663aCeC49aD17422d2E846eA113534a8abf": {"set": "0x17705474203F7ff7ba8a940c433AB43D1F58E249", "market": 0, "totalSupply": 11736214561, "top_holder": "0x349A01774f22f51ffD46270b48F1FDC85ac9131f", "top_holder_balance": 10000000000, "attacker_helper_dust": 928969},
+    "0x2086DcfB21761183ed0b20812F61F0984096AF99": {"set": "0x426713c9E9522Bd840b8506BC14a3fE761A5fBd8", "market": 0, "totalSupply": 112997194, "top_holder": "0xcD01A3acED67e266be21117376C7025B384Cd4d7", "top_holder_balance": 111844016, "attacker_helper_dust": 1015470},
+    "0x658CeBADEa3a833EB7E186bE626Ae88496A6F76E": {"set": "0xfB8b6E5b35b70324701adE10dafbdEFb8D0EB276", "totalSupply": 0},
+    "0x1F626C96Ed2AedB69DfF96B653F733b1767E9cce": {"set": "0x1a684C688AcA00944B22B9380219c7bBbC3B7fB9", "totalSupply": 0},
+    "0xcFA3560c768946446e9B8fbd734Be7b2a39dAB6F": {"set": "0x1a684C688AcA00944B22B9380219c7bBbC3B7fB9", "totalSupply": 0}
+  },
+  "set_state_token": {
+    "note": "the Set contract itself is the CSET share token (name Cozy Set, symbol CSET, 6 decimals)",
+    "set1_top_holder": {"address": "0xD43982b638b12f78B1fb48F9372539AC00D93c8A", "balance": 155118633991, "pct_of_supply": 99.49},
+    "set3_top_holder": {"address": "0x75C775CDf6881D3E9bfAFC8A88359a6f385bAF1C", "balance": 10000000000}
+  },
+  "incident_txs": {
+    "tx1_freeze": {"hash": "0x53b454a3f552c5498994f74ae8737faa60123cac274bdd3b0383ccb226b3f2cb", "block": 156364035, "purchases": [{"market": 5, "protection": 96596967870, "ptokens": 958573194147, "cost": 1280580768}, {"market": 0, "protection": 65715735793, "ptokens": 654809418152, "cost": 1351183395}], "uma_proposals": [{"trigger": "0xeB6613FAC35fED17c276e3FE45D67Da67685f1eF", "proposedPrice": "1e18", "bond_sent": 1000000000}, {"trigger": "0xaCD105FEEa362D5c27CAAbA0B45F53D91B92dE27", "proposedPrice": "1e18", "bond_sent": 1000000000}]},
+    "tx2_drain_set1": {"hash": "0x8761164b8947a0690b57896a8e7370dd69fe8e9137ce61e0b21ff08581a2ce60", "block": 156580507, "set": "0x17705474203F7ff7ba8a940c433AB43D1F58E249", "usdce_received": 160776340904, "uma_settle_payouts": [1025000000, 1025000000], "swept_to_bridge": 163326343700},
+    "tx2b_drain_set3": {"hash": "0xf7a270480f9d457bddc2c8cb4f16669ef01f185cf6bda338351a71e704c79b4b", "block": 156580507, "set": "0x426713c9E9522Bd840b8506BC14a3fE761A5fBd8", "usdce_received": 9409663229, "uma_settle_payouts": [1525000000], "swept_to_bridge": 10984663268},
+    "total_drained": 170186004133
+  },
+  "balance_history_usdce": {
+    "0x17705474203F7ff7ba8a940c433AB43D1F58E249": {"156364034": 162312703663, "156364035": 164944467826, "156580506": 164944467826, "156580507": 4168126922, "158019801": 4168126922},
+    "0x426713c9E9522Bd840b8506BC14a3fE761A5fBd8": {"156364034": 10013860418, "156364035": 10560338851, "156580506": 10560338851, "156580507": 1150675622, "158019801": 1150675622},
+    "0xcC5C3F319Aae7a70236Bb53226c2D44e627e4A9a": {"100000000": 101706713979, "112000000": 13446938850, "158019801": 13446938850}
+  },
+  "simulations_block_158020077": {
+    "claim_set1_mkt5_10000CPT_from_H5": "998178784",
+    "claim_set1_mkt0_10000CPT_from_H0": "994087419",
+    "claim_set3_mkt0_111844016PT_from_H3": "13800818",
+    "claim_thirdparty_set1_mkt5": "REVERT panic 0x11 (allowance underflow)",
+    "claim_thirdparty_set3_mkt0": "REVERT panic 0x11 (allowance underflow)",
+    "purchase_set1_mkt1_1e6_from_PROBE": "REVERT 0xbaf3f0f7 InvalidState()",
+    "purchase_set3_mkt0_1e6_from_PROBE": "REVERT 0xbaf3f0f7 InvalidState()",
+    "deposit_set3_1e6_from_PROBE": "REVERT 0xbaf3f0f7 InvalidState()",
+    "redeem_set1_from_CSET_holder": "REVERT 0x59818bce",
+    "claimSetFees_from_PROBE": "REVERT 0x82b42900 Unauthorized()",
+    "claimCozyFees_from_PROBE": "REVERT 0x82b42900 Unauthorized()",
+    "dripSupplierFees_from_PROBE": "SUCCESS (0x) - pays suppliers, not caller",
+    "previewClaim_set1_mkt5_10000e6": "998178784",
+    "previewClaim_set1_mkt0_10000e6": "994087419",
+    "previewClaim_set3_mkt0_1000e6": "123393444"
+  },
+  "error_selectors": {
+    "0xbaf3f0f7": "InvalidState()",
+    "0x82b42900": "Unauthorized()",
+    "0x53d13992": "InvalidPurchase()",
+    "0x59818bce": "unnamed (redemption pause / state)",
+    "0x25062e25": "unnamed"
+  },
+  "uma": {
+    "oov2": "0x255483434aba5a75dc60c1391bB162BCd9DE2882",
+    "oov2_usdce_balance_at_158018981": 2275980600,
+    "triggers": {
+      "0xeB6613FAC35fED17c276e3FE45D67Da67685f1eF": {"state": 2, "bondAmount": 500000000, "proposalDisputeWindow": 432000, "requestTimestamp": 1683500221, "query": "Did Aave v2 get hacked?"},
+      "0xaCD105FEEa362D5c27CAAbA0B45F53D91B92dE27": {"state": 2, "bondAmount": 500000000, "proposalDisputeWindow": 432000, "requestTimestamp": 1683500476, "query": "Did Curve get hacked?"},
+      "0x41701936CD5F4B8F5284dB0C68f0c2B9dF3B1618": {"state": 2, "bondAmount": 1000000000, "proposalDisputeWindow": 432000, "requestTimestamp": 1687805003, "query": "Did Rabbithole Quests get hacked?"},
+      "0xb634BF771915f1A22f26498098620f19340C06b0": {"state": 0, "bondAmount": 1000000000, "proposalDisputeWindow": 432000, "requestTimestamp": 1683500396, "query": "Was Uniswap v3 hacked?", "uma_request_settled": false},
+      "0xeaADbc9eDeB1F398AE603227A7EB508eF7e39392": {"state": 0, "query": "Did dYdX get hacked?"}
+    },
+    "settled_request_example": {"trigger": "0xeB6613FAC35fED17c276e3FE45D67Da67685f1eF", "settled": true, "bond": 500000000, "customLiveness": 432000, "settle_payout": 1025000000}
+  },
+  "pause": {"tx": "0xc74f6feb6b8125d7ae54f4b9a14ad6fda89355e414bfcb87259877476608aa19", "block": 156595428, "from": "0xa5C07599a81FD6DFB82Ca1554Ede5fcb24d57F3a", "to_manager": "0x7eDfAd1b566657a236C8422bA6997536BC647a29", "method": "pause", "selector": "0x9755c6a7"},
+  "other_sets_found": [
+    {"set": "0x09947441e3F379Ed98cDEdE84c6E38D77Bb73c84", "usdce": 50000000, "setState": 1, "generation": "gen2"},
+    {"set": "0xCd1889f7DeB404D489678fB9C243B41Ca1321d40", "usdce": 502501, "setState": 1, "generation": "gen2"},
+    {"set": "0xcC5C3F319Aae7a70236Bb53226c2D44e627e4A9a", "usdce": 13446938850, "setState": null, "generation": "gen1-2022", "impl": "0xd1a614eea9d4DF1565DdF6329234d0C74dc2c1fC"},
+    {"set": "0x14c0AFB615EaEeB4366AA4DbbC19964bBF293F93", "usdce": 113484092, "setState": null},
+    {"set": "0x288A668dFc5Bd873914210e23b186aD3473a0673", "usdce": 80677288, "setState": null},
+    {"set": "0x47fE1C30886F030d1da6dFbb3900925862548D7b", "usdce": 10507298, "setState": null},
+    {"set": "0x46fdF205d8aEE986d331a01dF1C2A8523EaB371b", "usdce": 10051154, "setState": null},
+    {"set": "0x372893DAF3581179A2066326eEE907264692D0d5", "usdce": 6606850, "setState": 0, "note": "ACTIVE; UMATrigger 'Was Uniswap v3 hacked?'; purchase -> InvalidPurchase() when unpaid"},
+    {"set": "0x03ba90c6a214e6C943DF55589675857881E041a6", "usdce": 5755156, "setState": 0},
+    {"set": "0x05585408234dec93F475dA4271f95d6138908bA6", "usdce": 2071946, "setState": 0},
+    {"set": "0x6A11F7C7a29590629086cd2ccA0061138FEBe6cB", "usdce": 1443562, "setState": null},
+    {"set": "0xf2E9B8795143fA3299357e0373589Fbb310558F5", "usdce": 302825, "setState": 0},
+    {"set": "0x1cfD6c4683a6d790B49aEF88Be917EA1547c0803", "usdce": 100003, "setState": 0},
+    {"set": "0x339a993111146b06cCd6Db44B05036b20eAdC8A7", "usdce": 50003, "setState": 0},
+    {"set": "0xC1B6eC68CB40459Ae1521b403d6f546f0a37914c", "usdce": 0, "asset": "0x41b75372f734ee9b7792ca5576a40e008c91a098", "setState": 1},
+    {"set": "0xBBf3a80c2ec900d877c13302f4407df08AeFfd28", "usdce": 0, "asset": "0x41b75372f734ee9b7792ca5576a40e008c91a098", "setState": 1},
+    {"set": "0xFE5a43AFa45EE3E56542635712d7f09cf62Da278", "usdce": 0, "asset": "0x41b75372f734ee9b7792ca5576a40e008c91a098", "setState": 1},
+    {"set": "0xEaf064dD483f878249F893c2F0Cdc590ef8d19d8", "usdce": 0, "setState": 1}
+  ],
+  "negative_results": {
+    "no_dex_pairs_for_CPT_or_CSET": "DexScreener tokens 0xC1304c0D / 0xFa1c5663 / 0x2086DcfB / 0x17705474 / 0x426713c9 = 0 pairs",
+    "no_holder_approvals_to_attacker": "allowance(H5/H0/CSET top holder -> helper1/helper2/attacker EOA) = 0",
+    "spam_tokens_only": "Sets contain only worthless airdrop spam tokens (www.base1.cfd, op-claim.com)",
+    "third_party_claims_revert": "panic 0x11",
+    "purchase_deposit_revert": "InvalidState()"
+  },
+  "caveats": [
+    "Set logic is unverified on-chain; function semantics inferred from cozy-interfaces-v2, the DeFiHackLabs PoC, and traces.",
+    "0x59818bce and 0x25062e25 are unidentified custom errors.",
+    "Pause vs market-state ordering for purchase on triggered markets not isolated (all four incident Sets paused).",
+    "CSET enumeration: manager (9 Gen-2 creates) + token search page 1 + factory api; Blockscout cursor pagination broken -> later-page/older-generation Sets possible.",
+    "Simulations are eth_call only (no transactions sent)."
+  ]
+}

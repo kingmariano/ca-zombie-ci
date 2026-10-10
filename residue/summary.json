@@ -1,0 +1,56 @@
+{
+  "finding": "H2-03",
+  "title": "Fresh-incident residue with live approvals/allowances — Nimiq HTLC handlers (Polygon), Base vault sibling, Cozy v2 Sets (OP), SKYDAO/FIST/MSN (BSC)",
+  "chains": ["polygon", "base", "optimism", "bsc"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 5318.69,
+    "P": 5312145.28,
+    "S": 186073.68
+  },
+  "latest_block": 95284982,
+  "block_numbers": {
+    "polygon": 95284982,
+    "base": 52424899,
+    "optimism": 158020077,
+    "bsc": 126834398
+  },
+  "targets_checked": 6,
+  "live_targets": 6,
+  "closed_reasons": [
+    "Nimiq H1/H2 (Polygon): owner zeroed relayHub on both handlers on 2026-09-17 18:26/18:27 UTC (txs 0xf42a363a… block 93,976,364; 0x22570a38… block 93,976,404). execute()/preRelayedCall() are onlyRelayHub -> unreachable; relayWithoutGsn reverts (call to address(0)); deposits==0 on all tokens -> no open HTLCs; excess balances owner-only",
+    "Nimiq: 8,171 event-seen HTLC ids checked -> 0 open in either handler; last Open/Redeem event is the Sep-16 exploit itself",
+    "Nimiq: other family deployments 0x98E69a69/0x3157d422/0xfAbBed81/0xe4491D94/0x3c870b03 all have relayHub==0; the one with a live hub (0x4b766A07, Feb-2023 prototype) verifies EIP-712 signatures + nonce in execute() and has zero balances/approvals",
+    "Base sibling 0x416Ec2cA: borrow/withdraw/repay revert !W for fresh callers (eth_call, block 52,424,899); C2-02 attacker helper is not whitelisted on this sibling; 92-address whitelist is 0 EOAs, all account contracts gated (C2-02 enumeration)",
+    "Cozy Sets 0x17705474 + 0x426713c9 (OP): all Sets PAUSED; purchase/deposit revert InvalidState(); remainingProtection==0 on the incident markets; residual allocated to CPT holders (claim() works while paused) and CSET share holders (pause-gated); repeat false-YES UMA run is negative-EV and pays existing CPT holders",
+    "SKYDAO controller 0xEe5fDff6 (BSC): all 43 public selectors probed from a fresh EOA -> no path moves the standing USDT; the only USDT-transferring functions distribute fresh flow to fixed config addresses and are token/pair-gated; sells bricked (pair holds 1 wei SKYDAO)",
+    "FIST 0xc9882def and MSN 0xd8b3ef86 (BSC): bare BEP20+Ownable token contracts, zero external calls, no USDT interface/rescue, owner()==0 (renounced), non-upgradeable"
+  ],
+  "poc": {
+    "tests_passed": 7,
+    "tests_total": 7,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38059644991"
+    ]
+  },
+  "key_facts": [
+    "Nimiq incident (Sep-16-2026): 26,130.641710 USDC + 24,332.489269 USDT + 0.661117 USDC.e (~$50,463) drained from the swap-liquidity wallet 0x24Cb173Ae221AeA93369f34bdcF0Ddb35b436773 via forged OpenGSN relayed calls (evil paymaster + forwarder=handler) exploiting execute() that ignores signature/nonce/checks; reproduced end-to-end on a fork (pre-fix block 93,930,000) through the real RelayHub for 1 POL refundable stake",
+    "Nimiq victim allowances still unlimited at block 95,284,982: USDC->H1 = max-439,898.614082; USDC.e->H2 = max-167,159.831969; USDT->H2 = max-116,212.238496; victim balances are 0 — any future inflow becomes drainable after ONE owner setRelayHub(hub) call (fork-proven re-arm; 5,000 USDT future inflow fully captured)",
+    "Nimiq allowance census: 989 distinct (handler,token,owner) approval pairs (1,512 to H1 + 6,099 to H2); 969 still have allowance>0 AND balance>0, total effective 4.034181 units (~$4.03) — dust only",
+    "Nimiq handler excess (owner-withdrawable, deposits==0): H1 11.250690 USDC + H2 18.116704 USDC.e + 2.126549 USDT = $31.49 (P)",
+    "Base sibling 0x416Ec2cA21a38CbCFeAcD6a14532B3F348356d23 (impl 0x67ed441b…, owner Safe 0x6b27512a… 3-of-7): AERO 4,508,069.47 + VIRTUAL 1,319,234.04 + USDT 161,813.10 + cbBTC 1.689 + WETH 4.416 + USDC 1,503 = $5,312,113.68 at block 52,424,899; owner-Safe borrow is owner-exempt (eth_call success) => P, no fresh path",
+    "Cozy Sets: 0x17705474203F7ff7ba8a940c433AB43D1F58E249 = 4,168.126922 USDC.e and 0x426713c9E9522Bd840b8506BC14a3fE761A5fBd8 = 1,150.675622 USDC.e (total 5,318.802544 ≈ $5,317.33); H-O 5,318.689610 (2,222.419203 claimable now + 3,096.270407 pause-gated), P 0.112934; an older-generation Cozy vault holds an extra $13,446.94 (H-O, different ABI)",
+    "BSC stuck: SKYDAO controller 0xEe5fDff6364dDe0A3C66dD38A4303cDd3D10730c = 29,774.225000 USDT; FIST 0xc9882def23bc42d53895b8361d0b1edc7570bc6a = 152,672.621512 USDT; MSN 0xd8b3ef86afce18edba91fed481abe22f173597c1 = 3,762.282749 USDT; total ≈ $186,073.68 (S)",
+    "PoC: 7/7 tests pass on Polygon forks — full relay exploit drains 24,332.489269 USDT + 26,130.641710 USDC (historical fork at block 93,930,000 locally with archive; reconstructed at latest block in CI); latest block execute reverts 'Base: illegal msg.sender' even from the real hub address; one owner setRelayHub re-arms the drain; forged redeem steals an open HTLC"
+  ],
+  "caveats": [
+    "Pre-fix historical fork reproduction requires an archive RPC (validated locally with Ankr/Infura archive endpoints); the CI suite reconstructs the incident at the latest block because the CI provider set is tip-only",
+    "Handler-family contracts deployed by other keys were not exhaustively searched by code hash; all 8 deployments of the Nimiq owner EOA were checked and only H1/H2 were the vulnerable HTLC generation",
+    "Cozy Set logic is unverified (semantics inferred from cozy-interfaces-v2 + traces); SKYDAO controller is unverified (disassembly + 43/43 selector probing + fork traces) — residual decompiler-level risk",
+    "USD figures are point-in-time 2026-10-10; AERO/VIRTUAL volatility moves the P total",
+    "The Nimiq latent risk is conditional: it requires an owner action (setRelayHub) or owner-key compromise; today the path is closed"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from all six H2-03 residues (high confidence): Nimiq handlers were remediated on 2026-09-17 (relayHub zeroed; unlimited victim allowances remain as latent risk — one owner call re-arms a fork-proven drain), Base sibling gates every fresh path !W (P $5.31M), Cozy Sets are paused with residual allocated to holders (H-O $5.3k), and SKYDAO/FIST/MSN are stuck ($186k)."
+}
