@@ -1,0 +1,65 @@
+{
+  "finding": "C2-55-multiversx",
+  "title": "MultiversX remnants: legacy delegation, legacy xExchange/Maiar farms, LKMEX plumbing, price-discovery brick",
+  "chains": ["multiversx"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": { "E-U": 0, "H-O": 6782224.00, "P": 227.05, "S": 1181.78 },
+  "latest_block": 35578436,
+  "block_numbers": { "multiversx": 35578436 },
+  "block_ref": { "epoch": 2258, "round": 36396548, "nonce": 35578436, "timestamp": 1791606898, "time_utc": "2026-10-10T04:34:58Z" },
+  "prices": {
+    "EGLD_usd": 4.033253723488384,
+    "EGLD_source": "coins.llama.fi coingecko:elrond-erd-2 ts=1791600774",
+    "WEGLD_usd": 4.026669153600333,
+    "MEX_usd": 6.087087452169736e-07,
+    "LKMEX_valued_at_MEX": true,
+    "EGLDMEX_LP_usd": 4.0692,
+    "notes": "WEGLD/MEX from api.multiversx.com token valueUsd; LP computed from live pair reserves/supply"
+  },
+  "targets_checked": 75,
+  "live_targets": 12,
+  "top_targets": [
+    { "name": "legacy delegation (MultiversX Community Delegation)", "address": "erd1qqqqqqqqqqqqqpgqxwakt2g7u9atsnr03gqcgmhcv38pt7mkd94q6shuwt", "class": "H-O", "usd": 6391628.80, "assets": "1,584,732.6357 EGLD user-owed (136,994.54 liquid in contract; rest staked); 35,601 users; owner min-stake share 0" },
+    { "name": "xExchange deprecated v2 farm (EGLD/MEX LP)", "address": "erd1qqqqqqqqqqqqqpgqapxdp9gjxtg60mjwhle3n6h88zch9e7kkp2s8aqhkg", "class": "H-O", "usd": 164840.03, "assets": "40,509.198308 EGLDMEX-0be9e5 LP + virtual 377.2B-MEX unclaimed rewards (LKMEX minted at claim)" },
+    { "name": "legacy farm v1.3-locked #0", "address": "erd1qqqqqqqqqqqqqpgqyawg3d9r4l27zue7e9sz7djf7p9aj3sz2jpsm070jf", "class": "H-O", "usd": 65119.01, "assets": "16,002.902161 EGLDMEX LP" },
+    { "name": "legacy farm v1.3-locked #2", "address": "erd1qqqqqqqqqqqqqpgq7qhsw8kffad85jtt79t9ym0a4ycvan9a2jps0zkpen", "class": "H-O", "usd": 46074.13, "assets": "75,691,579,841 MEX reward reserve; exitFarm live" },
+    { "name": "legacy proxy v1 (proxy-dex)", "address": "erd1qqqqqqqqqqqqqpgqrc4pg2xarca9z34njcxeur622qmfjp8w2jps89fxnl", "class": "H-O", "usd": 37457.06, "assets": "28,715,843,579.84 LKMEX + 4,909.433 EGLDMEX LP + 25.45B MEXFARML (unpriced) + LKLP 518.1; exits live daily" },
+    { "name": "legacy metabonding staking", "address": "erd1qqqqqqqqqqqqqpgqt7tyyswqvplpcqnhwe20xqrj7q7ap27d2jps7zczse", "class": "H-O", "usd": 19425.30, "assets": "31,912,309,911.89 LKMEX; unstake/unbond live" },
+    { "name": "legacy farms v1.2 (3)", "addresses": ["erd1qqqqqqqqqqqqqpgqye633y7k0zd7nedfnp3m48h24qygm5jl2jpslxallh", "erd1qqqqqqqqqqqqqpgqsw9pssy8rchjeyfh8jfafvl3ynum0p9k2jps6lwewp", "erd1qqqqqqqqqqqqqpgqv4ks4nzn2cw96mm06lt7s2l3xfrsznmp2jpsszdry5"], "class": "H-O", "usd": 39066.86, "assets": "4,525.75 EGLDMEX LP + 2.54B/0.277B/31.11B MEX; exits live (state=Migrate)" },
+    { "name": "legacy farms v1.3-unlocked (8) + custom (1)", "class": "H-O", "usd": 9391.82, "assets": "~15.5B MEX reward leftovers" },
+    { "name": "legacy simple-lock 0/1/2", "addresses": ["erd1qqqqqqqqqqqqqpgqs0jjyjmx0cvek4p8yj923q5yreshtpa62jpsz6vt84", "erd1qqqqqqqqqqqqqpgqawujux7w60sjhm8xdx3n0ed8v9h7kpqu2jpsecw6ek", "erd1qqqqqqqqqqqqqpgq6nu2t8lzakmcfmu4pu5trjdarca587hn2jpsyjapr5"], "class": "H-O", "usd": 9209.08, "assets": "1,869.08 WEGLD + 5.06M ASH + LKLP/LSF SFTs (unpriced); unlockTokens live" },
+    { "name": "Maiar price-discovery (3)", "addresses": ["erd1qqqqqqqqqqqqqpgq38cmvwwkujae3c0xmc9p9554jjctkv4w2jps83r492", "erd1qqqqqqqqqqqqqpgq666ta9cwtmjn6dtzv9fhfcmahkjmzhg62jps49k7k8", "erd1qqqqqqqqqqqqqpgqq93kw6jngqjugfyd7pf555lwurfg2z5e2jpsnhhywk"], "class": "S", "usd": 1181.08, "assets": "292.35 WEGLD + ITHEUM/CRT/ASH; redeem reverts: locking SC lacks lockTokens (latent owner fix setLockingScAddress)" },
+    { "name": "WEGLD-swap stray tokens (shard1/2)", "class": "S", "usd": 0.70, "assets": "150,321.44 LKMEX + 10 MEX + 0.152 WEGLD; no ESDT withdrawal in wrapping SC" }
+  ],
+  "closed_reasons": [
+    "All value-moving endpoints require a contract-issued position SFT (farm/wrapped/LK/redeem token) or whitelisted/owner caller; none moves third-party value for an outsider",
+    "legacy farms: exitFarm bound to farm-token holders; migration endpoints callable only by old-farm SC (which no longer exposes migrate)",
+    "simple-lock legacy: unlockTokens only for contract-issued LK SFTs; upgrade is protocol-owner path",
+    "delegation: unStake/unBond/claimRewards are per-caller; dust cleanup and claimUnusedFunds are only_owner",
+    "price discovery: redeem bricked by missing lockTokens at configured legacy simple-lock (revert proven on-chain); only owner can repoint",
+    "WEGLD swap: no ESDT withdrawal endpoint exists"
+  ],
+  "poc": {
+    "tests_passed": 0,
+    "tests_total": 0,
+    "ci_run_urls": [],
+    "note": "Read-only measurement phase; no fork PoC run (no E-U path to prove). Undisclosed-E-U residual would require a fork exploit of deployed legacy WASM, which no runtime evidence suggests."
+  },
+  "key_facts": [
+    "75 addresses measured with exhaustive nonce-paged token/NFT reads for the fund-holding targets (raw/full_balances.json, raw/candidate_balances.json); 49 deployments source-verified, 520 deployed-source files extracted",
+    "E-U = $0 across all audited targets; H-O = $6,782,224.00 dominated by the legacy delegation contract (1,584,732.64 EGLD user-owed, 35,601 users)",
+    "Price-discovery brick proof: tx 62f1ce1040951db5beea265e6cb20e09ed33a00d289035ffb0b87b262a7e7bd4 -> returnMessage 'invalid function (not found)' (lockTokens missing on simple_lock_legacy_0)",
+    "proxy v1 + metabonding LKMEX totals required nonce-paged reads: 28.72B and 31.91B respectively",
+    "LKMEX->MEX unlock is live and matured (factory unlockAssets permissionless; successful txs daily), so LKMEX valued at MEX parity",
+    "Unclaimed SC developer rewards across candidates: 56.294 EGLD = $227.05 (deployer-only, P)"
+  ],
+  "caveats": [
+    "LKMEX valued at MEX parity ($6.087e-7); LKMEX market is illiquid if force-sold (outstanding 434.7B ~= $264.6k)",
+    "Some SFT positions (MEXFARML, LKLP, locked-farm, LK SFTs) unpriced -> H-O is conservative",
+    "v1.3-unlocked/custom farms, simple-lock 0/1 and delegation v0.5.8 binary were screened (WASM exports + live activity) rather than line-by-line source verified",
+    "Delegation unbonding is subject to network unbond period (1,440,000 blocks); claims/unstakes proven live",
+    "No fork-PoC was run; source+on-chain gate analysis only"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from MultiversX legacy remnants: all $6.78M (H-O) sits behind contract-issued position SFTs or owner keys; the only bricked value is $1.18k in three Maiar price-discovery contracts (redeem forwards to a legacy simple-lock missing lockTokens) plus $0.70 stray tokens at the WEGLD swap."
+}

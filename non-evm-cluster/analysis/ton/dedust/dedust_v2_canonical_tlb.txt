@@ -1,0 +1,254 @@
+/// DeDust Protocol v2
+///
+
+_ version:uint16 = DedustVersion;
+
+_ timestamp:uint32 = DedustTimestamp;
+
+_ asset_type:uint4 = DedustAssetType;
+
+native$0000 = DedustAsset;
+jetton$0001 workchain_id:int8 address:bits256 = DedustAsset;
+
+vault#01 = DedustContractType;
+pool#02 = DedustContractType;
+liquidity_deposit#03 = DedustContractType;
+operator#04 = DedustContractType;
+
+proof#_ {X:Type} factory_addr:MsgAddressInt contract_type:DedustContractType params:X = DedustProof X;
+
+pool_params#_ is_stable:Bool asset0:DedustAsset asset1:DedustAsset = DedustPoolParams;
+
+code_installer#01 = DedustRole;
+code_updater#02 = DedustRole;
+fee_collector#03 = DedustRole;
+fee_configurator#04 = DedustRole;
+stable_pool_factory#05 = DedustRole;
+legacy_vault_factory#06 = DedustRole;
+quote_synchronizer#07 = DedustRole;
+quote_configurator#08 = DedustRole;
+
+_ proof:(DedustProof DedustAsset) = DedustVaultProof;
+_ proof:(DedustProof DedustPoolParams) = DedustPoolProof;
+_ proof:(DedustProof ^[ owner_addr:MsgAddressInt pool_params:DedustPoolParams ]) = DedustLiquidityDepositProof;
+_ proof:(DedustProof DedustRole) = DedustOperatorProof;
+
+given_in$0 = DedustSwapKind;
+given_out$1 = DedustSwapKind;
+
+swap_params#_ deadline:DedustTimestamp recipient_addr:MsgAddress referral_addr:MsgAddress
+              fulfill_payload:(Maybe ^Cell) reject_payload:(Maybe ^Cell) = DedustSwapParams;
+
+step_params#_ kind:DedustSwapKind limit:Coins next:(Maybe ^DedustSwapStep) = DedustSwapStepParams;
+step#_ pool_addr:MsgAddressInt params:DedustSwapStepParams = DedustSwapStep;
+
+//
+// Factory
+//
+
+// Ownership Management
+dedust_transfer_ownership#ca61554e query_id:uint64 new_owner_addr:MsgAddress = InternalMsgBody8;
+
+dedust_accept_ownership#dee60404 query_id:uint64 = InternalMsgBody8;
+
+dedust_cancel_ownership_transfer#16cb7fc2 query_id:uint64 = InternalMsgBody8;
+
+// Vaults
+dedust_install_vault_code#bc3f26f6 query_id:uint64 asset_type:DedustAssetType code_version:DedustVersion code:^Cell = InternalMsgBody8;
+
+dedust_create_vault#21cfe02b query_id:uint64 asset:DedustAsset = InternalMsgBody8;
+
+dedust_create_legacy_jetton_vault#c9a5752d query_id:uint64 minter_addr:MsgAddressInt resolver_addr: MsgAddressInt = InternalMsgBody8;
+
+dedust_upgrade_vault#25d66911 query_id:uint64 asset:DedustAsset = InternalMsgBody8;
+
+// Governance
+dedust_upgrade#df4a27aa query_id:uint64 code_version:DedustVersion code:^Cell = InternalMsgBody8;
+
+dedust_reset_gas#9f3f0937 query_id:uint64 = InternalMsgBody8;
+
+// Operators
+dedust_deploy_operator#b9d29997 query_id:uint64 role:DedustRole user_addr:MsgAddressInt = InternalMsgBody8;
+
+dedust_change_operator_user_addr#1be6df93 query_id:uint64 role:DedustRole user_addr:MsgAddressInt = InternalMsgBody8;
+
+dedust_install_operator_code#e505d21a query_id:uint64 code_version:DedustVersion code:^Cell = InternalMsgBody8;
+
+dedust_upgrade_operator#0085f5a3 query_id:uint64 role:DedustRole = InternalMsgBody8;
+
+// Pools
+dedust_install_pool_code#a3e45df1 query_id:uint64 code_version:DedustVersion code:^Cell = InternalMsgBody8;
+
+dedust_create_volatile_pool#97d51f2f query_id:uint64 asset0:DedustAsset asset1:DedustAsset = InternalMsgBody8;
+
+dedust_create_stable_pool#7c40ac87 query_id:uint64 asset0:DedustAsset asset0_decimals:uint8 asset1:DedustAsset asset1_decimals:uint8 = InternalMsgBody9;
+
+dedust_upgrade_pool#53e252ae query_id:uint64 pool_params:DedustPoolParams = InternalMsgBody9;
+
+dedust_sync_fee_collector_addr#817462a9 query_id:uint64 pool_addr:MsgAddressInt = InternalMsgBody9;
+
+dedust_configure_pool_asset_quote_provider#a805f43e query_id:uint64 pool_addr:MsgAddressInt
+                                             asset:DedustAsset quote_provider_addr:MsgAddress = InternalMsgBody9;
+
+dedust_sync_pool_asset_quote#59317e9a query_id:uint64 pool_addr:MsgAddressInt asset:DedustAsset = InternalMsgBody9;
+
+// Liquidity Deposits
+dedust_install_liquidity_deposit_code#99a84311 query_id:uint64 code_version:DedustVersion code:^Cell = InternalMsgBody9;
+
+dedust_create_liquidity_deposit#f04ec526 query_id:uint64 proof:^DedustVaultProof owner_addr:MsgAddressInt
+                                  pool_params:DedustPoolParams
+                                  ^[ asset0_target_balance:Coins asset1_target_balance:Coins
+                                  deposit_asset:DedustAsset deposit_amount:Coins min_lp_amount:Coins ]
+                                  fulfill_payload:(Maybe ^Cell) reject_payload:(Maybe ^Cell) = InternalMsgBody9;
+
+dedust_destroy_non_ready_vault#8a518d0d query_id:uint64 asset:DedustAsset = InternalMsgBody9;
+
+//
+// Blank
+//
+
+dedust_install#9b3aa3fa query_id:uint64 blank_code:^Cell
+                 code_version:DedustVersion code:^Cell extra_params:Cell = InternalMsgBody9;
+
+//
+// Vault
+//
+
+// Common
+dedust_pay_out_from_deposit#6b0b787f query_id:uint64 proof:^DedustLiquidityDepositProof
+                              amount:Coins payload:(Maybe ^Cell) = InternalMsgBody9;
+
+dedust_pay_out_from_pool#ad4eb6f5 query_id:uint64 proof:^DedustPoolProof amount:Coins
+                           recipient_addr:MsgAddress payload:(Maybe ^Cell) = InternalMsgBody9;
+
+dedust_provide_vault_state#e93405b9 query_id:uint64 = InternalMsgBody9;
+
+dedust_take_vault_state#a913dc0d query_id:uint64 is_ready:Bool = InternalMsgBody9;
+
+// Native-only
+
+_ min_lp_amount:Coins asset0_target_balance:Coins asset1_target_balance:Coins = DedustDepositLiquidityParams;
+
+dedust_deposit_liquidity#d55e4686 query_id:uint64 amount:Coins pool_params:DedustPoolParams
+        deposit_params:^DedustDepositLiquidityParams
+        fulfill_payload:(Maybe ^Cell)
+        reject_payload:(Maybe ^Cell) = InternalMsgBody0; // prior - has ref
+
+dedust_deposit_liquidity#d55e4686 query_id:uint64 amount:Coins pool_params:DedustPoolParams
+        min_lp_amount:Coins asset0_target_balance:Coins asset1_target_balance:Coins
+        fulfill_payload:(Maybe ^Cell) reject_payload:(Maybe ^Cell) = InternalMsgBody9;
+
+
+dedust_payout#474f86cf query_id:uint64 payload:(Maybe ^Cell) = InternalMsgBody9;
+
+dedust_swap#ea06185d query_id:uint64 amount:Coins _:DedustSwapStep swap_params:^DedustSwapParams = InternalMsgBody9;
+
+// Jetton-only
+dedust_deposit_liquidity#40e108d6 pool_params:DedustPoolParams min_lp_amount:Coins
+                           asset0_target_balance:Coins asset1_target_balance:Coins
+                           fulfill_payload:(Maybe ^Cell) reject_payload:(Maybe ^Cell) = ForwardPayload;
+
+dedust_swap#e3a0d482 _:DedustSwapStep swap_params:^DedustSwapParams = ForwardPayload;
+
+dedust_destroy_non_ready#9d65482b query_id:uint64 = InternalMsgBody9;
+
+//
+// Pool
+//
+
+// Operations
+dedust_deposit_liquidity_all#b56b9598 query_id:uint64 proof:^DedustLiquidityDepositProof
+                               owner_addr:MsgAddressInt min_lp_amount:Coins
+                               ^[ asset0:DedustAsset asset0_amount:Coins asset1:DedustAsset asset1_amount:Coins ]
+                               fulfill_payload:(Maybe ^Cell) reject_payload:(Maybe ^Cell) = InternalMsgBody9;
+
+dedust_swap_external#61ee542d query_id:uint64 proof:^DedustVaultProof amount:Coins
+                       sender_addr:MsgAddressInt current:DedustSwapStepParams
+                       swap_params:^DedustSwapParams = InternalMsgBody9;
+
+dedust_swap_peer#72aca8aa query_id:uint64 proof:^DedustPoolProof asset:DedustAsset amount:Coins
+                   sender_addr:MsgAddressInt current:DedustSwapStepParams
+                   swap_params:^DedustSwapParams = InternalMsgBody9;
+
+dedust_collect_fees#0b429f52 query_id:uint64
+                      asset0_amount:Coins asset0_destination:MsgAddressInt asset0_payload:(Maybe ^Cell)
+                      asset1_amount:Coins asset1_destination:MsgAddress asset1_payload:(Maybe ^Cell) = InternalMsgBody9;
+
+dedust_configure_fee_collector_addr#eda15922 query_id:uint64 fee_collector_addr:MsgAddressInt = InternalMsgBody9;
+
+dedust_configure_quote_provider#abb46b3d query_id:uint64 asset:DedustAsset quote_provider_addr:MsgAddress = InternalMsgBody9;
+
+dedust_sync_asset_quote#6873c90c query_id:uint64 asset:DedustAsset = InternalMsgBody9;
+
+dedust_provide_pool_state#6e24728d query_id:uint64 include_assets:Bool = InternalMsgBody9;
+
+dedust_take_pool_state#bddd4954 query_id:uint64 reserve0:Coins reserve1:Coins total_supply:Coins
+                         assets:(Maybe ^[ asset0:DedustAsset asset1:DedustAsset ]) = InternalMsgBody9;
+
+dedust_configure_start_time#7ed7f6ce query_id:uint64 start_at:DedustTimestamp = InternalMsgBody9;
+
+// Events
+dedust_deposit#b544f4a4 sender_addr:MsgAddressInt amount0:Coins amount1:Coins
+                 reserve0:Coins reserve1:Coins liquidity:Coins = ExtOutMsgBody;
+
+dedust_withdrawal#3aa870a6 sender_addr:MsgAddressInt liquidity:Coins
+                    amount0:Coins amount1:Coins
+                    reserve0:Coins reserve1:Coins = ExtOutMsgBody;
+
+dedust_swap#9c610de3 asset_in:DedustAsset asset_out:DedustAsset amount_in:Coins amount_out:Coins
+              ^[ sender_addr:MsgAddressInt referral_addr:MsgAddress
+              reserve0:Coins reserve1:Coins ] = ExtOutMsgBody;
+
+//
+// Liquidity Deposit
+//
+
+dedust_deposit_asset#54240fe5 query_id:uint64 asset:DedustAsset amount:Coins = InternalMsgBody9;
+
+dedust_fulfill_deposit#aae79256 query_id:uint64 proof:^DedustPoolProof
+                         asset0_deposit:Coins asset1_deposit:Coins = InternalMsgBody9;
+
+dedust_reject_deposit#e1a36cd4 query_id:uint64 proof:^DedustPoolProof payload:(Maybe ^Cell) = InternalMsgBody9;
+
+dedust_cancel_deposit#166cedee query_id:uint64 payload:(Maybe ^Cell) = InternalMsgBody9;
+
+///
+/// Quote Providers
+///
+
+dedust_provide_current_quote#ad83913f query_id:uint64 custom_payload:(Maybe ^Cell) = InternalMsgBody;
+
+dedust_take_current_quote#a420458 query_id:uint64
+                           quote_numerator:uint128 quote_denominator:uint128
+                           custom_payload:(Maybe ^Cell) = InternalMsgBody;
+
+///
+/// Common
+///
+
+dedust_configure_trade_fee#c015297f query_id:uint64 trade_fee:uint16 = InternalMsgBody9;
+
+dedust_reset_gas_v2#26c63ab7 query_id:uint64 response_destination:MsgAddressInt = InternalMsgBody9;
+
+//
+// Operator
+//
+
+dedust_set_user_addr#48e5a95d query_id:uint64 user_addr:MsgAddress = InternalMsgBody9;
+dedust_forward#f1989255 query_id:uint64 destination:MsgAddressInt body:^Cell = InternalMsgBody9;
+
+
+// wallets
+// most of these messages need special ref counting for parsing using tlbc. see special.cpp
+
+
+// w5
+
+// note: `m = extended actions count - 1`, so the last ref is not empty cell
+extended_list_last$_ action:W5ExtendedAction = W5ExtendedActionList 0;
+extended_list_action$_ {m:#} action:W5ExtendedAction prev:^(W5ExtendedActionList m) = W5ExtendedActionList (m + 1);
+
+add_extension#02 addr:MsgAddressInt = W5ExtendedAction;
+delete_extension#03 addr:MsgAddressInt = W5ExtendedAction;
+set_signature_auth_allowed#04 allowed:Bool = W5ExtendedAction;
+

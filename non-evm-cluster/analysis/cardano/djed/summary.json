@@ -1,0 +1,60 @@
+{
+ "protocol": "djed",
+ "chain": "cardano",
+ "headline": {
+  "E-U": {"usd": 0.0, "confidence": "high", "note": "no unprivileged extraction path; operator/oracle/owner keys gate all value movement"},
+  "H-O": {"usd": 54.0, "note": "pending MintSHEN order 212.304790 ADA cancellable by owner"},
+  "P": {"usd": 6268078.0, "note": "bank custody 24,642,073.488880 ADA + all processing/oracle authority"},
+  "S": {"usd": 40.13, "note": "142 ADA legacy V1 order (no datum/ticket) + 12 ADA ticketless V2 orders + 3.78 ADA memocoin dust at bank"}
+ },
+ "live_custody": {
+  "bank_address": "addr1z8mcpc26j64fmhhd6sv5qj5mk9xqnfxgm6k8zmk7h2rlu4qm5kjdmrpmng059yellupyvwgay2v0lz6663swmds7hp0qhxg9gt",
+  "bank_script": "f780e15a96aa9ddeedd419404a9bb14c09a4c8deac716edeba87fe54",
+  "bank_ada_lovelace": "24642073488880",
+  "ada_in_reserve_lovelace": "24642068178500",
+  "djed_in_circulation_raw": "1449008966237",
+  "shen_in_circulation_raw": "31196162384895",
+  "reserve_ratio": 17.006,
+  "shen_nav_ada": 0.743459,
+  "datum_hash_verified": "31806cabe96bccf88a61790f745bb8125a1a1f72c7fc35e54e14cab60c4e12c5"
+ },
+ "refs": {
+  "tip_block": 14049880,
+  "tip_slot": 200061476,
+  "tip_time": 1791627767,
+  "bank_utxo_bh": 14038672,
+  "order_pending_bh": 14045475,
+  "ada_usd": 0.2543648763920245,
+  "ada_usd_ts": 1791627832
+ },
+ "scripts": {
+  "bank": "f780e15a96aa9ddeedd419404a9bb14c09a4c8deac716edeba87fe54",
+  "order_spend": "021a32ee5621d4e94df1d9bef6baa284a7cc75ba51bb5fb804c6c471",
+  "order_mint": "04ea363a127872366ef2d3186325a25a5cee8826ff8a79dc7c8fa671",
+  "oracle": "89829415a9cdfb32a05122b1f0c0f495b80f57b00087bb62116651e8",
+  "oracle_policy": "815aca02042ba9188a2ca4f8ce7b276046e2376b4bce56391342299e",
+  "treasury": "78bf460e558b50ffb1a56c5f0a523111831bc5a5d166b23771035b9c",
+  "stake_guard": "d0f7ccfe58aecdc393218b786b8c8b793dfccd8a8d73ab0c2b7f11f8",
+  "djed_shen_policy": "8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61",
+  "legacy_bank_v1": "c7c55ab902dc34968966d06e3ea1e2322178c83fe3218c05ddd17a75"
+ },
+ "closed_reasons": [
+  "operator signature required to spend bank (client addSignerKey + operator PKH embedded in bank script)",
+  "oracle price ed25519-signed with hardcoded pubkey 51f4ed3f... verified by bank",
+  "DJED/SHEN/NFT one-shot mint UTxO 362e24ab...#0 spent 2023-01-30; mint_cnt=1; no inflation",
+  "order cancel requires owner signer + ticket burn; ticketless orders unspendable",
+  "legacy banks all empty (0 ADA); legacy order funds lack datum/ticket"
+ ],
+ "caveats": [
+  "no public source/audit for Dec-2024 Djed validators; gate evidence is on-chain + client + observed txs",
+  "bank operator gate not reproduced in a local CEK evaluation (CI candidate)",
+  "Koios address_info truncates at 6998 UTxOs (not hit for Djed)"
+ ],
+ "files": [
+  "REPORT.md",
+  "koios_address_info.json",
+  "koios_tx_b1c0f40a_full.json",
+  "bank_current_datum_reconstructed.json",
+  "scripts/plutus/*.uplc"
+ ]
+}

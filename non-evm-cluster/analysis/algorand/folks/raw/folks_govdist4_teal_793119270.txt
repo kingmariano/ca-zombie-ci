@@ -1,0 +1,615 @@
+#pragma version 6
+intcblock 0 1 16 2 4
+bytecblock 0x636f6d6d69746d656e74 0x636f6d6d69746d656e745f636c61696d6564 0x726577617264735f7065725f616c676f 0x746f74616c5f726577617264735f636c61696d6564 0x636f6d6d69745f656e64 0x706572696f645f656e64 0x746f74616c5f636f6d6d69746d656e745f636c61696d6564 0x64697370656e7365725f6170705f6964 0x746f74616c5f636f6d6d69746d656e74 0x69735f6275726e696e675f706175736564 0x63616e5f636c61696d5f616c676f5f72657761726473 0x675f616c676f5f6964
+txn NumAppArgs
+intc_0 // 0
+==
+bnz label1
+txn OnCompletion
+intc_0 // 0
+==
+bnz label2
+err
+label2:
+txna ApplicationArgs 0
+pushbytes 0x7efda4d2 // 0x7efda4d2
+==
+bnz label3
+txna ApplicationArgs 0
+pushbytes 0x6e1f544f // 0x6e1f544f
+==
+bnz label4
+txna ApplicationArgs 0
+pushbytes 0xddcd10c0 // 0xddcd10c0
+==
+bnz label5
+txna ApplicationArgs 0
+pushbytes 0xa23aa87a // 0xa23aa87a
+==
+bnz label6
+txna ApplicationArgs 0
+pushbytes 0xde332c54 // 0xde332c54
+==
+bnz label7
+txna ApplicationArgs 0
+pushbytes 0xdb03285a // 0xdb03285a
+==
+bnz label8
+txna ApplicationArgs 0
+pushbytes 0x2286f69b // 0x2286f69b
+==
+bnz label9
+txna ApplicationArgs 0
+pushbytes 0x706a35a1 // 0x706a35a1
+==
+bnz label10
+txna ApplicationArgs 0
+pushbytes 0x5e0b9be2 // 0x5e0b9be2
+==
+bnz label11
+txna ApplicationArgs 0
+pushbytes 0x1aa395bc // 0x1aa395bc
+==
+bnz label12
+err
+label12:
+callsub label13
+assert
+bytec 9 // "is_burning_paused"
+txna ApplicationArgs 1
+btoi
+intc_0 // 0
+>
+app_global_put
+intc_1 // 1
+b label14
+label11:
+callsub label13
+assert
+txn NumAppArgs
+intc_3 // 2
+==
+assert
+bytec_2 // "rewards_per_algo"
+txna ApplicationArgs 1
+btoi
+app_global_put
+intc_1 // 1
+b label14
+label10:
+callsub label13
+assert
+itxn_begin
+intc_1 // 1
+itxn_field TypeEnum
+global CurrentApplicationAddress
+itxn_field Sender
+txna ApplicationArgs 2
+btoi
+txnas Accounts
+itxn_field Receiver
+intc_0 // 0
+itxn_field Amount
+intc_0 // 0
+itxn_field Fee
+txna ApplicationArgs 1
+extract 2 0
+itxn_field Note
+itxn_submit
+intc_1 // 1
+b label14
+label9:
+callsub label13
+assert
+global LatestTimestamp
+bytec 5 // "period_end"
+app_global_get
+>=
+assert
+bytec_2 // "rewards_per_algo"
+app_global_get
+assert
+bytec 6 // "total_commitment_claimed"
+app_global_get
+bytec_2 // "rewards_per_algo"
+app_global_get
+intc_2 // 16
+callsub label15
+bytec_3 // "total_rewards_claimed"
+app_global_get
+-
+store 6
+txn Sender
+load 6
+callsub label16
+bytec_3 // "total_rewards_claimed"
+bytec_3 // "total_rewards_claimed"
+app_global_get
+load 6
++
+app_global_put
+bytec 10 // "can_claim_algo_rewards"
+intc_1 // 1
+app_global_put
+intc_1 // 1
+b label14
+label8:
+callsub label17
+assert
+global LatestTimestamp
+bytec 5 // "period_end"
+app_global_get
+>=
+assert
+bytec 10 // "can_claim_algo_rewards"
+app_global_get
+assert
+bytec_2 // "rewards_per_algo"
+app_global_get
+assert
+intc_0 // 0
+bytec_0 // "commitment"
+app_local_get
+intc_0 // 0
+bytec_1 // "commitment_claimed"
+app_local_get
+-
+bytec_2 // "rewards_per_algo"
+app_global_get
+intc_2 // 16
+callsub label15
+store 5
+txn Sender
+load 5
+callsub label16
+bytec 6 // "total_commitment_claimed"
+bytec 6 // "total_commitment_claimed"
+app_global_get
+intc_0 // 0
+bytec_0 // "commitment"
+app_local_get
+intc_0 // 0
+bytec_1 // "commitment_claimed"
+app_local_get
+-
++
+app_global_put
+bytec_3 // "total_rewards_claimed"
+bytec_3 // "total_rewards_claimed"
+app_global_get
+load 5
++
+app_global_put
+intc_0 // 0
+bytec_1 // "commitment_claimed"
+intc_0 // 0
+bytec_0 // "commitment"
+app_local_get
+app_local_put
+intc_1 // 1
+b label14
+label7:
+callsub label17
+assert
+global LatestTimestamp
+bytec 4 // "commit_end"
+app_global_get
+>=
+assert
+txna ApplicationArgs 1
+btoi
+intc_0 // 0
+bytec_0 // "commitment"
+app_local_get
+intc_0 // 0
+bytec_1 // "commitment_claimed"
+app_local_get
+-
+<=
+assert
+bytec_2 // "rewards_per_algo"
+app_global_get
+assert
+txna ApplicationArgs 1
+btoi
+bytec_2 // "rewards_per_algo"
+app_global_get
+intc_2 // 16
+callsub label15
+store 4
+txn Sender
+load 4
+callsub label18
+bytec 6 // "total_commitment_claimed"
+bytec 6 // "total_commitment_claimed"
+app_global_get
+txna ApplicationArgs 1
+btoi
++
+app_global_put
+bytec_3 // "total_rewards_claimed"
+bytec_3 // "total_rewards_claimed"
+app_global_get
+load 4
++
+app_global_put
+intc_0 // 0
+bytec_1 // "commitment_claimed"
+intc_0 // 0
+bytec_1 // "commitment_claimed"
+app_local_get
+txna ApplicationArgs 1
+btoi
++
+app_local_put
+intc_1 // 1
+b label14
+label6:
+callsub label17
+assert
+txn GroupIndex
+intc_1 // 1
+-
+callsub label19
+assert
+global LatestTimestamp
+bytec 5 // "period_end"
+app_global_get
+>=
+assert
+bytec 9 // "is_burning_paused"
+app_global_get
+!
+assert
+txn Sender
+txn GroupIndex
+intc_1 // 1
+-
+gtxns AssetAmount
+callsub label16
+intc_1 // 1
+b label14
+label5:
+callsub label17
+assert
+txn GroupIndex
+intc_1 // 1
+-
+callsub label19
+assert
+global LatestTimestamp
+bytec 4 // "commit_end"
+app_global_get
+<
+assert
+intc_0 // 0
+bytec_0 // "commitment"
+app_local_get
+txn GroupIndex
+intc_1 // 1
+-
+gtxns AssetAmount
+>=
+assert
+txn Sender
+txn GroupIndex
+intc_1 // 1
+-
+gtxns AssetAmount
+callsub label16
+bytec 8 // "total_commitment"
+bytec 8 // "total_commitment"
+app_global_get
+txn GroupIndex
+intc_1 // 1
+-
+gtxns AssetAmount
+-
+app_global_put
+intc_0 // 0
+bytec_0 // "commitment"
+intc_0 // 0
+bytec_0 // "commitment"
+app_local_get
+txn GroupIndex
+intc_1 // 1
+-
+gtxns AssetAmount
+-
+app_local_put
+intc_1 // 1
+b label14
+label4:
+callsub label17
+assert
+txn GroupIndex
+intc_1 // 1
+-
+callsub label20
+assert
+txn Sender
+txn GroupIndex
+intc_1 // 1
+-
+gtxns Amount
+callsub label18
+global LatestTimestamp
+bytec 4 // "commit_end"
+app_global_get
+<
+bnz label21
+label22:
+intc_1 // 1
+b label14
+label21:
+bytec 8 // "total_commitment"
+bytec 8 // "total_commitment"
+app_global_get
+txn GroupIndex
+intc_1 // 1
+-
+gtxns Amount
++
+app_global_put
+intc_0 // 0
+bytec_0 // "commitment"
+intc_0 // 0
+bytec_0 // "commitment"
+app_local_get
+txn GroupIndex
+intc_1 // 1
+-
+gtxns Amount
++
+app_local_put
+b label22
+label3:
+txn ApplicationID
+intc_0 // 0
+==
+assert
+txn NumAppArgs
+intc 4 // 4
+==
+assert
+bytec 7 // "dispenser_app_id"
+txna ApplicationArgs 1
+btoi
+app_global_put
+bytec 4 // "commit_end"
+txna ApplicationArgs 2
+btoi
+app_global_put
+bytec 5 // "period_end"
+txna ApplicationArgs 3
+btoi
+app_global_put
+global LatestTimestamp
+bytec 4 // "commit_end"
+app_global_get
+<
+assert
+bytec 4 // "commit_end"
+app_global_get
+bytec 5 // "period_end"
+app_global_get
+<
+assert
+intc_1 // 1
+b label14
+label1:
+txn OnCompletion
+intc_1 // 1
+==
+bnz label23
+txn OnCompletion
+intc_3 // 2
+==
+bnz label24
+err
+label24:
+callsub label17
+assert
+intc_0 // 0
+bytec_0 // "commitment"
+app_local_get
+intc_0 // 0
+bytec_1 // "commitment_claimed"
+app_local_get
+==
+assert
+intc_1 // 1
+b label14
+label23:
+callsub label17
+assert
+intc_0 // 0
+bytec_0 // "commitment"
+intc_0 // 0
+app_local_put
+intc_0 // 0
+bytec_1 // "commitment_claimed"
+intc_0 // 0
+app_local_put
+intc_1 // 1
+label14:
+return
+label15:
+store 9
+store 8
+store 7
+load 7
+load 8
+mulw
+intc_0 // 0
+pushint 10
+load 9
+exp
+divmodw
+pop
+pop
+swap
+!
+assert
+retsub
+label13:
+txn Sender
+pushbytes 0xbc08e40826f158c086d30bac265537ea2041d2412f97c64e4802ed1b38727575 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+==
+txn CloseRemainderTo
+global ZeroAddress
+==
+&&
+txn RekeyTo
+global ZeroAddress
+==
+&&
+retsub
+label17:
+txn CloseRemainderTo
+global ZeroAddress
+==
+txn RekeyTo
+global ZeroAddress
+==
+&&
+retsub
+label18:
+store 11
+store 10
+bytec 7 // "dispenser_app_id"
+app_global_get
+bytec 11 // "g_algo_id"
+app_global_get_ex
+store 3
+store 2
+load 3
+assert
+itxn_begin
+pushint 6
+itxn_field TypeEnum
+bytec 7 // "dispenser_app_id"
+app_global_get
+itxn_field ApplicationID
+load 10
+itxn_field Accounts
+load 2
+itxn_field Assets
+global CurrentApplicationID
+itxn_field Applications
+pushbytes 0x329ce41d // 0x329ce41d
+itxn_field ApplicationArgs
+load 11
+itob
+itxn_field ApplicationArgs
+intc_1 // 1
+itob
+extract 7 0
+itxn_field ApplicationArgs
+intc_0 // 0
+itob
+extract 7 0
+itxn_field ApplicationArgs
+intc_1 // 1
+itob
+extract 7 0
+itxn_field ApplicationArgs
+intc_0 // 0
+itxn_field Fee
+itxn_submit
+retsub
+label16:
+store 13
+store 12
+itxn_begin
+intc_1 // 1
+itxn_field TypeEnum
+global CurrentApplicationAddress
+itxn_field Sender
+load 12
+itxn_field Receiver
+load 13
+itxn_field Amount
+intc_0 // 0
+itxn_field Fee
+itxn_submit
+retsub
+label20:
+store 14
+load 14
+gtxns TypeEnum
+intc_1 // 1
+==
+load 14
+gtxns Sender
+txn Sender
+==
+&&
+load 14
+gtxns Receiver
+global CurrentApplicationAddress
+==
+&&
+load 14
+gtxns CloseRemainderTo
+global ZeroAddress
+==
+&&
+load 14
+gtxns RekeyTo
+global ZeroAddress
+==
+&&
+retsub
+label19:
+store 15
+bytec 7 // "dispenser_app_id"
+app_global_get
+bytec 11 // "g_algo_id"
+app_global_get_ex
+store 3
+store 2
+bytec 7 // "dispenser_app_id"
+app_global_get
+app_params_get AppAddress
+store 1
+store 0
+load 3
+assert
+load 1
+assert
+load 15
+gtxns TypeEnum
+intc 4 // 4
+==
+load 15
+gtxns XferAsset
+load 2
+==
+&&
+load 15
+gtxns Sender
+txn Sender
+==
+&&
+load 15
+gtxns AssetReceiver
+load 0
+==
+&&
+load 15
+gtxns AssetCloseTo
+global ZeroAddress
+==
+&&
+load 15
+gtxns CloseRemainderTo
+global ZeroAddress
+==
+&&
+load 15
+gtxns RekeyTo
+global ZeroAddress
+==
+&&
+retsub

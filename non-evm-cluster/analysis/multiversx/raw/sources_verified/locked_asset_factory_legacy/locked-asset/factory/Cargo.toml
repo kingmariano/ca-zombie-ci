@@ -1,0 +1,24 @@
+[package]
+name = "factory"
+publish = false
+version = "0.0.0"
+edition = "2018"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies.common_structs]
+path = "../../common/common_structs"
+
+[dependencies.common_errors]
+path = "../../common/common_errors"
+
+[dependencies.token_merge]
+path = "../../common/modules/token_merge"
+
+[dependencies.elrond-wasm]
+version = "=0.36.1"
+features = [ "esdt-token-payment-legacy-decode",]
+
+[dependencies.elrond-wasm-modules]
+version = "=0.36.1"

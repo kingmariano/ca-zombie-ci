@@ -1,0 +1,487 @@
+#pragma version 6
+intcblock 1 0 552635992 18 10 2 8
+bytecblock 0x6f7261636c655f315f6170705f6964 0x6f7261636c655f325f6170705f6964 0x70726963655f7468726573686f6c64 0x74696d655f7468726573686f6c64
+txn OnCompletion
+intc_1 // 0
+==
+bnz label1
+err
+label1:
+txn ApplicationID
+intc_1 // 0
+==
+bnz label2
+txna ApplicationArgs 0
+pushbytes 0x61 // "a"
+==
+bnz label3
+txna ApplicationArgs 0
+pushbytes 0x72 // "r"
+==
+bnz label4
+txna ApplicationArgs 0
+pushbytes 0x75 // "u"
+==
+bnz label5
+intc_0 // 1
+bnz label6
+err
+label6:
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+txna ApplicationArgs 0
+callsub label7
+store 12
+txna ApplicationArgs 1
+callsub label7
+store 13
+load 12
+load 13
+<
+bnz label8
+load 13
+store 15
+intc_3 // 18
+store 14
+label12:
+load 15
+load 12
+<
+load 14
+&&
+bnz label9
+load 14
+label13:
+store 11
+load 12
+load 13
+load 11
+callsub label10
+store 10
+intc_0 // 1
+b label11
+label9:
+load 15
+intc 4 // 10
+*
+store 15
+load 14
+intc_0 // 1
+-
+store 14
+b label12
+label8:
+intc_3 // 18
+b label13
+label5:
+callsub label14
+assert
+txna ApplicationArgs 1
+bytec_0 // "oracle_1_app_id"
+==
+txna ApplicationArgs 1
+bytec_1 // "oracle_2_app_id"
+==
+||
+txna ApplicationArgs 1
+bytec_2 // "price_threshold"
+==
+||
+txna ApplicationArgs 1
+bytec_3 // "time_threshold"
+==
+||
+assert
+txna ApplicationArgs 1
+txna ApplicationArgs 2
+btoi
+app_global_put
+intc_0 // 1
+b label11
+label4:
+callsub label14
+assert
+txn NumAssets
+intc_0 // 1
+==
+assert
+txna Assets 0
+itob
+app_global_del
+intc_0 // 1
+b label11
+label3:
+callsub label14
+assert
+txn NumAppArgs
+intc 5 // 2
+==
+assert
+txn NumAssets
+pushint 3
+==
+assert
+txna Assets 2
+itob
+txna ApplicationArgs 1
+btoi
+intc_1 // 0
+>
+itob
+txna Assets 0
+itob
+concat
+txna Assets 1
+itob
+concat
+txna ApplicationArgs 1
+btoi
+intc_1 // 0
+>
+bnz label15
+txn NumApplications
+intc_0 // 1
+==
+assert
+txna Assets 0
+txna Assets 1
+<
+assert
+txna Applications 1
+pushbytes 0x434f4e464947 // "CONFIG"
+app_global_get_ex
+store 7
+store 6
+txna Applications 1
+pushbytes 0x4c544944 // "LTID"
+app_global_get_ex
+store 9
+store 8
+load 7
+assert
+load 9
+assert
+txna Assets 0
+load 6
+intc_1 // 0
+extract_uint64
+==
+assert
+txna Assets 1
+load 6
+intc 6 // 8
+extract_uint64
+==
+assert
+txna Assets 2
+load 8
+==
+assert
+txna Applications 1
+itob
+label16:
+concat
+app_global_put
+intc_0 // 1
+b label11
+label15:
+txn NumAccounts
+intc_0 // 1
+==
+assert
+txna Assets 0
+txna Assets 1
+>
+assert
+txna Accounts 1
+intc_2 // 552635992
+pushbytes 0x6131 // "a1"
+app_local_get_ex
+store 1
+store 0
+txna Accounts 1
+intc_2 // 552635992
+pushbytes 0x6132 // "a2"
+app_local_get_ex
+store 3
+store 2
+txna Accounts 1
+intc_2 // 552635992
+pushbytes 0x6c74 // "lt"
+app_local_get_ex
+store 5
+store 4
+load 1
+assert
+load 3
+assert
+load 5
+assert
+txna Assets 0
+load 0
+==
+assert
+txna Assets 1
+load 2
+==
+assert
+txna Assets 2
+load 4
+==
+assert
+txna Accounts 1
+b label16
+label2:
+txn NumAppArgs
+pushint 4
+==
+assert
+bytec_0 // "oracle_1_app_id"
+txna ApplicationArgs 0
+btoi
+app_global_put
+bytec_1 // "oracle_2_app_id"
+txna ApplicationArgs 1
+btoi
+app_global_put
+bytec_2 // "price_threshold"
+txna ApplicationArgs 2
+btoi
+app_global_put
+bytec_3 // "time_threshold"
+txna ApplicationArgs 3
+btoi
+app_global_put
+intc_0 // 1
+label11:
+return
+label10:
+store 18
+store 17
+store 16
+load 16
+intc 4 // 10
+load 18
+exp
+mulw
+intc_1 // 0
+load 17
+divmodw
+pop
+pop
+swap
+!
+assert
+retsub
+label28:
+store 29
+store 28
+load 28
+load 29
+app_global_get_ex
+store 31
+store 30
+load 31
+assert
+load 30
+retsub
+label14:
+txn Sender
+pushbytes 0xbc08e40826f158c086d30bac265537ea2041d2412f97c64e4802ed1b38727575 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+==
+txn CloseRemainderTo
+global ZeroAddress
+==
+&&
+txn RekeyTo
+global ZeroAddress
+==
+&&
+retsub
+label20:
+store 25
+store 24
+load 24
+load 25
+>=
+bnz label17
+load 25
+load 24
+-
+b label18
+label17:
+load 24
+load 25
+-
+label18:
+pushint 1000
+*
+load 24
+/
+bytec_2 // "price_threshold"
+app_global_get
+<
+retsub
+label21:
+store 22
+bytec_0 // "oracle_1_app_id"
+app_global_get
+callsub label19
+store 23
+load 23
+bytec_1 // "oracle_2_app_id"
+app_global_get
+callsub label19
+callsub label20
+assert
+load 23
+retsub
+label27:
+store 32
+load 32
+extract 8 8
+callsub label21
+store 33
+load 32
+extract 16 8
+callsub label21
+store 34
+load 32
+intc_1 // 0
+extract_uint64
+bnz label22
+load 32
+pushint 24
+extract_uint64
+store 42
+load 42
+pushbytes 0x41 // "A"
+app_global_get_ex
+store 44
+store 43
+load 42
+pushbytes 0x42 // "B"
+app_global_get_ex
+store 46
+store 45
+load 42
+pushbytes 0x4c // "L"
+app_global_get_ex
+store 48
+store 47
+load 44
+assert
+load 46
+assert
+load 48
+assert
+load 43
+load 45
+load 33
+load 34
+load 47
+callsub label23
+b label24
+label22:
+load 32
+extract 24 32
+store 35
+load 35
+intc_2 // 552635992
+pushbytes 0x7331 // "s1"
+app_local_get_ex
+store 37
+store 36
+load 35
+intc_2 // 552635992
+pushbytes 0x7332 // "s2"
+app_local_get_ex
+store 39
+store 38
+load 35
+intc_2 // 552635992
+pushbytes 0x696c74 // "ilt"
+app_local_get_ex
+store 41
+store 40
+load 37
+assert
+load 39
+assert
+load 41
+assert
+load 36
+load 38
+load 33
+load 34
+load 40
+callsub label23
+label24:
+retsub
+label7:
+store 19
+global CurrentApplicationID
+load 19
+app_global_get_ex
+store 21
+store 20
+load 21
+bnz label25
+load 19
+callsub label21
+b label26
+label25:
+load 20
+callsub label27
+label26:
+retsub
+label19:
+store 26
+load 26
+load 22
+callsub label28
+store 27
+load 27
+intc 6 // 8
+extract_uint64
+bytec_3 // "time_threshold"
+app_global_get
++
+global LatestTimestamp
+>=
+assert
+load 27
+intc_1 // 0
+extract_uint64
+retsub
+label23:
+store 53
+store 52
+store 51
+store 50
+store 49
+intc 5 // 2
+load 49
+itob
+load 51
+itob
+b*
+load 50
+itob
+load 52
+itob
+b*
+b*
+bsqrt
+load 53
+itob
+b/
+btoi
+*
+retsub

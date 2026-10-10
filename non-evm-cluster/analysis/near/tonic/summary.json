@@ -1,0 +1,17 @@
+{
+  "protocol": "tonic",
+  "chain": "near",
+  "date": "2026-10-10",
+  "contracts": {
+    "v1.orderbook.near": {"role": "spot CLOB", "state": "Active", "owner": "v1.orderbook.near (self)", "markets": 40, "balance_near": 1883.8838, "ft_usd": 16809.62, "native_usd": 9783.83, "total_usd": 26593.45, "code": "2HL5pnkfUhyeAjmjAK9XPjNxH3WaGxSnbwaYVn6kNiY9", "access_keys": "2 FA + 1 FC"},
+    "v1.tonic-perps.near": {"role": "perps v1 (LP + margin)", "state": "Running", "version": "tonic-perps:0.1.0", "total_aum_usd_book": 50220.76, "balance_near": 1678.2499, "ft_usd": 3480.60, "native_usd": 8715.88, "total_usd": 12196.48, "code": "56i44yAoBEARN9XBxaftKXizq75R8JWpJaYV3Nnj735F", "access_keys": "2 FA"}
+  },
+  "headline_eu_usd": 0.00,
+  "eu_confidence": "medium-high",
+  "classification": {"E-U": 0.0, "H-O": 38789.93, "P": "admin owner-gated (perps), spot owner=self", "S": 0.0},
+  "headline_reads": {"orderbook.usdc.e": {"raw": "10473637070", "block": 219334572}, "orderbook.stnear": {"raw": "524091064788690513202120181", "block": 219334686}, "perp.usdt": {"raw": "3483264022", "block": 219334712}},
+  "activity": {"orderbook_last_tx": "2026-04-30 (calls failing)", "perps_last_successful_tx": "2024-04-10 (block 116567515)"},
+  "audit": {"source": ["tonic-foundation/tonic-core", "tonic-foundation/tonic-perps-v1"], "withdraw_sender_scoped": true, "gates": ["assert_active/assert_running", "assert_is_owner/admin roles", "private callbacks"]},
+  "caveats": ["aurora unreadable", "perps dormant since 2024-04; if state != Running withdrawals would revert (watch item)"],
+  "files": ["REPORT.md", "dumps/", "scripts/balances_tonic.py"]
+}

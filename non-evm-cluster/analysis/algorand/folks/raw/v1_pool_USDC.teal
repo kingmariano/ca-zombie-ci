@@ -1,0 +1,2318 @@
+#pragma version 5
+intcblock 1 0 2 4 100000000000000 3 6 5 31536000
+bytecblock 0x61737365745f6964 0x746f6b656e5f706169725f6170705f6964 0xbc08e40826f158c086d30bac265537ea2041d2412f97c64e4802ed1b38727575 0x6465706f7369745f696e7465726573745f696e646578 0x555f4f5054 0x665f61737365745f6964 0x74797065 0x746f74616c5f626f72726f7773 0x746f74616c5f6465706f73697473 0x626f72726f775f696e7465726573745f696e646578 0x5246 0x535252 0x5230 0x5231 0x6c69717569646974795f6170705f6964 0x69735f706175736564 0x5232 0x626f72726f775f696e7465726573745f72617465 0x6170 0x616c 0x626f72726f775f62616c616e6365 0x6c61746573745f626f72726f775f696e7465726573745f696e646578 0x455053 0x6c61746573745f757064617465 0x66725f61737365745f6964 0x5332 0x5331 0x6f7261636c655f616461707465725f6170705f6964 0x6465706f7369745f696e7465726573745f72617465 0x62 0x7263 0x6962 0x7262 0x6c 0x706c 0x69735f726577617264735f706175736564 0x626f72726f776564 0x5333
+txn OnCompletion
+intc_1 // 0
+==
+bnz label1
+txn OnCompletion
+intc_0 // 1
+==
+bnz label2
+err
+label2:
+txna ApplicationArgs 0
+bytec 18 // "ap"
+==
+bnz label3
+txna ApplicationArgs 0
+bytec 19 // "al"
+==
+bnz label4
+err
+label4:
+global GroupSize
+intc 5 // 3
+==
+assert
+txn GroupIndex
+intc_0 // 1
+==
+assert
+gtxn 1 Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+!=
+assert
+gtxn 1 CloseRemainderTo
+global ZeroAddress
+==
+assert
+gtxn 1 RekeyTo
+global CurrentApplicationAddress
+==
+assert
+intc_2 // 2
+intc_1 // 0
+bytec 19 // "al"
+callsub label5
+assert
+intc_0 // 1
+b label6
+label3:
+global GroupSize
+intc_3 // 4
+==
+assert
+txn Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+!=
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn GroupIndex
+intc_0 // 1
++
+intc_1 // 0
+bytec 18 // "ap"
+callsub label5
+assert
+gtxna 0 Applications 1
+gtxna 2 Applications 1
+==
+assert
+intc_0 // 1
+pushbytes 0x636f6c6c61746572616c5f6170705f6964 // "collateral_app_id"
+app_global_get_ex
+store 39
+store 40
+intc_0 // 1
+pushbytes 0x636f6c6c61746572616c5f61737365745f6964 // "collateral_asset_id"
+app_global_get_ex
+store 41
+store 42
+intc_0 // 1
+pushbytes 0x626f72726f775f6170705f6964 // "borrow_app_id"
+app_global_get_ex
+store 43
+store 44
+intc_0 // 1
+pushbytes 0x626f72726f775f61737365745f6964 // "borrow_asset_id"
+app_global_get_ex
+store 45
+store 46
+load 39
+assert
+load 41
+assert
+load 43
+assert
+load 45
+assert
+gtxn 0 ApplicationID
+load 40
+==
+assert
+gtxna 0 Applications 2
+load 44
+==
+assert
+gtxn 2 ApplicationID
+load 44
+==
+assert
+gtxna 2 Applications 2
+load 40
+==
+assert
+txn GroupIndex
+intc_1 // 0
+==
+bnz label7
+txn GroupIndex
+intc_2 // 2
+==
+bnz label8
+err
+label8:
+intc_2 // 2
+bytec 5 // "f_asset_id"
+app_global_get_ex
+store 49
+store 50
+load 49
+assert
+load 42
+load 50
+==
+assert
+load 46
+bytec_0 // "asset_id"
+app_global_get
+==
+assert
+txn RekeyTo
+global CurrentApplicationAddress
+==
+assert
+label9:
+intc_0 // 1
+b label6
+label7:
+intc_2 // 2
+bytec_0 // "asset_id"
+app_global_get_ex
+store 47
+store 48
+load 47
+assert
+load 42
+bytec 5 // "f_asset_id"
+app_global_get
+==
+assert
+load 46
+load 48
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+b label9
+label1:
+txn ApplicationID
+intc_1 // 0
+==
+bnz label10
+txna ApplicationArgs 0
+pushbytes 0x7364 // "sd"
+==
+bnz label11
+txna ApplicationArgs 0
+pushbytes 0x7564 // "ud"
+==
+bnz label12
+txna ApplicationArgs 0
+pushbytes 0x64 // "d"
+==
+bnz label13
+txna ApplicationArgs 0
+pushbytes 0x72 // "r"
+==
+bnz label14
+txna ApplicationArgs 0
+bytec 29 // "b"
+==
+bnz label15
+txna ApplicationArgs 0
+bytec 30 // "rc"
+==
+bnz label16
+txna ApplicationArgs 0
+bytec 31 // "ib"
+==
+bnz label17
+txna ApplicationArgs 0
+bytec 32 // "rb"
+==
+bnz label18
+txna ApplicationArgs 0
+bytec 33 // "l"
+==
+bnz label19
+txna ApplicationArgs 0
+pushbytes 0x7569 // "ui"
+==
+bnz label20
+txna ApplicationArgs 0
+pushbytes 0x70 // "p"
+==
+bnz label21
+txna ApplicationArgs 0
+pushbytes 0x7072 // "pr"
+==
+bnz label22
+txna ApplicationArgs 0
+bytec 18 // "ap"
+==
+bnz label23
+txna ApplicationArgs 0
+bytec 19 // "al"
+==
+bnz label24
+txna ApplicationArgs 0
+bytec 34 // "pl"
+==
+bnz label25
+txna ApplicationArgs 0
+pushbytes 0x726c // "rl"
+==
+bnz label26
+err
+label26:
+global GroupSize
+intc_0 // 1
+==
+assert
+txn Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+==
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+intc_0 // 1
+global CurrentApplicationID
+bytec 14 // "liquidity_app_id"
+app_local_get_ex
+store 37
+store 38
+load 37
+assert
+intc_0 // 1
+bytec 14 // "liquidity_app_id"
+app_local_del
+intc_0 // 1
+b label6
+label25:
+global GroupSize
+intc 7 // 5
+==
+assert
+bytec 15 // "is_paused"
+app_global_get
+!
+assert
+callsub label27
+gtxn 1 TypeEnum
+intc 6 // 6
+==
+gtxn 1 OnCompletion
+intc_0 // 1
+==
+&&
+gtxn 1 ApplicationID
+intc_0 // 1
+bytec 14 // "liquidity_app_id"
+app_local_get
+==
+&&
+gtxn 1 Sender
+txna Accounts 2
+==
+&&
+assert
+gtxn 2 TypeEnum
+intc 6 // 6
+==
+gtxn 2 OnCompletion
+intc_1 // 0
+==
+&&
+gtxn 2 ApplicationID
+intc_0 // 1
+bytec 14 // "liquidity_app_id"
+app_local_get
+==
+&&
+gtxna 2 ApplicationArgs 0
+bytec 34 // "pl"
+==
+&&
+gtxn 2 Sender
+txn Sender
+==
+&&
+assert
+txn GroupIndex
+intc 5 // 3
+==
+gtxn 3 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 3 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+gtxn 4 TypeEnum
+intc_3 // 4
+==
+gtxn 4 XferAsset
+bytec_0 // "asset_id"
+app_global_get
+==
+&&
+gtxn 4 Sender
+gtxn 3 Sender
+==
+&&
+gtxn 4 AssetReceiver
+global CurrentApplicationAddress
+==
+&&
+gtxn 4 AssetCloseTo
+global ZeroAddress
+==
+&&
+gtxn 4 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 4 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec 5 // "f_asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+txna Accounts 2
+itxn_field AssetReceiver
+gtxn 4 AssetAmount
+bytec_3 // "deposit_interest_index"
+app_global_get
+callsub label28
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+intc_0 // 1
+bytec 14 // "liquidity_app_id"
+app_local_get
+pushbytes 0x726577617264735f726174696f // "rewards_ratio"
+app_global_get_ex
+store 6
+store 7
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec 24 // "fr_asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+txn Sender
+itxn_field AssetReceiver
+gtxn 4 AssetAmount
+load 7
+callsub label29
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+bytec 8 // "total_deposits"
+bytec 8 // "total_deposits"
+app_global_get
+gtxn 4 AssetAmount
++
+app_global_put
+callsub label30
+intc_0 // 1
+b label6
+label24:
+global GroupSize
+intc 5 // 3
+==
+assert
+gtxn 0 ApplicationID
+intc_1 // 0
+==
+assert
+gtxna 0 Applications 1
+global CurrentApplicationID
+==
+assert
+intc_0 // 1
+intc_0 // 1
+bytec 19 // "al"
+callsub label5
+assert
+txn GroupIndex
+intc_2 // 2
+==
+assert
+gtxn 2 Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+==
+assert
+gtxna 2 Accounts 1
+gtxn 1 Sender
+==
+assert
+gtxn 2 CloseRemainderTo
+global ZeroAddress
+==
+assert
+gtxn 2 RekeyTo
+global ZeroAddress
+==
+assert
+intc_0 // 1
+bytec 14 // "liquidity_app_id"
+gaid 0
+app_local_put
+intc_0 // 1
+b label6
+label23:
+global GroupSize
+intc_3 // 4
+==
+assert
+txn Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+==
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+txn GroupIndex
+intc_0 // 1
+-
+intc_0 // 1
+bytec 18 // "ap"
+callsub label5
+assert
+gtxna 1 Accounts 1
+gtxna 3 Accounts 1
+==
+assert
+txna Accounts 1
+txn GroupIndex
+intc_0 // 1
+-
+gtxns Sender
+==
+assert
+intc_0 // 1
+bytec 6 // "type"
+txn GroupIndex
+intc_0 // 1
+==
+bnz label31
+txn GroupIndex
+intc 5 // 3
+==
+bnz label32
+err
+label32:
+intc_0 // 1
+label33:
+app_local_put
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+txn GroupIndex
+intc_0 // 1
+-
+gtxnsa Applications 1
+app_local_put
+intc_0 // 1
+b label6
+label31:
+intc_1 // 0
+b label33
+label22:
+global GroupSize
+intc_0 // 1
+==
+assert
+txn Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+==
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+bytec 35 // "is_rewards_paused"
+txna ApplicationArgs 1
+btoi
+intc_1 // 0
+>
+app_global_put
+intc_0 // 1
+b label6
+label21:
+global GroupSize
+intc_0 // 1
+==
+assert
+txn Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+==
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+bytec 15 // "is_paused"
+txna ApplicationArgs 1
+btoi
+intc_1 // 0
+>
+app_global_put
+intc_0 // 1
+b label6
+label20:
+global GroupSize
+intc_0 // 1
+==
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+callsub label27
+callsub label30
+intc_0 // 1
+b label6
+label19:
+global GroupSize
+intc 7 // 5
+==
+assert
+callsub label34
+assert
+intc 5 // 3
+bytec 33 // "l"
+callsub label35
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+txn GroupIndex
+intc_0 // 1
+==
+bnz label36
+txn GroupIndex
+intc_2 // 2
+==
+bnz label37
+err
+label37:
+intc_0 // 1
+bytec 6 // "type"
+app_local_get
+intc_0 // 1
+==
+assert
+gtxna 0 ApplicationArgs 1
+bytec_0 // "asset_id"
+app_global_get
+itob
+==
+assert
+gtxn 4 TypeEnum
+intc_3 // 4
+==
+gtxn 4 XferAsset
+bytec_0 // "asset_id"
+app_global_get
+==
+&&
+gtxn 4 Sender
+txn Sender
+==
+&&
+gtxn 4 AssetReceiver
+global CurrentApplicationAddress
+==
+&&
+gtxn 4 AssetCloseTo
+global ZeroAddress
+==
+&&
+gtxn 4 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 4 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+callsub label27
+gtxna 3 Accounts 1
+txna Accounts 2
+==
+assert
+intc_2 // 2
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 20 // "borrow_balance"
+app_local_get_ex
+store 10
+store 11
+intc_2 // 2
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 21 // "latest_borrow_interest_index"
+app_local_get_ex
+store 12
+store 13
+load 11
+bytec 9 // "borrow_interest_index"
+app_global_get
+load 13
+callsub label28
+callsub label29
+intc_0 // 1
++
+store 25
+gload 1 22
+load 25
+<=
+assert
+intc_2 // 2
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 36 // "borrowed"
+app_local_get_ex
+store 8
+store 9
+load 25
+load 9
+-
+bytec 10 // "RF"
+app_global_get
+bytec 11 // "SRR"
+app_global_get
++
+callsub label29
+store 36
+load 25
+gtxn 4 AssetAmount
+callsub label38
+store 26
+load 9
+load 9
+gtxn 4 AssetAmount
+mulw
+intc_1 // 0
+load 25
+divmodw
+pop
+pop
+swap
+!
+assert
+callsub label38
+store 27
+gload 1 23
+gload 1 23
+gtxn 4 AssetAmount
+mulw
+intc_1 // 0
+load 25
+divmodw
+pop
+pop
+swap
+!
+assert
+callsub label38
+store 24
+bytec 7 // "total_borrows"
+bytec 7 // "total_borrows"
+app_global_get
+load 27
+-
+app_global_put
+callsub label30
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec_0 // "asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+itxn_field AssetReceiver
+load 36
+load 36
+gtxn 4 AssetAmount
+mulw
+intc_1 // 0
+load 25
+divmodw
+pop
+pop
+swap
+!
+assert
+callsub label38
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+gtxn 4 AssetAmount
+load 25
+>
+bnz label39
+label40:
+intc_0 // 1
+b label6
+label39:
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec_0 // "asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+txn Sender
+itxn_field AssetReceiver
+gtxn 4 AssetAmount
+load 25
+-
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+b label40
+label36:
+intc_0 // 1
+bytec 6 // "type"
+app_local_get
+intc_1 // 0
+==
+assert
+gtxna 0 ApplicationArgs 0
+bytec_0 // "asset_id"
+app_global_get
+itob
+==
+assert
+callsub label27
+gtxna 3 Accounts 1
+txna Accounts 2
+==
+assert
+intc_2 // 2
+bytec 5 // "f_asset_id"
+app_global_get
+asset_holding_get AssetBalance
+store 14
+store 15
+load 15
+store 23
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 25 // "S2"
+app_global_get_ex
+store 2
+store 3
+load 15
+bytec_3 // "deposit_interest_index"
+app_global_get
+callsub label29
+load 3
+callsub label29
+gload 0 10
+gload 0 11
+callsub label41
+store 22
+callsub label30
+b label40
+label18:
+global GroupSize
+intc_3 // 4
+==
+assert
+intc_2 // 2
+bytec 32 // "rb"
+callsub label35
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+txn GroupIndex
+intc_1 // 0
+==
+bnz label42
+txn GroupIndex
+intc_0 // 1
+==
+bnz label43
+err
+label43:
+intc_0 // 1
+bytec 6 // "type"
+app_local_get
+intc_0 // 1
+==
+assert
+gtxn 3 TypeEnum
+intc_3 // 4
+==
+gtxn 3 XferAsset
+bytec_0 // "asset_id"
+app_global_get
+==
+&&
+gtxn 3 Sender
+txn Sender
+==
+&&
+gtxn 3 AssetReceiver
+global CurrentApplicationAddress
+==
+&&
+gtxn 3 AssetCloseTo
+global ZeroAddress
+==
+&&
+gtxn 3 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 3 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+callsub label27
+gtxna 2 Accounts 1
+txna Accounts 2
+==
+assert
+intc_2 // 2
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 20 // "borrow_balance"
+app_local_get_ex
+store 10
+store 11
+intc_2 // 2
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 21 // "latest_borrow_interest_index"
+app_local_get_ex
+store 12
+store 13
+load 11
+bytec 9 // "borrow_interest_index"
+app_global_get
+load 13
+callsub label28
+callsub label29
+intc_0 // 1
++
+store 25
+intc_2 // 2
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 36 // "borrowed"
+app_local_get_ex
+store 8
+store 9
+load 25
+load 9
+-
+store 34
+load 34
+gtxn 3 AssetAmount
+callsub label38
+store 35
+load 25
+gtxn 3 AssetAmount
+callsub label38
+store 26
+gtxn 3 AssetAmount
+load 25
+>=
+bnz label44
+gtxn 3 AssetAmount
+load 34
+>
+bnz label45
+intc_1 // 0
+label50:
+store 27
+bytec 7 // "total_borrows"
+bytec 7 // "total_borrows"
+app_global_get
+load 27
+-
+app_global_put
+callsub label30
+bytec 35 // "is_rewards_paused"
+app_global_get
+!
+bnz label46
+label49:
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec_0 // "asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+itxn_field AssetReceiver
+load 35
+bytec 10 // "RF"
+app_global_get
+bytec 11 // "SRR"
+app_global_get
++
+callsub label29
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+gtxn 3 AssetAmount
+load 25
+>
+bnz label47
+label48:
+intc_0 // 1
+b label6
+label47:
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec_0 // "asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+txn Sender
+itxn_field AssetReceiver
+gtxn 3 AssetAmount
+load 25
+-
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+b label48
+label46:
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec 24 // "fr_asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+txn Sender
+itxn_field AssetReceiver
+load 35
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+b label49
+label45:
+gtxn 3 AssetAmount
+load 34
+-
+b label50
+label44:
+load 9
+b label50
+label42:
+intc_0 // 1
+bytec 6 // "type"
+app_local_get
+intc_1 // 0
+==
+assert
+callsub label27
+callsub label30
+b label48
+label17:
+global GroupSize
+intc_3 // 4
+==
+assert
+bytec 15 // "is_paused"
+app_global_get
+!
+assert
+callsub label34
+assert
+intc 5 // 3
+bytec 31 // "ib"
+callsub label35
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+txn GroupIndex
+intc_0 // 1
+==
+bnz label51
+txn GroupIndex
+intc_2 // 2
+==
+bnz label52
+err
+label52:
+intc_0 // 1
+bytec 6 // "type"
+app_local_get
+intc_0 // 1
+==
+assert
+gtxna 0 ApplicationArgs 1
+bytec_0 // "asset_id"
+app_global_get
+itob
+==
+assert
+callsub label27
+gtxna 3 Accounts 1
+txna Accounts 2
+==
+assert
+intc_2 // 2
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 20 // "borrow_balance"
+app_local_get_ex
+store 10
+store 11
+intc_2 // 2
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 21 // "latest_borrow_interest_index"
+app_local_get_ex
+store 12
+store 13
+load 11
+bytec 9 // "borrow_interest_index"
+app_global_get
+load 13
+callsub label28
+callsub label29
+intc_0 // 1
++
+store 25
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 37 // "S3"
+app_global_get_ex
+store 4
+store 5
+gload 1 22
+load 25
+callsub label28
+load 5
+>=
+assert
+gload 1 20
+load 25
+-
+store 33
+txn NumAppArgs
+intc_2 // 2
+==
+bnz label53
+load 33
+label54:
+store 26
+load 26
+store 27
+bytec 7 // "total_borrows"
+bytec 7 // "total_borrows"
+app_global_get
+load 27
++
+app_global_put
+callsub label30
+bytec 7 // "total_borrows"
+app_global_get
+bytec 8 // "total_deposits"
+app_global_get
+<=
+assert
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec_0 // "asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+txn Sender
+itxn_field AssetReceiver
+load 26
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+label55:
+intc_0 // 1
+b label6
+label53:
+txna ApplicationArgs 1
+btoi
+load 33
+<=
+assert
+txna ApplicationArgs 1
+btoi
+b label54
+label51:
+intc_0 // 1
+bytec 6 // "type"
+app_local_get
+intc_1 // 0
+==
+assert
+gtxna 0 ApplicationArgs 0
+bytec_0 // "asset_id"
+app_global_get
+itob
+==
+assert
+callsub label27
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 25 // "S2"
+app_global_get_ex
+store 2
+store 3
+gtxna 3 Accounts 1
+txna Accounts 2
+==
+assert
+intc_2 // 2
+bytec 5 // "f_asset_id"
+app_global_get
+asset_holding_get AssetBalance
+store 14
+store 15
+load 15
+bytec_3 // "deposit_interest_index"
+app_global_get
+callsub label29
+load 3
+callsub label29
+gload 0 10
+gload 0 11
+callsub label41
+store 22
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 26 // "S1"
+app_global_get_ex
+store 0
+store 1
+load 15
+bytec_3 // "deposit_interest_index"
+app_global_get
+callsub label29
+load 1
+callsub label29
+gload 0 10
+gload 0 11
+callsub label41
+store 20
+callsub label30
+b label55
+label16:
+global GroupSize
+intc_3 // 4
+==
+assert
+callsub label34
+assert
+intc 5 // 3
+bytec 30 // "rc"
+callsub label35
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+txn GroupIndex
+intc_0 // 1
+==
+bnz label56
+txn GroupIndex
+intc_2 // 2
+==
+bnz label57
+err
+label57:
+intc_0 // 1
+bytec 6 // "type"
+app_local_get
+intc_0 // 1
+==
+assert
+gtxna 0 ApplicationArgs 1
+bytec_0 // "asset_id"
+app_global_get
+itob
+==
+assert
+callsub label27
+gtxna 3 Accounts 1
+txna Accounts 2
+==
+assert
+intc_2 // 2
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 20 // "borrow_balance"
+app_local_get_ex
+store 10
+store 11
+intc_2 // 2
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 21 // "latest_borrow_interest_index"
+app_local_get_ex
+store 12
+store 13
+load 11
+bytec 9 // "borrow_interest_index"
+app_global_get
+load 13
+callsub label28
+callsub label29
+intc_0 // 1
++
+store 25
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 37 // "S3"
+app_global_get_ex
+store 4
+store 5
+gload 1 22
+load 25
+callsub label28
+load 5
+>=
+assert
+gload 1 23
+load 25
+gload 1 21
+callsub label28
+-
+intc_0 // 1
+-
+store 32
+txn NumAppArgs
+intc_2 // 2
+==
+bnz label58
+load 32
+label59:
+store 24
+callsub label30
+label60:
+intc_0 // 1
+b label6
+label58:
+txna ApplicationArgs 1
+btoi
+load 32
+<=
+assert
+txna ApplicationArgs 1
+btoi
+b label59
+label56:
+intc_0 // 1
+bytec 6 // "type"
+app_local_get
+intc_1 // 0
+==
+assert
+gtxna 0 ApplicationArgs 0
+bytec_0 // "asset_id"
+app_global_get
+itob
+==
+assert
+callsub label27
+gtxna 3 Accounts 1
+txna Accounts 2
+==
+assert
+intc_2 // 2
+bytec 5 // "f_asset_id"
+app_global_get
+asset_holding_get AssetBalance
+store 14
+store 15
+load 15
+store 23
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 25 // "S2"
+app_global_get_ex
+store 2
+store 3
+load 15
+bytec_3 // "deposit_interest_index"
+app_global_get
+callsub label29
+load 3
+callsub label29
+gload 0 10
+gload 0 11
+callsub label41
+store 22
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 26 // "S1"
+app_global_get_ex
+store 0
+store 1
+bytec_3 // "deposit_interest_index"
+app_global_get
+load 1
+callsub label29
+gload 0 10
+gload 0 11
+callsub label41
+store 21
+callsub label30
+b label60
+label15:
+global GroupSize
+intc 7 // 5
+==
+assert
+bytec 15 // "is_paused"
+app_global_get
+!
+assert
+callsub label34
+assert
+intc 5 // 3
+bytec 29 // "b"
+callsub label35
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+txn GroupIndex
+intc_0 // 1
+==
+bnz label61
+txn GroupIndex
+intc_2 // 2
+==
+bnz label62
+err
+label62:
+intc_0 // 1
+bytec 6 // "type"
+app_local_get
+intc_0 // 1
+==
+assert
+gtxna 0 ApplicationArgs 1
+bytec_0 // "asset_id"
+app_global_get
+itob
+==
+assert
+callsub label27
+bytec 7 // "total_borrows"
+bytec 7 // "total_borrows"
+app_global_get
+gload 1 20
++
+app_global_put
+callsub label30
+bytec 7 // "total_borrows"
+app_global_get
+bytec 8 // "total_deposits"
+app_global_get
+<=
+assert
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec_0 // "asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+txn Sender
+itxn_field AssetReceiver
+gload 1 20
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+label64:
+intc_0 // 1
+b label6
+label61:
+intc_0 // 1
+bytec 6 // "type"
+app_local_get
+intc_1 // 0
+==
+assert
+gtxna 0 ApplicationArgs 0
+bytec_0 // "asset_id"
+app_global_get
+itob
+==
+assert
+gtxn 4 TypeEnum
+intc_3 // 4
+==
+gtxn 4 XferAsset
+bytec 5 // "f_asset_id"
+app_global_get
+==
+&&
+gtxn 4 Sender
+txn Sender
+==
+&&
+gtxn 4 AssetReceiver
+gtxna 3 Accounts 1
+==
+&&
+gtxn 4 AssetCloseTo
+global ZeroAddress
+==
+&&
+gtxn 4 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 4 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+callsub label27
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+bytec 26 // "S1"
+app_global_get_ex
+store 0
+store 1
+gtxn 4 AssetAmount
+bytec_3 // "deposit_interest_index"
+app_global_get
+callsub label29
+load 1
+callsub label29
+gload 0 10
+gload 0 11
+callsub label41
+store 31
+gtxn 2 NumAppArgs
+intc_2 // 2
+==
+bnz label63
+load 31
+label65:
+store 20
+load 20
+assert
+callsub label30
+b label64
+label63:
+gtxna 2 ApplicationArgs 1
+btoi
+load 31
+<=
+assert
+gtxna 2 ApplicationArgs 1
+btoi
+b label65
+label14:
+global GroupSize
+intc_2 // 2
+==
+assert
+callsub label27
+txn GroupIndex
+intc_1 // 0
+==
+gtxn 0 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 0 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+gtxn 1 TypeEnum
+intc_3 // 4
+==
+gtxn 1 XferAsset
+bytec 5 // "f_asset_id"
+app_global_get
+==
+&&
+gtxn 1 Sender
+gtxn 0 Sender
+==
+&&
+gtxn 1 AssetReceiver
+global CurrentApplicationAddress
+==
+&&
+gtxn 1 AssetCloseTo
+global ZeroAddress
+==
+&&
+gtxn 1 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 1 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+gtxn 1 AssetAmount
+bytec_3 // "deposit_interest_index"
+app_global_get
+callsub label29
+store 30
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec_0 // "asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+txn Sender
+itxn_field AssetReceiver
+load 30
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+bytec 8 // "total_deposits"
+bytec 8 // "total_deposits"
+app_global_get
+load 30
+-
+app_global_put
+callsub label30
+intc_0 // 1
+b label6
+label13:
+global GroupSize
+intc_2 // 2
+==
+assert
+bytec 15 // "is_paused"
+app_global_get
+!
+assert
+callsub label27
+txn GroupIndex
+intc_1 // 0
+==
+gtxn 0 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 0 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+gtxn 1 TypeEnum
+intc_3 // 4
+==
+gtxn 1 XferAsset
+bytec_0 // "asset_id"
+app_global_get
+==
+&&
+gtxn 1 Sender
+gtxn 0 Sender
+==
+&&
+gtxn 1 AssetReceiver
+global CurrentApplicationAddress
+==
+&&
+gtxn 1 AssetCloseTo
+global ZeroAddress
+==
+&&
+gtxn 1 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 1 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec 5 // "f_asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+txn Sender
+itxn_field AssetReceiver
+gtxn 1 AssetAmount
+bytec_3 // "deposit_interest_index"
+app_global_get
+callsub label28
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+bytec 8 // "total_deposits"
+bytec 8 // "total_deposits"
+app_global_get
+gtxn 1 AssetAmount
++
+app_global_put
+callsub label30
+intc_0 // 1
+b label6
+label12:
+global GroupSize
+intc_0 // 1
+==
+assert
+txn Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+==
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn RekeyTo
+global ZeroAddress
+==
+assert
+txna ApplicationArgs 1
+bytec 4 // "U_OPT"
+==
+txna ApplicationArgs 1
+bytec 12 // "R0"
+==
+||
+txna ApplicationArgs 1
+bytec 13 // "R1"
+==
+||
+txna ApplicationArgs 1
+bytec 16 // "R2"
+==
+||
+txna ApplicationArgs 1
+bytec 10 // "RF"
+==
+||
+txna ApplicationArgs 1
+bytec 11 // "SRR"
+==
+||
+txna ApplicationArgs 1
+bytec 22 // "EPS"
+==
+||
+txna ApplicationArgs 1
+bytec 27 // "oracle_adapter_app_id"
+==
+||
+assert
+txna ApplicationArgs 1
+txna ApplicationArgs 2
+btoi
+app_global_put
+callsub label66
+intc_0 // 1
+b label6
+label11:
+global GroupSize
+intc_2 // 2
+==
+assert
+bytec 5 // "f_asset_id"
+app_global_get
+intc_1 // 0
+==
+assert
+gtxn 0 TypeEnum
+intc_0 // 1
+==
+gtxn 0 Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+==
+&&
+gtxn 0 Receiver
+global CurrentApplicationAddress
+==
+&&
+gtxn 0 Amount
+pushint 400000
+==
+&&
+gtxn 0 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 0 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+txn GroupIndex
+intc_0 // 1
+==
+gtxn 1 Sender
+bytec_2 // addr XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU
+==
+&&
+gtxn 1 CloseRemainderTo
+global ZeroAddress
+==
+&&
+gtxn 1 RekeyTo
+global ZeroAddress
+==
+&&
+assert
+itxn_begin
+intc_3 // 4
+itxn_field TypeEnum
+bytec_0 // "asset_id"
+app_global_get
+itxn_field XferAsset
+global CurrentApplicationAddress
+itxn_field Sender
+global CurrentApplicationAddress
+itxn_field AssetReceiver
+intc_1 // 0
+itxn_field AssetAmount
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+bytec_0 // "asset_id"
+app_global_get
+asset_params_get AssetName
+store 16
+store 17
+bytec_0 // "asset_id"
+app_global_get
+asset_params_get AssetUnitName
+store 18
+store 19
+bytec_0 // "asset_id"
+app_global_get
+asset_params_get AssetDecimals
+store 28
+store 29
+itxn_begin
+intc 5 // 3
+itxn_field TypeEnum
+pushbytes 0x466f6c6b7320 // "Folks "
+load 17
+concat
+itxn_field ConfigAssetName
+pushbytes 0x66 // "f"
+load 19
+concat
+itxn_field ConfigAssetUnitName
+intc_1 // 0
+~
+itxn_field ConfigAssetTotal
+load 29
+itxn_field ConfigAssetDecimals
+global CurrentApplicationAddress
+itxn_field ConfigAssetReserve
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+bytec 5 // "f_asset_id"
+itxn CreatedAssetID
+app_global_put
+itxn_begin
+intc 5 // 3
+itxn_field TypeEnum
+pushbytes 0x466f6c6b73205265776172647320 // "Folks Rewards "
+load 17
+concat
+itxn_field ConfigAssetName
+pushbytes 0x6672 // "fr"
+load 19
+concat
+itxn_field ConfigAssetUnitName
+intc_1 // 0
+~
+itxn_field ConfigAssetTotal
+load 29
+itxn_field ConfigAssetDecimals
+global CurrentApplicationAddress
+itxn_field ConfigAssetReserve
+intc_1 // 0
+itxn_field Fee
+itxn_submit
+bytec 24 // "fr_asset_id"
+itxn CreatedAssetID
+app_global_put
+bytec 9 // "borrow_interest_index"
+intc 4 // 100000000000000
+app_global_put
+bytec_3 // "deposit_interest_index"
+intc 4 // 100000000000000
+app_global_put
+bytec 17 // "borrow_interest_rate"
+intc_1 // 0
+bytec 4 // "U_OPT"
+app_global_get
+<
+bnz label67
+bytec 12 // "R0"
+app_global_get
+bytec 13 // "R1"
+app_global_get
++
+intc_1 // 0
+bytec 4 // "U_OPT"
+app_global_get
+-
+bytec 16 // "R2"
+app_global_get
+callsub label29
+intc 4 // 100000000000000
+bytec 4 // "U_OPT"
+app_global_get
+-
+callsub label28
++
+label68:
+app_global_put
+bytec 28 // "deposit_interest_rate"
+intc_1 // 0
+bytec 17 // "borrow_interest_rate"
+app_global_get
+callsub label29
+intc 4 // 100000000000000
+bytec 10 // "RF"
+app_global_get
+bytec 11 // "SRR"
+app_global_get
++
+-
+callsub label29
+app_global_put
+bytec 23 // "latest_update"
+global LatestTimestamp
+app_global_put
+intc_0 // 1
+b label6
+label67:
+bytec 12 // "R0"
+app_global_get
+intc_1 // 0
+bytec 13 // "R1"
+app_global_get
+callsub label29
+bytec 4 // "U_OPT"
+app_global_get
+callsub label28
++
+b label68
+label10:
+global GroupSize
+intc_0 // 1
+==
+assert
+txn NumAppArgs
+pushint 9
+==
+assert
+bytec 4 // "U_OPT"
+txna ApplicationArgs 0
+btoi
+app_global_put
+bytec 12 // "R0"
+txna ApplicationArgs 1
+btoi
+app_global_put
+bytec 13 // "R1"
+txna ApplicationArgs 2
+btoi
+app_global_put
+bytec 16 // "R2"
+txna ApplicationArgs 3
+btoi
+app_global_put
+bytec 10 // "RF"
+txna ApplicationArgs 4
+btoi
+app_global_put
+bytec 11 // "SRR"
+txna ApplicationArgs 5
+btoi
+app_global_put
+bytec 22 // "EPS"
+txna ApplicationArgs 6
+btoi
+app_global_put
+bytec 27 // "oracle_adapter_app_id"
+txna ApplicationArgs 7
+btoi
+app_global_put
+bytec_0 // "asset_id"
+txna ApplicationArgs 8
+btoi
+app_global_put
+callsub label66
+intc_0 // 1
+label6:
+return
+label29:
+store 52
+store 51
+load 51
+load 52
+mulw
+intc_1 // 0
+intc 4 // 100000000000000
+divmodw
+pop
+pop
+swap
+!
+assert
+retsub
+label41:
+store 55
+store 54
+store 53
+load 53
+load 54
+mulw
+intc_1 // 0
+pushint 10
+load 55
+exp
+divmodw
+pop
+pop
+swap
+!
+assert
+retsub
+label28:
+store 57
+store 56
+load 56
+intc 4 // 100000000000000
+mulw
+intc_1 // 0
+load 57
+divmodw
+pop
+pop
+swap
+!
+assert
+retsub
+label38:
+store 59
+store 58
+load 58
+load 59
+<
+bnz label69
+load 59
+b label70
+label69:
+load 58
+label70:
+retsub
+label66:
+bytec 4 // "U_OPT"
+app_global_get
+intc_1 // 0
+>
+assert
+bytec 4 // "U_OPT"
+app_global_get
+intc 4 // 100000000000000
+<
+assert
+bytec 12 // "R0"
+app_global_get
+intc 4 // 100000000000000
+<=
+assert
+bytec 13 // "R1"
+app_global_get
+pushint 1000000000000000
+<=
+assert
+bytec 16 // "R2"
+app_global_get
+pushint 10000000000000000
+<=
+assert
+bytec 10 // "RF"
+app_global_get
+bytec 11 // "SRR"
+app_global_get
++
+intc 4 // 100000000000000
+<=
+assert
+bytec 22 // "EPS"
+app_global_get
+intc 4 // 100000000000000
+>=
+assert
+retsub
+label27:
+bytec 9 // "borrow_interest_index"
+bytec 9 // "borrow_interest_index"
+app_global_get
+intc 4 // 100000000000000
+bytec 22 // "EPS"
+app_global_get
+bytec 17 // "borrow_interest_rate"
+app_global_get
+intc 8 // 31536000
+/
+global LatestTimestamp
+bytec 23 // "latest_update"
+app_global_get
+-
+*
+callsub label29
++
+callsub label29
+app_global_put
+bytec_3 // "deposit_interest_index"
+bytec_3 // "deposit_interest_index"
+app_global_get
+intc 4 // 100000000000000
+bytec 28 // "deposit_interest_rate"
+app_global_get
+intc 8 // 31536000
+/
+global LatestTimestamp
+bytec 23 // "latest_update"
+app_global_get
+-
+*
++
+callsub label29
+app_global_put
+bytec 23 // "latest_update"
+global LatestTimestamp
+app_global_put
+retsub
+label30:
+bytec 8 // "total_deposits"
+app_global_get
+intc_1 // 0
+==
+bnz label71
+bytec 7 // "total_borrows"
+app_global_get
+bytec 8 // "total_deposits"
+app_global_get
+callsub label28
+label74:
+store 60
+bytec 17 // "borrow_interest_rate"
+load 60
+bytec 4 // "U_OPT"
+app_global_get
+<
+bnz label72
+bytec 12 // "R0"
+app_global_get
+bytec 13 // "R1"
+app_global_get
++
+load 60
+bytec 4 // "U_OPT"
+app_global_get
+-
+bytec 16 // "R2"
+app_global_get
+callsub label29
+intc 4 // 100000000000000
+bytec 4 // "U_OPT"
+app_global_get
+-
+callsub label28
++
+b label73
+label72:
+bytec 12 // "R0"
+app_global_get
+load 60
+bytec 13 // "R1"
+app_global_get
+callsub label29
+bytec 4 // "U_OPT"
+app_global_get
+callsub label28
++
+b label73
+label71:
+intc_1 // 0
+b label74
+label73:
+app_global_put
+bytec 28 // "deposit_interest_rate"
+load 60
+bytec 17 // "borrow_interest_rate"
+app_global_get
+callsub label29
+intc 4 // 100000000000000
+bytec 10 // "RF"
+app_global_get
+bytec 11 // "SRR"
+app_global_get
++
+-
+callsub label29
+app_global_put
+retsub
+label5:
+store 63
+store 62
+store 61
+load 61
+gtxns TypeEnum
+intc 6 // 6
+==
+load 61
+gtxns OnCompletion
+load 62
+==
+&&
+load 61
+gtxns ApplicationID
+global CurrentApplicationID
+==
+&&
+load 61
+gtxnsa ApplicationArgs 0
+load 63
+==
+&&
+retsub
+label34:
+gtxn 0 TypeEnum
+intc 6 // 6
+==
+gtxn 0 OnCompletion
+intc_1 // 0
+==
+&&
+gtxn 0 ApplicationID
+bytec 27 // "oracle_adapter_app_id"
+app_global_get
+==
+&&
+retsub
+label35:
+store 65
+store 64
+load 64
+gtxns TypeEnum
+intc 6 // 6
+==
+load 64
+gtxns OnCompletion
+intc_1 // 0
+==
+&&
+load 64
+gtxns ApplicationID
+intc_0 // 1
+bytec_1 // "token_pair_app_id"
+app_local_get
+==
+&&
+load 64
+gtxnsa ApplicationArgs 0
+load 65
+==
+&&
+retsub

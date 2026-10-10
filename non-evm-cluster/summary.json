@@ -1,0 +1,77 @@
+{
+  "finding": "C2-55",
+  "title": "Abandoned non-EVM custody cluster (Djed/UTONIC/DeDust/Minswap/Folks/Pact/Ref/Veax/Spin/Tonic/MultiversX)",
+  "chains": [
+    "cardano",
+    "ton",
+    "algorand",
+    "near",
+    "multiversx"
+  ],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 38813680.0,
+    "P": 6268303.68,
+    "S": 67206.38
+  },
+  "latest_block": 14048959,
+  "block_numbers": {
+    "cardano": 14049765,
+    "cardano_djed_reserve_utxo_block": 14038672,
+    "ton_masterchain_seqno": 98067263,
+    "algorand_round": 65847980,
+    "near": 219335481,
+    "multiversx_epoch": 2258,
+    "multiversx_nonce": 35578436
+  },
+  "targets_checked": 15,
+  "live_targets": 15,
+  "closed_reasons": [
+    "Minswap V1: deployed pool validator e1317b15... proven to be the post-audit fixed code (UPLC builtin/constant stream equivalence with the open-sourced fixed release + CEK evaluation: legit owner withdraw ACCEPT, no-owner ATTACK REJECT, datum-hijack redirect REJECT); owner token gate + continuing-output address check live",
+    "DeDust v2: 22 read-only trace-emulation probes all rejected (overclaim swap exit 263, forged pay_out_from_pool 265, forged swap_external/swap_peer 264/265, spoofed jetton-notify inert/zero out-msgs, collect_fees/configure 296/65535, destroy/install 256/65535); only provide_vault_state accepted (harmless state probe per ton-blockchain abis)",
+    "Minswap V2+Stable: deployed scripts hash-match the audited public repo minswap/minswap-dex-v2; on-chain GlobalSetting authorizes a single batcher vkey 5b7e2322... (fee updater/taker ac187100..., stake updater c4121a88..., admin script 4abd7063...); no signature-free drain path",
+    "Djed: bank (addr1z8mcpc26..., script f780e15a...) spend requires operator-signed processing (addSignerKey(operator 409d3ec8...) in tx b1c0f40a...) and the bank+oracle validators call Ed25519 verifySignature with hardcoded key 51f4ed3f...; forged price datums cannot pass; bank datum hash-verified (31806cab...); live custody 24,642,068.18 ADA = P (operator-processed redemptions); legacy banks emptied; H-O only $54 pending order; S $40.13 legacy/ticketless orders",
+    "Folks: v1 pools redeem ('r') is sender-scoped and NOT pause-gated (H-O) with payout capped by total_deposits; deposits/borrows pause-gated (is_paused=1); admin = reserve key XQEOIC...; residual candidate: v1 oracle frozen since 2023-02-20 (ALGO marked $0.2896 vs market $0.1154) => mispriced liquidations on ~100 remaining v1 loan/lock accounts, mechanism proven (liquidations observed round 64.97M), amount unquantified",
+    "Pact: REMLIQ pro-rata sender-scoped (LP outstanding = L-1000; 13 successful REMLIQs on 2757646117, 2 on 985089418); classic admin = txn Sender == KIRIMY...; v201 manager+vault keys; live weakness (user-loss, not drain): min-out args pop-discarded in SWAP/ADDLIQ/REMLIQ => MEV sandwich leakage on deprecated pools still actively swapped",
+    "NEAR Ref v1 farm/exchange: executable code emptied (code_hash = sha256(\"\")), calls fail PrepareError(Deserialization) -> S; v2 farms/Boost Farm sender-scoped (H-O)",
+    "Veax/Tonic: source-verified withdraw is sender-scoped; admin owner-gated; Spin closed-source but no unprivileged mover found (low-med confidence)",
+    "MultiversX: every value-moving endpoint requires a contract-issued position SFT, whitelisted caller, or owner (49 source-verified deployments); 3 price-discovery contracts bricked (redeem -> missing lockTokens, proven by failed tx 62f1ce1040951db5beea265e6cb20e09ed33a00d289035ffb0b87b262a7e7bd4)"
+  ],
+  "poc": {
+    "tests_passed": 3,
+    "tests_total": 3,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38043461182",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38042544383",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38026892333"
+    ]
+  },
+  "key_facts": [
+    "Cluster total E-U $0.00; live holder-recoverable value ~$50.39M; stuck ~$2.14k; quantified privileged $227.05",
+    "Minswap V1: deployed pool script e1317b152faac13426e6a83e06ff88a4d62cce3c1634ab0a5ec13309 (created block 7,039,882, 2022-03-25) is the same logic as the open-sourced fixed release 57c8e718... (515 builtins, identical counts; only derived policy IDs differ); sibling build 57c8e718 deployed 2022-03-04; Minswap's own indexer (dcSpark/carp) lists both",
+    "Minswap V1 live: 7,000-pool census $2.89M nominal / $1.33M both-verified (currency=usd); 24 pools trading ($49.8k/24h), 8,140 pending orders; order contract 72,960.12 ADA + ~492k MIN; on-chain pool address >= 2,717,373 ADA (Koios truncation); child re-verification: top-3 pools match to lamport, aggregate 2,720,955 ADA",
+    "Minswap V2+Stable (child-cardano-2): 3,326 pools / 3,325 pairs, 26,518,169.35 ADA at shared V2 address addr1z84q0den...777e2a; H-O ~$15.9M; E-U $0 (high) - batcher-gated batching via GlobalSetting single vkey; stableswap 14 pools $166,444",
+    "Djed (child-cardano-2): bank addr1z8mcpc26... = 24,642,068.18 ADA (adaInReserve; hash-verified datum 31806cab...); DJED circulating 1,449,008.966237, SHEN 31,196,162.384895; 17.0x collateralised; oracle updates ~every 15 min signed by key 51f4ed3f...; processing txs operator-signed (409d3ec8...); legacy banks (Jan-2023, v1.2, v1b) emptied; E-U $0 (high)",
+    "Minswap V1 CEK PoC (aiken, deployed script): LEGIT owner WithdrawLiquidityShare ACCEPT (cpu 454,122,385); same call without OWNER token REJECT; pool-output redirect to foreign address REJECT",
+    "DeDust v2 native vault EQDa4VOnTYlLvDJ0gZjNYm5PXfSmmtL6Vs6A_CZEtXCNICq_ = 1,828,441.82 TON (~$2.66M, seqno 98,067,263); jetton vaults sampled ~$1.26M (USDT vault 0:88dac67c... $784k); v1 legacy 1,761 pools top-30 hold 3.34 TON total",
+    "UTONIC minter EQAfF5j3JMIpZlLmACv7Ub7RH7WmiVMuV4ivcgNYHvNnqHTz: uTON supply 2,950,470.02 (DefiLlama $4,305,527); admin single wallet 0:1326d65f...; contracts hold only 609 TON (master) + 17.75 TON (12 proxies); frozen since 2026-09-15; ~2.8M uTON backing not identifiable in current contracts",
+    "NEAR: ref-farming.near 45.7621 NEAR + 3.57257 KSM (code emptied, S) and ref-finance.near 134.3236 NEAR (code emptied, S); v2.ref-farming.near staked LP $2,809,854 + $92,235 rewards (174/176 farms Ended); boostfarm.ref-labs.near $1,839,449 LP + $141,373; veax.near $78,288 live; spin 3 contracts $126,494; tonic 2 contracts $38,790",
+    "Folks (round 65,847,915): v1 pools H-O $45,224.60 (priced escrow $80,761.56, redeem capped by total_deposits) + govDist14 4,404,873.67 ALGO = $508,431.34 + v2 deposit-staking $4,482.88 => H-O $558,139; S $65,030 (v1 surplus escrow $45,572.95 + govDist4-6 $19,456.68); P reserve key XQEOIC...; xALGO 259.3M ALGO stake and v2 ($57.7M DefiLlama) are live products",
+    "Pact (round 65,847,980): 4,008 pools; H-O $924,558.95 = deprecated classic family $495,982.49 (3,867 pools; 54 pools >=$1k sum $440,723 API / $367,329 measured on-chain) + v201 managed-weighted $428,576.46; admin gated; min-out args pop-discarded (MEV weakness)",
+    "MultiversX: legacy delegation erd1qqq...shuwt 1,584,732.64 EGLD user-owed ($6.39M, 35,601 users; balance 136,971.98 EGLD re-verified); 3 Maiar price-discovery contracts bricked (redeem -> 'invalid function (not found)', tx 62f1ce10... status fail re-verified); 49 source-verified deployments audited; S $1,181.78; P $227.05"
+  ],
+  "caveats": [
+    "Djed Dec-2024 validators have no public source; they were audited here from on-chain UPLC decompilation + live datum hash verification + operator/oracle signature evidence (a CEK evaluation remains a CI candidate)",
+    "Minswap V2/Stable was audited at the source/hash level (deployed scripts match the audited repo; GlobalSetting batcher gate); a line-by-line re-audit of every V2 validator was not performed",
+    "Algorand child completed after a workspace reset (evidence rebuilt at round 65,847,915/65,847,980); its reports were restored after a parent rsync overwrote them \u2014 both are now on disk",
+    "UTONIC: ~2.8M uTON backing (of 2.95M supply) is not identifiable in current contracts (staked/lent out); H-O is conditional on the proxy-funded burn flow, and the protocol is frozen since 2026-09-15",
+    "Spin (NEAR) and Ref Boost Farm are closed-source: verdicts are black-box/export-level (low-med / medium confidence)",
+    "Minswap V1 TVL depends on the Minswap market API (same-chain indexer); the on-chain pool address holds >= 2,717,373 ADA (Koios truncation) and 3 pools with unverified memecoin pairs (~$1.0M nominal) are $0 real",
+    "Pact's pools API per-pool tvl_usd is pair-aggregate and duplicated across pool instances; the $898k headline is DefiLlama, with old-pool escrows confirmed by sampling",
+    "Folks residual: the frozen v1 oracle (last update 2023-02-20) creates a live mispriced-liquidation candidate on ~100 v1 loan/lock accounts (mechanism proven, amount unquantified) \u2014 recommended CI follow-up",
+    "Pact: min-out slippage args are discarded (pop) in SWAP/ADDLIQ/REMLIQ of both templates \u2014 a user-loss (sandwich MEV) vector on deprecated pools, not a protocol drain; the child report documents it"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0.00 live from the whole non-EVM cluster: Minswap V1's deployed validator is the post-audit fixed code (CEK-proven), DeDust rejects all 22 forged-message probes, Djed's $6.24M reserve requires an oracle-signed feed, and every other member's user paths are sender-scoped; ~$50.4M is holder-recoverable, ~$2.1k is bricked."
+}

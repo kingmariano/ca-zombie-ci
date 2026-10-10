@@ -1,0 +1,56 @@
+{
+ "protocol": "minswap-v2",
+ "chain": "cardano",
+ "headline": {
+  "E-U": {"usd": 0.0, "confidence": "high", "note": "batching requires authorized batcher vkey 5b7e2322... from live GlobalSetting; pool updates/fee-taking privileged; deployed source hash-matches audited public repo (CertiK 0 critical)"},
+  "H-O": {"usd": 15863600.0, "note": "V2 top-292 pools $15.70M (Minswap USD) + stableswap $0.166M; LP withdrawals via live batcher"},
+  "P": {"usd": 0.0, "note": "fee-sharing LP + batcher/admin authority (GlobalSetting: batcher 5b7e2322, admin script 4abd7063...)"},
+  "S": {"usd": 0.0, "note": "45 non-pool datum UTxOs + micro-pools (4.5 ADA, ~0 reserves)"}
+ },
+ "live_funds": {
+  "v2_shared_pool_address": "addr1z84q0denmyep98ph3tmzwsmw0j7zau9ljmsqx6a4rvaau66j2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pq777e2a",
+  "v2_pool_script": "ea07b733d932129c378af627436e7cbc2ef0bf96e0036bb51b3bde6b",
+  "v2_pool_utxos": 3326,
+  "v2_unique_pairs": 3325,
+  "v2_ada_in_pools_lovelace": "26518169351770",
+  "v2_ada_address_total_lovelace": "26523579308258",
+  "stableswap_pools": 13,
+  "stableswap_usd": 166262.02
+ },
+ "top_pools": [
+  {"pair": "ADA/NIGHT", "onchain_ada": "3790954.15", "usd": 1931453},
+  {"pair": "ADA/MIN", "onchain_ada": "3072625.38", "usd": 1563346},
+  {"pair": "ADA/SNEK", "onchain_ada": "2284383.28", "usd": 1161806},
+  {"pair": "ADA/DJED", "onchain_ada": "445468.28", "note": "113,455.89 DJED"},
+  {"pair": "ADA/SHEN", "onchain_ada": "307410.19", "note": "512,916.43 SHEN"}
+ ],
+ "refs": {
+  "tip_block": 14049765,
+  "tip_slot": 200059444,
+  "global_setting_bh": 10532125,
+  "ada_usd": 0.2543648763920245,
+  "ada_usd_ts": 1791627832
+ },
+ "closed_reasons": [
+  "batcher authorization from GlobalSetting (single vkey 5b7e23228dba75595645fc357d0f97ba258cfccfff5d588d4bb9165b)",
+  "Batching redeemer requires pool-batching stake withdrawal; batching validator enforces order economics",
+  "no mint allowed in batching; LP/params/fee updates privileged",
+  "deployed/mainnet scripts hash-match on-chain bytes exactly (audited repo minswap/minswap-dex-v2)"
+ ],
+ "v1_reverification": {
+  "status": "no material discrepancies",
+  "top3": [
+   {"pool": "Trust/BullyDoggy", "api_usd": 666759.01, "onchain": "1.98 ADA + 3,658,332,194 Trust + 94,280,995,784 BD (exact token match; nominal USD)"},
+   {"pool": "d037aa7c/ed36c305", "api_usd": 302768.74, "onchain": "2.38 ADA + 127,469,055 + 2,003,005 (exact match; nominal)"},
+   {"pool": "ADA/MIN", "api_usd": 251258.16, "onchain": "492,139.323171 ADA + 31,828,810.06 MIN (match within +0.13%/-0.13% trading drift)"}
+  ],
+  "aggregate": "my address_info = 2,720,955.332415 ADA vs parent 2,717,373.13 (lower bound, +3,582.20 ADA); census $2.838M nominal / $1.335M both-verified reproduces parent's $2.89M/$1.33M",
+  "report": "reverify-v1/REPORT.md"
+ },
+ "caveats": [
+  "stablecoin pegs assumed at $1.00 for iUSD/USDM/USDA/MyUSD; iBTC/iETH/iSOL at underlying prices",
+  "API vs chain drift on active pools (ADA/MIN +-0.13% in ~15 min)",
+  "Anastasia Labs audit PDF is scanned (no text layer)"
+ ],
+ "files": ["REPORT.md", "v2_pools_parsed.json", "koios_v2_script_info.json", "minswap_v2_metrics_usd_top300.json", "koios_stableswap_assets.json", "stableswap_usd.json", "koios_global_setting.json", "raw/minswap-dex-v2/", "reverify-v1/REPORT.md"]
+}
