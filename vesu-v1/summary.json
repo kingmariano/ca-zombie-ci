@@ -1,0 +1,50 @@
+{
+  "finding": "C2-50",
+  "title": "Vesu V1.1 singleton (Starknet) — closure re-verified; no live unprivileged extraction",
+  "chains": ["starknet"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 862963.56, "P": 0, "S": 21.45},
+  "latest_block": 16156339,
+  "block_numbers": {"starknet": 16156339},
+  "targets_checked": 16,
+  "live_targets": 16,
+  "closed_reasons": [
+    "assert_ownership enforced on modify_position (collateral out / debt in): external account -> revert 'no-delegation' (simulateTransactions, block 16156339)",
+    "transfer_position gated from-side (collateral out) and to-side (debt in): external account -> revert 'no-delegation'",
+    "vToken unwrap of extension-held shares blocked by vToken burn (caller lacks vTokens): external account -> revert 'u256_sub Overflow'",
+    "liquidate_position requires undercollateralized position: healthy position -> revert 'not-undercollateralized'; full scan 1747+ positions, 0 undercollateralized",
+    "retrieve_from_reserve extension-gated -> revert 'caller-not-extension'",
+    "set_extension_whitelist / upgrade owner-gated -> revert 'Caller is not the owner' (owner = 4-of-6 multisig)",
+    "extension upgrade gated to singleton owner -> revert 'caller-not-singleton-owner'",
+    "migrate_position migrator-gated -> revert 'caller-not-migrator'",
+    "deployed Sierra class 0x62c6e1d7 (SingletonV2Impl) contains the exact assert constants (no-delegation, extension-not-whitelisted, caller-not-extension, caller-not-migrator, not-undercollateralized, invalid upgrade name)"
+  ],
+  "poc": {
+    "tests_passed": 12,
+    "tests_total": 12,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38021297461"
+    ]
+  },
+  "key_facts": [
+    "V1.1 singleton 0x000d8d6dfec4d33bfb6895de9f3852143a17c6f92fd2a21da3d6924d34870160 deployed block 1439949 (2025-05-28), upgraded in place to SingletonV2Impl class 0x62c6e1d7bd892e63a3514c672e9cfe63bfb647fac4eccc54517f135c25750ee",
+    "owner = 0x24b295eed808e3f3160e17ab424a59921f18ee2b1327e4615a5902d12bc9403 (threshold 4 of 6 signers); pending_owner=0; singleton_v1=0x2545b2e5d519fc230e9cd781046d3a64e092114f07e44771e0d719d148725ef",
+    "singleton holds $862,963.56 at scan prices (report's $662.9k reconciles to 2026-10-02/03 prices; difference is price movement, not outflow)",
+    "16 pools (docs list 11), all on whitelisted extension 0x4e06e04b8d624d039aa1c3ca8e0aa9e21dc1ccba1d88d0d650837159e0ee054 (DefaultExtensionPOV2Impl)",
+    "full event scan: 58573 events (V1.1) + deprecated V1.0 events; 1747 candidate positions; 38 with debt; 0 undercollateralized; 254 historical liquidations",
+    "all 69 configured Pragma oracle feeds valid at scan",
+    "latent: 25 Re7_xSTRK positions (xSTRK coll / STRK debt, LTV 87%) with $31.1k debt, min health factor 1.0053; liquidation factor 0.9 (11.1% bonus) -> up to ~$3.4k if ratio falls ~0.5-5%; Genesis wstETH/ETH $45.8k debt needs ~5.6% move",
+    "Genesis fee_recipient unset (0x0): claim_fees reverts 'ERC20: transfer to 0' -> accrued Genesis fees unattributable (P)",
+    "deprecated V1.0 singleton holds dust only (~$21.45); old V1 vTokens have delegation=false on V1.1"
+  ],
+  "caveats": [
+    "Point-in-time reads at blocks 16156123 (state) / 16156339 (gate proofs); prices DefiLlama at scan time",
+    "sSTRK (238,486.63) and rUSDC (713.84) not priced by DefiLlama -> excluded from USD total (nominal ~$15-20k); no impact on the $0 E-U verdict",
+    "Gate proofs use starknet_simulateTransactions with SKIP_VALIDATE (execution proof, no signatures); fee estimates from simulation (cents per attempt)",
+    "Latent liquidation value depends on xSTRK/STRK price ratio; monitor HF<1.05 set (11 positions, ~$3.3k debt)",
+    "Event-derived position set: positions are created only via covered events; V1.0-resident positions covered via a second event scan",
+    "P=0 means no privileged-only recovery of value to an attacker; the 4-of-6 owner can upgrade (trust assumption, not a live unprivileged path)"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Vesu V1.1 on Starknet: ownership/extension/owner/migrator gates are live and proven by 12 simulateTransactions proofs from a real external account, 0 of 1747+ positions are liquidatable, and the $863k held by the singleton is holder-recoverable (H-O) rather than extractable; residual risk is a latent ~$3.4k liquidation bonus if the xSTRK/STRK ratio drops ~0.5%."
+}
