@@ -1,0 +1,700 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.rewarder {
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::config;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::safe_math;
+use 0000000000000000000000000000000000000000000000000000000000000001::option;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000002::bag;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct RewarderManager has store {
+	rewarders: vector<Rewarder>,
+	last_update_timestamp: u64
+}
+
+struct Rewarder has copy, drop, store {
+	emission_per_ms: u128,
+	reward_coin: TypeName
+}
+
+struct RewarderGlobalVault has store, key {
+	id: UID,
+	balances: Bag
+}
+
+struct RewarderInitEvent has copy, drop {
+	global_vault_id: ID
+}
+
+struct RewardEmissionUpdateEvent has copy, drop {
+	pair: ID,
+	reward_type: TypeName,
+	old_emission: u128,
+	new_emission: u128
+}
+
+struct DepositEvent has copy, drop {
+	vault: ID,
+	reward_type: TypeName,
+	amount: u64,
+	total_balance: u64
+}
+
+struct EmergentWithdrawEvent has copy, drop, store {
+	reward_type: TypeName,
+	withdraw_amount: u64,
+	after_amount: u64
+}
+
+init(Arg0: &mut TxContext) {
+L1:	loc0: RewarderGlobalVault
+L2:	loc1: ID
+B0:
+	0: CopyLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: MoveLoc[0](Arg0: &mut TxContext)
+	3: Call bag::new(&mut TxContext): Bag
+	4: Pack[2](RewarderGlobalVault)
+	5: StLoc[1](loc0: RewarderGlobalVault)
+	6: ImmBorrowLoc[1](loc0: RewarderGlobalVault)
+	7: Call object::id<RewarderGlobalVault>(&RewarderGlobalVault): ID
+	8: StLoc[2](loc1: ID)
+	9: MoveLoc[1](loc0: RewarderGlobalVault)
+	10: Call transfer::share_object<RewarderGlobalVault>(RewarderGlobalVault)
+	11: MoveLoc[2](loc1: ID)
+	12: Pack[3](RewarderInitEvent)
+	13: Call event::emit<RewarderInitEvent>(RewarderInitEvent)
+	14: Ret
+}
+
+public(friend) new(): RewarderManager {
+B0:
+	0: VecPack(31, 0)
+	1: LdU64(0)
+	2: Pack[0](RewarderManager)
+	3: Ret
+}
+
+public(friend) add_rewarder<Ty0>(Arg0: &mut RewarderManager) {
+L1:	loc0: TypeName
+L2:	loc1: TypeName
+L3:	loc2: Rewarder
+B0:
+	0: CopyLoc[0](Arg0: &mut RewarderManager)
+	1: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	2: VecLen(31)
+	3: LdConst[4](u64: 5)
+	4: Le
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[0](Arg0: &mut RewarderManager)
+	8: Pop
+	9: LdConst[0](u64: 3000)
+	10: Abort
+B3:
+	11: Call type_name::get<Ty0>(): TypeName
+	12: StLoc[2](loc1: TypeName)
+	13: CopyLoc[0](Arg0: &mut RewarderManager)
+	14: CopyLoc[2](loc1: TypeName)
+	15: StLoc[1](loc0: TypeName)
+	16: FreezeRef
+	17: MoveLoc[1](loc0: TypeName)
+	18: Call rewarder_exists(&RewarderManager, TypeName): bool
+	19: Not
+	20: BrFalse(22)
+B4:
+	21: Branch(26)
+B5:
+	22: MoveLoc[0](Arg0: &mut RewarderManager)
+	23: Pop
+	24: LdConst[1](u64: 3001)
+	25: Abort
+B6:
+	26: LdU128(0)
+	27: MoveLoc[2](loc1: TypeName)
+	28: Pack[1](Rewarder)
+	29: StLoc[3](loc2: Rewarder)
+	30: MoveLoc[0](Arg0: &mut RewarderManager)
+	31: MutBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	32: MoveLoc[3](loc2: Rewarder)
+	33: VecPushBack(31)
+	34: Ret
+}
+
+public(friend) update_reward_emission<Ty0>(Arg0: &RewarderGlobalVault, Arg1: &mut RewarderManager, Arg2: ID, Arg3: u128) {
+L4:	loc0: TypeName
+L5:	loc1: u128
+L6:	loc2: &mut Rewarder
+B0:
+	0: Call type_name::get<Ty0>(): TypeName
+	1: StLoc[4](loc0: TypeName)
+	2: MoveLoc[1](Arg1: &mut RewarderManager)
+	3: CopyLoc[4](loc0: TypeName)
+	4: Call get_rewarder_mut(&mut RewarderManager, TypeName): &mut Rewarder
+	5: StLoc[6](loc2: &mut Rewarder)
+	6: CopyLoc[6](loc2: &mut Rewarder)
+	7: ImmBorrowField[1](Rewarder.emission_per_ms: u128)
+	8: ReadRef
+	9: StLoc[5](loc1: u128)
+	10: CopyLoc[3](Arg3: u128)
+	11: LdU128(0)
+	12: Gt
+	13: BrFalse(30)
+B1:
+	14: MoveLoc[0](Arg0: &RewarderGlobalVault)
+	15: Call balance_of<Ty0>(&RewarderGlobalVault): u64
+	16: CastU128
+	17: LdU8(64)
+	18: Shl
+	19: LdConst[5](u128: 8640..)
+	20: CopyLoc[3](Arg3: u128)
+	21: Mul
+	22: Ge
+	23: BrFalse(25)
+B2:
+	24: Branch(29)
+B3:
+	25: MoveLoc[6](loc2: &mut Rewarder)
+	26: Pop
+	27: LdConst[2](u64: 3003)
+	28: Abort
+B4:
+	29: Branch(32)
+B5:
+	30: MoveLoc[0](Arg0: &RewarderGlobalVault)
+	31: Pop
+B6:
+	32: CopyLoc[3](Arg3: u128)
+	33: MoveLoc[6](loc2: &mut Rewarder)
+	34: MutBorrowField[1](Rewarder.emission_per_ms: u128)
+	35: WriteRef
+	36: MoveLoc[2](Arg2: ID)
+	37: MoveLoc[4](loc0: TypeName)
+	38: MoveLoc[5](loc1: u128)
+	39: MoveLoc[3](Arg3: u128)
+	40: Pack[4](RewardEmissionUpdateEvent)
+	41: Call event::emit<RewardEmissionUpdateEvent>(RewardEmissionUpdateEvent)
+	42: Ret
+}
+
+public calc_reward_emission(Arg0: &RewarderManager, Arg1: &Clock): vector<u128> {
+L2:	loc0: bool
+L3:	loc1: u128
+L4:	loc2: u64
+L5:	loc3: u64
+L6:	loc4: u64
+L7:	loc5: u128
+L8:	loc6: &Rewarder
+L9:	loc7: vector<u128>
+B0:
+	0: LdU64(0)
+	1: StLoc[5](loc3: u64)
+	2: VecPack(16, 0)
+	3: StLoc[9](loc7: vector<u128>)
+	4: MoveLoc[1](Arg1: &Clock)
+	5: Call clock::timestamp_ms(&Clock): u64
+	6: StLoc[6](loc4: u64)
+B1:
+	7: CopyLoc[5](loc3: u64)
+	8: CopyLoc[0](Arg0: &RewarderManager)
+	9: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	10: VecLen(31)
+	11: Lt
+	12: BrFalse(64)
+B2:
+	13: Branch(14)
+B3:
+	14: CopyLoc[0](Arg0: &RewarderManager)
+	15: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	16: CopyLoc[5](loc3: u64)
+	17: VecImmBorrow(31)
+	18: StLoc[8](loc6: &Rewarder)
+	19: CopyLoc[8](loc6: &Rewarder)
+	20: ImmBorrowField[1](Rewarder.emission_per_ms: u128)
+	21: ReadRef
+	22: LdU128(0)
+	23: Gt
+	24: BrFalse(32)
+B4:
+	25: CopyLoc[6](loc4: u64)
+	26: CopyLoc[0](Arg0: &RewarderManager)
+	27: ImmBorrowField[2](RewarderManager.last_update_timestamp: u64)
+	28: ReadRef
+	29: Gt
+	30: StLoc[2](loc0: bool)
+	31: Branch(34)
+B5:
+	32: LdFalse
+	33: StLoc[2](loc0: bool)
+B6:
+	34: MoveLoc[2](loc0: bool)
+	35: BrFalse(50)
+B7:
+	36: CopyLoc[6](loc4: u64)
+	37: CopyLoc[0](Arg0: &RewarderManager)
+	38: ImmBorrowField[2](RewarderManager.last_update_timestamp: u64)
+	39: ReadRef
+	40: Call safe_math::sub_u64(u64, u64): u64
+	41: StLoc[4](loc2: u64)
+	42: MoveLoc[8](loc6: &Rewarder)
+	43: ImmBorrowField[1](Rewarder.emission_per_ms: u128)
+	44: ReadRef
+	45: MoveLoc[4](loc2: u64)
+	46: CastU128
+	47: Call safe_math::mul_u128(u128, u128): u128
+	48: StLoc[3](loc1: u128)
+	49: Branch(54)
+B8:
+	50: MoveLoc[8](loc6: &Rewarder)
+	51: Pop
+	52: LdU128(0)
+	53: StLoc[3](loc1: u128)
+B9:
+	54: MoveLoc[3](loc1: u128)
+	55: StLoc[7](loc5: u128)
+	56: MutBorrowLoc[9](loc7: vector<u128>)
+	57: MoveLoc[7](loc5: u128)
+	58: VecPushBack(16)
+	59: MoveLoc[5](loc3: u64)
+	60: LdU64(1)
+	61: Add
+	62: StLoc[5](loc3: u64)
+	63: Branch(7)
+B10:
+	64: MoveLoc[0](Arg0: &RewarderManager)
+	65: Pop
+	66: MoveLoc[9](loc7: vector<u128>)
+	67: Ret
+}
+
+public(friend) settle_reward(Arg0: &mut RewarderManager, Arg1: &Clock): vector<u128> {
+L2:	loc0: &Clock
+L3:	loc1: vector<u128>
+B0:
+	0: CopyLoc[0](Arg0: &mut RewarderManager)
+	1: CopyLoc[1](Arg1: &Clock)
+	2: StLoc[2](loc0: &Clock)
+	3: FreezeRef
+	4: MoveLoc[2](loc0: &Clock)
+	5: Call calc_reward_emission(&RewarderManager, &Clock): vector<u128>
+	6: StLoc[3](loc1: vector<u128>)
+	7: MoveLoc[1](Arg1: &Clock)
+	8: Call clock::timestamp_ms(&Clock): u64
+	9: MoveLoc[0](Arg0: &mut RewarderManager)
+	10: MutBorrowField[2](RewarderManager.last_update_timestamp: u64)
+	11: WriteRef
+	12: MoveLoc[3](loc1: vector<u128>)
+	13: Ret
+}
+
+public rewarder_index<Ty0>(Arg0: &RewarderManager): Option<u64> {
+L1:	loc0: TypeName
+L2:	loc1: u64
+B0:
+	0: Call type_name::get<Ty0>(): TypeName
+	1: StLoc[1](loc0: TypeName)
+	2: LdU64(0)
+	3: StLoc[2](loc1: u64)
+B1:
+	4: CopyLoc[2](loc1: u64)
+	5: CopyLoc[0](Arg0: &RewarderManager)
+	6: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	7: VecLen(31)
+	8: Lt
+	9: BrFalse(30)
+B2:
+	10: Branch(11)
+B3:
+	11: CopyLoc[0](Arg0: &RewarderManager)
+	12: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	13: CopyLoc[2](loc1: u64)
+	14: VecImmBorrow(31)
+	15: ImmBorrowField[3](Rewarder.reward_coin: TypeName)
+	16: ReadRef
+	17: CopyLoc[1](loc0: TypeName)
+	18: Eq
+	19: BrFalse(25)
+B4:
+	20: MoveLoc[0](Arg0: &RewarderManager)
+	21: Pop
+	22: MoveLoc[2](loc1: u64)
+	23: Call option::some<u64>(u64): Option<u64>
+	24: Ret
+B5:
+	25: MoveLoc[2](loc1: u64)
+	26: LdU64(1)
+	27: Add
+	28: StLoc[2](loc1: u64)
+	29: Branch(4)
+B6:
+	30: MoveLoc[0](Arg0: &RewarderManager)
+	31: Pop
+	32: Call option::none<u64>(): Option<u64>
+	33: Ret
+}
+
+public deposit_reward<Ty0>(Arg0: &GlobalConfig, Arg1: &mut RewarderGlobalVault, Arg2: Balance<Ty0>) {
+L3:	loc0: TypeName
+L4:	loc1: u64
+L5:	loc2: u64
+L6:	loc3: &mut Balance<Ty0>
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: Call type_name::get<Ty0>(): TypeName
+	3: StLoc[3](loc0: TypeName)
+	4: ImmBorrowLoc[2](Arg2: Balance<Ty0>)
+	5: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	6: StLoc[4](loc1: u64)
+	7: CopyLoc[1](Arg1: &mut RewarderGlobalVault)
+	8: ImmBorrowField[4](RewarderGlobalVault.balances: Bag)
+	9: CopyLoc[3](loc0: TypeName)
+	10: Call bag::contains<TypeName>(&Bag, TypeName): bool
+	11: Not
+	12: BrFalse(18)
+B1:
+	13: CopyLoc[1](Arg1: &mut RewarderGlobalVault)
+	14: MutBorrowField[4](RewarderGlobalVault.balances: Bag)
+	15: CopyLoc[3](loc0: TypeName)
+	16: Call balance::zero<Ty0>(): Balance<Ty0>
+	17: Call bag::add<TypeName, Balance<Ty0>>(&mut Bag, TypeName, Balance<Ty0>)
+B2:
+	18: CopyLoc[1](Arg1: &mut RewarderGlobalVault)
+	19: MutBorrowField[4](RewarderGlobalVault.balances: Bag)
+	20: CopyLoc[3](loc0: TypeName)
+	21: Call bag::borrow_mut<TypeName, Balance<Ty0>>(&mut Bag, TypeName): &mut Balance<Ty0>
+	22: StLoc[6](loc3: &mut Balance<Ty0>)
+	23: CopyLoc[6](loc3: &mut Balance<Ty0>)
+	24: MoveLoc[2](Arg2: Balance<Ty0>)
+	25: Call balance::join<Ty0>(&mut Balance<Ty0>, Balance<Ty0>): u64
+	26: Pop
+	27: MoveLoc[6](loc3: &mut Balance<Ty0>)
+	28: FreezeRef
+	29: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	30: StLoc[5](loc2: u64)
+	31: MoveLoc[1](Arg1: &mut RewarderGlobalVault)
+	32: FreezeRef
+	33: Call object::id<RewarderGlobalVault>(&RewarderGlobalVault): ID
+	34: MoveLoc[3](loc0: TypeName)
+	35: MoveLoc[4](loc1: u64)
+	36: MoveLoc[5](loc2: u64)
+	37: Pack[5](DepositEvent)
+	38: Call event::emit<DepositEvent>(DepositEvent)
+	39: Ret
+}
+
+public(friend) withdraw_reward<Ty0>(Arg0: &mut RewarderGlobalVault, Arg1: u64): Balance<Ty0> {
+L2:	loc0: TypeName
+L3:	loc1: &mut Balance<Ty0>
+B0:
+	0: Call type_name::get<Ty0>(): TypeName
+	1: StLoc[2](loc0: TypeName)
+	2: CopyLoc[0](Arg0: &mut RewarderGlobalVault)
+	3: ImmBorrowField[4](RewarderGlobalVault.balances: Bag)
+	4: CopyLoc[2](loc0: TypeName)
+	5: Call bag::contains<TypeName>(&Bag, TypeName): bool
+	6: BrFalse(8)
+B1:
+	7: Branch(12)
+B2:
+	8: MoveLoc[0](Arg0: &mut RewarderGlobalVault)
+	9: Pop
+	10: LdConst[3](u64: 3004)
+	11: Abort
+B3:
+	12: MoveLoc[0](Arg0: &mut RewarderGlobalVault)
+	13: MutBorrowField[4](RewarderGlobalVault.balances: Bag)
+	14: MoveLoc[2](loc0: TypeName)
+	15: Call bag::borrow_mut<TypeName, Balance<Ty0>>(&mut Bag, TypeName): &mut Balance<Ty0>
+	16: StLoc[3](loc1: &mut Balance<Ty0>)
+	17: CopyLoc[3](loc1: &mut Balance<Ty0>)
+	18: FreezeRef
+	19: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	20: CopyLoc[1](Arg1: u64)
+	21: Ge
+	22: BrFalse(24)
+B4:
+	23: Branch(28)
+B5:
+	24: MoveLoc[3](loc1: &mut Balance<Ty0>)
+	25: Pop
+	26: LdConst[2](u64: 3003)
+	27: Abort
+B6:
+	28: MoveLoc[3](loc1: &mut Balance<Ty0>)
+	29: MoveLoc[1](Arg1: u64)
+	30: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	31: Ret
+}
+
+public emergent_withdraw<Ty0>(Arg0: &GlobalConfig, Arg1: &mut RewarderGlobalVault, Arg2: u64, Arg3: &mut TxContext) {
+L4:	loc0: address
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: CopyLoc[0](Arg0: &GlobalConfig)
+	3: CopyLoc[3](Arg3: &mut TxContext)
+	4: FreezeRef
+	5: Call tx_context::sender(&TxContext): address
+	6: Call config::check_reward_role(&GlobalConfig, address)
+	7: MoveLoc[0](Arg0: &GlobalConfig)
+	8: Call config::get_reward_receiver(&GlobalConfig): address
+	9: StLoc[4](loc0: address)
+	10: CopyLoc[1](Arg1: &mut RewarderGlobalVault)
+	11: CopyLoc[2](Arg2: u64)
+	12: Call withdraw_reward<Ty0>(&mut RewarderGlobalVault, u64): Balance<Ty0>
+	13: MoveLoc[3](Arg3: &mut TxContext)
+	14: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	15: MoveLoc[4](loc0: address)
+	16: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	17: Call type_name::get<Ty0>(): TypeName
+	18: MoveLoc[2](Arg2: u64)
+	19: MoveLoc[1](Arg1: &mut RewarderGlobalVault)
+	20: FreezeRef
+	21: Call balance_of<Ty0>(&RewarderGlobalVault): u64
+	22: Pack[6](EmergentWithdrawEvent)
+	23: Call event::emit<EmergentWithdrawEvent>(EmergentWithdrawEvent)
+	24: Ret
+}
+
+public balance_of<Ty0>(Arg0: &RewarderGlobalVault): u64 {
+L1:	loc0: u64
+L2:	loc1: TypeName
+B0:
+	0: Call type_name::get<Ty0>(): TypeName
+	1: StLoc[2](loc1: TypeName)
+	2: CopyLoc[0](Arg0: &RewarderGlobalVault)
+	3: ImmBorrowField[4](RewarderGlobalVault.balances: Bag)
+	4: CopyLoc[2](loc1: TypeName)
+	5: Call bag::contains<TypeName>(&Bag, TypeName): bool
+	6: Not
+	7: BrFalse(13)
+B1:
+	8: MoveLoc[0](Arg0: &RewarderGlobalVault)
+	9: Pop
+	10: LdU64(0)
+	11: StLoc[1](loc0: u64)
+	12: Branch(19)
+B2:
+	13: MoveLoc[0](Arg0: &RewarderGlobalVault)
+	14: ImmBorrowField[4](RewarderGlobalVault.balances: Bag)
+	15: MoveLoc[2](loc1: TypeName)
+	16: Call bag::borrow<TypeName, Balance<Ty0>>(&Bag, TypeName): &Balance<Ty0>
+	17: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	18: StLoc[1](loc0: u64)
+B3:
+	19: MoveLoc[1](loc0: u64)
+	20: Ret
+}
+
+public(friend) get_reward_emission<Ty0>(Arg0: &RewarderManager, Arg1: &Clock): u128 {
+L2:	loc0: bool
+L3:	loc1: u128
+L4:	loc2: TypeName
+L5:	loc3: u64
+L6:	loc4: u128
+L7:	loc5: u64
+L8:	loc6: u64
+B0:
+	0: Call type_name::get<Ty0>(): TypeName
+	1: StLoc[4](loc2: TypeName)
+	2: CopyLoc[0](Arg0: &RewarderManager)
+	3: MoveLoc[4](loc2: TypeName)
+	4: Call get_rewarder(&RewarderManager, TypeName): &Rewarder
+	5: ImmBorrowField[1](Rewarder.emission_per_ms: u128)
+	6: ReadRef
+	7: StLoc[6](loc4: u128)
+	8: MoveLoc[1](Arg1: &Clock)
+	9: Call clock::timestamp_ms(&Clock): u64
+	10: StLoc[8](loc6: u64)
+	11: MoveLoc[0](Arg0: &RewarderManager)
+	12: ImmBorrowField[2](RewarderManager.last_update_timestamp: u64)
+	13: ReadRef
+	14: StLoc[7](loc5: u64)
+	15: CopyLoc[6](loc4: u128)
+	16: LdU128(0)
+	17: Gt
+	18: BrFalse(24)
+B1:
+	19: CopyLoc[8](loc6: u64)
+	20: CopyLoc[7](loc5: u64)
+	21: Gt
+	22: StLoc[2](loc0: bool)
+	23: Branch(26)
+B2:
+	24: LdFalse
+	25: StLoc[2](loc0: bool)
+B3:
+	26: MoveLoc[2](loc0: bool)
+	27: BrFalse(38)
+B4:
+	28: MoveLoc[8](loc6: u64)
+	29: MoveLoc[7](loc5: u64)
+	30: Call safe_math::sub_u64(u64, u64): u64
+	31: StLoc[5](loc3: u64)
+	32: MoveLoc[6](loc4: u128)
+	33: MoveLoc[5](loc3: u64)
+	34: CastU128
+	35: Call safe_math::mul_u128(u128, u128): u128
+	36: StLoc[3](loc1: u128)
+	37: Branch(40)
+B5:
+	38: LdU128(0)
+	39: StLoc[3](loc1: u128)
+B6:
+	40: MoveLoc[3](loc1: u128)
+	41: Ret
+}
+
+public get_rewarders(Arg0: &RewarderManager): &vector<Rewarder> {
+B0:
+	0: MoveLoc[0](Arg0: &RewarderManager)
+	1: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	2: Ret
+}
+
+rewarder_exists(Arg0: &RewarderManager, Arg1: TypeName): bool {
+L2:	loc0: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[2](loc0: u64)
+B1:
+	2: CopyLoc[2](loc0: u64)
+	3: CopyLoc[0](Arg0: &RewarderManager)
+	4: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	5: VecLen(31)
+	6: Lt
+	7: BrFalse(27)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &RewarderManager)
+	10: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	11: CopyLoc[2](loc0: u64)
+	12: VecImmBorrow(31)
+	13: ImmBorrowField[3](Rewarder.reward_coin: TypeName)
+	14: ReadRef
+	15: CopyLoc[1](Arg1: TypeName)
+	16: Eq
+	17: BrFalse(22)
+B4:
+	18: MoveLoc[0](Arg0: &RewarderManager)
+	19: Pop
+	20: LdTrue
+	21: Ret
+B5:
+	22: MoveLoc[2](loc0: u64)
+	23: LdU64(1)
+	24: Add
+	25: StLoc[2](loc0: u64)
+	26: Branch(2)
+B6:
+	27: MoveLoc[0](Arg0: &RewarderManager)
+	28: Pop
+	29: LdFalse
+	30: Ret
+}
+
+get_rewarder(Arg0: &RewarderManager, Arg1: TypeName): &Rewarder {
+L2:	loc0: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[2](loc0: u64)
+B1:
+	2: CopyLoc[2](loc0: u64)
+	3: CopyLoc[0](Arg0: &RewarderManager)
+	4: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	5: VecLen(31)
+	6: Lt
+	7: BrFalse(28)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &RewarderManager)
+	10: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	11: CopyLoc[2](loc0: u64)
+	12: VecImmBorrow(31)
+	13: ImmBorrowField[3](Rewarder.reward_coin: TypeName)
+	14: ReadRef
+	15: CopyLoc[1](Arg1: TypeName)
+	16: Eq
+	17: BrFalse(23)
+B4:
+	18: MoveLoc[0](Arg0: &RewarderManager)
+	19: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	20: MoveLoc[2](loc0: u64)
+	21: VecImmBorrow(31)
+	22: Ret
+B5:
+	23: MoveLoc[2](loc0: u64)
+	24: LdU64(1)
+	25: Add
+	26: StLoc[2](loc0: u64)
+	27: Branch(2)
+B6:
+	28: MoveLoc[0](Arg0: &RewarderManager)
+	29: Pop
+	30: LdConst[3](u64: 3004)
+	31: Abort
+}
+
+get_rewarder_mut(Arg0: &mut RewarderManager, Arg1: TypeName): &mut Rewarder {
+L2:	loc0: u64
+B0:
+	0: LdU64(0)
+	1: StLoc[2](loc0: u64)
+B1:
+	2: CopyLoc[2](loc0: u64)
+	3: CopyLoc[0](Arg0: &mut RewarderManager)
+	4: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	5: VecLen(31)
+	6: Lt
+	7: BrFalse(28)
+B2:
+	8: Branch(9)
+B3:
+	9: CopyLoc[0](Arg0: &mut RewarderManager)
+	10: ImmBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	11: CopyLoc[2](loc0: u64)
+	12: VecImmBorrow(31)
+	13: ImmBorrowField[3](Rewarder.reward_coin: TypeName)
+	14: ReadRef
+	15: CopyLoc[1](Arg1: TypeName)
+	16: Eq
+	17: BrFalse(23)
+B4:
+	18: MoveLoc[0](Arg0: &mut RewarderManager)
+	19: MutBorrowField[0](RewarderManager.rewarders: vector<Rewarder>)
+	20: MoveLoc[2](loc0: u64)
+	21: VecMutBorrow(31)
+	22: Ret
+B5:
+	23: MoveLoc[2](loc0: u64)
+	24: LdU64(1)
+	25: Add
+	26: StLoc[2](loc0: u64)
+	27: Branch(2)
+B6:
+	28: MoveLoc[0](Arg0: &mut RewarderManager)
+	29: Pop
+	30: LdConst[3](u64: 3004)
+	31: Abort
+}
+
+Constants [
+	0 => u64: 3000
+	1 => u64: 3001
+	2 => u64: 3003
+	3 => u64: 3004
+	4 => u64: 5
+	5 => u128: 86400000
+]
+}

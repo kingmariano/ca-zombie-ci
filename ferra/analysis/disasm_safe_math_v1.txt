@@ -1,0 +1,495 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.safe_math {
+
+public u256_to_u64(Arg0: u256): u64 {
+B0:
+	0: CopyLoc[0](Arg0: u256)
+	1: LdConst[3](u64: 1844..)
+	2: CastU256
+	3: Le
+	4: BrFalse(6)
+B1:
+	5: Branch(8)
+B2:
+	6: LdConst[1](u64: 101)
+	7: Abort
+B3:
+	8: MoveLoc[0](Arg0: u256)
+	9: CastU64
+	10: Ret
+}
+
+public u256_to_u128(Arg0: u256): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u256)
+	1: LdConst[4](u128: 3402..)
+	2: CastU256
+	3: Le
+	4: BrFalse(6)
+B1:
+	5: Branch(8)
+B2:
+	6: LdConst[1](u64: 101)
+	7: Abort
+B3:
+	8: MoveLoc[0](Arg0: u256)
+	9: CastU128
+	10: Ret
+}
+
+public u128_to_u64(Arg0: u128): u64 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdConst[3](u64: 1844..)
+	2: CastU128
+	3: Le
+	4: BrFalse(6)
+B1:
+	5: Branch(8)
+B2:
+	6: LdConst[1](u64: 101)
+	7: Abort
+B3:
+	8: MoveLoc[0](Arg0: u128)
+	9: CastU64
+	10: Ret
+}
+
+public u128_to_u32(Arg0: u128): u32 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdConst[2](u32: 4294..)
+	2: CastU128
+	3: Le
+	4: BrFalse(6)
+B1:
+	5: Branch(8)
+B2:
+	6: LdConst[1](u64: 101)
+	7: Abort
+B3:
+	8: MoveLoc[0](Arg0: u128)
+	9: CastU32
+	10: Ret
+}
+
+public u64_to_u32(Arg0: u64): u32 {
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: LdConst[2](u32: 4294..)
+	2: CastU64
+	3: Le
+	4: BrFalse(6)
+B1:
+	5: Branch(8)
+B2:
+	6: LdConst[1](u64: 101)
+	7: Abort
+B3:
+	8: MoveLoc[0](Arg0: u64)
+	9: CastU32
+	10: Ret
+}
+
+public add_u128(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdConst[4](u128: 3402..)
+	2: CopyLoc[1](Arg1: u128)
+	3: Sub
+	4: Le
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: LdConst[1](u64: 101)
+	8: Abort
+B3:
+	9: MoveLoc[0](Arg0: u128)
+	10: MoveLoc[1](Arg1: u128)
+	11: Add
+	12: Ret
+}
+
+public add_u64(Arg0: u64, Arg1: u64): u64 {
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: LdConst[3](u64: 1844..)
+	2: CopyLoc[1](Arg1: u64)
+	3: Sub
+	4: Le
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: LdConst[1](u64: 101)
+	8: Abort
+B3:
+	9: MoveLoc[0](Arg0: u64)
+	10: MoveLoc[1](Arg1: u64)
+	11: Add
+	12: Ret
+}
+
+public add_u32(Arg0: u32, Arg1: u32): u32 {
+B0:
+	0: CopyLoc[0](Arg0: u32)
+	1: LdConst[2](u32: 4294..)
+	2: CopyLoc[1](Arg1: u32)
+	3: Sub
+	4: Le
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: LdConst[1](u64: 101)
+	8: Abort
+B3:
+	9: MoveLoc[0](Arg0: u32)
+	10: MoveLoc[1](Arg1: u32)
+	11: Add
+	12: Ret
+}
+
+public sub_u128(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: CopyLoc[1](Arg1: u128)
+	2: Ge
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[1](u64: 101)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u128)
+	8: MoveLoc[1](Arg1: u128)
+	9: Sub
+	10: Ret
+}
+
+public sub_mul_u128(Arg0: u128, Arg1: u128, Arg2: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: CopyLoc[1](Arg1: u128)
+	2: Ge
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[1](u64: 101)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u128)
+	8: MoveLoc[1](Arg1: u128)
+	9: Sub
+	10: MoveLoc[2](Arg2: u128)
+	11: Call mul_u128(u128, u128): u128
+	12: Ret
+}
+
+public sub_u64(Arg0: u64, Arg1: u64): u64 {
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: CopyLoc[1](Arg1: u64)
+	2: Ge
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[1](u64: 101)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u64)
+	8: MoveLoc[1](Arg1: u64)
+	9: Sub
+	10: Ret
+}
+
+public mul_u128(Arg0: u128, Arg1: u128): u128 {
+L2:	loc0: bool
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdU128(0)
+	2: Eq
+	3: BrFalse(7)
+B1:
+	4: LdTrue
+	5: StLoc[2](loc0: bool)
+	6: Branch(11)
+B2:
+	7: CopyLoc[1](Arg1: u128)
+	8: LdU128(0)
+	9: Eq
+	10: StLoc[2](loc0: bool)
+B3:
+	11: MoveLoc[2](loc0: bool)
+	12: BrFalse(15)
+B4:
+	13: LdU128(0)
+	14: Ret
+B5:
+	15: CopyLoc[0](Arg0: u128)
+	16: LdConst[4](u128: 3402..)
+	17: CopyLoc[1](Arg1: u128)
+	18: Div
+	19: Le
+	20: BrFalse(22)
+B6:
+	21: Branch(24)
+B7:
+	22: LdConst[1](u64: 101)
+	23: Abort
+B8:
+	24: MoveLoc[0](Arg0: u128)
+	25: MoveLoc[1](Arg1: u128)
+	26: Mul
+	27: Ret
+}
+
+public mul_u64(Arg0: u64, Arg1: u64): u64 {
+L2:	loc0: bool
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: LdU64(0)
+	2: Eq
+	3: BrFalse(7)
+B1:
+	4: LdTrue
+	5: StLoc[2](loc0: bool)
+	6: Branch(11)
+B2:
+	7: CopyLoc[1](Arg1: u64)
+	8: LdU64(0)
+	9: Eq
+	10: StLoc[2](loc0: bool)
+B3:
+	11: MoveLoc[2](loc0: bool)
+	12: BrFalse(15)
+B4:
+	13: LdU64(0)
+	14: Ret
+B5:
+	15: CopyLoc[0](Arg0: u64)
+	16: LdConst[3](u64: 1844..)
+	17: CopyLoc[1](Arg1: u64)
+	18: Div
+	19: Le
+	20: BrFalse(22)
+B6:
+	21: Branch(24)
+B7:
+	22: LdConst[1](u64: 101)
+	23: Abort
+B8:
+	24: MoveLoc[0](Arg0: u64)
+	25: MoveLoc[1](Arg1: u64)
+	26: Mul
+	27: Ret
+}
+
+public div_u128(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: LdU128(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 100)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u128)
+	8: MoveLoc[1](Arg1: u128)
+	9: Div
+	10: Ret
+}
+
+public mul_add_u64(Arg0: u64, Arg1: u64, Arg2: u64): u64 {
+L3:	loc0: bool
+L4:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: LdU64(0)
+	2: Eq
+	3: BrFalse(7)
+B1:
+	4: LdTrue
+	5: StLoc[3](loc0: bool)
+	6: Branch(11)
+B2:
+	7: CopyLoc[1](Arg1: u64)
+	8: LdU64(0)
+	9: Eq
+	10: StLoc[3](loc0: bool)
+B3:
+	11: MoveLoc[3](loc0: bool)
+	12: BrFalse(15)
+B4:
+	13: LdU64(0)
+	14: Ret
+B5:
+	15: CopyLoc[0](Arg0: u64)
+	16: LdConst[3](u64: 1844..)
+	17: CopyLoc[1](Arg1: u64)
+	18: Div
+	19: Le
+	20: BrFalse(22)
+B6:
+	21: Branch(24)
+B7:
+	22: LdConst[1](u64: 101)
+	23: Abort
+B8:
+	24: MoveLoc[0](Arg0: u64)
+	25: MoveLoc[1](Arg1: u64)
+	26: Mul
+	27: StLoc[4](loc1: u64)
+	28: CopyLoc[4](loc1: u64)
+	29: LdConst[3](u64: 1844..)
+	30: CopyLoc[2](Arg2: u64)
+	31: Sub
+	32: Le
+	33: BrFalse(35)
+B9:
+	34: Branch(37)
+B10:
+	35: LdConst[1](u64: 101)
+	36: Abort
+B11:
+	37: MoveLoc[4](loc1: u64)
+	38: MoveLoc[2](Arg2: u64)
+	39: Add
+	40: Ret
+}
+
+public mul_div_u64(Arg0: u64, Arg1: u64, Arg2: u64): u64 {
+L3:	loc0: bool
+B0:
+	0: CopyLoc[2](Arg2: u64)
+	1: LdU64(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 100)
+	6: Abort
+B3:
+	7: CopyLoc[0](Arg0: u64)
+	8: LdU64(0)
+	9: Eq
+	10: BrFalse(14)
+B4:
+	11: LdTrue
+	12: StLoc[3](loc0: bool)
+	13: Branch(18)
+B5:
+	14: CopyLoc[1](Arg1: u64)
+	15: LdU64(0)
+	16: Eq
+	17: StLoc[3](loc0: bool)
+B6:
+	18: MoveLoc[3](loc0: bool)
+	19: BrFalse(22)
+B7:
+	20: LdU64(0)
+	21: Ret
+B8:
+	22: MoveLoc[0](Arg0: u64)
+	23: CastU128
+	24: MoveLoc[1](Arg1: u64)
+	25: CastU128
+	26: Mul
+	27: MoveLoc[2](Arg2: u64)
+	28: CastU128
+	29: Div
+	30: Call u128_to_u64(u128): u64
+	31: Ret
+}
+
+public mul_div_u128_to_u64(Arg0: u128, Arg1: u128, Arg2: u128): u64 {
+L3:	loc0: bool
+B0:
+	0: CopyLoc[2](Arg2: u128)
+	1: LdU128(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 100)
+	6: Abort
+B3:
+	7: CopyLoc[0](Arg0: u128)
+	8: LdU128(0)
+	9: Eq
+	10: BrFalse(14)
+B4:
+	11: LdTrue
+	12: StLoc[3](loc0: bool)
+	13: Branch(18)
+B5:
+	14: CopyLoc[1](Arg1: u128)
+	15: LdU128(0)
+	16: Eq
+	17: StLoc[3](loc0: bool)
+B6:
+	18: MoveLoc[3](loc0: bool)
+	19: BrFalse(22)
+B7:
+	20: LdU64(0)
+	21: Ret
+B8:
+	22: MoveLoc[0](Arg0: u128)
+	23: CastU256
+	24: MoveLoc[1](Arg1: u128)
+	25: CastU256
+	26: Mul
+	27: MoveLoc[2](Arg2: u128)
+	28: CastU256
+	29: Div
+	30: Call u256_to_u64(u256): u64
+	31: Ret
+}
+
+public div_round_up_u64(Arg0: u64, Arg1: u64): u64 {
+B0:
+	0: CopyLoc[1](Arg1: u64)
+	1: LdU64(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 100)
+	6: Abort
+B3:
+	7: CopyLoc[0](Arg0: u64)
+	8: LdU64(0)
+	9: Eq
+	10: BrFalse(13)
+B4:
+	11: LdU64(0)
+	12: Ret
+B5:
+	13: MoveLoc[0](Arg0: u64)
+	14: LdU64(1)
+	15: Sub
+	16: MoveLoc[1](Arg1: u64)
+	17: Div
+	18: LdU64(1)
+	19: Add
+	20: Ret
+}
+
+Constants [
+	0 => u64: 100
+	1 => u64: 101
+	2 => u32: 4294967295
+	3 => u64: 18446744073709551615
+	4 => u128: 340282366920938463463374607431768211455
+]
+}

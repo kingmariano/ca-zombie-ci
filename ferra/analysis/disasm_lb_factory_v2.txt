@@ -1,0 +1,492 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.lb_factory {
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::config;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::lb_pair;
+use 0000000000000000000000000000000000000000000000000000000000000001::ascii;
+use 0000000000000000000000000000000000000000000000000000000000000001::bcs;
+use 0000000000000000000000000000000000000000000000000000000000000001::string;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000001::vector;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::hash;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct PairSimpleInfo has copy, drop, store {
+	pair_id: ID,
+	pair_key: ID,
+	bin_step: u16,
+	coin_type_a: TypeName,
+	coin_type_b: TypeName
+}
+
+struct Pairs has store, key {
+	id: UID,
+	list: Table<ID, PairSimpleInfo>,
+	index: u64
+}
+
+struct InitFactoryEvent has copy, drop {
+	pair_factory: ID
+}
+
+struct CreatePairEvent has copy, drop {
+	pair_id: ID,
+	bin_step: u16,
+	coin_type_a: String,
+	coin_type_b: String,
+	active_id: u32
+}
+
+init(Arg0: &mut TxContext) {
+L1:	loc0: UID
+L2:	loc1: Table<ID, PairSimpleInfo>
+L3:	loc2: ID
+L4:	loc3: Pairs
+B0:
+	0: CopyLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: StLoc[1](loc0: UID)
+	3: MoveLoc[0](Arg0: &mut TxContext)
+	4: Call table::new<ID, PairSimpleInfo>(&mut TxContext): Table<ID, PairSimpleInfo>
+	5: StLoc[2](loc1: Table<ID, PairSimpleInfo>)
+	6: MoveLoc[1](loc0: UID)
+	7: MoveLoc[2](loc1: Table<ID, PairSimpleInfo>)
+	8: LdU64(0)
+	9: Pack[1](Pairs)
+	10: StLoc[4](loc3: Pairs)
+	11: ImmBorrowLoc[4](loc3: Pairs)
+	12: Call object::id<Pairs>(&Pairs): ID
+	13: StLoc[3](loc2: ID)
+	14: MoveLoc[4](loc3: Pairs)
+	15: Call transfer::share_object<Pairs>(Pairs)
+	16: MoveLoc[3](loc2: ID)
+	17: Pack[2](InitFactoryEvent)
+	18: Call event::emit<InitFactoryEvent>(InitFactoryEvent)
+	19: Ret
+}
+
+public create_pair<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut Pairs, Arg2: u32, Arg3: u16, Arg4: &mut TxContext) {
+L5:	loc0: bool
+L6:	loc1: bool
+L7:	loc2: ID
+L8:	loc3: String
+L9:	loc4: String
+L10:	loc5: u16
+L11:	loc6: u32
+L12:	loc7: TypeName
+L13:	loc8: TypeName
+L14:	loc9: LBPair<Ty0, Ty1>
+L15:	loc10: u32
+L16:	loc11: u32
+L17:	loc12: ID
+L18:	loc13: PairSimpleInfo
+L19:	loc14: ID
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: CopyLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(7)
+B1:
+	6: Branch(15)
+B2:
+	7: MoveLoc[1](Arg1: &mut Pairs)
+	8: Pop
+	9: MoveLoc[4](Arg4: &mut TxContext)
+	10: Pop
+	11: MoveLoc[0](Arg0: &GlobalConfig)
+	12: Pop
+	13: LdConst[0](u64: 100)
+	14: Abort
+B3:
+	15: CopyLoc[0](Arg0: &GlobalConfig)
+	16: CopyLoc[3](Arg3: u16)
+	17: Call config::bin_step_exists(&GlobalConfig, u16): bool
+	18: BrFalse(20)
+B4:
+	19: Branch(28)
+B5:
+	20: MoveLoc[1](Arg1: &mut Pairs)
+	21: Pop
+	22: MoveLoc[4](Arg4: &mut TxContext)
+	23: Pop
+	24: MoveLoc[0](Arg0: &GlobalConfig)
+	25: Pop
+	26: LdConst[1](u64: 101)
+	27: Abort
+B6:
+	28: CopyLoc[0](Arg0: &GlobalConfig)
+	29: CopyLoc[3](Arg3: u16)
+	30: Call config::get_bin_range(&GlobalConfig, u16): u32 * u32
+	31: StLoc[15](loc10: u32)
+	32: StLoc[16](loc11: u32)
+	33: CopyLoc[2](Arg2: u32)
+	34: MoveLoc[16](loc11: u32)
+	35: Ge
+	36: BrFalse(42)
+B7:
+	37: CopyLoc[2](Arg2: u32)
+	38: MoveLoc[15](loc10: u32)
+	39: Le
+	40: StLoc[5](loc0: bool)
+	41: Branch(44)
+B8:
+	42: LdFalse
+	43: StLoc[5](loc0: bool)
+B9:
+	44: MoveLoc[5](loc0: bool)
+	45: BrFalse(47)
+B10:
+	46: Branch(55)
+B11:
+	47: MoveLoc[1](Arg1: &mut Pairs)
+	48: Pop
+	49: MoveLoc[4](Arg4: &mut TxContext)
+	50: Pop
+	51: MoveLoc[0](Arg0: &GlobalConfig)
+	52: Pop
+	53: LdConst[5](u64: 105)
+	54: Abort
+B12:
+	55: CopyLoc[0](Arg0: &GlobalConfig)
+	56: Call config::get_allow_create_pair(&GlobalConfig): bool
+	57: Not
+	58: BrFalse(64)
+B13:
+	59: CopyLoc[0](Arg0: &GlobalConfig)
+	60: CopyLoc[4](Arg4: &mut TxContext)
+	61: FreezeRef
+	62: Call tx_context::sender(&TxContext): address
+	63: Call config::check_pool_manager_role(&GlobalConfig, address)
+B14:
+	64: Call type_name::get<Ty0>(): TypeName
+	65: StLoc[12](loc7: TypeName)
+	66: Call type_name::get<Ty1>(): TypeName
+	67: StLoc[13](loc8: TypeName)
+	68: CopyLoc[12](loc7: TypeName)
+	69: CopyLoc[13](loc8: TypeName)
+	70: Neq
+	71: BrFalse(73)
+B15:
+	72: Branch(81)
+B16:
+	73: MoveLoc[1](Arg1: &mut Pairs)
+	74: Pop
+	75: MoveLoc[4](Arg4: &mut TxContext)
+	76: Pop
+	77: MoveLoc[0](Arg0: &GlobalConfig)
+	78: Pop
+	79: LdConst[2](u64: 102)
+	80: Abort
+B17:
+	81: CopyLoc[0](Arg0: &GlobalConfig)
+	82: Call type_name::get<Ty0>(): TypeName
+	83: Call config::is_in_whitelist(&GlobalConfig, TypeName): bool
+	84: BrFalse(88)
+B18:
+	85: LdTrue
+	86: StLoc[6](loc1: bool)
+	87: Branch(92)
+B19:
+	88: CopyLoc[0](Arg0: &GlobalConfig)
+	89: Call type_name::get<Ty1>(): TypeName
+	90: Call config::is_in_whitelist(&GlobalConfig, TypeName): bool
+	91: StLoc[6](loc1: bool)
+B20:
+	92: MoveLoc[6](loc1: bool)
+	93: BrFalse(95)
+B21:
+	94: Branch(103)
+B22:
+	95: MoveLoc[1](Arg1: &mut Pairs)
+	96: Pop
+	97: MoveLoc[4](Arg4: &mut TxContext)
+	98: Pop
+	99: MoveLoc[0](Arg0: &GlobalConfig)
+	100: Pop
+	101: LdConst[3](u64: 103)
+	102: Abort
+B23:
+	103: CopyLoc[3](Arg3: u16)
+	104: Call new_pair_key<Ty0, Ty1>(u16): ID
+	105: StLoc[19](loc14: ID)
+	106: CopyLoc[1](Arg1: &mut Pairs)
+	107: ImmBorrowField[0](Pairs.list: Table<ID, PairSimpleInfo>)
+	108: CopyLoc[19](loc14: ID)
+	109: Call table::contains<ID, PairSimpleInfo>(&Table<ID, PairSimpleInfo>, ID): bool
+	110: BrFalse(119)
+B24:
+	111: MoveLoc[1](Arg1: &mut Pairs)
+	112: Pop
+	113: MoveLoc[4](Arg4: &mut TxContext)
+	114: Pop
+	115: MoveLoc[0](Arg0: &GlobalConfig)
+	116: Pop
+	117: LdConst[4](u64: 104)
+	118: Abort
+B25:
+	119: CopyLoc[2](Arg2: u32)
+	120: CopyLoc[3](Arg3: u16)
+	121: CopyLoc[0](Arg0: &GlobalConfig)
+	122: CopyLoc[3](Arg3: u16)
+	123: Call config::base_factor(&GlobalConfig, u16): u32
+	124: CopyLoc[0](Arg0: &GlobalConfig)
+	125: CopyLoc[3](Arg3: u16)
+	126: Call config::filter_period(&GlobalConfig, u16): u16
+	127: CopyLoc[0](Arg0: &GlobalConfig)
+	128: CopyLoc[3](Arg3: u16)
+	129: Call config::decay_period(&GlobalConfig, u16): u16
+	130: CopyLoc[0](Arg0: &GlobalConfig)
+	131: CopyLoc[3](Arg3: u16)
+	132: Call config::reduction_factor(&GlobalConfig, u16): u16
+	133: CopyLoc[0](Arg0: &GlobalConfig)
+	134: CopyLoc[3](Arg3: u16)
+	135: Call config::variable_fee_control(&GlobalConfig, u16): u32
+	136: CopyLoc[0](Arg0: &GlobalConfig)
+	137: CopyLoc[3](Arg3: u16)
+	138: Call config::protocol_share(&GlobalConfig, u16): u16
+	139: MoveLoc[0](Arg0: &GlobalConfig)
+	140: CopyLoc[3](Arg3: u16)
+	141: Call config::max_volatility_accumulator(&GlobalConfig, u16): u32
+	142: MoveLoc[4](Arg4: &mut TxContext)
+	143: Call lb_pair::new<Ty0, Ty1>(u32, u16, u32, u16, u16, u16, u32, u16, u32, &mut TxContext): LBPair<Ty0, Ty1>
+	144: StLoc[14](loc9: LBPair<Ty0, Ty1>)
+	145: CopyLoc[1](Arg1: &mut Pairs)
+	146: ImmBorrowField[1](Pairs.index: u64)
+	147: ReadRef
+	148: LdU64(1)
+	149: Add
+	150: CopyLoc[1](Arg1: &mut Pairs)
+	151: MutBorrowField[1](Pairs.index: u64)
+	152: WriteRef
+	153: ImmBorrowLoc[14](loc9: LBPair<Ty0, Ty1>)
+	154: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	155: StLoc[17](loc12: ID)
+	156: CopyLoc[17](loc12: ID)
+	157: CopyLoc[19](loc14: ID)
+	158: CopyLoc[3](Arg3: u16)
+	159: CopyLoc[12](loc7: TypeName)
+	160: CopyLoc[13](loc8: TypeName)
+	161: Pack[0](PairSimpleInfo)
+	162: StLoc[18](loc13: PairSimpleInfo)
+	163: MoveLoc[1](Arg1: &mut Pairs)
+	164: MutBorrowField[0](Pairs.list: Table<ID, PairSimpleInfo>)
+	165: MoveLoc[19](loc14: ID)
+	166: MoveLoc[18](loc13: PairSimpleInfo)
+	167: Call table::add<ID, PairSimpleInfo>(&mut Table<ID, PairSimpleInfo>, ID, PairSimpleInfo)
+	168: MoveLoc[17](loc12: ID)
+	169: StLoc[7](loc2: ID)
+	170: MoveLoc[12](loc7: TypeName)
+	171: Call type_name::into_string(TypeName): String
+	172: Call string::from_ascii(String): String
+	173: StLoc[8](loc3: String)
+	174: MoveLoc[13](loc8: TypeName)
+	175: Call type_name::into_string(TypeName): String
+	176: Call string::from_ascii(String): String
+	177: StLoc[9](loc4: String)
+	178: MoveLoc[3](Arg3: u16)
+	179: StLoc[10](loc5: u16)
+	180: MoveLoc[2](Arg2: u32)
+	181: StLoc[11](loc6: u32)
+	182: MoveLoc[7](loc2: ID)
+	183: MoveLoc[10](loc5: u16)
+	184: MoveLoc[8](loc3: String)
+	185: MoveLoc[9](loc4: String)
+	186: MoveLoc[11](loc6: u32)
+	187: Pack[3](CreatePairEvent)
+	188: Call event::emit<CreatePairEvent>(CreatePairEvent)
+	189: MoveLoc[14](loc9: LBPair<Ty0, Ty1>)
+	190: Call transfer::public_share_object<LBPair<Ty0, Ty1>>(LBPair<Ty0, Ty1>)
+	191: Ret
+}
+
+public index(Arg0: &Pairs): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Pairs)
+	1: ImmBorrowField[1](Pairs.index: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public coin_types(Arg0: &PairSimpleInfo): TypeName * TypeName {
+B0:
+	0: CopyLoc[0](Arg0: &PairSimpleInfo)
+	1: ImmBorrowField[2](PairSimpleInfo.coin_type_a: TypeName)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &PairSimpleInfo)
+	4: ImmBorrowField[3](PairSimpleInfo.coin_type_b: TypeName)
+	5: ReadRef
+	6: Ret
+}
+
+public new_pair_key<Ty0, Ty1>(Arg0: u16): ID {
+L1:	loc0: bool
+L2:	loc1: u8
+L3:	loc2: u8
+L4:	loc3: vector<u8>
+L5:	loc4: vector<u8>
+L6:	loc5: u64
+L7:	loc6: bool
+L8:	loc7: String
+L9:	loc8: String
+B0:
+	0: Call type_name::get<Ty0>(): TypeName
+	1: Call type_name::into_string(TypeName): String
+	2: StLoc[8](loc7: String)
+	3: ImmBorrowLoc[8](loc7: String)
+	4: Call ascii::as_bytes(&String): &vector<u8>
+	5: ReadRef
+	6: StLoc[4](loc3: vector<u8>)
+	7: Call type_name::get<Ty1>(): TypeName
+	8: Call type_name::into_string(TypeName): String
+	9: StLoc[9](loc8: String)
+	10: ImmBorrowLoc[9](loc8: String)
+	11: Call ascii::as_bytes(&String): &vector<u8>
+	12: ReadRef
+	13: StLoc[5](loc4: vector<u8>)
+	14: LdU64(0)
+	15: StLoc[6](loc5: u64)
+	16: LdFalse
+	17: StLoc[7](loc6: bool)
+B1:
+	18: CopyLoc[6](loc5: u64)
+	19: ImmBorrowLoc[5](loc4: vector<u8>)
+	20: VecLen(41)
+	21: Lt
+	22: BrFalse(67)
+B2:
+	23: Branch(24)
+B3:
+	24: ImmBorrowLoc[5](loc4: vector<u8>)
+	25: CopyLoc[6](loc5: u64)
+	26: VecImmBorrow(41)
+	27: ReadRef
+	28: StLoc[3](loc2: u8)
+	29: CopyLoc[7](loc6: bool)
+	30: Not
+	31: BrFalse(38)
+B4:
+	32: CopyLoc[6](loc5: u64)
+	33: ImmBorrowLoc[4](loc3: vector<u8>)
+	34: VecLen(41)
+	35: Lt
+	36: StLoc[1](loc0: bool)
+	37: Branch(40)
+B5:
+	38: LdFalse
+	39: StLoc[1](loc0: bool)
+B6:
+	40: MoveLoc[1](loc0: bool)
+	41: BrFalse(59)
+B7:
+	42: ImmBorrowLoc[4](loc3: vector<u8>)
+	43: CopyLoc[6](loc5: u64)
+	44: VecImmBorrow(41)
+	45: ReadRef
+	46: StLoc[2](loc1: u8)
+	47: CopyLoc[2](loc1: u8)
+	48: CopyLoc[3](loc2: u8)
+	49: Lt
+	50: BrFalse(53)
+B8:
+	51: LdU64(6)
+	52: Abort
+B9:
+	53: MoveLoc[2](loc1: u8)
+	54: CopyLoc[3](loc2: u8)
+	55: Gt
+	56: BrFalse(59)
+B10:
+	57: LdTrue
+	58: StLoc[7](loc6: bool)
+B11:
+	59: MutBorrowLoc[4](loc3: vector<u8>)
+	60: MoveLoc[3](loc2: u8)
+	61: VecPushBack(41)
+	62: MoveLoc[6](loc5: u64)
+	63: LdU64(1)
+	64: Add
+	65: StLoc[6](loc5: u64)
+	66: Branch(18)
+B12:
+	67: MoveLoc[7](loc6: bool)
+	68: Not
+	69: BrFalse(86)
+B13:
+	70: ImmBorrowLoc[4](loc3: vector<u8>)
+	71: VecLen(41)
+	72: ImmBorrowLoc[5](loc4: vector<u8>)
+	73: VecLen(41)
+	74: Lt
+	75: BrFalse(78)
+B14:
+	76: LdU64(6)
+	77: Abort
+B15:
+	78: ImmBorrowLoc[4](loc3: vector<u8>)
+	79: VecLen(41)
+	80: ImmBorrowLoc[5](loc4: vector<u8>)
+	81: VecLen(41)
+	82: Eq
+	83: BrFalse(86)
+B16:
+	84: LdU64(3)
+	85: Abort
+B17:
+	86: MutBorrowLoc[4](loc3: vector<u8>)
+	87: ImmBorrowLoc[0](Arg0: u16)
+	88: Call bcs::to_bytes<u16>(&u16): vector<u8>
+	89: Call vector::append<u8>(&mut vector<u8>, vector<u8>)
+	90: ImmBorrowLoc[4](loc3: vector<u8>)
+	91: Call hash::blake2b256(&vector<u8>): vector<u8>
+	92: Call object::id_from_bytes(vector<u8>): ID
+	93: Ret
+}
+
+public pair_id(Arg0: &PairSimpleInfo): ID {
+B0:
+	0: MoveLoc[0](Arg0: &PairSimpleInfo)
+	1: ImmBorrowField[4](PairSimpleInfo.pair_id: ID)
+	2: ReadRef
+	3: Ret
+}
+
+public pair_key(Arg0: &PairSimpleInfo): ID {
+B0:
+	0: MoveLoc[0](Arg0: &PairSimpleInfo)
+	1: ImmBorrowField[5](PairSimpleInfo.pair_key: ID)
+	2: ReadRef
+	3: Ret
+}
+
+public pool_simple_info(Arg0: &Pairs, Arg1: ID): &PairSimpleInfo {
+B0:
+	0: MoveLoc[0](Arg0: &Pairs)
+	1: ImmBorrowField[0](Pairs.list: Table<ID, PairSimpleInfo>)
+	2: MoveLoc[1](Arg1: ID)
+	3: Call table::borrow<ID, PairSimpleInfo>(&Table<ID, PairSimpleInfo>, ID): &PairSimpleInfo
+	4: Ret
+}
+
+public bin_step(Arg0: &PairSimpleInfo): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &PairSimpleInfo)
+	1: ImmBorrowField[6](PairSimpleInfo.bin_step: u16)
+	2: ReadRef
+	3: CastU32
+	4: Ret
+}
+
+Constants [
+	0 => u64: 100
+	1 => u64: 101
+	2 => u64: 102
+	3 => u64: 103
+	4 => u64: 104
+	5 => u64: 105
+]
+}

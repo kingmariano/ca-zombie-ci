@@ -1,0 +1,808 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.config {
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::acl;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::fee_helper;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::package;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 0000000000000000000000000000000000000000000000000000000000000002::vec_map;
+use 0000000000000000000000000000000000000000000000000000000000000002::vec_set;
+
+struct AdminCap has store, key {
+	id: UID
+}
+
+struct FeeParameters has copy, drop, store {
+	base_factor: u32,
+	filter_period: u16,
+	decay_period: u16,
+	reduction_factor: u16,
+	variable_fee_control: u32,
+	protocol_share: u16,
+	max_volatility_accumulator: u32
+}
+
+struct GlobalConfig has store, key {
+	id: UID,
+	pause: bool,
+	bin_steps: VecMap<u16, FeeParameters>,
+	flash_loan_enable: bool,
+	flash_loan_fee_rate: u64,
+	flash_loan_max_amount: u64,
+	quote_asset_whitelist: VecSet<TypeName>,
+	allow_create_pair: bool,
+	acl: ACL,
+	package_version: u64
+}
+
+struct InitConfigEvent has copy, drop {
+	global_config_id: ID
+}
+
+struct SetBinStepEvent has copy, drop {
+	bin_step: u16,
+	base_factor: u32,
+	filter_period: u16,
+	decay_period: u16,
+	reduction_factor: u16,
+	variable_fee_control: u32,
+	protocol_share: u16,
+	max_volatility_accumulator: u32
+}
+
+struct DeleteBinStepEvent has copy, drop {
+	bin_step: u16
+}
+
+struct UpdateFlashLoanFeeRateEvent has copy, drop {
+	old_fee_rate: u64,
+	new_fee_rate: u64
+}
+
+struct SetPackageVersion has copy, drop {
+	new_version: u64,
+	old_version: u64
+}
+
+init(Arg0: &mut TxContext) {
+L1:	loc0: GlobalConfig
+L2:	loc1: InitConfigEvent
+B0:
+	0: CopyLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: LdFalse
+	3: Call vec_map::empty<u16, FeeParameters>(): VecMap<u16, FeeParameters>
+	4: LdTrue
+	5: LdU64(0)
+	6: LdConst[7](u64: 3000..)
+	7: Call vec_set::empty<TypeName>(): VecSet<TypeName>
+	8: LdFalse
+	9: MoveLoc[0](Arg0: &mut TxContext)
+	10: Call acl::new(&mut TxContext): ACL
+	11: LdConst[13](u64: 1)
+	12: Pack[2](GlobalConfig)
+	13: StLoc[1](loc0: GlobalConfig)
+	14: ImmBorrowLoc[1](loc0: GlobalConfig)
+	15: Call object::id<GlobalConfig>(&GlobalConfig): ID
+	16: Pack[3](InitConfigEvent)
+	17: StLoc[2](loc1: InitConfigEvent)
+	18: MoveLoc[1](loc0: GlobalConfig)
+	19: Call transfer::share_object<GlobalConfig>(GlobalConfig)
+	20: MoveLoc[2](loc1: InitConfigEvent)
+	21: Call event::emit<InitConfigEvent>(InitConfigEvent)
+	22: Ret
+}
+
+public add_update_bin_step(Arg0: &mut GlobalConfig, Arg1: u16, Arg2: u32, Arg3: u16, Arg4: u16, Arg5: u16, Arg6: u32, Arg7: u16, Arg8: u32, Arg9: &TxContext) {
+L10:	loc0: address
+L11:	loc1: u16
+L12:	loc2: &mut FeeParameters
+L13:	loc3: FeeParameters
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: CopyLoc[0](Arg0: &mut GlobalConfig)
+	4: MoveLoc[9](Arg9: &TxContext)
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[10](loc0: address)
+	7: FreezeRef
+	8: MoveLoc[10](loc0: address)
+	9: Call check_config_role(&GlobalConfig, address)
+	10: CopyLoc[1](Arg1: u16)
+	11: Call validate_bin_step(u16)
+	12: CopyLoc[7](Arg7: u16)
+	13: Call fee_helper::verify_protocol_share(u16)
+	14: CopyLoc[2](Arg2: u32)
+	15: CopyLoc[3](Arg3: u16)
+	16: CopyLoc[4](Arg4: u16)
+	17: CopyLoc[5](Arg5: u16)
+	18: CopyLoc[6](Arg6: u32)
+	19: CopyLoc[7](Arg7: u16)
+	20: CopyLoc[8](Arg8: u32)
+	21: Pack[1](FeeParameters)
+	22: StLoc[13](loc3: FeeParameters)
+	23: CopyLoc[0](Arg0: &mut GlobalConfig)
+	24: CopyLoc[1](Arg1: u16)
+	25: StLoc[11](loc1: u16)
+	26: FreezeRef
+	27: MoveLoc[11](loc1: u16)
+	28: Call bin_step_exists(&GlobalConfig, u16): bool
+	29: Not
+	30: BrFalse(37)
+B1:
+	31: MoveLoc[0](Arg0: &mut GlobalConfig)
+	32: MutBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	33: CopyLoc[1](Arg1: u16)
+	34: MoveLoc[13](loc3: FeeParameters)
+	35: Call vec_map::insert<u16, FeeParameters>(&mut VecMap<u16, FeeParameters>, u16, FeeParameters)
+	36: Branch(45)
+B2:
+	37: MoveLoc[0](Arg0: &mut GlobalConfig)
+	38: MutBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	39: ImmBorrowLoc[1](Arg1: u16)
+	40: Call vec_map::get_mut<u16, FeeParameters>(&mut VecMap<u16, FeeParameters>, &u16): &mut FeeParameters
+	41: StLoc[12](loc2: &mut FeeParameters)
+	42: MoveLoc[13](loc3: FeeParameters)
+	43: MoveLoc[12](loc2: &mut FeeParameters)
+	44: WriteRef
+B3:
+	45: MoveLoc[1](Arg1: u16)
+	46: MoveLoc[2](Arg2: u32)
+	47: MoveLoc[3](Arg3: u16)
+	48: MoveLoc[4](Arg4: u16)
+	49: MoveLoc[5](Arg5: u16)
+	50: MoveLoc[6](Arg6: u32)
+	51: MoveLoc[7](Arg7: u16)
+	52: MoveLoc[8](Arg8: u32)
+	53: Pack[4](SetBinStepEvent)
+	54: Call event::emit<SetBinStepEvent>(SetBinStepEvent)
+	55: Ret
+}
+
+public delete_bin_step(Arg0: &mut GlobalConfig, Arg1: u16, Arg2: &TxContext) {
+L3:	loc0: address
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: CopyLoc[0](Arg0: &mut GlobalConfig)
+	4: MoveLoc[2](Arg2: &TxContext)
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[3](loc0: address)
+	7: FreezeRef
+	8: MoveLoc[3](loc0: address)
+	9: Call check_config_role(&GlobalConfig, address)
+	10: CopyLoc[1](Arg1: u16)
+	11: Call validate_bin_step(u16)
+	12: MoveLoc[0](Arg0: &mut GlobalConfig)
+	13: MutBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	14: ImmBorrowLoc[1](Arg1: u16)
+	15: Call vec_map::remove<u16, FeeParameters>(&mut VecMap<u16, FeeParameters>, &u16): u16 * FeeParameters
+	16: Pop
+	17: Pop
+	18: MoveLoc[1](Arg1: u16)
+	19: Pack[5](DeleteBinStepEvent)
+	20: Call event::emit<DeleteBinStepEvent>(DeleteBinStepEvent)
+	21: Ret
+}
+
+public set_pause(Arg0: &mut GlobalConfig, Arg1: bool, Arg2: &TxContext) {
+L3:	loc0: address
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: CopyLoc[0](Arg0: &mut GlobalConfig)
+	4: MoveLoc[2](Arg2: &TxContext)
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[3](loc0: address)
+	7: FreezeRef
+	8: MoveLoc[3](loc0: address)
+	9: Call check_config_role(&GlobalConfig, address)
+	10: MoveLoc[1](Arg1: bool)
+	11: MoveLoc[0](Arg0: &mut GlobalConfig)
+	12: MutBorrowField[1](GlobalConfig.pause: bool)
+	13: WriteRef
+	14: Ret
+}
+
+public update_flash_loan_max_amount(Arg0: &mut GlobalConfig, Arg1: u64, Arg2: &TxContext) {
+L3:	loc0: address
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: CopyLoc[0](Arg0: &mut GlobalConfig)
+	4: MoveLoc[2](Arg2: &TxContext)
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[3](loc0: address)
+	7: FreezeRef
+	8: MoveLoc[3](loc0: address)
+	9: Call check_config_role(&GlobalConfig, address)
+	10: CopyLoc[1](Arg1: u64)
+	11: LdConst[7](u64: 3000..)
+	12: Le
+	13: BrFalse(15)
+B1:
+	14: Branch(19)
+B2:
+	15: MoveLoc[0](Arg0: &mut GlobalConfig)
+	16: Pop
+	17: LdConst[10](u64: 5002)
+	18: Abort
+B3:
+	19: MoveLoc[1](Arg1: u64)
+	20: MoveLoc[0](Arg0: &mut GlobalConfig)
+	21: MutBorrowField[2](GlobalConfig.flash_loan_max_amount: u64)
+	22: WriteRef
+	23: Ret
+}
+
+public update_flash_loan_fee_rate(Arg0: &mut GlobalConfig, Arg1: u64, Arg2: &TxContext) {
+L3:	loc0: address
+L4:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: CopyLoc[0](Arg0: &mut GlobalConfig)
+	4: MoveLoc[2](Arg2: &TxContext)
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[3](loc0: address)
+	7: FreezeRef
+	8: MoveLoc[3](loc0: address)
+	9: Call check_config_role(&GlobalConfig, address)
+	10: CopyLoc[1](Arg1: u64)
+	11: LdConst[6](u64: 1000..)
+	12: Le
+	13: BrFalse(15)
+B1:
+	14: Branch(19)
+B2:
+	15: MoveLoc[0](Arg0: &mut GlobalConfig)
+	16: Pop
+	17: LdConst[9](u64: 5001)
+	18: Abort
+B3:
+	19: CopyLoc[0](Arg0: &mut GlobalConfig)
+	20: ImmBorrowField[3](GlobalConfig.flash_loan_fee_rate: u64)
+	21: ReadRef
+	22: StLoc[4](loc1: u64)
+	23: CopyLoc[1](Arg1: u64)
+	24: MoveLoc[0](Arg0: &mut GlobalConfig)
+	25: MutBorrowField[3](GlobalConfig.flash_loan_fee_rate: u64)
+	26: WriteRef
+	27: MoveLoc[4](loc1: u64)
+	28: MoveLoc[1](Arg1: u64)
+	29: Pack[6](UpdateFlashLoanFeeRateEvent)
+	30: Call event::emit<UpdateFlashLoanFeeRateEvent>(UpdateFlashLoanFeeRateEvent)
+	31: Ret
+}
+
+public add_whitelist_token<Ty0>(Arg0: &mut GlobalConfig, Arg1: &TxContext) {
+L2:	loc0: address
+L3:	loc1: TypeName
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: CopyLoc[0](Arg0: &mut GlobalConfig)
+	4: MoveLoc[1](Arg1: &TxContext)
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[2](loc0: address)
+	7: FreezeRef
+	8: MoveLoc[2](loc0: address)
+	9: Call check_config_role(&GlobalConfig, address)
+	10: Call type_name::get<Ty0>(): TypeName
+	11: StLoc[3](loc1: TypeName)
+	12: CopyLoc[0](Arg0: &mut GlobalConfig)
+	13: ImmBorrowField[4](GlobalConfig.quote_asset_whitelist: VecSet<TypeName>)
+	14: ImmBorrowLoc[3](loc1: TypeName)
+	15: Call vec_set::contains<TypeName>(&VecSet<TypeName>, &TypeName): bool
+	16: Not
+	17: BrFalse(23)
+B1:
+	18: MoveLoc[0](Arg0: &mut GlobalConfig)
+	19: MutBorrowField[4](GlobalConfig.quote_asset_whitelist: VecSet<TypeName>)
+	20: MoveLoc[3](loc1: TypeName)
+	21: Call vec_set::insert<TypeName>(&mut VecSet<TypeName>, TypeName)
+	22: Branch(25)
+B2:
+	23: MoveLoc[0](Arg0: &mut GlobalConfig)
+	24: Pop
+B3:
+	25: Ret
+}
+
+public delete_whitelist_token<Ty0>(Arg0: &mut GlobalConfig, Arg1: &TxContext) {
+L2:	loc0: address
+L3:	loc1: TypeName
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: CopyLoc[0](Arg0: &mut GlobalConfig)
+	4: MoveLoc[1](Arg1: &TxContext)
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[2](loc0: address)
+	7: FreezeRef
+	8: MoveLoc[2](loc0: address)
+	9: Call check_config_role(&GlobalConfig, address)
+	10: Call type_name::get<Ty0>(): TypeName
+	11: StLoc[3](loc1: TypeName)
+	12: CopyLoc[0](Arg0: &mut GlobalConfig)
+	13: ImmBorrowField[4](GlobalConfig.quote_asset_whitelist: VecSet<TypeName>)
+	14: ImmBorrowLoc[3](loc1: TypeName)
+	15: Call vec_set::contains<TypeName>(&VecSet<TypeName>, &TypeName): bool
+	16: BrFalse(22)
+B1:
+	17: MoveLoc[0](Arg0: &mut GlobalConfig)
+	18: MutBorrowField[4](GlobalConfig.quote_asset_whitelist: VecSet<TypeName>)
+	19: ImmBorrowLoc[3](loc1: TypeName)
+	20: Call vec_set::remove<TypeName>(&mut VecSet<TypeName>, &TypeName)
+	21: Branch(24)
+B2:
+	22: MoveLoc[0](Arg0: &mut GlobalConfig)
+	23: Pop
+B3:
+	24: Ret
+}
+
+public set_flash_loan_enable(Arg0: &mut GlobalConfig, Arg1: bool, Arg2: &TxContext) {
+L3:	loc0: address
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: CopyLoc[0](Arg0: &mut GlobalConfig)
+	4: MoveLoc[2](Arg2: &TxContext)
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[3](loc0: address)
+	7: FreezeRef
+	8: MoveLoc[3](loc0: address)
+	9: Call check_config_role(&GlobalConfig, address)
+	10: MoveLoc[1](Arg1: bool)
+	11: MoveLoc[0](Arg0: &mut GlobalConfig)
+	12: MutBorrowField[5](GlobalConfig.flash_loan_enable: bool)
+	13: WriteRef
+	14: Ret
+}
+
+public set_allow_create_pair(Arg0: &mut GlobalConfig, Arg1: bool, Arg2: &TxContext) {
+L3:	loc0: address
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: CopyLoc[0](Arg0: &mut GlobalConfig)
+	4: MoveLoc[2](Arg2: &TxContext)
+	5: Call tx_context::sender(&TxContext): address
+	6: StLoc[3](loc0: address)
+	7: FreezeRef
+	8: MoveLoc[3](loc0: address)
+	9: Call check_config_role(&GlobalConfig, address)
+	10: MoveLoc[1](Arg1: bool)
+	11: MoveLoc[0](Arg0: &mut GlobalConfig)
+	12: MutBorrowField[6](GlobalConfig.allow_create_pair: bool)
+	13: WriteRef
+	14: Ret
+}
+
+public set_upgrade_cap(Arg0: &mut GlobalConfig, Arg1: UpgradeCap, Arg2: &Clock, Arg3: &TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: MoveLoc[0](Arg0: &mut GlobalConfig)
+	4: MutBorrowField[7](GlobalConfig.acl: ACL)
+	5: MoveLoc[1](Arg1: UpgradeCap)
+	6: MoveLoc[2](Arg2: &Clock)
+	7: MoveLoc[3](Arg3: &TxContext)
+	8: Call acl::set_upgrade_cap(&mut ACL, UpgradeCap, &Clock, &TxContext)
+	9: Ret
+}
+
+public set_publisher(Arg0: &mut GlobalConfig, Arg1: Publisher, Arg2: &Clock, Arg3: &TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: MoveLoc[0](Arg0: &mut GlobalConfig)
+	4: MutBorrowField[7](GlobalConfig.acl: ACL)
+	5: MoveLoc[1](Arg1: Publisher)
+	6: MoveLoc[2](Arg2: &Clock)
+	7: MoveLoc[3](Arg3: &TxContext)
+	8: Call acl::set_publisher(&mut ACL, Publisher, &Clock, &TxContext)
+	9: Ret
+}
+
+public bin_step_exists(Arg0: &GlobalConfig, Arg1: u16): bool {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	2: ImmBorrowLoc[1](Arg1: u16)
+	3: Call vec_map::contains<u16, FeeParameters>(&VecMap<u16, FeeParameters>, &u16): bool
+	4: Ret
+}
+
+public base_factor(Arg0: &GlobalConfig, Arg1: u16): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	2: ImmBorrowLoc[1](Arg1: u16)
+	3: Call vec_map::get<u16, FeeParameters>(&VecMap<u16, FeeParameters>, &u16): &FeeParameters
+	4: ImmBorrowField[8](FeeParameters.base_factor: u32)
+	5: ReadRef
+	6: Ret
+}
+
+public filter_period(Arg0: &GlobalConfig, Arg1: u16): u16 {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	2: ImmBorrowLoc[1](Arg1: u16)
+	3: Call vec_map::get<u16, FeeParameters>(&VecMap<u16, FeeParameters>, &u16): &FeeParameters
+	4: ImmBorrowField[9](FeeParameters.filter_period: u16)
+	5: ReadRef
+	6: Ret
+}
+
+public decay_period(Arg0: &GlobalConfig, Arg1: u16): u16 {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	2: ImmBorrowLoc[1](Arg1: u16)
+	3: Call vec_map::get<u16, FeeParameters>(&VecMap<u16, FeeParameters>, &u16): &FeeParameters
+	4: ImmBorrowField[10](FeeParameters.decay_period: u16)
+	5: ReadRef
+	6: Ret
+}
+
+public reduction_factor(Arg0: &GlobalConfig, Arg1: u16): u16 {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	2: ImmBorrowLoc[1](Arg1: u16)
+	3: Call vec_map::get<u16, FeeParameters>(&VecMap<u16, FeeParameters>, &u16): &FeeParameters
+	4: ImmBorrowField[11](FeeParameters.reduction_factor: u16)
+	5: ReadRef
+	6: Ret
+}
+
+public variable_fee_control(Arg0: &GlobalConfig, Arg1: u16): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	2: ImmBorrowLoc[1](Arg1: u16)
+	3: Call vec_map::get<u16, FeeParameters>(&VecMap<u16, FeeParameters>, &u16): &FeeParameters
+	4: ImmBorrowField[12](FeeParameters.variable_fee_control: u32)
+	5: ReadRef
+	6: Ret
+}
+
+public protocol_share(Arg0: &GlobalConfig, Arg1: u16): u16 {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	2: ImmBorrowLoc[1](Arg1: u16)
+	3: Call vec_map::get<u16, FeeParameters>(&VecMap<u16, FeeParameters>, &u16): &FeeParameters
+	4: ImmBorrowField[13](FeeParameters.protocol_share: u16)
+	5: ReadRef
+	6: Ret
+}
+
+public max_volatility_accumulator(Arg0: &GlobalConfig, Arg1: u16): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[0](GlobalConfig.bin_steps: VecMap<u16, FeeParameters>)
+	2: ImmBorrowLoc[1](Arg1: u16)
+	3: Call vec_map::get<u16, FeeParameters>(&VecMap<u16, FeeParameters>, &u16): &FeeParameters
+	4: ImmBorrowField[14](FeeParameters.max_volatility_accumulator: u32)
+	5: ReadRef
+	6: Ret
+}
+
+public global_paused(Arg0: &GlobalConfig): bool {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[1](GlobalConfig.pause: bool)
+	2: ReadRef
+	3: Ret
+}
+
+public flash_loan_enable(Arg0: &GlobalConfig): bool {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[5](GlobalConfig.flash_loan_enable: bool)
+	2: ReadRef
+	3: Ret
+}
+
+public flash_loan_fee_rate(Arg0: &GlobalConfig): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[3](GlobalConfig.flash_loan_fee_rate: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public flash_loan_max_amount(Arg0: &GlobalConfig): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[2](GlobalConfig.flash_loan_max_amount: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public validate_bin_step(Arg0: u16) {
+L1:	loc0: bool
+B0:
+	0: CopyLoc[0](Arg0: u16)
+	1: LdConst[5](u16: 5000)
+	2: Le
+	3: BrFalse(9)
+B1:
+	4: MoveLoc[0](Arg0: u16)
+	5: LdConst[4](u16: 1)
+	6: Ge
+	7: StLoc[1](loc0: bool)
+	8: Branch(11)
+B2:
+	9: LdFalse
+	10: StLoc[1](loc0: bool)
+B3:
+	11: MoveLoc[1](loc0: bool)
+	12: BrFalse(14)
+B4:
+	13: Branch(16)
+B5:
+	14: LdConst[8](u64: 5000)
+	15: Abort
+B6:
+	16: Ret
+}
+
+public is_in_whitelist(Arg0: &GlobalConfig, Arg1: TypeName): bool {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[4](GlobalConfig.quote_asset_whitelist: VecSet<TypeName>)
+	2: ImmBorrowLoc[1](Arg1: TypeName)
+	3: Call vec_set::contains<TypeName>(&VecSet<TypeName>, &TypeName): bool
+	4: Ret
+}
+
+public whitelist_tokens(Arg0: &GlobalConfig): &VecSet<TypeName> {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[4](GlobalConfig.quote_asset_whitelist: VecSet<TypeName>)
+	2: Ret
+}
+
+public get_allow_create_pair(Arg0: &GlobalConfig): bool {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[6](GlobalConfig.allow_create_pair: bool)
+	2: ReadRef
+	3: Ret
+}
+
+public get_fund_receiver(Arg0: &GlobalConfig): address {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[7](GlobalConfig.acl: ACL)
+	2: Call acl::get_fund_receiver(&ACL): address
+	3: Ret
+}
+
+public get_reward_receiver(Arg0: &GlobalConfig): address {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[7](GlobalConfig.acl: ACL)
+	2: Call acl::get_reward_receiver(&ACL): address
+	3: Ret
+}
+
+public acl(Arg0: &GlobalConfig): &ACL {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[7](GlobalConfig.acl: ACL)
+	2: Ret
+}
+
+public propose(Arg0: &mut GlobalConfig, Arg1: u8, Arg2: u8, Arg3: address, Arg4: &Clock, Arg5: &TxContext): u64 {
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: MoveLoc[0](Arg0: &mut GlobalConfig)
+	4: MutBorrowField[7](GlobalConfig.acl: ACL)
+	5: MoveLoc[1](Arg1: u8)
+	6: MoveLoc[2](Arg2: u8)
+	7: MoveLoc[3](Arg3: address)
+	8: MoveLoc[4](Arg4: &Clock)
+	9: MoveLoc[5](Arg5: &TxContext)
+	10: Call acl::propose(&mut ACL, u8, u8, address, &Clock, &TxContext): u64
+	11: Ret
+}
+
+public vote(Arg0: &mut GlobalConfig, Arg1: u64, Arg2: &Clock, Arg3: &TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: MoveLoc[0](Arg0: &mut GlobalConfig)
+	4: MutBorrowField[7](GlobalConfig.acl: ACL)
+	5: MoveLoc[1](Arg1: u64)
+	6: MoveLoc[2](Arg2: &Clock)
+	7: MoveLoc[3](Arg3: &TxContext)
+	8: Call acl::vote(&mut ACL, u64, &Clock, &TxContext)
+	9: Ret
+}
+
+public execute(Arg0: &mut GlobalConfig, Arg1: u64, Arg2: &Clock, Arg3: &TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: MoveLoc[0](Arg0: &mut GlobalConfig)
+	4: MutBorrowField[7](GlobalConfig.acl: ACL)
+	5: MoveLoc[1](Arg1: u64)
+	6: MoveLoc[2](Arg2: &Clock)
+	7: MoveLoc[3](Arg3: &TxContext)
+	8: Call acl::execute(&mut ACL, u64, &Clock, &TxContext)
+	9: Ret
+}
+
+public cancel(Arg0: &mut GlobalConfig, Arg1: u64, Arg2: &Clock, Arg3: &TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: FreezeRef
+	2: Call checked_package_version(&GlobalConfig)
+	3: MoveLoc[0](Arg0: &mut GlobalConfig)
+	4: MutBorrowField[7](GlobalConfig.acl: ACL)
+	5: MoveLoc[1](Arg1: u64)
+	6: MoveLoc[2](Arg2: &Clock)
+	7: MoveLoc[3](Arg3: &TxContext)
+	8: Call acl::cancel(&mut ACL, u64, &Clock, &TxContext)
+	9: Ret
+}
+
+public check_config_role(Arg0: &GlobalConfig, Arg1: address) {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[7](GlobalConfig.acl: ACL)
+	2: MoveLoc[1](Arg1: address)
+	3: LdConst[0](u8: 0)
+	4: Call acl::has_role(&ACL, address, u8): bool
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: LdConst[11](u64: 5003)
+	8: Abort
+B3:
+	9: Ret
+}
+
+public check_pool_manager_role(Arg0: &GlobalConfig, Arg1: address) {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[7](GlobalConfig.acl: ACL)
+	2: MoveLoc[1](Arg1: address)
+	3: LdConst[1](u8: 1)
+	4: Call acl::has_role(&ACL, address, u8): bool
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: LdConst[11](u64: 5003)
+	8: Abort
+B3:
+	9: Ret
+}
+
+public check_reward_role(Arg0: &GlobalConfig, Arg1: address) {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[7](GlobalConfig.acl: ACL)
+	2: MoveLoc[1](Arg1: address)
+	3: LdConst[2](u8: 2)
+	4: Call acl::has_role(&ACL, address, u8): bool
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: LdConst[11](u64: 5003)
+	8: Abort
+B3:
+	9: Ret
+}
+
+public check_upgrade_role(Arg0: &GlobalConfig, Arg1: address) {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[7](GlobalConfig.acl: ACL)
+	2: MoveLoc[1](Arg1: address)
+	3: LdConst[3](u8: 3)
+	4: Call acl::has_role(&ACL, address, u8): bool
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: LdConst[11](u64: 5003)
+	8: Abort
+B3:
+	9: Ret
+}
+
+public checked_package_version(Arg0: &GlobalConfig) {
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: ImmBorrowField[15](GlobalConfig.package_version: u64)
+	2: ReadRef
+	3: LdConst[13](u64: 1)
+	4: Le
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: LdConst[12](u64: 5004)
+	8: Abort
+B3:
+	9: Ret
+}
+
+public update_package_version(Arg0: &mut GlobalConfig, Arg1: u64, Arg2: &TxContext) {
+L3:	loc0: address
+L4:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut GlobalConfig)
+	1: MoveLoc[2](Arg2: &TxContext)
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[3](loc0: address)
+	4: FreezeRef
+	5: MoveLoc[3](loc0: address)
+	6: Call check_upgrade_role(&GlobalConfig, address)
+	7: CopyLoc[0](Arg0: &mut GlobalConfig)
+	8: ImmBorrowField[15](GlobalConfig.package_version: u64)
+	9: ReadRef
+	10: StLoc[4](loc1: u64)
+	11: CopyLoc[1](Arg1: u64)
+	12: MoveLoc[0](Arg0: &mut GlobalConfig)
+	13: MutBorrowField[15](GlobalConfig.package_version: u64)
+	14: WriteRef
+	15: MoveLoc[1](Arg1: u64)
+	16: MoveLoc[4](loc1: u64)
+	17: Pack[7](SetPackageVersion)
+	18: Call event::emit<SetPackageVersion>(SetPackageVersion)
+	19: Ret
+}
+
+public package_version(): u64 {
+B0:
+	0: LdConst[13](u64: 1)
+	1: Ret
+}
+
+Constants [
+	0 => u8: 0
+	1 => u8: 1
+	2 => u8: 2
+	3 => u8: 3
+	4 => u16: 1
+	5 => u16: 5000
+	6 => u64: 100000000
+	7 => u64: 300000000
+	8 => u64: 5000
+	9 => u64: 5001
+	10 => u64: 5002
+	11 => u64: 5003
+	12 => u64: 5004
+	13 => u64: 1
+]
+}

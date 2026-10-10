@@ -1,0 +1,881 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.tree_math {
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::bit_math;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct TreeUint24 has store {
+	level0: u256,
+	level1: Table<u64, u256>,
+	level2: Table<u64, u256>
+}
+
+public max_id(): u32 {
+B0:
+	0: LdConst[0](u32: 1677..)
+	1: Ret
+}
+
+public(friend) empty(Arg0: &mut TxContext): TreeUint24 {
+B0:
+	0: LdU256(0)
+	1: CopyLoc[0](Arg0: &mut TxContext)
+	2: Call table::new<u64, u256>(&mut TxContext): Table<u64, u256>
+	3: MoveLoc[0](Arg0: &mut TxContext)
+	4: Call table::new<u64, u256>(&mut TxContext): Table<u64, u256>
+	5: Pack[0](TreeUint24)
+	6: Ret
+}
+
+safe_borrow_table(Arg0: &Table<u64, u256>, Arg1: u64): u256 {
+L2:	loc0: u256
+B0:
+	0: CopyLoc[0](Arg0: &Table<u64, u256>)
+	1: CopyLoc[1](Arg1: u64)
+	2: Call table::contains<u64, u256>(&Table<u64, u256>, u64): bool
+	3: BrFalse(10)
+B1:
+	4: MoveLoc[0](Arg0: &Table<u64, u256>)
+	5: MoveLoc[1](Arg1: u64)
+	6: Call table::borrow<u64, u256>(&Table<u64, u256>, u64): &u256
+	7: ReadRef
+	8: StLoc[2](loc0: u256)
+	9: Branch(14)
+B2:
+	10: MoveLoc[0](Arg0: &Table<u64, u256>)
+	11: Pop
+	12: LdU256(0)
+	13: StLoc[2](loc0: u256)
+B3:
+	14: MoveLoc[2](loc0: u256)
+	15: Ret
+}
+
+public contains(Arg0: &TreeUint24, Arg1: u32): bool {
+L2:	loc0: u8
+L3:	loc1: u64
+B0:
+	0: CopyLoc[1](Arg1: u32)
+	1: LdConst[0](u32: 1677..)
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &TreeUint24)
+	6: Pop
+	7: LdConst[4](u64: 65536)
+	8: Abort
+B3:
+	9: CopyLoc[0](Arg0: &TreeUint24)
+	10: ImmBorrowField[0](TreeUint24.level0: u256)
+	11: ReadRef
+	12: LdU256(0)
+	13: Eq
+	14: BrFalse(19)
+B4:
+	15: MoveLoc[0](Arg0: &TreeUint24)
+	16: Pop
+	17: LdFalse
+	18: Ret
+B5:
+	19: CopyLoc[1](Arg1: u32)
+	20: LdConst[3](u8: 8)
+	21: Shr
+	22: CastU64
+	23: StLoc[3](loc1: u64)
+	24: MoveLoc[1](Arg1: u32)
+	25: LdConst[1](u8: 255)
+	26: CastU32
+	27: BitAnd
+	28: CastU8
+	29: StLoc[2](loc0: u8)
+	30: MoveLoc[0](Arg0: &TreeUint24)
+	31: ImmBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	32: MoveLoc[3](loc1: u64)
+	33: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	34: LdU256(1)
+	35: MoveLoc[2](loc0: u8)
+	36: Shl
+	37: BitAnd
+	38: LdU256(0)
+	39: Neq
+	40: Ret
+}
+
+public(friend) add(Arg0: &mut TreeUint24, Arg1: u32): bool {
+L2:	loc0: bool
+L3:	loc1: u8
+L4:	loc2: u8
+L5:	loc3: u8
+L6:	loc4: u256
+L7:	loc5: u256
+L8:	loc6: u64
+L9:	loc7: u64
+L10:	loc8: u256
+L11:	loc9: u256
+B0:
+	0: CopyLoc[1](Arg1: u32)
+	1: LdConst[0](u32: 1677..)
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &mut TreeUint24)
+	6: Pop
+	7: LdConst[4](u64: 65536)
+	8: Abort
+B3:
+	9: CopyLoc[1](Arg1: u32)
+	10: LdConst[3](u8: 8)
+	11: Shr
+	12: CastU64
+	13: StLoc[9](loc7: u64)
+	14: MoveLoc[1](Arg1: u32)
+	15: LdConst[1](u8: 255)
+	16: CastU32
+	17: BitAnd
+	18: CastU8
+	19: StLoc[5](loc3: u8)
+	20: CopyLoc[0](Arg0: &mut TreeUint24)
+	21: ImmBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	22: CopyLoc[9](loc7: u64)
+	23: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	24: StLoc[7](loc5: u256)
+	25: CopyLoc[7](loc5: u256)
+	26: LdU256(1)
+	27: MoveLoc[5](loc3: u8)
+	28: Shl
+	29: BitOr
+	30: StLoc[11](loc9: u256)
+	31: CopyLoc[7](loc5: u256)
+	32: CopyLoc[11](loc9: u256)
+	33: Eq
+	34: BrFalse(40)
+B4:
+	35: MoveLoc[0](Arg0: &mut TreeUint24)
+	36: Pop
+	37: LdFalse
+	38: StLoc[2](loc0: bool)
+	39: Branch(125)
+B5:
+	40: CopyLoc[7](loc5: u256)
+	41: LdU256(0)
+	42: Eq
+	43: BrFalse(50)
+B6:
+	44: CopyLoc[0](Arg0: &mut TreeUint24)
+	45: MutBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	46: CopyLoc[9](loc7: u64)
+	47: MoveLoc[11](loc9: u256)
+	48: Call table::add<u64, u256>(&mut Table<u64, u256>, u64, u256)
+	49: Branch(56)
+B7:
+	50: MoveLoc[11](loc9: u256)
+	51: CopyLoc[0](Arg0: &mut TreeUint24)
+	52: MutBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	53: CopyLoc[9](loc7: u64)
+	54: Call table::borrow_mut<u64, u256>(&mut Table<u64, u256>, u64): &mut u256
+	55: WriteRef
+B8:
+	56: MoveLoc[7](loc5: u256)
+	57: LdU256(0)
+	58: Eq
+	59: BrFalse(121)
+B9:
+	60: CopyLoc[9](loc7: u64)
+	61: LdConst[3](u8: 8)
+	62: Shr
+	63: StLoc[8](loc6: u64)
+	64: MoveLoc[9](loc7: u64)
+	65: LdConst[1](u8: 255)
+	66: CastU64
+	67: BitAnd
+	68: CastU8
+	69: StLoc[4](loc2: u8)
+	70: CopyLoc[0](Arg0: &mut TreeUint24)
+	71: ImmBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	72: CopyLoc[8](loc6: u64)
+	73: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	74: StLoc[6](loc4: u256)
+	75: CopyLoc[6](loc4: u256)
+	76: LdU256(1)
+	77: MoveLoc[4](loc2: u8)
+	78: Shl
+	79: BitOr
+	80: StLoc[10](loc8: u256)
+	81: CopyLoc[6](loc4: u256)
+	82: LdU256(0)
+	83: Eq
+	84: BrFalse(91)
+B10:
+	85: CopyLoc[0](Arg0: &mut TreeUint24)
+	86: MutBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	87: CopyLoc[8](loc6: u64)
+	88: MoveLoc[10](loc8: u256)
+	89: Call table::add<u64, u256>(&mut Table<u64, u256>, u64, u256)
+	90: Branch(97)
+B11:
+	91: MoveLoc[10](loc8: u256)
+	92: CopyLoc[0](Arg0: &mut TreeUint24)
+	93: MutBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	94: CopyLoc[8](loc6: u64)
+	95: Call table::borrow_mut<u64, u256>(&mut Table<u64, u256>, u64): &mut u256
+	96: WriteRef
+B12:
+	97: MoveLoc[6](loc4: u256)
+	98: LdU256(0)
+	99: Eq
+	100: BrFalse(118)
+B13:
+	101: MoveLoc[8](loc6: u64)
+	102: LdConst[1](u8: 255)
+	103: CastU64
+	104: BitAnd
+	105: CastU8
+	106: StLoc[3](loc1: u8)
+	107: CopyLoc[0](Arg0: &mut TreeUint24)
+	108: ImmBorrowField[0](TreeUint24.level0: u256)
+	109: ReadRef
+	110: LdU256(1)
+	111: MoveLoc[3](loc1: u8)
+	112: Shl
+	113: BitOr
+	114: MoveLoc[0](Arg0: &mut TreeUint24)
+	115: MutBorrowField[0](TreeUint24.level0: u256)
+	116: WriteRef
+	117: Branch(120)
+B14:
+	118: MoveLoc[0](Arg0: &mut TreeUint24)
+	119: Pop
+B15:
+	120: Branch(123)
+B16:
+	121: MoveLoc[0](Arg0: &mut TreeUint24)
+	122: Pop
+B17:
+	123: LdTrue
+	124: StLoc[2](loc0: bool)
+B18:
+	125: MoveLoc[2](loc0: bool)
+	126: Ret
+}
+
+public(friend) remove(Arg0: &mut TreeUint24, Arg1: u32): bool {
+L2:	loc0: bool
+L3:	loc1: u8
+L4:	loc2: u8
+L5:	loc3: u8
+L6:	loc4: u256
+L7:	loc5: u64
+L8:	loc6: u64
+L9:	loc7: u256
+L10:	loc8: u256
+B0:
+	0: CopyLoc[1](Arg1: u32)
+	1: LdConst[0](u32: 1677..)
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &mut TreeUint24)
+	6: Pop
+	7: LdConst[4](u64: 65536)
+	8: Abort
+B3:
+	9: CopyLoc[0](Arg0: &mut TreeUint24)
+	10: ImmBorrowField[0](TreeUint24.level0: u256)
+	11: ReadRef
+	12: LdU256(0)
+	13: Eq
+	14: BrFalse(19)
+B4:
+	15: MoveLoc[0](Arg0: &mut TreeUint24)
+	16: Pop
+	17: LdFalse
+	18: Ret
+B5:
+	19: CopyLoc[1](Arg1: u32)
+	20: LdConst[3](u8: 8)
+	21: Shr
+	22: CastU64
+	23: StLoc[8](loc6: u64)
+	24: MoveLoc[1](Arg1: u32)
+	25: LdConst[1](u8: 255)
+	26: CastU32
+	27: BitAnd
+	28: CastU8
+	29: StLoc[5](loc3: u8)
+	30: CopyLoc[0](Arg0: &mut TreeUint24)
+	31: ImmBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	32: CopyLoc[8](loc6: u64)
+	33: Call table::contains<u64, u256>(&Table<u64, u256>, u64): bool
+	34: Not
+	35: BrFalse(40)
+B6:
+	36: MoveLoc[0](Arg0: &mut TreeUint24)
+	37: Pop
+	38: LdFalse
+	39: Ret
+B7:
+	40: CopyLoc[0](Arg0: &mut TreeUint24)
+	41: ImmBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	42: CopyLoc[8](loc6: u64)
+	43: Call table::borrow<u64, u256>(&Table<u64, u256>, u64): &u256
+	44: ReadRef
+	45: StLoc[6](loc4: u256)
+	46: CopyLoc[6](loc4: u256)
+	47: LdConst[2](u256: 1157..)
+	48: LdU256(1)
+	49: MoveLoc[5](loc3: u8)
+	50: Shl
+	51: Xor
+	52: BitAnd
+	53: StLoc[10](loc8: u256)
+	54: MoveLoc[6](loc4: u256)
+	55: CopyLoc[10](loc8: u256)
+	56: Eq
+	57: BrFalse(63)
+B8:
+	58: MoveLoc[0](Arg0: &mut TreeUint24)
+	59: Pop
+	60: LdFalse
+	61: StLoc[2](loc0: bool)
+	62: Branch(159)
+B9:
+	63: CopyLoc[10](loc8: u256)
+	64: LdU256(0)
+	65: Eq
+	66: BrFalse(73)
+B10:
+	67: CopyLoc[0](Arg0: &mut TreeUint24)
+	68: MutBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	69: CopyLoc[8](loc6: u64)
+	70: Call table::remove<u64, u256>(&mut Table<u64, u256>, u64): u256
+	71: Pop
+	72: Branch(79)
+B11:
+	73: CopyLoc[10](loc8: u256)
+	74: CopyLoc[0](Arg0: &mut TreeUint24)
+	75: MutBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	76: CopyLoc[8](loc6: u64)
+	77: Call table::borrow_mut<u64, u256>(&mut Table<u64, u256>, u64): &mut u256
+	78: WriteRef
+B12:
+	79: MoveLoc[10](loc8: u256)
+	80: LdU256(0)
+	81: Eq
+	82: BrFalse(155)
+B13:
+	83: CopyLoc[8](loc6: u64)
+	84: LdConst[3](u8: 8)
+	85: Shr
+	86: StLoc[7](loc5: u64)
+	87: MoveLoc[8](loc6: u64)
+	88: LdConst[1](u8: 255)
+	89: CastU64
+	90: BitAnd
+	91: CastU8
+	92: StLoc[4](loc2: u8)
+	93: CopyLoc[0](Arg0: &mut TreeUint24)
+	94: ImmBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	95: CopyLoc[7](loc5: u64)
+	96: Call table::contains<u64, u256>(&Table<u64, u256>, u64): bool
+	97: BrFalse(152)
+B14:
+	98: CopyLoc[0](Arg0: &mut TreeUint24)
+	99: ImmBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	100: CopyLoc[7](loc5: u64)
+	101: Call table::borrow<u64, u256>(&Table<u64, u256>, u64): &u256
+	102: ReadRef
+	103: LdConst[2](u256: 1157..)
+	104: LdU256(1)
+	105: MoveLoc[4](loc2: u8)
+	106: Shl
+	107: Xor
+	108: BitAnd
+	109: StLoc[9](loc7: u256)
+	110: CopyLoc[9](loc7: u256)
+	111: LdU256(0)
+	112: Eq
+	113: BrFalse(120)
+B15:
+	114: CopyLoc[0](Arg0: &mut TreeUint24)
+	115: MutBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	116: CopyLoc[7](loc5: u64)
+	117: Call table::remove<u64, u256>(&mut Table<u64, u256>, u64): u256
+	118: Pop
+	119: Branch(126)
+B16:
+	120: CopyLoc[9](loc7: u256)
+	121: CopyLoc[0](Arg0: &mut TreeUint24)
+	122: MutBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	123: CopyLoc[7](loc5: u64)
+	124: Call table::borrow_mut<u64, u256>(&mut Table<u64, u256>, u64): &mut u256
+	125: WriteRef
+B17:
+	126: MoveLoc[9](loc7: u256)
+	127: LdU256(0)
+	128: Eq
+	129: BrFalse(149)
+B18:
+	130: MoveLoc[7](loc5: u64)
+	131: LdConst[1](u8: 255)
+	132: CastU64
+	133: BitAnd
+	134: CastU8
+	135: StLoc[3](loc1: u8)
+	136: CopyLoc[0](Arg0: &mut TreeUint24)
+	137: ImmBorrowField[0](TreeUint24.level0: u256)
+	138: ReadRef
+	139: LdConst[2](u256: 1157..)
+	140: LdU256(1)
+	141: MoveLoc[3](loc1: u8)
+	142: Shl
+	143: Xor
+	144: BitAnd
+	145: MoveLoc[0](Arg0: &mut TreeUint24)
+	146: MutBorrowField[0](TreeUint24.level0: u256)
+	147: WriteRef
+	148: Branch(151)
+B19:
+	149: MoveLoc[0](Arg0: &mut TreeUint24)
+	150: Pop
+B20:
+	151: Branch(154)
+B21:
+	152: MoveLoc[0](Arg0: &mut TreeUint24)
+	153: Pop
+B22:
+	154: Branch(157)
+B23:
+	155: MoveLoc[0](Arg0: &mut TreeUint24)
+	156: Pop
+B24:
+	157: LdTrue
+	158: StLoc[2](loc0: bool)
+B25:
+	159: MoveLoc[2](loc0: bool)
+	160: Ret
+}
+
+public find_first_right(Arg0: &TreeUint24, Arg1: u32): u32 {
+L2:	loc0: u8
+L3:	loc1: u8
+L4:	loc2: u8
+L5:	loc3: u256
+L6:	loc4: u256
+L7:	loc5: u256
+L8:	loc6: u64
+L9:	loc7: u64
+L10:	loc8: u256
+L11:	loc9: u256
+L12:	loc10: u256
+L13:	loc11: u256
+L14:	loc12: u256
+L15:	loc13: u256
+B0:
+	0: CopyLoc[1](Arg1: u32)
+	1: LdConst[0](u32: 1677..)
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &TreeUint24)
+	6: Pop
+	7: LdConst[4](u64: 65536)
+	8: Abort
+B3:
+	9: CopyLoc[0](Arg0: &TreeUint24)
+	10: ImmBorrowField[0](TreeUint24.level0: u256)
+	11: ReadRef
+	12: LdU256(0)
+	13: Eq
+	14: BrFalse(19)
+B4:
+	15: MoveLoc[0](Arg0: &TreeUint24)
+	16: Pop
+	17: LdConst[0](u32: 1677..)
+	18: Ret
+B5:
+	19: CopyLoc[1](Arg1: u32)
+	20: LdConst[3](u8: 8)
+	21: Shr
+	22: CastU64
+	23: StLoc[9](loc7: u64)
+	24: MoveLoc[1](Arg1: u32)
+	25: LdConst[1](u8: 255)
+	26: CastU32
+	27: BitAnd
+	28: CastU8
+	29: StLoc[4](loc2: u8)
+	30: CopyLoc[4](loc2: u8)
+	31: LdU8(0)
+	32: Gt
+	33: BrFalse(57)
+B6:
+	34: CopyLoc[0](Arg0: &TreeUint24)
+	35: ImmBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	36: CopyLoc[9](loc7: u64)
+	37: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	38: MoveLoc[4](loc2: u8)
+	39: LdU8(1)
+	40: Sub
+	41: Call bit_math::closest_bit_right_u256(u256, u8): u256
+	42: StLoc[5](loc3: u256)
+	43: CopyLoc[5](loc3: u256)
+	44: Call bit_math::invalid_bit(): u256
+	45: Neq
+	46: BrFalse(57)
+B7:
+	47: MoveLoc[0](Arg0: &TreeUint24)
+	48: Pop
+	49: MoveLoc[9](loc7: u64)
+	50: CastU256
+	51: LdConst[3](u8: 8)
+	52: Shl
+	53: MoveLoc[5](loc3: u256)
+	54: BitOr
+	55: CastU32
+	56: Ret
+B8:
+	57: CopyLoc[9](loc7: u64)
+	58: LdConst[3](u8: 8)
+	59: Shr
+	60: StLoc[8](loc6: u64)
+	61: MoveLoc[9](loc7: u64)
+	62: LdConst[1](u8: 255)
+	63: CastU64
+	64: BitAnd
+	65: CastU8
+	66: StLoc[3](loc1: u8)
+	67: CopyLoc[3](loc1: u8)
+	68: LdU8(0)
+	69: Gt
+	70: BrFalse(106)
+B9:
+	71: CopyLoc[0](Arg0: &TreeUint24)
+	72: ImmBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	73: CopyLoc[8](loc6: u64)
+	74: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	75: MoveLoc[3](loc1: u8)
+	76: LdU8(1)
+	77: Sub
+	78: Call bit_math::closest_bit_right_u256(u256, u8): u256
+	79: StLoc[6](loc4: u256)
+	80: CopyLoc[6](loc4: u256)
+	81: Call bit_math::invalid_bit(): u256
+	82: Neq
+	83: BrFalse(106)
+B10:
+	84: MoveLoc[8](loc6: u64)
+	85: CastU256
+	86: LdConst[3](u8: 8)
+	87: Shl
+	88: MoveLoc[6](loc4: u256)
+	89: BitOr
+	90: StLoc[14](loc12: u256)
+	91: MoveLoc[0](Arg0: &TreeUint24)
+	92: ImmBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	93: CopyLoc[14](loc12: u256)
+	94: CastU64
+	95: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	96: Call bit_math::most_significant_bit_u256(u256): u8
+	97: CastU256
+	98: StLoc[10](loc8: u256)
+	99: MoveLoc[14](loc12: u256)
+	100: LdConst[3](u8: 8)
+	101: Shl
+	102: MoveLoc[10](loc8: u256)
+	103: BitOr
+	104: CastU32
+	105: Ret
+B11:
+	106: MoveLoc[8](loc6: u64)
+	107: LdConst[1](u8: 255)
+	108: CastU64
+	109: BitAnd
+	110: CastU8
+	111: StLoc[2](loc0: u8)
+	112: CopyLoc[2](loc0: u8)
+	113: LdU8(0)
+	114: Gt
+	115: BrFalse(162)
+B12:
+	116: CopyLoc[0](Arg0: &TreeUint24)
+	117: ImmBorrowField[0](TreeUint24.level0: u256)
+	118: ReadRef
+	119: MoveLoc[2](loc0: u8)
+	120: LdU8(1)
+	121: Sub
+	122: Call bit_math::closest_bit_right_u256(u256, u8): u256
+	123: StLoc[7](loc5: u256)
+	124: CopyLoc[7](loc5: u256)
+	125: Call bit_math::invalid_bit(): u256
+	126: Neq
+	127: BrFalse(159)
+B13:
+	128: MoveLoc[7](loc5: u256)
+	129: StLoc[13](loc11: u256)
+	130: CopyLoc[0](Arg0: &TreeUint24)
+	131: ImmBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	132: CopyLoc[13](loc11: u256)
+	133: CastU64
+	134: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	135: Call bit_math::most_significant_bit_u256(u256): u8
+	136: CastU256
+	137: StLoc[11](loc9: u256)
+	138: MoveLoc[13](loc11: u256)
+	139: LdConst[3](u8: 8)
+	140: Shl
+	141: MoveLoc[11](loc9: u256)
+	142: BitOr
+	143: StLoc[15](loc13: u256)
+	144: MoveLoc[0](Arg0: &TreeUint24)
+	145: ImmBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	146: CopyLoc[15](loc13: u256)
+	147: CastU64
+	148: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	149: Call bit_math::most_significant_bit_u256(u256): u8
+	150: CastU256
+	151: StLoc[12](loc10: u256)
+	152: MoveLoc[15](loc13: u256)
+	153: LdConst[3](u8: 8)
+	154: Shl
+	155: MoveLoc[12](loc10: u256)
+	156: BitOr
+	157: CastU32
+	158: Ret
+B14:
+	159: MoveLoc[0](Arg0: &TreeUint24)
+	160: Pop
+	161: Branch(164)
+B15:
+	162: MoveLoc[0](Arg0: &TreeUint24)
+	163: Pop
+B16:
+	164: LdConst[0](u32: 1677..)
+	165: Ret
+}
+
+public find_first_left(Arg0: &TreeUint24, Arg1: u32): u32 {
+L2:	loc0: u8
+L3:	loc1: u8
+L4:	loc2: u8
+L5:	loc3: u256
+L6:	loc4: u256
+L7:	loc5: u256
+L8:	loc6: u64
+L9:	loc7: u64
+L10:	loc8: u256
+L11:	loc9: u256
+L12:	loc10: u256
+L13:	loc11: u256
+L14:	loc12: u256
+L15:	loc13: u256
+B0:
+	0: CopyLoc[1](Arg1: u32)
+	1: LdConst[0](u32: 1677..)
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &TreeUint24)
+	6: Pop
+	7: LdConst[4](u64: 65536)
+	8: Abort
+B3:
+	9: CopyLoc[0](Arg0: &TreeUint24)
+	10: ImmBorrowField[0](TreeUint24.level0: u256)
+	11: ReadRef
+	12: LdU256(0)
+	13: Eq
+	14: BrFalse(19)
+B4:
+	15: MoveLoc[0](Arg0: &TreeUint24)
+	16: Pop
+	17: LdU32(0)
+	18: Ret
+B5:
+	19: CopyLoc[1](Arg1: u32)
+	20: LdConst[3](u8: 8)
+	21: Shr
+	22: CastU64
+	23: StLoc[9](loc7: u64)
+	24: MoveLoc[1](Arg1: u32)
+	25: LdConst[1](u8: 255)
+	26: CastU32
+	27: BitAnd
+	28: CastU8
+	29: StLoc[4](loc2: u8)
+	30: CopyLoc[4](loc2: u8)
+	31: LdConst[1](u8: 255)
+	32: Lt
+	33: BrFalse(57)
+B6:
+	34: CopyLoc[0](Arg0: &TreeUint24)
+	35: ImmBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	36: CopyLoc[9](loc7: u64)
+	37: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	38: MoveLoc[4](loc2: u8)
+	39: LdU8(1)
+	40: Add
+	41: Call bit_math::closest_bit_left_u256(u256, u8): u256
+	42: StLoc[5](loc3: u256)
+	43: CopyLoc[5](loc3: u256)
+	44: Call bit_math::invalid_bit(): u256
+	45: Neq
+	46: BrFalse(57)
+B7:
+	47: MoveLoc[0](Arg0: &TreeUint24)
+	48: Pop
+	49: MoveLoc[9](loc7: u64)
+	50: CastU256
+	51: LdConst[3](u8: 8)
+	52: Shl
+	53: MoveLoc[5](loc3: u256)
+	54: BitOr
+	55: CastU32
+	56: Ret
+B8:
+	57: CopyLoc[9](loc7: u64)
+	58: LdConst[3](u8: 8)
+	59: Shr
+	60: StLoc[8](loc6: u64)
+	61: MoveLoc[9](loc7: u64)
+	62: LdConst[1](u8: 255)
+	63: CastU64
+	64: BitAnd
+	65: CastU8
+	66: StLoc[3](loc1: u8)
+	67: CopyLoc[3](loc1: u8)
+	68: LdConst[1](u8: 255)
+	69: Lt
+	70: BrFalse(106)
+B9:
+	71: CopyLoc[0](Arg0: &TreeUint24)
+	72: ImmBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	73: CopyLoc[8](loc6: u64)
+	74: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	75: MoveLoc[3](loc1: u8)
+	76: LdU8(1)
+	77: Add
+	78: Call bit_math::closest_bit_left_u256(u256, u8): u256
+	79: StLoc[6](loc4: u256)
+	80: CopyLoc[6](loc4: u256)
+	81: Call bit_math::invalid_bit(): u256
+	82: Neq
+	83: BrFalse(106)
+B10:
+	84: MoveLoc[8](loc6: u64)
+	85: CastU256
+	86: LdConst[3](u8: 8)
+	87: Shl
+	88: MoveLoc[6](loc4: u256)
+	89: BitOr
+	90: StLoc[14](loc12: u256)
+	91: MoveLoc[0](Arg0: &TreeUint24)
+	92: ImmBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	93: CopyLoc[14](loc12: u256)
+	94: CastU64
+	95: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	96: Call bit_math::least_significant_bit_u256(u256): u8
+	97: CastU256
+	98: StLoc[10](loc8: u256)
+	99: MoveLoc[14](loc12: u256)
+	100: LdConst[3](u8: 8)
+	101: Shl
+	102: MoveLoc[10](loc8: u256)
+	103: BitOr
+	104: CastU32
+	105: Ret
+B11:
+	106: MoveLoc[8](loc6: u64)
+	107: LdConst[1](u8: 255)
+	108: CastU64
+	109: BitAnd
+	110: CastU8
+	111: StLoc[2](loc0: u8)
+	112: CopyLoc[2](loc0: u8)
+	113: LdConst[1](u8: 255)
+	114: Lt
+	115: BrFalse(162)
+B12:
+	116: CopyLoc[0](Arg0: &TreeUint24)
+	117: ImmBorrowField[0](TreeUint24.level0: u256)
+	118: ReadRef
+	119: MoveLoc[2](loc0: u8)
+	120: LdU8(1)
+	121: Add
+	122: Call bit_math::closest_bit_left_u256(u256, u8): u256
+	123: StLoc[7](loc5: u256)
+	124: CopyLoc[7](loc5: u256)
+	125: Call bit_math::invalid_bit(): u256
+	126: Neq
+	127: BrFalse(159)
+B13:
+	128: MoveLoc[7](loc5: u256)
+	129: StLoc[13](loc11: u256)
+	130: CopyLoc[0](Arg0: &TreeUint24)
+	131: ImmBorrowField[2](TreeUint24.level1: Table<u64, u256>)
+	132: CopyLoc[13](loc11: u256)
+	133: CastU64
+	134: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	135: Call bit_math::least_significant_bit_u256(u256): u8
+	136: CastU256
+	137: StLoc[11](loc9: u256)
+	138: MoveLoc[13](loc11: u256)
+	139: LdConst[3](u8: 8)
+	140: Shl
+	141: MoveLoc[11](loc9: u256)
+	142: BitOr
+	143: StLoc[15](loc13: u256)
+	144: MoveLoc[0](Arg0: &TreeUint24)
+	145: ImmBorrowField[1](TreeUint24.level2: Table<u64, u256>)
+	146: CopyLoc[15](loc13: u256)
+	147: CastU64
+	148: Call safe_borrow_table(&Table<u64, u256>, u64): u256
+	149: Call bit_math::least_significant_bit_u256(u256): u8
+	150: CastU256
+	151: StLoc[12](loc10: u256)
+	152: MoveLoc[15](loc13: u256)
+	153: LdConst[3](u8: 8)
+	154: Shl
+	155: MoveLoc[12](loc10: u256)
+	156: BitOr
+	157: CastU32
+	158: Ret
+B14:
+	159: MoveLoc[0](Arg0: &TreeUint24)
+	160: Pop
+	161: Branch(164)
+B15:
+	162: MoveLoc[0](Arg0: &TreeUint24)
+	163: Pop
+B16:
+	164: LdU32(0)
+	165: Ret
+}
+
+public is_empty(Arg0: &TreeUint24): bool {
+B0:
+	0: MoveLoc[0](Arg0: &TreeUint24)
+	1: ImmBorrowField[0](TreeUint24.level0: u256)
+	2: ReadRef
+	3: LdU256(0)
+	4: Eq
+	5: Ret
+}
+
+Constants [
+	0 => u32: 16777215
+	1 => u8: 255
+	2 => u256: 115792089237316195423570985008687907853269984665640564039457584007913129639935
+	3 => u8: 8
+	4 => u64: 65536
+]
+}

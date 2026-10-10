@@ -1,0 +1,5253 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.lb_pair {
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::bin_manager;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::config;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::constants;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::fee_helper;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::lb_position;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::pair_parameter_helper;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::price_helper;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::q64x64;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::rewarder;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::safe_math;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::tree_math;
+use 0000000000000000000000000000000000000000000000000000000000000001::option;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct Amount has copy, drop {
+	x: u64,
+	y: u64
+}
+
+struct FlashLoanReceipt {
+	pair_id: ID,
+	loan_x: bool,
+	amount: u64,
+	fee_amount: u64
+}
+
+struct LBPair<phantom Ty0, phantom Ty1> has store, key {
+	id: UID,
+	is_pause: bool,
+	bin_step: u16,
+	parameters: PairParameters,
+	protocol_fee_x: u64,
+	protocol_fee_y: u64,
+	bin_manager: BinManager,
+	position_manager: LBPositionManager,
+	balance_x: Balance<Ty0>,
+	balance_y: Balance<Ty1>,
+	reward_manager: RewarderManager
+}
+
+struct SwapEvent has copy, drop {
+	sender: address,
+	pair: ID,
+	swap_for_y: bool,
+	bin_ids: vector<u32>,
+	amounts_in_x: vector<u64>,
+	amounts_in_y: vector<u64>,
+	amounts_out_x: vector<u64>,
+	amounts_out_y: vector<u64>,
+	total_fees_x: vector<u64>,
+	total_fees_y: vector<u64>,
+	protocol_fees_x: vector<u64>,
+	protocol_fees_y: vector<u64>,
+	volatility_accumulators: vector<u32>
+}
+
+struct CollectedProtocolFeesEvent has copy, drop {
+	fee_recipient: address,
+	protocol_fees_x: u64,
+	protocol_fees_y: u64
+}
+
+struct ForcedDecayEvent has copy, drop {
+	sender: address,
+	id_reference: u32,
+	volatility_reference: u32
+}
+
+struct StaticFeeParametersSetEvent has copy, drop {
+	sender: address,
+	base_factor: u32,
+	filter_period: u16,
+	decay_period: u16,
+	reduction_factor: u16,
+	variable_fee_control: u32,
+	protocol_share: u64,
+	max_volatility_accumulator: u32
+}
+
+struct CompositionFeesEvent has copy, drop {
+	pair: ID,
+	bin_id: u32,
+	fee_x: u64,
+	fee_y: u64
+}
+
+struct FeesCollectedEvent has copy, drop {
+	pair: ID,
+	position: ID,
+	bin_ids: vector<u32>,
+	amount_x: u64,
+	amount_y: u64
+}
+
+struct RewarderAddedEvent has copy, drop {
+	pair: ID,
+	rewarder_type: TypeName
+}
+
+struct RewardsCollectedEvent has copy, drop {
+	pair: ID,
+	position: ID,
+	reward_type: TypeName,
+	amount: u64
+}
+
+struct PriceFromIdQueriedEvent has copy, drop {
+	id: u32,
+	price: u128
+}
+
+struct IdFromPriceQueriedEvent has copy, drop {
+	price: u128,
+	id: u32
+}
+
+struct FlashLoanEvent has copy, drop {
+	pair: ID,
+	loan_x: bool,
+	amount: u64,
+	fee_amount: u64
+}
+
+struct OpenPositionEvent has copy, drop {
+	pair: ID,
+	position: ID,
+	owner: address
+}
+
+struct ClosePositionEvent has copy, drop {
+	pair: ID,
+	position: ID,
+	owner: address
+}
+
+struct AddLiquidityEvent has copy, drop {
+	pair: ID,
+	position: ID,
+	ids: vector<u32>,
+	amounts_x: vector<u64>,
+	amounts_y: vector<u64>,
+	tokens: vector<u128>
+}
+
+struct RemoveLiquidityEvent has copy, drop {
+	pair: ID,
+	position: ID,
+	ids: vector<u32>,
+	tokens_x: u64,
+	tokens_y: u64,
+	token_bins_x: vector<u64>,
+	token_bins_y: vector<u64>,
+	liquidity_burned: vector<u128>
+}
+
+struct LockPositionEvent has copy, drop {
+	pair: ID,
+	position: ID,
+	lock_until: u64,
+	owner: address
+}
+
+struct PairPausedEvent has copy, drop {
+	pair: ID,
+	paused: bool
+}
+
+public(friend) new<Ty0, Ty1>(Arg0: u32, Arg1: u16, Arg2: u32, Arg3: u16, Arg4: u16, Arg5: u16, Arg6: u32, Arg7: u16, Arg8: u32, Arg9: &mut TxContext): LBPair<Ty0, Ty1> {
+L10:	loc0: LBPair<Ty0, Ty1>
+B0:
+	0: CopyLoc[1](Arg1: u16)
+	1: Call config::validate_bin_step(u16)
+	2: CopyLoc[9](Arg9: &mut TxContext)
+	3: Call object::new(&mut TxContext): UID
+	4: LdFalse
+	5: MoveLoc[1](Arg1: u16)
+	6: MoveLoc[0](Arg0: u32)
+	7: Call pair_parameter_helper::new(u32): PairParameters
+	8: LdU64(0)
+	9: LdU64(0)
+	10: CopyLoc[9](Arg9: &mut TxContext)
+	11: Call bin_manager::new(&mut TxContext): BinManager
+	12: CopyLoc[9](Arg9: &mut TxContext)
+	13: Call lb_position::new(&mut TxContext): LBPositionManager
+	14: Call balance::zero<Ty0>(): Balance<Ty0>
+	15: Call balance::zero<Ty1>(): Balance<Ty1>
+	16: Call rewarder::new(): RewarderManager
+	17: PackGeneric[0](LBPair<Ty0, Ty1>)
+	18: StLoc[10](loc0: LBPair<Ty0, Ty1>)
+	19: MutBorrowLoc[10](loc0: LBPair<Ty0, Ty1>)
+	20: MoveLoc[2](Arg2: u32)
+	21: MoveLoc[3](Arg3: u16)
+	22: MoveLoc[4](Arg4: u16)
+	23: MoveLoc[5](Arg5: u16)
+	24: MoveLoc[6](Arg6: u32)
+	25: MoveLoc[7](Arg7: u16)
+	26: MoveLoc[8](Arg8: u32)
+	27: MoveLoc[9](Arg9: &mut TxContext)
+	28: FreezeRef
+	29: Call set_static_fee_parameters_internal<Ty0, Ty1>(&mut LBPair<Ty0, Ty1>, u32, u16, u16, u16, u32, u16, u32, &TxContext)
+	30: MoveLoc[10](loc0: LBPair<Ty0, Ty1>)
+	31: Ret
+}
+
+public get_bin_manager<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>): &BinManager {
+B0:
+	0: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	2: Ret
+}
+
+public get_position_manager<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>): &LBPositionManager {
+B0:
+	0: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	2: Ret
+}
+
+public get_reward_manager<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>): &RewarderManager {
+B0:
+	0: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	2: Ret
+}
+
+public get_bin_step<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>): u16 {
+B0:
+	0: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[3](LBPair.bin_step: u16)
+	2: ReadRef
+	3: Ret
+}
+
+public get_range_id<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>): u32 * u32 {
+B0:
+	0: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	2: Call bin_manager::get_range_id(&BinManager): u32 * u32
+	3: Ret
+}
+
+public get_active_id<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	2: Call pair_parameter_helper::get_active_id(&PairParameters): u32
+	3: Ret
+}
+
+public get_bin<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>, Arg1: u32): u64 * u64 {
+B0:
+	0: CopyLoc[1](Arg1: u32)
+	1: Call tree_math::max_id(): u32
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	6: Pop
+	7: LdConst[11](u64: 2020)
+	8: Abort
+B3:
+	9: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	10: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	11: MoveLoc[1](Arg1: u32)
+	12: Call bin_manager::get_bin_reserves(&BinManager, u32): u64 * u64
+	13: Ret
+}
+
+public get_protocol_fees<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>): u64 * u64 {
+B0:
+	0: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	5: ReadRef
+	6: Ret
+}
+
+public get_price_from_id<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>, Arg1: u32): u128 {
+L2:	loc0: u128
+B0:
+	0: CopyLoc[1](Arg1: u32)
+	1: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	2: ImmBorrowFieldGeneric[3](LBPair.bin_step: u16)
+	3: ReadRef
+	4: Call price_helper::get_price_from_id(u32, u16): u128
+	5: StLoc[2](loc0: u128)
+	6: MoveLoc[1](Arg1: u32)
+	7: CopyLoc[2](loc0: u128)
+	8: Pack[11](PriceFromIdQueriedEvent)
+	9: Call event::emit<PriceFromIdQueriedEvent>(PriceFromIdQueriedEvent)
+	10: MoveLoc[2](loc0: u128)
+	11: Ret
+}
+
+public get_id_from_price<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>, Arg1: u128): u32 {
+L2:	loc0: u32
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	2: ImmBorrowFieldGeneric[3](LBPair.bin_step: u16)
+	3: ReadRef
+	4: Call price_helper::get_id_from_price(u128, u16): u32
+	5: StLoc[2](loc0: u32)
+	6: MoveLoc[1](Arg1: u128)
+	7: CopyLoc[2](loc0: u32)
+	8: Pack[12](IdFromPriceQueriedEvent)
+	9: Call event::emit<IdFromPriceQueriedEvent>(IdFromPriceQueriedEvent)
+	10: MoveLoc[2](loc0: u32)
+	11: Ret
+}
+
+public get_swap_in<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>, Arg1: u64, Arg2: bool, Arg3: &Clock): u64 * u64 * u64 {
+L4:	loc0: u64
+L5:	loc1: u64
+L6:	loc2: u64
+L7:	loc3: bool
+L8:	loc4: u64
+L9:	loc5: u64
+L10:	loc6: u64
+L11:	loc7: u64
+L12:	loc8: u64
+L13:	loc9: u16
+L14:	loc10: u64
+L15:	loc11: u64
+L16:	loc12: u32
+L17:	loc13: u32
+L18:	loc14: u128
+L19:	loc15: u64
+L20:	loc16: u64
+L21:	loc17: PairParameters
+L22:	loc18: u64
+B0:
+	0: MoveLoc[1](Arg1: u64)
+	1: StLoc[10](loc6: u64)
+	2: LdU64(0)
+	3: StLoc[8](loc4: u64)
+	4: LdU64(0)
+	5: StLoc[14](loc10: u64)
+	6: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	8: ReadRef
+	9: StLoc[21](loc17: PairParameters)
+	10: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	11: ImmBorrowFieldGeneric[3](LBPair.bin_step: u16)
+	12: ReadRef
+	13: StLoc[13](loc9: u16)
+	14: ImmBorrowLoc[21](loc17: PairParameters)
+	15: Call pair_parameter_helper::get_active_id(&PairParameters): u32
+	16: StLoc[16](loc12: u32)
+	17: MutBorrowLoc[21](loc17: PairParameters)
+	18: MoveLoc[3](Arg3: &Clock)
+	19: Call clock::timestamp_ms(&Clock): u64
+	20: LdConst[1](u64: 1000)
+	21: Div
+	22: Call pair_parameter_helper::update_references(&mut PairParameters, u64)
+B1:
+	23: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	24: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	25: CopyLoc[16](loc12: u32)
+	26: Call bin_manager::contains(&BinManager, u32): bool
+	27: BrFalse(105)
+B2:
+	28: Branch(29)
+B3:
+	29: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	30: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	31: CopyLoc[16](loc12: u32)
+	32: Call bin_manager::get_bin_reserves(&BinManager, u32): u64 * u64
+	33: StLoc[20](loc16: u64)
+	34: StLoc[19](loc15: u64)
+	35: CopyLoc[2](Arg2: bool)
+	36: BrFalse(40)
+B4:
+	37: MoveLoc[20](loc16: u64)
+	38: StLoc[4](loc0: u64)
+	39: Branch(42)
+B5:
+	40: MoveLoc[19](loc15: u64)
+	41: StLoc[4](loc0: u64)
+B6:
+	42: MoveLoc[4](loc0: u64)
+	43: StLoc[12](loc8: u64)
+	44: CopyLoc[12](loc8: u64)
+	45: LdU64(0)
+	46: Gt
+	47: BrFalse(105)
+B7:
+	48: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	49: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	50: CopyLoc[16](loc12: u32)
+	51: Call bin_manager::get_bin(&BinManager, u32): &Bin
+	52: Call bin_manager::get_price(&Bin): u128
+	53: StLoc[18](loc14: u128)
+	54: CopyLoc[12](loc8: u64)
+	55: CopyLoc[10](loc6: u64)
+	56: Gt
+	57: BrFalse(61)
+B8:
+	58: CopyLoc[10](loc6: u64)
+	59: StLoc[5](loc1: u64)
+	60: Branch(63)
+B9:
+	61: MoveLoc[12](loc8: u64)
+	62: StLoc[5](loc1: u64)
+B10:
+	63: MoveLoc[5](loc1: u64)
+	64: StLoc[11](loc7: u64)
+	65: MutBorrowLoc[21](loc17: PairParameters)
+	66: CopyLoc[16](loc12: u32)
+	67: Call pair_parameter_helper::update_volatility_accumulator(&mut PairParameters, u32)
+	68: CopyLoc[2](Arg2: bool)
+	69: BrFalse(76)
+B11:
+	70: CopyLoc[11](loc7: u64)
+	71: Call q64x64::scale_offset(): u8
+	72: MoveLoc[18](loc14: u128)
+	73: Call q64x64::shift_div_round_up(u64, u8, u128): u64
+	74: StLoc[6](loc2: u64)
+	75: Branch(81)
+B12:
+	76: CopyLoc[11](loc7: u64)
+	77: MoveLoc[18](loc14: u128)
+	78: Call q64x64::scale_offset(): u8
+	79: Call q64x64::mul_shift_round_up(u64, u128, u8): u64
+	80: StLoc[6](loc2: u64)
+B13:
+	81: MoveLoc[6](loc2: u64)
+	82: StLoc[9](loc5: u64)
+	83: ImmBorrowLoc[21](loc17: PairParameters)
+	84: CopyLoc[13](loc9: u16)
+	85: Call pair_parameter_helper::get_total_fee_rate(&PairParameters, u16): u64
+	86: StLoc[22](loc18: u64)
+	87: CopyLoc[9](loc5: u64)
+	88: MoveLoc[22](loc18: u64)
+	89: Call fee_helper::get_fee_amount_exclusive(u64, u64): u64
+	90: StLoc[15](loc11: u64)
+	91: MoveLoc[8](loc4: u64)
+	92: MoveLoc[9](loc5: u64)
+	93: CopyLoc[15](loc11: u64)
+	94: Call safe_math::add_u64(u64, u64): u64
+	95: Call safe_math::add_u64(u64, u64): u64
+	96: StLoc[8](loc4: u64)
+	97: MoveLoc[10](loc6: u64)
+	98: MoveLoc[11](loc7: u64)
+	99: Sub
+	100: StLoc[10](loc6: u64)
+	101: MoveLoc[14](loc10: u64)
+	102: MoveLoc[15](loc11: u64)
+	103: Call safe_math::add_u64(u64, u64): u64
+	104: StLoc[14](loc10: u64)
+B14:
+	105: CopyLoc[10](loc6: u64)
+	106: LdU64(0)
+	107: Eq
+	108: BrFalse(112)
+B15:
+	109: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	110: Pop
+	111: Branch(137)
+B16:
+	112: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	113: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	114: CopyLoc[2](Arg2: bool)
+	115: CopyLoc[16](loc12: u32)
+	116: Call bin_manager::get_next_non_empty_bin(&BinManager, bool, u32): u32
+	117: StLoc[17](loc13: u32)
+	118: CopyLoc[17](loc13: u32)
+	119: LdU32(0)
+	120: Eq
+	121: BrFalse(125)
+B17:
+	122: LdTrue
+	123: StLoc[7](loc3: bool)
+	124: Branch(129)
+B18:
+	125: CopyLoc[17](loc13: u32)
+	126: MoveLoc[16](loc12: u32)
+	127: Eq
+	128: StLoc[7](loc3: bool)
+B19:
+	129: MoveLoc[7](loc3: bool)
+	130: BrFalse(134)
+B20:
+	131: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	132: Pop
+	133: Branch(137)
+B21:
+	134: MoveLoc[17](loc13: u32)
+	135: StLoc[16](loc12: u32)
+	136: Branch(23)
+B22:
+	137: MoveLoc[8](loc4: u64)
+	138: MoveLoc[10](loc6: u64)
+	139: MoveLoc[14](loc10: u64)
+	140: Ret
+}
+
+public get_swap_out<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>, Arg1: u64, Arg2: bool, Arg3: &Clock): u64 * u64 * u64 {
+L4:	loc0: u64
+L5:	loc1: u64
+L6:	loc2: u64
+L7:	loc3: bool
+L8:	loc4: bool
+L9:	loc5: bool
+L10:	loc6: u64
+L11:	loc7: u64
+L12:	loc8: u64
+L13:	loc9: u64
+L14:	loc10: u32
+L15:	loc11: u64
+L16:	loc12: u64
+L17:	loc13: u64
+L18:	loc14: u64
+L19:	loc15: &Bin
+L20:	loc16: u16
+L21:	loc17: u64
+L22:	loc18: u64
+L23:	loc19: u32
+L24:	loc20: u64
+L25:	loc21: u64
+L26:	loc22: u32
+L27:	loc23: u64
+L28:	loc24: u64
+L29:	loc25: PairParameters
+L30:	loc26: u64
+L31:	loc27: u64
+B0:
+	0: CopyLoc[2](Arg2: bool)
+	1: BrFalse(7)
+B1:
+	2: MoveLoc[1](Arg1: u64)
+	3: LdU64(0)
+	4: StLoc[6](loc2: u64)
+	5: StLoc[4](loc0: u64)
+	6: Branch(11)
+B2:
+	7: LdU64(0)
+	8: MoveLoc[1](Arg1: u64)
+	9: StLoc[6](loc2: u64)
+	10: StLoc[4](loc0: u64)
+B3:
+	11: MoveLoc[4](loc0: u64)
+	12: MoveLoc[6](loc2: u64)
+	13: StLoc[16](loc12: u64)
+	14: StLoc[15](loc11: u64)
+	15: LdU64(0)
+	16: LdU64(0)
+	17: StLoc[18](loc14: u64)
+	18: StLoc[17](loc13: u64)
+	19: LdU64(0)
+	20: LdU64(0)
+	21: StLoc[31](loc27: u64)
+	22: StLoc[30](loc26: u64)
+	23: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	24: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	25: ReadRef
+	26: StLoc[29](loc25: PairParameters)
+	27: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	28: ImmBorrowFieldGeneric[3](LBPair.bin_step: u16)
+	29: ReadRef
+	30: StLoc[20](loc16: u16)
+	31: ImmBorrowLoc[29](loc25: PairParameters)
+	32: Call pair_parameter_helper::get_active_id(&PairParameters): u32
+	33: StLoc[14](loc10: u32)
+	34: MutBorrowLoc[29](loc25: PairParameters)
+	35: MoveLoc[3](Arg3: &Clock)
+	36: Call clock::timestamp_ms(&Clock): u64
+	37: LdConst[1](u64: 1000)
+	38: Div
+	39: Call pair_parameter_helper::update_references(&mut PairParameters, u64)
+	40: MoveLoc[14](loc10: u32)
+	41: StLoc[23](loc19: u32)
+B4:
+	42: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	43: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	44: CopyLoc[23](loc19: u32)
+	45: Call bin_manager::contains(&BinManager, u32): bool
+	46: BrFalse(115)
+B5:
+	47: Branch(48)
+B6:
+	48: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	49: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	50: CopyLoc[23](loc19: u32)
+	51: Call bin_manager::get_bin(&BinManager, u32): &Bin
+	52: StLoc[19](loc15: &Bin)
+	53: CopyLoc[19](loc15: &Bin)
+	54: CopyLoc[2](Arg2: bool)
+	55: Not
+	56: Call bin_manager::is_empty(&Bin, bool): bool
+	57: Not
+	58: BrFalse(113)
+B7:
+	59: MutBorrowLoc[29](loc25: PairParameters)
+	60: CopyLoc[23](loc19: u32)
+	61: Call pair_parameter_helper::update_volatility_accumulator(&mut PairParameters, u32)
+	62: MoveLoc[19](loc15: &Bin)
+	63: ImmBorrowLoc[29](loc25: PairParameters)
+	64: CopyLoc[20](loc16: u16)
+	65: CopyLoc[2](Arg2: bool)
+	66: CopyLoc[15](loc11: u64)
+	67: CopyLoc[16](loc12: u64)
+	68: Call bin_manager::get_amounts(&Bin, &PairParameters, u16, bool, u64, u64): u64 * u64 * u64 * u64 * u64 * u64
+	69: StLoc[22](loc18: u64)
+	70: StLoc[21](loc17: u64)
+	71: StLoc[28](loc24: u64)
+	72: StLoc[27](loc23: u64)
+	73: StLoc[25](loc21: u64)
+	74: StLoc[24](loc20: u64)
+	75: CopyLoc[24](loc20: u64)
+	76: LdU64(0)
+	77: Gt
+	78: BrFalse(82)
+B8:
+	79: LdTrue
+	80: StLoc[7](loc3: bool)
+	81: Branch(86)
+B9:
+	82: CopyLoc[25](loc21: u64)
+	83: LdU64(0)
+	84: Gt
+	85: StLoc[7](loc3: bool)
+B10:
+	86: MoveLoc[7](loc3: bool)
+	87: BrFalse(112)
+B11:
+	88: MoveLoc[15](loc11: u64)
+	89: MoveLoc[24](loc20: u64)
+	90: Call safe_math::sub_u64(u64, u64): u64
+	91: StLoc[15](loc11: u64)
+	92: MoveLoc[16](loc12: u64)
+	93: MoveLoc[25](loc21: u64)
+	94: Call safe_math::sub_u64(u64, u64): u64
+	95: StLoc[16](loc12: u64)
+	96: MoveLoc[17](loc13: u64)
+	97: MoveLoc[27](loc23: u64)
+	98: Call safe_math::add_u64(u64, u64): u64
+	99: StLoc[17](loc13: u64)
+	100: MoveLoc[18](loc14: u64)
+	101: MoveLoc[28](loc24: u64)
+	102: Call safe_math::add_u64(u64, u64): u64
+	103: StLoc[18](loc14: u64)
+	104: MoveLoc[30](loc26: u64)
+	105: MoveLoc[21](loc17: u64)
+	106: Call safe_math::add_u64(u64, u64): u64
+	107: StLoc[30](loc26: u64)
+	108: MoveLoc[31](loc27: u64)
+	109: MoveLoc[22](loc18: u64)
+	110: Call safe_math::add_u64(u64, u64): u64
+	111: StLoc[31](loc27: u64)
+B12:
+	112: Branch(115)
+B13:
+	113: MoveLoc[19](loc15: &Bin)
+	114: Pop
+B14:
+	115: CopyLoc[15](loc11: u64)
+	116: LdU64(0)
+	117: Eq
+	118: BrFalse(124)
+B15:
+	119: CopyLoc[16](loc12: u64)
+	120: LdU64(0)
+	121: Eq
+	122: StLoc[8](loc4: bool)
+	123: Branch(126)
+B16:
+	124: LdFalse
+	125: StLoc[8](loc4: bool)
+B17:
+	126: MoveLoc[8](loc4: bool)
+	127: BrFalse(131)
+B18:
+	128: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	129: Pop
+	130: Branch(156)
+B19:
+	131: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	132: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	133: CopyLoc[2](Arg2: bool)
+	134: CopyLoc[23](loc19: u32)
+	135: Call bin_manager::get_next_non_empty_bin(&BinManager, bool, u32): u32
+	136: StLoc[26](loc22: u32)
+	137: CopyLoc[26](loc22: u32)
+	138: LdU32(0)
+	139: Eq
+	140: BrFalse(144)
+B20:
+	141: LdTrue
+	142: StLoc[9](loc5: bool)
+	143: Branch(148)
+B21:
+	144: CopyLoc[26](loc22: u32)
+	145: MoveLoc[23](loc19: u32)
+	146: Eq
+	147: StLoc[9](loc5: bool)
+B22:
+	148: MoveLoc[9](loc5: bool)
+	149: BrFalse(153)
+B23:
+	150: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	151: Pop
+	152: Branch(156)
+B24:
+	153: MoveLoc[26](loc22: u32)
+	154: StLoc[23](loc19: u32)
+	155: Branch(42)
+B25:
+	156: CopyLoc[2](Arg2: bool)
+	157: BrFalse(161)
+B26:
+	158: MoveLoc[15](loc11: u64)
+	159: StLoc[13](loc9: u64)
+	160: Branch(163)
+B27:
+	161: MoveLoc[16](loc12: u64)
+	162: StLoc[13](loc9: u64)
+B28:
+	163: MoveLoc[13](loc9: u64)
+	164: StLoc[5](loc1: u64)
+	165: CopyLoc[2](Arg2: bool)
+	166: BrFalse(170)
+B29:
+	167: MoveLoc[18](loc14: u64)
+	168: StLoc[11](loc7: u64)
+	169: Branch(172)
+B30:
+	170: MoveLoc[17](loc13: u64)
+	171: StLoc[11](loc7: u64)
+B31:
+	172: MoveLoc[11](loc7: u64)
+	173: StLoc[12](loc8: u64)
+	174: MoveLoc[2](Arg2: bool)
+	175: BrFalse(179)
+B32:
+	176: MoveLoc[30](loc26: u64)
+	177: StLoc[10](loc6: u64)
+	178: Branch(181)
+B33:
+	179: MoveLoc[31](loc27: u64)
+	180: StLoc[10](loc6: u64)
+B34:
+	181: MoveLoc[5](loc1: u64)
+	182: MoveLoc[12](loc8: u64)
+	183: MoveLoc[10](loc6: u64)
+	184: Ret
+}
+
+public swap<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: bool, Arg3: u64, Arg4: Coin<Ty0>, Arg5: Coin<Ty1>, Arg6: &Clock, Arg7: &mut TxContext): Coin<Ty0> * Coin<Ty1> {
+L8:	loc0: bool
+L9:	loc1: &PairParameters
+L10:	loc2: u16
+L11:	loc3: bool
+L12:	loc4: u64
+L13:	loc5: u64
+L14:	loc6: bool
+L15:	loc7: bool
+L16:	loc8: bool
+L17:	loc9: u64
+L18:	loc10: bool
+L19:	loc11: bool
+L20:	loc12: bool
+L21:	loc13: bool
+L22:	loc14: bool
+L23:	loc15: bool
+L24:	loc16: bool
+L25:	loc17: u32
+L26:	loc18: &mut Bin
+L27:	loc19: u16
+L28:	loc20: u64
+L29:	loc21: u32
+L30:	loc22: u64
+L31:	loc23: u64
+L32:	loc24: u64
+L33:	loc25: u64
+L34:	loc26: u64
+L35:	loc27: u64
+L36:	loc28: Amount
+L37:	loc29: u64
+L38:	loc30: u64
+L39:	loc31: u32
+L40:	loc32: u64
+L41:	loc33: u64
+L42:	loc34: u64
+L43:	loc35: u64
+L44:	loc36: u64
+L45:	loc37: address
+L46:	loc38: SwapEvent
+L47:	loc39: Amount
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[8](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[8](loc0: bool)
+B3:
+	14: MoveLoc[8](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(25)
+B5:
+	17: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	18: Pop
+	19: MoveLoc[7](Arg7: &mut TxContext)
+	20: Pop
+	21: MoveLoc[6](Arg6: &Clock)
+	22: Pop
+	23: LdConst[15](u64: 2033)
+	24: Abort
+B6:
+	25: CopyLoc[7](Arg7: &mut TxContext)
+	26: FreezeRef
+	27: Call tx_context::sender(&TxContext): address
+	28: StLoc[45](loc37: address)
+	29: ImmBorrowLoc[4](Arg4: Coin<Ty0>)
+	30: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	31: ImmBorrowLoc[5](Arg5: Coin<Ty1>)
+	32: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	33: Call make_amount_with(u64, u64): Amount
+	34: StLoc[36](loc28: Amount)
+	35: CopyLoc[2](Arg2: bool)
+	36: BrFalse(53)
+B7:
+	37: ImmBorrowLoc[36](loc28: Amount)
+	38: ImmBorrowField[8](Amount.y: u64)
+	39: ReadRef
+	40: LdU64(0)
+	41: Eq
+	42: BrFalse(50)
+B8:
+	43: ImmBorrowLoc[36](loc28: Amount)
+	44: ImmBorrowField[9](Amount.x: u64)
+	45: ReadRef
+	46: LdU64(0)
+	47: Gt
+	48: StLoc[21](loc13: bool)
+	49: Branch(52)
+B9:
+	50: LdFalse
+	51: StLoc[21](loc13: bool)
+B10:
+	52: Branch(55)
+B11:
+	53: LdFalse
+	54: StLoc[21](loc13: bool)
+B12:
+	55: MoveLoc[21](loc13: bool)
+	56: BrFalse(60)
+B13:
+	57: LdTrue
+	58: StLoc[18](loc10: bool)
+	59: Branch(83)
+B14:
+	60: CopyLoc[2](Arg2: bool)
+	61: Not
+	62: BrFalse(79)
+B15:
+	63: ImmBorrowLoc[36](loc28: Amount)
+	64: ImmBorrowField[9](Amount.x: u64)
+	65: ReadRef
+	66: LdU64(0)
+	67: Eq
+	68: BrFalse(76)
+B16:
+	69: ImmBorrowLoc[36](loc28: Amount)
+	70: ImmBorrowField[8](Amount.y: u64)
+	71: ReadRef
+	72: LdU64(0)
+	73: Gt
+	74: StLoc[20](loc12: bool)
+	75: Branch(78)
+B17:
+	76: LdFalse
+	77: StLoc[20](loc12: bool)
+B18:
+	78: Branch(81)
+B19:
+	79: LdFalse
+	80: StLoc[20](loc12: bool)
+B20:
+	81: MoveLoc[20](loc12: bool)
+	82: StLoc[18](loc10: bool)
+B21:
+	83: MoveLoc[18](loc10: bool)
+	84: BrFalse(86)
+B22:
+	85: Branch(94)
+B23:
+	86: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	87: Pop
+	88: MoveLoc[7](Arg7: &mut TxContext)
+	89: Pop
+	90: MoveLoc[6](Arg6: &Clock)
+	91: Pop
+	92: LdConst[3](u64: 2001)
+	93: Abort
+B24:
+	94: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	95: MutBorrowFieldGeneric[8](LBPair.balance_x: Balance<Ty0>)
+	96: MoveLoc[4](Arg4: Coin<Ty0>)
+	97: Call coin::put<Ty0>(&mut Balance<Ty0>, Coin<Ty0>)
+	98: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	99: MutBorrowFieldGeneric[9](LBPair.balance_y: Balance<Ty1>)
+	100: MoveLoc[5](Arg5: Coin<Ty1>)
+	101: Call coin::put<Ty1>(&mut Balance<Ty1>, Coin<Ty1>)
+	102: Call make_amount(): Amount
+	103: StLoc[47](loc39: Amount)
+	104: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	105: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	106: Call pair_parameter_helper::get_active_id(&PairParameters): u32
+	107: StLoc[25](loc17: u32)
+	108: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	109: ImmBorrowFieldGeneric[3](LBPair.bin_step: u16)
+	110: ReadRef
+	111: StLoc[27](loc19: u16)
+	112: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	113: MutBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	114: CopyLoc[6](Arg6: &Clock)
+	115: Call clock::timestamp_ms(&Clock): u64
+	116: LdConst[1](u64: 1000)
+	117: Div
+	118: Call pair_parameter_helper::update_references(&mut PairParameters, u64)
+	119: MoveLoc[45](loc37: address)
+	120: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	121: CopyLoc[2](Arg2: bool)
+	122: StLoc[22](loc14: bool)
+	123: FreezeRef
+	124: MoveLoc[22](loc14: bool)
+	125: Call make_swap_event<Ty0, Ty1>(address, &LBPair<Ty0, Ty1>, bool): SwapEvent
+	126: StLoc[46](loc38: SwapEvent)
+	127: LdFalse
+	128: StLoc[24](loc16: bool)
+	129: CopyLoc[25](loc17: u32)
+	130: StLoc[29](loc21: u32)
+B25:
+	131: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	132: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	133: CopyLoc[29](loc21: u32)
+	134: Call bin_manager::contains(&BinManager, u32): bool
+	135: BrFalse(315)
+B26:
+	136: Branch(137)
+B27:
+	137: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	138: MutBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	139: CopyLoc[29](loc21: u32)
+	140: Call bin_manager::get_bin_mut(&mut BinManager, u32): &mut Bin
+	141: StLoc[26](loc18: &mut Bin)
+	142: CopyLoc[29](loc21: u32)
+	143: CopyLoc[25](loc17: u32)
+	144: Eq
+	145: BrFalse(154)
+B28:
+	146: CopyLoc[26](loc18: &mut Bin)
+	147: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	148: MutBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	149: CopyLoc[6](Arg6: &Clock)
+	150: Call bin_manager::settle_active_bin_reward_growths(&mut Bin, &mut RewarderManager, &Clock): vector<u128>
+	151: Pop
+	152: LdTrue
+	153: StLoc[24](loc16: bool)
+B29:
+	154: CopyLoc[26](loc18: &mut Bin)
+	155: CopyLoc[2](Arg2: bool)
+	156: Not
+	157: StLoc[23](loc15: bool)
+	158: FreezeRef
+	159: MoveLoc[23](loc15: bool)
+	160: Call bin_manager::is_empty(&Bin, bool): bool
+	161: Not
+	162: BrFalse(313)
+B30:
+	163: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	164: MutBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	165: CopyLoc[29](loc21: u32)
+	166: Call pair_parameter_helper::update_volatility_accumulator(&mut PairParameters, u32)
+	167: CopyLoc[26](loc18: &mut Bin)
+	168: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	169: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	170: CopyLoc[27](loc19: u16)
+	171: CopyLoc[2](Arg2: bool)
+	172: ImmBorrowLoc[36](loc28: Amount)
+	173: ImmBorrowField[9](Amount.x: u64)
+	174: ReadRef
+	175: ImmBorrowLoc[36](loc28: Amount)
+	176: ImmBorrowField[8](Amount.y: u64)
+	177: ReadRef
+	178: StLoc[13](loc5: u64)
+	179: StLoc[12](loc4: u64)
+	180: StLoc[11](loc3: bool)
+	181: StLoc[10](loc2: u16)
+	182: StLoc[9](loc1: &PairParameters)
+	183: FreezeRef
+	184: MoveLoc[9](loc1: &PairParameters)
+	185: MoveLoc[10](loc2: u16)
+	186: MoveLoc[11](loc3: bool)
+	187: MoveLoc[12](loc4: u64)
+	188: MoveLoc[13](loc5: u64)
+	189: Call bin_manager::get_amounts(&Bin, &PairParameters, u16, bool, u64, u64): u64 * u64 * u64 * u64 * u64 * u64
+	190: StLoc[31](loc23: u64)
+	191: StLoc[30](loc22: u64)
+	192: StLoc[41](loc33: u64)
+	193: StLoc[40](loc32: u64)
+	194: StLoc[35](loc27: u64)
+	195: StLoc[33](loc25: u64)
+	196: CopyLoc[33](loc25: u64)
+	197: LdU64(0)
+	198: Gt
+	199: BrFalse(203)
+B31:
+	200: LdTrue
+	201: StLoc[14](loc6: bool)
+	202: Branch(207)
+B32:
+	203: CopyLoc[35](loc27: u64)
+	204: LdU64(0)
+	205: Gt
+	206: StLoc[14](loc6: bool)
+B33:
+	207: MoveLoc[14](loc6: bool)
+	208: BrFalse(310)
+B34:
+	209: MutBorrowLoc[36](loc28: Amount)
+	210: CopyLoc[33](loc25: u64)
+	211: CopyLoc[35](loc27: u64)
+	212: Call sub_amount(&mut Amount, u64, u64)
+	213: MutBorrowLoc[47](loc39: Amount)
+	214: CopyLoc[40](loc32: u64)
+	215: CopyLoc[41](loc33: u64)
+	216: Call add_amount(&mut Amount, u64, u64)
+	217: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	218: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	219: Call pair_parameter_helper::get_protocol_share(&PairParameters): u64
+	220: StLoc[44](loc36: u64)
+	221: CopyLoc[30](loc22: u64)
+	222: CopyLoc[44](loc36: u64)
+	223: Call fee_helper::get_protocol_fee_amount(u64, u64): u64
+	224: StLoc[42](loc34: u64)
+	225: CopyLoc[31](loc23: u64)
+	226: MoveLoc[44](loc36: u64)
+	227: Call fee_helper::get_protocol_fee_amount(u64, u64): u64
+	228: StLoc[43](loc35: u64)
+	229: CopyLoc[30](loc22: u64)
+	230: CopyLoc[42](loc34: u64)
+	231: Call safe_math::sub_u64(u64, u64): u64
+	232: StLoc[37](loc29: u64)
+	233: CopyLoc[31](loc23: u64)
+	234: CopyLoc[43](loc35: u64)
+	235: Call safe_math::sub_u64(u64, u64): u64
+	236: StLoc[38](loc30: u64)
+	237: CopyLoc[33](loc25: u64)
+	238: CopyLoc[30](loc22: u64)
+	239: Call safe_math::sub_u64(u64, u64): u64
+	240: StLoc[32](loc24: u64)
+	241: CopyLoc[35](loc27: u64)
+	242: CopyLoc[31](loc23: u64)
+	243: Call safe_math::sub_u64(u64, u64): u64
+	244: StLoc[34](loc26: u64)
+	245: CopyLoc[26](loc18: &mut Bin)
+	246: MoveLoc[37](loc29: u64)
+	247: MoveLoc[38](loc30: u64)
+	248: Call bin_manager::add_fee_growth(&mut Bin, u64, u64): bool
+	249: BrFalse(273)
+B35:
+	250: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	251: ImmBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	252: ReadRef
+	253: CopyLoc[42](loc34: u64)
+	254: Call safe_math::add_u64(u64, u64): u64
+	255: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	256: MutBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	257: WriteRef
+	258: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	259: ImmBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	260: ReadRef
+	261: CopyLoc[43](loc35: u64)
+	262: Call safe_math::add_u64(u64, u64): u64
+	263: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	264: MutBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	265: WriteRef
+	266: MoveLoc[26](loc18: &mut Bin)
+	267: MoveLoc[32](loc24: u64)
+	268: CopyLoc[40](loc32: u64)
+	269: MoveLoc[34](loc26: u64)
+	270: CopyLoc[41](loc33: u64)
+	271: Call bin_manager::update_reserves_fees(&mut Bin, u64, u64, u64, u64)
+	272: Branch(295)
+B36:
+	273: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	274: ImmBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	275: ReadRef
+	276: CopyLoc[30](loc22: u64)
+	277: Call safe_math::add_u64(u64, u64): u64
+	278: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	279: MutBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	280: WriteRef
+	281: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	282: ImmBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	283: ReadRef
+	284: CopyLoc[31](loc23: u64)
+	285: Call safe_math::add_u64(u64, u64): u64
+	286: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	287: MutBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	288: WriteRef
+	289: MoveLoc[26](loc18: &mut Bin)
+	290: MoveLoc[32](loc24: u64)
+	291: CopyLoc[40](loc32: u64)
+	292: MoveLoc[34](loc26: u64)
+	293: CopyLoc[41](loc33: u64)
+	294: Call bin_manager::update_reserves_fees(&mut Bin, u64, u64, u64, u64)
+B37:
+	295: MutBorrowLoc[46](loc38: SwapEvent)
+	296: CopyLoc[29](loc21: u32)
+	297: MoveLoc[33](loc25: u64)
+	298: MoveLoc[35](loc27: u64)
+	299: MoveLoc[40](loc32: u64)
+	300: MoveLoc[41](loc33: u64)
+	301: MoveLoc[30](loc22: u64)
+	302: MoveLoc[31](loc23: u64)
+	303: MoveLoc[42](loc34: u64)
+	304: MoveLoc[43](loc35: u64)
+	305: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	306: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	307: Call pair_parameter_helper::get_volatility_accumulator(&PairParameters): u32
+	308: Call push_swap_event(&mut SwapEvent, u32, u64, u64, u64, u64, u64, u64, u64, u64, u32)
+	309: Branch(312)
+B38:
+	310: MoveLoc[26](loc18: &mut Bin)
+	311: Pop
+B39:
+	312: Branch(315)
+B40:
+	313: MoveLoc[26](loc18: &mut Bin)
+	314: Pop
+B41:
+	315: ImmBorrowLoc[36](loc28: Amount)
+	316: ImmBorrowField[9](Amount.x: u64)
+	317: ReadRef
+	318: LdU64(0)
+	319: Eq
+	320: BrFalse(328)
+B42:
+	321: ImmBorrowLoc[36](loc28: Amount)
+	322: ImmBorrowField[8](Amount.y: u64)
+	323: ReadRef
+	324: LdU64(0)
+	325: Eq
+	326: StLoc[15](loc7: bool)
+	327: Branch(330)
+B43:
+	328: LdFalse
+	329: StLoc[15](loc7: bool)
+B44:
+	330: MoveLoc[15](loc7: bool)
+	331: BrFalse(333)
+B45:
+	332: Branch(363)
+B46:
+	333: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	334: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	335: CopyLoc[2](Arg2: bool)
+	336: CopyLoc[29](loc21: u32)
+	337: Call bin_manager::get_next_non_empty_bin(&BinManager, bool, u32): u32
+	338: StLoc[39](loc31: u32)
+	339: CopyLoc[39](loc31: u32)
+	340: LdU32(0)
+	341: Eq
+	342: BrFalse(346)
+B47:
+	343: LdTrue
+	344: StLoc[16](loc8: bool)
+	345: Branch(350)
+B48:
+	346: CopyLoc[39](loc31: u32)
+	347: MoveLoc[29](loc21: u32)
+	348: Eq
+	349: StLoc[16](loc8: bool)
+B49:
+	350: MoveLoc[16](loc8: bool)
+	351: BrFalse(360)
+B50:
+	352: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	353: Pop
+	354: MoveLoc[7](Arg7: &mut TxContext)
+	355: Pop
+	356: MoveLoc[6](Arg6: &Clock)
+	357: Pop
+	358: LdConst[7](u64: 2011)
+	359: Abort
+B51:
+	360: MoveLoc[39](loc31: u32)
+	361: StLoc[29](loc21: u32)
+	362: Branch(131)
+B52:
+	363: MoveLoc[24](loc16: bool)
+	364: Not
+	365: BrFalse(372)
+B53:
+	366: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	367: MutBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	368: MoveLoc[6](Arg6: &Clock)
+	369: Call rewarder::settle_reward(&mut RewarderManager, &Clock): vector<u128>
+	370: Pop
+	371: Branch(374)
+B54:
+	372: MoveLoc[6](Arg6: &Clock)
+	373: Pop
+B55:
+	374: MoveLoc[2](Arg2: bool)
+	375: BrFalse(381)
+B56:
+	376: ImmBorrowLoc[47](loc39: Amount)
+	377: ImmBorrowField[8](Amount.y: u64)
+	378: ReadRef
+	379: StLoc[17](loc9: u64)
+	380: Branch(385)
+B57:
+	381: ImmBorrowLoc[47](loc39: Amount)
+	382: ImmBorrowField[9](Amount.x: u64)
+	383: ReadRef
+	384: StLoc[17](loc9: u64)
+B58:
+	385: MoveLoc[17](loc9: u64)
+	386: StLoc[28](loc20: u64)
+	387: CopyLoc[28](loc20: u64)
+	388: LdU64(0)
+	389: Gt
+	390: BrFalse(396)
+B59:
+	391: MoveLoc[28](loc20: u64)
+	392: MoveLoc[3](Arg3: u64)
+	393: Ge
+	394: StLoc[19](loc11: bool)
+	395: Branch(398)
+B60:
+	396: LdFalse
+	397: StLoc[19](loc11: bool)
+B61:
+	398: MoveLoc[19](loc11: bool)
+	399: BrFalse(401)
+B62:
+	400: Branch(407)
+B63:
+	401: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	402: Pop
+	403: MoveLoc[7](Arg7: &mut TxContext)
+	404: Pop
+	405: LdConst[18](u64: 2037)
+	406: Abort
+B64:
+	407: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	408: MutBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	409: MoveLoc[29](loc21: u32)
+	410: Call pair_parameter_helper::set_active_id(&mut PairParameters, u32)
+	411: MoveLoc[46](loc38: SwapEvent)
+	412: Call event::emit<SwapEvent>(SwapEvent)
+	413: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	414: MutBorrowFieldGeneric[8](LBPair.balance_x: Balance<Ty0>)
+	415: ImmBorrowLoc[47](loc39: Amount)
+	416: ImmBorrowField[9](Amount.x: u64)
+	417: ReadRef
+	418: CopyLoc[7](Arg7: &mut TxContext)
+	419: Call coin::take<Ty0>(&mut Balance<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	420: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	421: MutBorrowFieldGeneric[9](LBPair.balance_y: Balance<Ty1>)
+	422: ImmBorrowLoc[47](loc39: Amount)
+	423: ImmBorrowField[8](Amount.y: u64)
+	424: ReadRef
+	425: MoveLoc[7](Arg7: &mut TxContext)
+	426: Call coin::take<Ty1>(&mut Balance<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	427: Ret
+}
+
+public open_position<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: &mut TxContext): LBPosition {
+L3:	loc0: bool
+L4:	loc1: ID
+L5:	loc2: LBPosition
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[3](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[3](loc0: bool)
+B3:
+	14: MoveLoc[3](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(23)
+B5:
+	17: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	18: Pop
+	19: MoveLoc[2](Arg2: &mut TxContext)
+	20: Pop
+	21: LdConst[15](u64: 2033)
+	22: Abort
+B6:
+	23: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	24: FreezeRef
+	25: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	26: StLoc[4](loc1: ID)
+	27: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	28: MutBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	29: CopyLoc[4](loc1: ID)
+	30: CopyLoc[2](Arg2: &mut TxContext)
+	31: Call lb_position::open_position<Ty0, Ty1>(&mut LBPositionManager, ID, &mut TxContext): LBPosition
+	32: StLoc[5](loc2: LBPosition)
+	33: MoveLoc[4](loc1: ID)
+	34: ImmBorrowLoc[5](loc2: LBPosition)
+	35: Call object::id<LBPosition>(&LBPosition): ID
+	36: MoveLoc[2](Arg2: &mut TxContext)
+	37: FreezeRef
+	38: Call tx_context::sender(&TxContext): address
+	39: Pack[14](OpenPositionEvent)
+	40: Call event::emit<OpenPositionEvent>(OpenPositionEvent)
+	41: MoveLoc[5](loc2: LBPosition)
+	42: Ret
+}
+
+public lock_position<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: &mut LBPosition, Arg3: u64, Arg4: &Clock, Arg5: &mut TxContext) {
+L6:	loc0: bool
+L7:	loc1: bool
+L8:	loc2: ID
+L9:	loc3: ID
+L10:	loc4: address
+L11:	loc5: u64
+L12:	loc6: u64
+L13:	loc7: u64
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[6](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[6](loc0: bool)
+B3:
+	14: MoveLoc[6](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(27)
+B5:
+	17: MoveLoc[2](Arg2: &mut LBPosition)
+	18: Pop
+	19: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	20: Pop
+	21: MoveLoc[5](Arg5: &mut TxContext)
+	22: Pop
+	23: MoveLoc[4](Arg4: &Clock)
+	24: Pop
+	25: LdConst[15](u64: 2033)
+	26: Abort
+B6:
+	27: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	28: FreezeRef
+	29: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	30: CopyLoc[2](Arg2: &mut LBPosition)
+	31: FreezeRef
+	32: Call lb_position::pair_id(&LBPosition): ID
+	33: Eq
+	34: BrFalse(36)
+B7:
+	35: Branch(46)
+B8:
+	36: MoveLoc[2](Arg2: &mut LBPosition)
+	37: Pop
+	38: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	39: Pop
+	40: MoveLoc[5](Arg5: &mut TxContext)
+	41: Pop
+	42: MoveLoc[4](Arg4: &Clock)
+	43: Pop
+	44: LdConst[12](u64: 2030)
+	45: Abort
+B9:
+	46: MoveLoc[4](Arg4: &Clock)
+	47: Call clock::timestamp_ms(&Clock): u64
+	48: StLoc[12](loc6: u64)
+	49: CopyLoc[2](Arg2: &mut LBPosition)
+	50: FreezeRef
+	51: Call lb_position::get_lock_until(&LBPosition): u64
+	52: StLoc[13](loc7: u64)
+	53: CopyLoc[3](Arg3: u64)
+	54: MoveLoc[13](loc7: u64)
+	55: Gt
+	56: BrFalse(71)
+B10:
+	57: CopyLoc[3](Arg3: u64)
+	58: CopyLoc[12](loc6: u64)
+	59: Gt
+	60: BrFalse(68)
+B11:
+	61: CopyLoc[3](Arg3: u64)
+	62: MoveLoc[12](loc6: u64)
+	63: Sub
+	64: LdConst[0](u64: 5315..)
+	65: Lt
+	66: StLoc[7](loc1: bool)
+	67: Branch(70)
+B12:
+	68: LdFalse
+	69: StLoc[7](loc1: bool)
+B13:
+	70: Branch(73)
+B14:
+	71: LdFalse
+	72: StLoc[7](loc1: bool)
+B15:
+	73: MoveLoc[7](loc1: bool)
+	74: BrFalse(76)
+B16:
+	75: Branch(84)
+B17:
+	76: MoveLoc[2](Arg2: &mut LBPosition)
+	77: Pop
+	78: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	79: Pop
+	80: MoveLoc[5](Arg5: &mut TxContext)
+	81: Pop
+	82: LdConst[13](u64: 2031)
+	83: Abort
+B18:
+	84: CopyLoc[2](Arg2: &mut LBPosition)
+	85: CopyLoc[3](Arg3: u64)
+	86: Call lb_position::lock_position(&mut LBPosition, u64)
+	87: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	88: FreezeRef
+	89: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	90: StLoc[8](loc2: ID)
+	91: MoveLoc[2](Arg2: &mut LBPosition)
+	92: FreezeRef
+	93: Call object::id<LBPosition>(&LBPosition): ID
+	94: StLoc[9](loc3: ID)
+	95: MoveLoc[5](Arg5: &mut TxContext)
+	96: FreezeRef
+	97: Call tx_context::sender(&TxContext): address
+	98: StLoc[10](loc4: address)
+	99: MoveLoc[3](Arg3: u64)
+	100: StLoc[11](loc5: u64)
+	101: MoveLoc[8](loc2: ID)
+	102: MoveLoc[9](loc3: ID)
+	103: MoveLoc[11](loc5: u64)
+	104: MoveLoc[10](loc4: address)
+	105: Pack[18](LockPositionEvent)
+	106: Call event::emit<LockPositionEvent>(LockPositionEvent)
+	107: Ret
+}
+
+public add_liquidity<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: &mut LBPosition, Arg3: vector<u32>, Arg4: vector<u64>, Arg5: vector<u64>, Arg6: Coin<Ty0>, Arg7: Coin<Ty1>, Arg8: u64, Arg9: u64, Arg10: &Clock, Arg11: &mut TxContext) {
+L12:	loc0: bool
+L13:	loc1: u32
+L14:	loc2: u8
+L15:	loc3: u8
+L16:	loc4: u64
+L17:	loc5: u64
+L18:	loc6: u128
+L19:	loc7: bool
+L20:	loc8: &PairParameters
+L21:	loc9: u16
+L22:	loc10: u64
+L23:	loc11: u64
+L24:	loc12: u128
+L25:	loc13: u128
+L26:	loc14: bool
+L27:	loc15: vector<u128>
+L28:	loc16: bool
+L29:	loc17: bool
+L30:	loc18: bool
+L31:	loc19: PackedBins
+L32:	loc20: PackedBins
+L33:	loc21: bool
+L34:	loc22: u32
+L35:	loc23: vector<u128>
+L36:	loc24: u32
+L37:	loc25: vector<u64>
+L38:	loc26: vector<u64>
+L39:	loc27: &mut Bin
+L40:	loc28: u64
+L41:	loc29: u128
+L42:	loc30: u16
+L43:	loc31: &mut Table<u32, PackedBins>
+L44:	loc32: u64
+L45:	loc33: u64
+L46:	loc34: &mut PackedBins
+L47:	loc35: u32
+L48:	loc36: &mut PackedBins
+L49:	loc37: u64
+L50:	loc38: u64
+L51:	loc39: u64
+L52:	loc40: u32
+L53:	loc41: u64
+L54:	loc42: u32
+L55:	loc43: u64
+L56:	loc44: u64
+L57:	loc45: u64
+L58:	loc46: u64
+L59:	loc47: u64
+L60:	loc48: u64
+L61:	loc49: u64
+L62:	loc50: u64
+L63:	loc51: u64
+L64:	loc52: u64
+L65:	loc53: u64
+L66:	loc54: u64
+L67:	loc55: u64
+L68:	loc56: vector<u32>
+L69:	loc57: ID
+L70:	loc58: u64
+L71:	loc59: u64
+L72:	loc60: &mut LBBinPosition
+L73:	loc61: &mut Table<u32, PackedBins>
+L74:	loc62: u8
+L75:	loc63: u8
+L76:	loc64: u64
+L77:	loc65: u64
+L78:	loc66: u128
+L79:	loc67: u64
+L80:	loc68: u64
+L81:	loc69: u64
+L82:	loc70: vector<u128>
+L83:	loc71: address
+L84:	loc72: u128
+L85:	loc73: vector<u128>
+L86:	loc74: u128
+L87:	loc75: u128
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[12](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[12](loc0: bool)
+B3:
+	14: MoveLoc[12](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(27)
+B5:
+	17: MoveLoc[2](Arg2: &mut LBPosition)
+	18: Pop
+	19: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	20: Pop
+	21: MoveLoc[11](Arg11: &mut TxContext)
+	22: Pop
+	23: MoveLoc[10](Arg10: &Clock)
+	24: Pop
+	25: LdConst[15](u64: 2033)
+	26: Abort
+B6:
+	27: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	28: FreezeRef
+	29: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	30: StLoc[69](loc57: ID)
+	31: CopyLoc[69](loc57: ID)
+	32: CopyLoc[2](Arg2: &mut LBPosition)
+	33: FreezeRef
+	34: Call lb_position::pair_id(&LBPosition): ID
+	35: Eq
+	36: BrFalse(38)
+B7:
+	37: Branch(48)
+B8:
+	38: MoveLoc[2](Arg2: &mut LBPosition)
+	39: Pop
+	40: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	41: Pop
+	42: MoveLoc[11](Arg11: &mut TxContext)
+	43: Pop
+	44: MoveLoc[10](Arg10: &Clock)
+	45: Pop
+	46: LdConst[12](u64: 2030)
+	47: Abort
+B9:
+	48: CopyLoc[2](Arg2: &mut LBPosition)
+	49: FreezeRef
+	50: Call lb_position::get_lock_until(&LBPosition): u64
+	51: CopyLoc[10](Arg10: &Clock)
+	52: Call clock::timestamp_ms(&Clock): u64
+	53: Le
+	54: BrFalse(56)
+B10:
+	55: Branch(66)
+B11:
+	56: MoveLoc[2](Arg2: &mut LBPosition)
+	57: Pop
+	58: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	59: Pop
+	60: MoveLoc[11](Arg11: &mut TxContext)
+	61: Pop
+	62: MoveLoc[10](Arg10: &Clock)
+	63: Pop
+	64: LdConst[19](u64: 2038)
+	65: Abort
+B12:
+	66: ImmBorrowLoc[3](Arg3: vector<u32>)
+	67: VecLen(8)
+	68: StLoc[61](loc49: u64)
+	69: CopyLoc[61](loc49: u64)
+	70: Call validate_bin_length(u64)
+	71: CopyLoc[61](loc49: u64)
+	72: ImmBorrowLoc[4](Arg4: vector<u64>)
+	73: VecLen(30)
+	74: Eq
+	75: BrFalse(82)
+B13:
+	76: CopyLoc[61](loc49: u64)
+	77: ImmBorrowLoc[5](Arg5: vector<u64>)
+	78: VecLen(30)
+	79: Eq
+	80: StLoc[19](loc7: bool)
+	81: Branch(84)
+B14:
+	82: LdFalse
+	83: StLoc[19](loc7: bool)
+B15:
+	84: MoveLoc[19](loc7: bool)
+	85: BrFalse(87)
+B16:
+	86: Branch(97)
+B17:
+	87: MoveLoc[2](Arg2: &mut LBPosition)
+	88: Pop
+	89: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	90: Pop
+	91: MoveLoc[11](Arg11: &mut TxContext)
+	92: Pop
+	93: MoveLoc[10](Arg10: &Clock)
+	94: Pop
+	95: LdConst[5](u64: 2007)
+	96: Abort
+B18:
+	97: CopyLoc[11](Arg11: &mut TxContext)
+	98: FreezeRef
+	99: Call tx_context::sender(&TxContext): address
+	100: StLoc[83](loc71: address)
+	101: ImmBorrowLoc[6](Arg6: Coin<Ty0>)
+	102: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	103: ImmBorrowLoc[7](Arg7: Coin<Ty1>)
+	104: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	105: StLoc[81](loc69: u64)
+	106: StLoc[80](loc68: u64)
+	107: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	108: MutBorrowFieldGeneric[8](LBPair.balance_x: Balance<Ty0>)
+	109: MoveLoc[6](Arg6: Coin<Ty0>)
+	110: Call coin::put<Ty0>(&mut Balance<Ty0>, Coin<Ty0>)
+	111: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	112: MutBorrowFieldGeneric[9](LBPair.balance_y: Balance<Ty1>)
+	113: MoveLoc[7](Arg7: Coin<Ty1>)
+	114: Call coin::put<Ty1>(&mut Balance<Ty1>, Coin<Ty1>)
+	115: CopyLoc[80](loc68: u64)
+	116: CopyLoc[81](loc69: u64)
+	117: StLoc[60](loc48: u64)
+	118: StLoc[59](loc47: u64)
+	119: VecPack(30, 0)
+	120: VecPack(30, 0)
+	121: StLoc[38](loc26: vector<u64>)
+	122: StLoc[37](loc25: vector<u64>)
+	123: VecPack(11, 0)
+	124: StLoc[85](loc73: vector<u128>)
+	125: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	126: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	127: Call pair_parameter_helper::get_active_id(&PairParameters): u32
+	128: StLoc[36](loc24: u32)
+	129: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	130: ImmBorrowFieldGeneric[3](LBPair.bin_step: u16)
+	131: ReadRef
+	132: StLoc[42](loc30: u16)
+	133: CopyLoc[10](Arg10: &Clock)
+	134: Call clock::timestamp_ms(&Clock): u64
+	135: LdConst[1](u64: 1000)
+	136: Div
+	137: StLoc[49](loc37: u64)
+	138: Call constants::precision(): u64
+	139: StLoc[77](loc65: u64)
+	140: VecPack(8, 0)
+	141: StLoc[68](loc56: vector<u32>)
+	142: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	143: MutBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	144: Call bin_manager::borrow_bins_table_mut(&mut BinManager): &mut Table<u32, PackedBins>
+	145: StLoc[43](loc31: &mut Table<u32, PackedBins>)
+	146: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	147: MutBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	148: CopyLoc[2](Arg2: &mut LBPosition)
+	149: FreezeRef
+	150: Call lb_position::borrow_position_info_mut(&mut LBPositionManager, &LBPosition): &mut LBPositionInfo
+	151: Call lb_position::borrow_position_bins_mut(&mut LBPositionInfo): &mut Table<u32, PackedBins>
+	152: StLoc[73](loc61: &mut Table<u32, PackedBins>)
+	153: LdU64(0)
+	154: StLoc[76](loc64: u64)
+	155: Call constants::max_u32(): u32
+	156: StLoc[47](loc35: u32)
+	157: Call bin_manager::create_empty_pack(): PackedBins
+	158: StLoc[31](loc19: PackedBins)
+	159: MutBorrowLoc[31](loc19: PackedBins)
+	160: StLoc[46](loc34: &mut PackedBins)
+	161: Call lb_position::create_empty_pack(): PackedBins
+	162: StLoc[32](loc20: PackedBins)
+	163: MutBorrowLoc[32](loc20: PackedBins)
+	164: StLoc[48](loc36: &mut PackedBins)
+	165: LdU64(0)
+	166: StLoc[53](loc41: u64)
+B19:
+	167: CopyLoc[53](loc41: u64)
+	168: CopyLoc[61](loc49: u64)
+	169: Lt
+	170: BrFalse(626)
+B20:
+	171: Branch(172)
+B21:
+	172: ImmBorrowLoc[3](Arg3: vector<u32>)
+	173: CopyLoc[53](loc41: u64)
+	174: VecImmBorrow(8)
+	175: ReadRef
+	176: StLoc[54](loc42: u32)
+	177: CopyLoc[54](loc42: u32)
+	178: Call price_helper::validate_bin_id(u32)
+	179: ImmBorrowLoc[4](Arg4: vector<u64>)
+	180: CopyLoc[53](loc41: u64)
+	181: VecImmBorrow(30)
+	182: ReadRef
+	183: ImmBorrowLoc[5](Arg5: vector<u64>)
+	184: CopyLoc[53](loc41: u64)
+	185: VecImmBorrow(30)
+	186: ReadRef
+	187: StLoc[51](loc39: u64)
+	188: StLoc[50](loc38: u64)
+	189: CopyLoc[50](loc38: u64)
+	190: CopyLoc[77](loc65: u64)
+	191: Le
+	192: BrFalse(198)
+B22:
+	193: CopyLoc[51](loc39: u64)
+	194: CopyLoc[77](loc65: u64)
+	195: Le
+	196: StLoc[33](loc21: bool)
+	197: Branch(200)
+B23:
+	198: LdFalse
+	199: StLoc[33](loc21: bool)
+B24:
+	200: MoveLoc[33](loc21: bool)
+	201: BrFalse(203)
+B25:
+	202: Branch(221)
+B26:
+	203: MoveLoc[2](Arg2: &mut LBPosition)
+	204: Pop
+	205: MoveLoc[73](loc61: &mut Table<u32, PackedBins>)
+	206: Pop
+	207: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	208: Pop
+	209: MoveLoc[48](loc36: &mut PackedBins)
+	210: Pop
+	211: MoveLoc[46](loc34: &mut PackedBins)
+	212: Pop
+	213: MoveLoc[11](Arg11: &mut TxContext)
+	214: Pop
+	215: MoveLoc[10](Arg10: &Clock)
+	216: Pop
+	217: MoveLoc[43](loc31: &mut Table<u32, PackedBins>)
+	218: Pop
+	219: LdConst[17](u64: 2035)
+	220: Abort
+B27:
+	221: CopyLoc[80](loc68: u64)
+	222: MoveLoc[50](loc38: u64)
+	223: CopyLoc[77](loc65: u64)
+	224: Call safe_math::mul_div_u64(u64, u64, u64): u64
+	225: StLoc[64](loc52: u64)
+	226: CopyLoc[81](loc69: u64)
+	227: MoveLoc[51](loc39: u64)
+	228: CopyLoc[77](loc65: u64)
+	229: Call safe_math::mul_div_u64(u64, u64, u64): u64
+	230: StLoc[65](loc53: u64)
+	231: CopyLoc[54](loc42: u32)
+	232: Call bin_manager::resolve_bin_group_index(u32): u32 * u8
+	233: StLoc[75](loc63: u8)
+	234: StLoc[52](loc40: u32)
+	235: CopyLoc[52](loc40: u32)
+	236: CopyLoc[47](loc35: u32)
+	237: Neq
+	238: BrFalse(277)
+B28:
+	239: MoveLoc[48](loc36: &mut PackedBins)
+	240: Pop
+	241: MoveLoc[46](loc34: &mut PackedBins)
+	242: Pop
+	243: CopyLoc[43](loc31: &mut Table<u32, PackedBins>)
+	244: CopyLoc[52](loc40: u32)
+	245: StLoc[34](loc22: u32)
+	246: FreezeRef
+	247: MoveLoc[34](loc22: u32)
+	248: Call table::contains<u32, PackedBins>(&Table<u32, PackedBins>, u32): bool
+	249: Not
+	250: BrFalse(255)
+B29:
+	251: CopyLoc[43](loc31: &mut Table<u32, PackedBins>)
+	252: CopyLoc[52](loc40: u32)
+	253: Call bin_manager::create_empty_pack(): PackedBins
+	254: Call table::add<u32, PackedBins>(&mut Table<u32, PackedBins>, u32, PackedBins)
+B30:
+	255: CopyLoc[43](loc31: &mut Table<u32, PackedBins>)
+	256: CopyLoc[52](loc40: u32)
+	257: Call table::borrow_mut<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): &mut PackedBins
+	258: StLoc[46](loc34: &mut PackedBins)
+	259: CopyLoc[52](loc40: u32)
+	260: StLoc[47](loc35: u32)
+	261: CopyLoc[73](loc61: &mut Table<u32, PackedBins>)
+	262: CopyLoc[52](loc40: u32)
+	263: StLoc[13](loc1: u32)
+	264: FreezeRef
+	265: MoveLoc[13](loc1: u32)
+	266: Call table::contains<u32, PackedBins>(&Table<u32, PackedBins>, u32): bool
+	267: Not
+	268: BrFalse(273)
+B31:
+	269: CopyLoc[73](loc61: &mut Table<u32, PackedBins>)
+	270: CopyLoc[52](loc40: u32)
+	271: Call lb_position::create_empty_pack(): PackedBins
+	272: Call table::add<u32, PackedBins>(&mut Table<u32, PackedBins>, u32, PackedBins)
+B32:
+	273: CopyLoc[73](loc61: &mut Table<u32, PackedBins>)
+	274: MoveLoc[52](loc40: u32)
+	275: Call table::borrow_mut<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): &mut PackedBins
+	276: StLoc[48](loc36: &mut PackedBins)
+B33:
+	277: CopyLoc[46](loc34: &mut PackedBins)
+	278: CopyLoc[75](loc63: u8)
+	279: StLoc[14](loc2: u8)
+	280: FreezeRef
+	281: MoveLoc[14](loc2: u8)
+	282: Call bin_manager::bin_exists_in_pack(&PackedBins, u8): bool
+	283: Not
+	284: BrFalse(293)
+B34:
+	285: CopyLoc[46](loc34: &mut PackedBins)
+	286: CopyLoc[54](loc42: u32)
+	287: CopyLoc[75](loc63: u8)
+	288: CopyLoc[42](loc30: u16)
+	289: Call bin_manager::create_bin_in_pack(&mut PackedBins, u32, u8, u16)
+	290: MutBorrowLoc[68](loc56: vector<u32>)
+	291: CopyLoc[54](loc42: u32)
+	292: VecPushBack(8)
+B35:
+	293: CopyLoc[46](loc34: &mut PackedBins)
+	294: CopyLoc[75](loc63: u8)
+	295: StLoc[15](loc3: u8)
+	296: FreezeRef
+	297: MoveLoc[15](loc3: u8)
+	298: Call bin_manager::get_bin_index_in_pack(&PackedBins, u8): u64
+	299: StLoc[40](loc28: u64)
+	300: CopyLoc[46](loc34: &mut PackedBins)
+	301: MoveLoc[40](loc28: u64)
+	302: Call bin_manager::get_bin_mut_from_pack(&mut PackedBins, u64): &mut Bin
+	303: StLoc[39](loc27: &mut Bin)
+	304: CopyLoc[48](loc36: &mut PackedBins)
+	305: FreezeRef
+	306: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	307: CopyLoc[75](loc63: u8)
+	308: Call lb_position::is_bin_active_in_bitmap(u8, u8): bool
+	309: Not
+	310: BrFalse(319)
+B36:
+	311: MoveLoc[76](loc64: u64)
+	312: LdU64(1)
+	313: Add
+	314: StLoc[76](loc64: u64)
+	315: CopyLoc[48](loc36: &mut PackedBins)
+	316: CopyLoc[54](loc42: u32)
+	317: CopyLoc[75](loc63: u8)
+	318: Call lb_position::create_bin_in_pack(&mut PackedBins, u32, u8)
+B37:
+	319: CopyLoc[48](loc36: &mut PackedBins)
+	320: FreezeRef
+	321: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	322: MoveLoc[75](loc63: u8)
+	323: Call lb_position::count_active_bins_before_position(u8, u8): u8
+	324: StLoc[74](loc62: u8)
+	325: CopyLoc[48](loc36: &mut PackedBins)
+	326: MoveLoc[74](loc62: u8)
+	327: CastU64
+	328: Call lb_position::borrow_position_bin_mut_from_pack(&mut PackedBins, u64): &mut LBBinPosition
+	329: StLoc[72](loc60: &mut LBBinPosition)
+	330: CopyLoc[39](loc27: &mut Bin)
+	331: FreezeRef
+	332: Call bin_manager::get_price(&Bin): u128
+	333: StLoc[78](loc66: u128)
+	334: CopyLoc[39](loc27: &mut Bin)
+	335: FreezeRef
+	336: Call bin_manager::get_total_supply(&Bin): u128
+	337: StLoc[86](loc74: u128)
+	338: CopyLoc[39](loc27: &mut Bin)
+	339: MoveLoc[64](loc52: u64)
+	340: MoveLoc[65](loc53: u64)
+	341: CopyLoc[78](loc66: u128)
+	342: StLoc[18](loc6: u128)
+	343: StLoc[17](loc5: u64)
+	344: StLoc[16](loc4: u64)
+	345: FreezeRef
+	346: MoveLoc[16](loc4: u64)
+	347: MoveLoc[17](loc5: u64)
+	348: MoveLoc[18](loc6: u128)
+	349: Call bin_manager::get_shares_and_effective_amounts_in(&Bin, u64, u64, u128): u128 * u64 * u64
+	350: StLoc[57](loc45: u64)
+	351: StLoc[55](loc43: u64)
+	352: StLoc[84](loc72: u128)
+	353: CopyLoc[84](loc72: u128)
+	354: LdU128(0)
+	355: Gt
+	356: BrFalse(358)
+B38:
+	357: Branch(380)
+B39:
+	358: MoveLoc[2](Arg2: &mut LBPosition)
+	359: Pop
+	360: MoveLoc[73](loc61: &mut Table<u32, PackedBins>)
+	361: Pop
+	362: MoveLoc[72](loc60: &mut LBBinPosition)
+	363: Pop
+	364: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	365: Pop
+	366: MoveLoc[48](loc36: &mut PackedBins)
+	367: Pop
+	368: MoveLoc[46](loc34: &mut PackedBins)
+	369: Pop
+	370: MoveLoc[11](Arg11: &mut TxContext)
+	371: Pop
+	372: MoveLoc[10](Arg10: &Clock)
+	373: Pop
+	374: MoveLoc[43](loc31: &mut Table<u32, PackedBins>)
+	375: Pop
+	376: MoveLoc[39](loc27: &mut Bin)
+	377: Pop
+	378: LdConst[9](u64: 2015)
+	379: Abort
+B40:
+	380: CopyLoc[55](loc43: u64)
+	381: CopyLoc[57](loc45: u64)
+	382: StLoc[58](loc46: u64)
+	383: StLoc[56](loc44: u64)
+	384: CopyLoc[54](loc42: u32)
+	385: CopyLoc[36](loc24: u32)
+	386: Eq
+	387: BrFalse(527)
+B41:
+	388: CopyLoc[39](loc27: &mut Bin)
+	389: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	390: MutBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	391: CopyLoc[10](Arg10: &Clock)
+	392: Call bin_manager::settle_active_bin_reward_growths(&mut Bin, &mut RewarderManager, &Clock): vector<u128>
+	393: StLoc[35](loc23: vector<u128>)
+	394: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	395: MutBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	396: CopyLoc[54](loc42: u32)
+	397: CopyLoc[49](loc37: u64)
+	398: Call pair_parameter_helper::update_volatility_parameters(&mut PairParameters, u32, u64)
+	399: CopyLoc[39](loc27: &mut Bin)
+	400: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	401: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	402: CopyLoc[42](loc30: u16)
+	403: CopyLoc[55](loc43: u64)
+	404: CopyLoc[57](loc45: u64)
+	405: CopyLoc[86](loc74: u128)
+	406: CopyLoc[84](loc72: u128)
+	407: StLoc[25](loc13: u128)
+	408: StLoc[24](loc12: u128)
+	409: StLoc[23](loc11: u64)
+	410: StLoc[22](loc10: u64)
+	411: StLoc[21](loc9: u16)
+	412: StLoc[20](loc8: &PairParameters)
+	413: FreezeRef
+	414: MoveLoc[20](loc8: &PairParameters)
+	415: MoveLoc[21](loc9: u16)
+	416: MoveLoc[22](loc10: u64)
+	417: MoveLoc[23](loc11: u64)
+	418: MoveLoc[24](loc12: u128)
+	419: MoveLoc[25](loc13: u128)
+	420: Call bin_manager::get_composition_fees(&Bin, &PairParameters, u16, u64, u64, u128, u128): u64 * u64
+	421: StLoc[45](loc33: u64)
+	422: StLoc[44](loc32: u64)
+	423: CopyLoc[44](loc32: u64)
+	424: LdU64(0)
+	425: Gt
+	426: BrFalse(430)
+B42:
+	427: LdTrue
+	428: StLoc[26](loc14: bool)
+	429: Branch(434)
+B43:
+	430: CopyLoc[45](loc33: u64)
+	431: LdU64(0)
+	432: Gt
+	433: StLoc[26](loc14: bool)
+B44:
+	434: MoveLoc[26](loc14: bool)
+	435: BrFalse(524)
+B45:
+	436: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	437: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	438: Call pair_parameter_helper::get_protocol_share(&PairParameters): u64
+	439: StLoc[79](loc67: u64)
+	440: CopyLoc[44](loc32: u64)
+	441: CopyLoc[79](loc67: u64)
+	442: Call fee_helper::get_protocol_fee_amount(u64, u64): u64
+	443: StLoc[70](loc58: u64)
+	444: CopyLoc[45](loc33: u64)
+	445: MoveLoc[79](loc67: u64)
+	446: Call fee_helper::get_protocol_fee_amount(u64, u64): u64
+	447: StLoc[71](loc59: u64)
+	448: CopyLoc[44](loc32: u64)
+	449: CopyLoc[70](loc58: u64)
+	450: Call safe_math::sub_u64(u64, u64): u64
+	451: StLoc[62](loc50: u64)
+	452: CopyLoc[45](loc33: u64)
+	453: CopyLoc[71](loc59: u64)
+	454: Call safe_math::sub_u64(u64, u64): u64
+	455: StLoc[63](loc51: u64)
+	456: CopyLoc[39](loc27: &mut Bin)
+	457: MoveLoc[62](loc50: u64)
+	458: MoveLoc[63](loc51: u64)
+	459: Call bin_manager::add_fee_growth(&mut Bin, u64, u64): bool
+	460: BrFalse(478)
+B46:
+	461: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	462: ImmBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	463: ReadRef
+	464: MoveLoc[70](loc58: u64)
+	465: Call safe_math::add_u64(u64, u64): u64
+	466: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	467: MutBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	468: WriteRef
+	469: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	470: ImmBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	471: ReadRef
+	472: MoveLoc[71](loc59: u64)
+	473: Call safe_math::add_u64(u64, u64): u64
+	474: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	475: MutBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	476: WriteRef
+	477: Branch(494)
+B47:
+	478: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	479: ImmBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	480: ReadRef
+	481: CopyLoc[44](loc32: u64)
+	482: Call safe_math::add_u64(u64, u64): u64
+	483: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	484: MutBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	485: WriteRef
+	486: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	487: ImmBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	488: ReadRef
+	489: CopyLoc[45](loc33: u64)
+	490: Call safe_math::add_u64(u64, u64): u64
+	491: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	492: MutBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	493: WriteRef
+B48:
+	494: MoveLoc[56](loc44: u64)
+	495: CopyLoc[44](loc32: u64)
+	496: Call safe_math::sub_u64(u64, u64): u64
+	497: StLoc[56](loc44: u64)
+	498: MoveLoc[58](loc46: u64)
+	499: CopyLoc[45](loc33: u64)
+	500: Call safe_math::sub_u64(u64, u64): u64
+	501: StLoc[58](loc46: u64)
+	502: CopyLoc[56](loc44: u64)
+	503: CopyLoc[58](loc46: u64)
+	504: CopyLoc[78](loc66: u128)
+	505: Call q64x64::liquidity(u64, u64, u128): u128
+	506: StLoc[87](loc75: u128)
+	507: CopyLoc[39](loc27: &mut Bin)
+	508: FreezeRef
+	509: Call bin_manager::get_reserves(&Bin): u64 * u64
+	510: MoveLoc[78](loc66: u128)
+	511: Call q64x64::liquidity(u64, u64, u128): u128
+	512: StLoc[41](loc29: u128)
+	513: MoveLoc[87](loc75: u128)
+	514: MoveLoc[86](loc74: u128)
+	515: MoveLoc[41](loc29: u128)
+	516: Call q64x64::mul_div_round_down_u128(u128, u128, u128): u128
+	517: StLoc[84](loc72: u128)
+	518: CopyLoc[69](loc57: ID)
+	519: MoveLoc[54](loc42: u32)
+	520: MoveLoc[44](loc32: u64)
+	521: MoveLoc[45](loc33: u64)
+	522: Pack[7](CompositionFeesEvent)
+	523: Call event::emit<CompositionFeesEvent>(CompositionFeesEvent)
+B49:
+	524: MoveLoc[35](loc23: vector<u128>)
+	525: StLoc[27](loc15: vector<u128>)
+	526: Branch(536)
+B50:
+	527: CopyLoc[55](loc43: u64)
+	528: CopyLoc[57](loc45: u64)
+	529: CopyLoc[36](loc24: u32)
+	530: MoveLoc[54](loc42: u32)
+	531: Call bin_manager::verify_lp_amounts(u64, u64, u32, u32)
+	532: CopyLoc[39](loc27: &mut Bin)
+	533: FreezeRef
+	534: Call bin_manager::get_reward_growths(&Bin): vector<u128>
+	535: StLoc[27](loc15: vector<u128>)
+B51:
+	536: MoveLoc[27](loc15: vector<u128>)
+	537: StLoc[82](loc70: vector<u128>)
+	538: CopyLoc[56](loc44: u64)
+	539: LdU64(0)
+	540: Gt
+	541: BrFalse(545)
+B52:
+	542: LdTrue
+	543: StLoc[29](loc17: bool)
+	544: Branch(549)
+B53:
+	545: CopyLoc[58](loc46: u64)
+	546: LdU64(0)
+	547: Gt
+	548: StLoc[29](loc17: bool)
+B54:
+	549: MoveLoc[29](loc17: bool)
+	550: BrFalse(556)
+B55:
+	551: CopyLoc[84](loc72: u128)
+	552: LdU128(0)
+	553: Gt
+	554: StLoc[28](loc16: bool)
+	555: Branch(558)
+B56:
+	556: LdFalse
+	557: StLoc[28](loc16: bool)
+B57:
+	558: MoveLoc[28](loc16: bool)
+	559: BrFalse(561)
+B58:
+	560: Branch(583)
+B59:
+	561: MoveLoc[2](Arg2: &mut LBPosition)
+	562: Pop
+	563: MoveLoc[73](loc61: &mut Table<u32, PackedBins>)
+	564: Pop
+	565: MoveLoc[72](loc60: &mut LBBinPosition)
+	566: Pop
+	567: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	568: Pop
+	569: MoveLoc[48](loc36: &mut PackedBins)
+	570: Pop
+	571: MoveLoc[46](loc34: &mut PackedBins)
+	572: Pop
+	573: MoveLoc[11](Arg11: &mut TxContext)
+	574: Pop
+	575: MoveLoc[10](Arg10: &Clock)
+	576: Pop
+	577: MoveLoc[43](loc31: &mut Table<u32, PackedBins>)
+	578: Pop
+	579: MoveLoc[39](loc27: &mut Bin)
+	580: Pop
+	581: LdConst[9](u64: 2015)
+	582: Abort
+B60:
+	583: CopyLoc[2](Arg2: &mut LBPosition)
+	584: CopyLoc[72](loc60: &mut LBBinPosition)
+	585: CopyLoc[39](loc27: &mut Bin)
+	586: FreezeRef
+	587: Call bin_manager::get_fee_growth_x(&Bin): u128
+	588: CopyLoc[39](loc27: &mut Bin)
+	589: FreezeRef
+	590: Call bin_manager::get_fee_growth_y(&Bin): u128
+	591: Call lb_position::settle_position_fees(&mut LBPosition, &mut LBBinPosition, u128, u128)
+	592: CopyLoc[2](Arg2: &mut LBPosition)
+	593: CopyLoc[72](loc60: &mut LBBinPosition)
+	594: MoveLoc[82](loc70: vector<u128>)
+	595: Call lb_position::settle_position_rewards(&mut LBPosition, &mut LBBinPosition, vector<u128>)
+	596: MoveLoc[39](loc27: &mut Bin)
+	597: CopyLoc[56](loc44: u64)
+	598: CopyLoc[58](loc46: u64)
+	599: CopyLoc[84](loc72: u128)
+	600: Call bin_manager::add_reserves_and_supply(&mut Bin, u64, u64, u128)
+	601: MoveLoc[72](loc60: &mut LBBinPosition)
+	602: CopyLoc[84](loc72: u128)
+	603: Call lb_position::increase_bin_liquidity(&mut LBBinPosition, u128)
+	604: MoveLoc[59](loc47: u64)
+	605: MoveLoc[55](loc43: u64)
+	606: Call safe_math::sub_u64(u64, u64): u64
+	607: StLoc[59](loc47: u64)
+	608: MoveLoc[60](loc48: u64)
+	609: MoveLoc[57](loc45: u64)
+	610: Call safe_math::sub_u64(u64, u64): u64
+	611: StLoc[60](loc48: u64)
+	612: MutBorrowLoc[37](loc25: vector<u64>)
+	613: MoveLoc[56](loc44: u64)
+	614: VecPushBack(30)
+	615: MutBorrowLoc[38](loc26: vector<u64>)
+	616: MoveLoc[58](loc46: u64)
+	617: VecPushBack(30)
+	618: MutBorrowLoc[85](loc73: vector<u128>)
+	619: MoveLoc[84](loc72: u128)
+	620: VecPushBack(11)
+	621: MoveLoc[53](loc41: u64)
+	622: LdU64(1)
+	623: Add
+	624: StLoc[53](loc41: u64)
+	625: Branch(167)
+B61:
+	626: MoveLoc[73](loc61: &mut Table<u32, PackedBins>)
+	627: Pop
+	628: MoveLoc[48](loc36: &mut PackedBins)
+	629: Pop
+	630: MoveLoc[46](loc34: &mut PackedBins)
+	631: Pop
+	632: MoveLoc[10](Arg10: &Clock)
+	633: Pop
+	634: MoveLoc[43](loc31: &mut Table<u32, PackedBins>)
+	635: Pop
+	636: CopyLoc[2](Arg2: &mut LBPosition)
+	637: MoveLoc[76](loc64: u64)
+	638: Call lb_position::increase_position_total_bins(&mut LBPosition, u64)
+	639: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	640: MutBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	641: ImmBorrowLoc[68](loc56: vector<u32>)
+	642: Call bin_manager::batch_add_bins_to_tree(&mut BinManager, &vector<u32>)
+	643: MoveLoc[80](loc68: u64)
+	644: CopyLoc[59](loc47: u64)
+	645: Call safe_math::sub_u64(u64, u64): u64
+	646: StLoc[66](loc54: u64)
+	647: MoveLoc[81](loc69: u64)
+	648: CopyLoc[60](loc48: u64)
+	649: Call safe_math::sub_u64(u64, u64): u64
+	650: StLoc[67](loc55: u64)
+	651: MoveLoc[66](loc54: u64)
+	652: MoveLoc[8](Arg8: u64)
+	653: Ge
+	654: BrFalse(660)
+B62:
+	655: MoveLoc[67](loc55: u64)
+	656: MoveLoc[9](Arg9: u64)
+	657: Ge
+	658: StLoc[30](loc18: bool)
+	659: Branch(662)
+B63:
+	660: LdFalse
+	661: StLoc[30](loc18: bool)
+B64:
+	662: MoveLoc[30](loc18: bool)
+	663: BrFalse(665)
+B65:
+	664: Branch(673)
+B66:
+	665: MoveLoc[2](Arg2: &mut LBPosition)
+	666: Pop
+	667: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	668: Pop
+	669: MoveLoc[11](Arg11: &mut TxContext)
+	670: Pop
+	671: LdConst[18](u64: 2037)
+	672: Abort
+B67:
+	673: CopyLoc[59](loc47: u64)
+	674: LdU64(0)
+	675: Gt
+	676: BrFalse(684)
+B68:
+	677: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	678: MutBorrowFieldGeneric[8](LBPair.balance_x: Balance<Ty0>)
+	679: MoveLoc[59](loc47: u64)
+	680: CopyLoc[11](Arg11: &mut TxContext)
+	681: Call coin::take<Ty0>(&mut Balance<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	682: CopyLoc[83](loc71: address)
+	683: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+B69:
+	684: CopyLoc[60](loc48: u64)
+	685: LdU64(0)
+	686: Gt
+	687: BrFalse(696)
+B70:
+	688: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	689: MutBorrowFieldGeneric[9](LBPair.balance_y: Balance<Ty1>)
+	690: MoveLoc[60](loc48: u64)
+	691: MoveLoc[11](Arg11: &mut TxContext)
+	692: Call coin::take<Ty1>(&mut Balance<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	693: MoveLoc[83](loc71: address)
+	694: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	695: Branch(700)
+B71:
+	696: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	697: Pop
+	698: MoveLoc[11](Arg11: &mut TxContext)
+	699: Pop
+B72:
+	700: MoveLoc[69](loc57: ID)
+	701: MoveLoc[2](Arg2: &mut LBPosition)
+	702: FreezeRef
+	703: Call object::id<LBPosition>(&LBPosition): ID
+	704: MoveLoc[3](Arg3: vector<u32>)
+	705: MoveLoc[37](loc25: vector<u64>)
+	706: MoveLoc[38](loc26: vector<u64>)
+	707: MoveLoc[85](loc73: vector<u128>)
+	708: Pack[16](AddLiquidityEvent)
+	709: Call event::emit<AddLiquidityEvent>(AddLiquidityEvent)
+	710: Ret
+}
+
+public remove_liquidity<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: &mut LBPosition, Arg3: vector<u32>, Arg4: u64, Arg5: u64, Arg6: &Clock, Arg7: &mut TxContext): Coin<Ty0> * Coin<Ty1> {
+L8:	loc0: bool
+L9:	loc1: u8
+L10:	loc2: u128
+L11:	loc3: u128
+L12:	loc4: bool
+L13:	loc5: vector<u128>
+L14:	loc6: bool
+L15:	loc7: PackedBins
+L16:	loc8: PackedBins
+L17:	loc9: u32
+L18:	loc10: u8
+L19:	loc11: Amount
+L20:	loc12: vector<u64>
+L21:	loc13: vector<u64>
+L22:	loc14: &mut Bin
+L23:	loc15: u32
+L24:	loc16: u64
+L25:	loc17: u8
+L26:	loc18: vector<u32>
+L27:	loc19: vector<u32>
+L28:	loc20: &mut Table<u32, PackedBins>
+L29:	loc21: &mut PackedBins
+L30:	loc22: u32
+L31:	loc23: u128
+L32:	loc24: u128
+L33:	loc25: &mut PackedBins
+L34:	loc26: u64
+L35:	loc27: u64
+L36:	loc28: u32
+L37:	loc29: u64
+L38:	loc30: u128
+L39:	loc31: vector<u128>
+L40:	loc32: u64
+L41:	loc33: u64
+L42:	loc34: &mut LBBinPosition
+L43:	loc35: &mut Table<u32, PackedBins>
+L44:	loc36: u8
+L45:	loc37: vector<u128>
+L46:	loc38: u128
+L47:	loc39: u64
+L48:	loc40: u64
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[8](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[8](loc0: bool)
+B3:
+	14: MoveLoc[8](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(27)
+B5:
+	17: MoveLoc[2](Arg2: &mut LBPosition)
+	18: Pop
+	19: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	20: Pop
+	21: MoveLoc[7](Arg7: &mut TxContext)
+	22: Pop
+	23: MoveLoc[6](Arg6: &Clock)
+	24: Pop
+	25: LdConst[15](u64: 2033)
+	26: Abort
+B6:
+	27: CopyLoc[6](Arg6: &Clock)
+	28: Call clock::timestamp_ms(&Clock): u64
+	29: StLoc[34](loc26: u64)
+	30: CopyLoc[2](Arg2: &mut LBPosition)
+	31: FreezeRef
+	32: Call lb_position::get_lock_until(&LBPosition): u64
+	33: MoveLoc[34](loc26: u64)
+	34: Le
+	35: BrFalse(37)
+B7:
+	36: Branch(47)
+B8:
+	37: MoveLoc[2](Arg2: &mut LBPosition)
+	38: Pop
+	39: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	40: Pop
+	41: MoveLoc[7](Arg7: &mut TxContext)
+	42: Pop
+	43: MoveLoc[6](Arg6: &Clock)
+	44: Pop
+	45: LdConst[19](u64: 2038)
+	46: Abort
+B9:
+	47: ImmBorrowLoc[3](Arg3: vector<u32>)
+	48: VecLen(8)
+	49: StLoc[37](loc29: u64)
+	50: CopyLoc[37](loc29: u64)
+	51: Call validate_bin_length(u64)
+	52: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	53: FreezeRef
+	54: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	55: CopyLoc[2](Arg2: &mut LBPosition)
+	56: FreezeRef
+	57: Call lb_position::pair_id(&LBPosition): ID
+	58: Eq
+	59: BrFalse(61)
+B10:
+	60: Branch(71)
+B11:
+	61: MoveLoc[2](Arg2: &mut LBPosition)
+	62: Pop
+	63: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	64: Pop
+	65: MoveLoc[7](Arg7: &mut TxContext)
+	66: Pop
+	67: MoveLoc[6](Arg6: &Clock)
+	68: Pop
+	69: LdConst[12](u64: 2030)
+	70: Abort
+B12:
+	71: Call make_amount(): Amount
+	72: StLoc[19](loc11: Amount)
+	73: VecPack(30, 0)
+	74: StLoc[20](loc12: vector<u64>)
+	75: VecPack(30, 0)
+	76: StLoc[21](loc13: vector<u64>)
+	77: VecPack(11, 0)
+	78: StLoc[39](loc31: vector<u128>)
+	79: VecPack(8, 0)
+	80: StLoc[27](loc19: vector<u32>)
+	81: VecPack(8, 0)
+	82: StLoc[26](loc18: vector<u32>)
+	83: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	84: MutBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	85: Call bin_manager::borrow_bins_table_mut(&mut BinManager): &mut Table<u32, PackedBins>
+	86: StLoc[28](loc20: &mut Table<u32, PackedBins>)
+	87: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	88: MutBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	89: CopyLoc[2](Arg2: &mut LBPosition)
+	90: FreezeRef
+	91: Call lb_position::borrow_position_info_mut(&mut LBPositionManager, &LBPosition): &mut LBPositionInfo
+	92: Call lb_position::borrow_position_bins_mut(&mut LBPositionInfo): &mut Table<u32, PackedBins>
+	93: StLoc[43](loc35: &mut Table<u32, PackedBins>)
+	94: Call constants::max_u32(): u32
+	95: StLoc[30](loc22: u32)
+	96: Call bin_manager::create_empty_pack(): PackedBins
+	97: StLoc[15](loc7: PackedBins)
+	98: MutBorrowLoc[15](loc7: PackedBins)
+	99: StLoc[29](loc21: &mut PackedBins)
+	100: Call lb_position::create_empty_pack(): PackedBins
+	101: StLoc[16](loc8: PackedBins)
+	102: MutBorrowLoc[16](loc8: PackedBins)
+	103: StLoc[33](loc25: &mut PackedBins)
+	104: LdU64(0)
+	105: StLoc[35](loc27: u64)
+B13:
+	106: CopyLoc[35](loc27: u64)
+	107: CopyLoc[37](loc29: u64)
+	108: Lt
+	109: BrFalse(355)
+B14:
+	110: Branch(111)
+B15:
+	111: ImmBorrowLoc[3](Arg3: vector<u32>)
+	112: CopyLoc[35](loc27: u64)
+	113: VecImmBorrow(8)
+	114: ReadRef
+	115: StLoc[36](loc28: u32)
+	116: CopyLoc[36](loc28: u32)
+	117: Call price_helper::validate_bin_id(u32)
+	118: CopyLoc[36](loc28: u32)
+	119: Call bin_manager::resolve_bin_group_index(u32): u32 * u8
+	120: StLoc[25](loc17: u8)
+	121: StLoc[23](loc15: u32)
+	122: CopyLoc[23](loc15: u32)
+	123: CopyLoc[30](loc22: u32)
+	124: Neq
+	125: BrFalse(162)
+B16:
+	126: MoveLoc[33](loc25: &mut PackedBins)
+	127: Pop
+	128: MoveLoc[29](loc21: &mut PackedBins)
+	129: Pop
+	130: CopyLoc[28](loc20: &mut Table<u32, PackedBins>)
+	131: CopyLoc[23](loc15: u32)
+	132: StLoc[17](loc9: u32)
+	133: FreezeRef
+	134: MoveLoc[17](loc9: u32)
+	135: Call table::contains<u32, PackedBins>(&Table<u32, PackedBins>, u32): bool
+	136: BrFalse(138)
+B17:
+	137: Branch(152)
+B18:
+	138: MoveLoc[2](Arg2: &mut LBPosition)
+	139: Pop
+	140: MoveLoc[43](loc35: &mut Table<u32, PackedBins>)
+	141: Pop
+	142: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	143: Pop
+	144: MoveLoc[7](Arg7: &mut TxContext)
+	145: Pop
+	146: MoveLoc[6](Arg6: &Clock)
+	147: Pop
+	148: MoveLoc[28](loc20: &mut Table<u32, PackedBins>)
+	149: Pop
+	150: LdConst[20](u64: 2039)
+	151: Abort
+B19:
+	152: CopyLoc[28](loc20: &mut Table<u32, PackedBins>)
+	153: CopyLoc[23](loc15: u32)
+	154: Call table::borrow_mut<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): &mut PackedBins
+	155: StLoc[29](loc21: &mut PackedBins)
+	156: CopyLoc[43](loc35: &mut Table<u32, PackedBins>)
+	157: CopyLoc[23](loc15: u32)
+	158: Call table::borrow_mut<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): &mut PackedBins
+	159: StLoc[33](loc25: &mut PackedBins)
+	160: MoveLoc[23](loc15: u32)
+	161: StLoc[30](loc22: u32)
+B20:
+	162: CopyLoc[29](loc21: &mut PackedBins)
+	163: CopyLoc[25](loc17: u8)
+	164: StLoc[18](loc10: u8)
+	165: FreezeRef
+	166: MoveLoc[18](loc10: u8)
+	167: Call bin_manager::bin_exists_in_pack(&PackedBins, u8): bool
+	168: BrFalse(170)
+B21:
+	169: Branch(188)
+B22:
+	170: MoveLoc[2](Arg2: &mut LBPosition)
+	171: Pop
+	172: MoveLoc[43](loc35: &mut Table<u32, PackedBins>)
+	173: Pop
+	174: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	175: Pop
+	176: MoveLoc[33](loc25: &mut PackedBins)
+	177: Pop
+	178: MoveLoc[29](loc21: &mut PackedBins)
+	179: Pop
+	180: MoveLoc[7](Arg7: &mut TxContext)
+	181: Pop
+	182: MoveLoc[6](Arg6: &Clock)
+	183: Pop
+	184: MoveLoc[28](loc20: &mut Table<u32, PackedBins>)
+	185: Pop
+	186: LdConst[20](u64: 2039)
+	187: Abort
+B23:
+	188: CopyLoc[29](loc21: &mut PackedBins)
+	189: CopyLoc[25](loc17: u8)
+	190: StLoc[9](loc1: u8)
+	191: FreezeRef
+	192: MoveLoc[9](loc1: u8)
+	193: Call bin_manager::get_bin_index_in_pack(&PackedBins, u8): u64
+	194: StLoc[24](loc16: u64)
+	195: CopyLoc[29](loc21: &mut PackedBins)
+	196: MoveLoc[24](loc16: u64)
+	197: Call bin_manager::get_bin_mut_from_pack(&mut PackedBins, u64): &mut Bin
+	198: StLoc[22](loc14: &mut Bin)
+	199: CopyLoc[33](loc25: &mut PackedBins)
+	200: FreezeRef
+	201: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	202: CopyLoc[25](loc17: u8)
+	203: Call lb_position::is_bin_active_in_bitmap(u8, u8): bool
+	204: BrFalse(206)
+B24:
+	205: Branch(226)
+B25:
+	206: MoveLoc[2](Arg2: &mut LBPosition)
+	207: Pop
+	208: MoveLoc[43](loc35: &mut Table<u32, PackedBins>)
+	209: Pop
+	210: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	211: Pop
+	212: MoveLoc[33](loc25: &mut PackedBins)
+	213: Pop
+	214: MoveLoc[29](loc21: &mut PackedBins)
+	215: Pop
+	216: MoveLoc[7](Arg7: &mut TxContext)
+	217: Pop
+	218: MoveLoc[6](Arg6: &Clock)
+	219: Pop
+	220: MoveLoc[28](loc20: &mut Table<u32, PackedBins>)
+	221: Pop
+	222: MoveLoc[22](loc14: &mut Bin)
+	223: Pop
+	224: LdConst[20](u64: 2039)
+	225: Abort
+B26:
+	226: CopyLoc[33](loc25: &mut PackedBins)
+	227: FreezeRef
+	228: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	229: MoveLoc[25](loc17: u8)
+	230: Call lb_position::count_active_bins_before_position(u8, u8): u8
+	231: StLoc[44](loc36: u8)
+	232: CopyLoc[33](loc25: &mut PackedBins)
+	233: MoveLoc[44](loc36: u8)
+	234: CastU64
+	235: Call lb_position::borrow_position_bin_mut_from_pack(&mut PackedBins, u64): &mut LBBinPosition
+	236: StLoc[42](loc34: &mut LBBinPosition)
+	237: CopyLoc[42](loc34: &mut LBBinPosition)
+	238: FreezeRef
+	239: Call lb_position::position_token_amount(&LBBinPosition): u128
+	240: StLoc[38](loc30: u128)
+	241: CopyLoc[22](loc14: &mut Bin)
+	242: FreezeRef
+	243: Call bin_manager::fee_growth_and_supply(&Bin): u128 * u128 * u128
+	244: StLoc[46](loc38: u128)
+	245: StLoc[32](loc24: u128)
+	246: StLoc[31](loc23: u128)
+	247: CopyLoc[22](loc14: &mut Bin)
+	248: CopyLoc[38](loc30: u128)
+	249: MoveLoc[46](loc38: u128)
+	250: StLoc[11](loc3: u128)
+	251: StLoc[10](loc2: u128)
+	252: FreezeRef
+	253: MoveLoc[10](loc2: u128)
+	254: MoveLoc[11](loc3: u128)
+	255: Call bin_manager::get_amount_out_of_bin(&Bin, u128, u128): u64 * u64
+	256: StLoc[41](loc33: u64)
+	257: StLoc[40](loc32: u64)
+	258: CopyLoc[40](loc32: u64)
+	259: LdU64(0)
+	260: Gt
+	261: BrFalse(265)
+B27:
+	262: LdTrue
+	263: StLoc[12](loc4: bool)
+	264: Branch(269)
+B28:
+	265: CopyLoc[41](loc33: u64)
+	266: LdU64(0)
+	267: Gt
+	268: StLoc[12](loc4: bool)
+B29:
+	269: MoveLoc[12](loc4: bool)
+	270: BrFalse(272)
+B30:
+	271: Branch(294)
+B31:
+	272: MoveLoc[2](Arg2: &mut LBPosition)
+	273: Pop
+	274: MoveLoc[43](loc35: &mut Table<u32, PackedBins>)
+	275: Pop
+	276: MoveLoc[42](loc34: &mut LBBinPosition)
+	277: Pop
+	278: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	279: Pop
+	280: MoveLoc[33](loc25: &mut PackedBins)
+	281: Pop
+	282: MoveLoc[29](loc21: &mut PackedBins)
+	283: Pop
+	284: MoveLoc[7](Arg7: &mut TxContext)
+	285: Pop
+	286: MoveLoc[6](Arg6: &Clock)
+	287: Pop
+	288: MoveLoc[28](loc20: &mut Table<u32, PackedBins>)
+	289: Pop
+	290: MoveLoc[22](loc14: &mut Bin)
+	291: Pop
+	292: LdConst[8](u64: 2014)
+	293: Abort
+B32:
+	294: MutBorrowLoc[19](loc11: Amount)
+	295: CopyLoc[40](loc32: u64)
+	296: CopyLoc[41](loc33: u64)
+	297: Call add_amount(&mut Amount, u64, u64)
+	298: CopyLoc[2](Arg2: &mut LBPosition)
+	299: CopyLoc[42](loc34: &mut LBBinPosition)
+	300: MoveLoc[31](loc23: u128)
+	301: MoveLoc[32](loc24: u128)
+	302: Call lb_position::settle_position_fees(&mut LBPosition, &mut LBBinPosition, u128, u128)
+	303: CopyLoc[36](loc28: u32)
+	304: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	305: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	306: Call pair_parameter_helper::get_active_id(&PairParameters): u32
+	307: Eq
+	308: BrFalse(316)
+B33:
+	309: CopyLoc[22](loc14: &mut Bin)
+	310: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	311: MutBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	312: CopyLoc[6](Arg6: &Clock)
+	313: Call bin_manager::settle_active_bin_reward_growths(&mut Bin, &mut RewarderManager, &Clock): vector<u128>
+	314: StLoc[13](loc5: vector<u128>)
+	315: Branch(320)
+B34:
+	316: CopyLoc[22](loc14: &mut Bin)
+	317: FreezeRef
+	318: Call bin_manager::get_reward_growths(&Bin): vector<u128>
+	319: StLoc[13](loc5: vector<u128>)
+B35:
+	320: MoveLoc[13](loc5: vector<u128>)
+	321: StLoc[45](loc37: vector<u128>)
+	322: CopyLoc[2](Arg2: &mut LBPosition)
+	323: MoveLoc[42](loc34: &mut LBBinPosition)
+	324: MoveLoc[45](loc37: vector<u128>)
+	325: Call lb_position::settle_position_rewards(&mut LBPosition, &mut LBBinPosition, vector<u128>)
+	326: CopyLoc[22](loc14: &mut Bin)
+	327: CopyLoc[40](loc32: u64)
+	328: CopyLoc[41](loc33: u64)
+	329: CopyLoc[38](loc30: u128)
+	330: Call bin_manager::subtract_bin(&mut Bin, u64, u64, u128)
+	331: MutBorrowLoc[26](loc18: vector<u32>)
+	332: CopyLoc[36](loc28: u32)
+	333: VecPushBack(8)
+	334: MoveLoc[22](loc14: &mut Bin)
+	335: FreezeRef
+	336: Call bin_manager::bin_empty(&Bin): bool
+	337: BrFalse(341)
+B36:
+	338: MutBorrowLoc[27](loc19: vector<u32>)
+	339: MoveLoc[36](loc28: u32)
+	340: VecPushBack(8)
+B37:
+	341: MutBorrowLoc[20](loc12: vector<u64>)
+	342: MoveLoc[40](loc32: u64)
+	343: VecPushBack(30)
+	344: MutBorrowLoc[21](loc13: vector<u64>)
+	345: MoveLoc[41](loc33: u64)
+	346: VecPushBack(30)
+	347: MutBorrowLoc[39](loc31: vector<u128>)
+	348: MoveLoc[38](loc30: u128)
+	349: VecPushBack(11)
+	350: MoveLoc[35](loc27: u64)
+	351: LdU64(1)
+	352: Add
+	353: StLoc[35](loc27: u64)
+	354: Branch(106)
+B38:
+	355: MoveLoc[43](loc35: &mut Table<u32, PackedBins>)
+	356: Pop
+	357: MoveLoc[33](loc25: &mut PackedBins)
+	358: Pop
+	359: MoveLoc[29](loc21: &mut PackedBins)
+	360: Pop
+	361: MoveLoc[6](Arg6: &Clock)
+	362: Pop
+	363: MoveLoc[28](loc20: &mut Table<u32, PackedBins>)
+	364: Pop
+	365: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	366: MutBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	367: MoveLoc[27](loc19: vector<u32>)
+	368: Call bin_manager::remove_bins(&mut BinManager, vector<u32>)
+	369: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	370: MutBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	371: CopyLoc[2](Arg2: &mut LBPosition)
+	372: MoveLoc[26](loc18: vector<u32>)
+	373: Call lb_position::remove_bins(&mut LBPositionManager, &mut LBPosition, vector<u32>)
+	374: ImmBorrowLoc[19](loc11: Amount)
+	375: ImmBorrowField[9](Amount.x: u64)
+	376: ReadRef
+	377: MoveLoc[4](Arg4: u64)
+	378: Ge
+	379: BrFalse(387)
+B39:
+	380: ImmBorrowLoc[19](loc11: Amount)
+	381: ImmBorrowField[8](Amount.y: u64)
+	382: ReadRef
+	383: MoveLoc[5](Arg5: u64)
+	384: Ge
+	385: StLoc[14](loc6: bool)
+	386: Branch(389)
+B40:
+	387: LdFalse
+	388: StLoc[14](loc6: bool)
+B41:
+	389: MoveLoc[14](loc6: bool)
+	390: BrFalse(392)
+B42:
+	391: Branch(400)
+B43:
+	392: MoveLoc[2](Arg2: &mut LBPosition)
+	393: Pop
+	394: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	395: Pop
+	396: MoveLoc[7](Arg7: &mut TxContext)
+	397: Pop
+	398: LdConst[18](u64: 2037)
+	399: Abort
+B44:
+	400: CopyLoc[2](Arg2: &mut LBPosition)
+	401: Call lb_position::collect_saved_fees(&mut LBPosition): u64 * u64
+	402: StLoc[48](loc40: u64)
+	403: StLoc[47](loc39: u64)
+	404: MutBorrowLoc[19](loc11: Amount)
+	405: MoveLoc[47](loc39: u64)
+	406: MoveLoc[48](loc40: u64)
+	407: Call add_amount(&mut Amount, u64, u64)
+	408: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	409: FreezeRef
+	410: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	411: MoveLoc[2](Arg2: &mut LBPosition)
+	412: FreezeRef
+	413: Call object::id<LBPosition>(&LBPosition): ID
+	414: MoveLoc[3](Arg3: vector<u32>)
+	415: ImmBorrowLoc[19](loc11: Amount)
+	416: ImmBorrowField[9](Amount.x: u64)
+	417: ReadRef
+	418: ImmBorrowLoc[19](loc11: Amount)
+	419: ImmBorrowField[8](Amount.y: u64)
+	420: ReadRef
+	421: MoveLoc[20](loc12: vector<u64>)
+	422: MoveLoc[21](loc13: vector<u64>)
+	423: MoveLoc[39](loc31: vector<u128>)
+	424: Pack[17](RemoveLiquidityEvent)
+	425: Call event::emit<RemoveLiquidityEvent>(RemoveLiquidityEvent)
+	426: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	427: MutBorrowFieldGeneric[8](LBPair.balance_x: Balance<Ty0>)
+	428: ImmBorrowLoc[19](loc11: Amount)
+	429: ImmBorrowField[9](Amount.x: u64)
+	430: ReadRef
+	431: CopyLoc[7](Arg7: &mut TxContext)
+	432: Call coin::take<Ty0>(&mut Balance<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	433: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	434: MutBorrowFieldGeneric[9](LBPair.balance_y: Balance<Ty1>)
+	435: ImmBorrowLoc[19](loc11: Amount)
+	436: ImmBorrowField[8](Amount.y: u64)
+	437: ReadRef
+	438: MoveLoc[7](Arg7: &mut TxContext)
+	439: Call coin::take<Ty1>(&mut Balance<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	440: Ret
+}
+
+public close_position<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: LBPosition, Arg3: &mut TxContext) {
+L4:	loc0: bool
+L5:	loc1: ID
+L6:	loc2: ID
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[4](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[4](loc0: bool)
+B3:
+	14: MoveLoc[4](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(23)
+B5:
+	17: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	18: Pop
+	19: MoveLoc[3](Arg3: &mut TxContext)
+	20: Pop
+	21: LdConst[15](u64: 2033)
+	22: Abort
+B6:
+	23: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	24: FreezeRef
+	25: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	26: StLoc[5](loc1: ID)
+	27: ImmBorrowLoc[2](Arg2: LBPosition)
+	28: Call object::id<LBPosition>(&LBPosition): ID
+	29: StLoc[6](loc2: ID)
+	30: CopyLoc[5](loc1: ID)
+	31: ImmBorrowLoc[2](Arg2: LBPosition)
+	32: Call lb_position::pair_id(&LBPosition): ID
+	33: Eq
+	34: BrFalse(36)
+B7:
+	35: Branch(42)
+B8:
+	36: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	37: Pop
+	38: MoveLoc[3](Arg3: &mut TxContext)
+	39: Pop
+	40: LdConst[12](u64: 2030)
+	41: Abort
+B9:
+	42: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	43: MutBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	44: MoveLoc[2](Arg2: LBPosition)
+	45: Call lb_position::close_position(&mut LBPositionManager, LBPosition)
+	46: MoveLoc[5](loc1: ID)
+	47: MoveLoc[6](loc2: ID)
+	48: MoveLoc[3](Arg3: &mut TxContext)
+	49: FreezeRef
+	50: Call tx_context::sender(&TxContext): address
+	51: Pack[15](ClosePositionEvent)
+	52: Call event::emit<ClosePositionEvent>(ClosePositionEvent)
+	53: Ret
+}
+
+public add_rewarder<Ty0, Ty1, Ty2>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: &mut TxContext) {
+L3:	loc0: bool
+L4:	loc1: ID
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: CopyLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[3](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[3](loc0: bool)
+B3:
+	14: MoveLoc[3](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(25)
+B5:
+	17: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	18: Pop
+	19: MoveLoc[2](Arg2: &mut TxContext)
+	20: Pop
+	21: MoveLoc[0](Arg0: &GlobalConfig)
+	22: Pop
+	23: LdConst[15](u64: 2033)
+	24: Abort
+B6:
+	25: MoveLoc[0](Arg0: &GlobalConfig)
+	26: MoveLoc[2](Arg2: &mut TxContext)
+	27: FreezeRef
+	28: Call tx_context::sender(&TxContext): address
+	29: Call config::check_reward_role(&GlobalConfig, address)
+	30: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	31: FreezeRef
+	32: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	33: StLoc[4](loc1: ID)
+	34: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	35: MutBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	36: Call rewarder::add_rewarder<Ty2>(&mut RewarderManager)
+	37: MoveLoc[4](loc1: ID)
+	38: Call type_name::get<Ty2>(): TypeName
+	39: Pack[9](RewarderAddedEvent)
+	40: Call event::emit<RewarderAddedEvent>(RewarderAddedEvent)
+	41: Ret
+}
+
+public update_emission<Ty0, Ty1, Ty2>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: &RewarderGlobalVault, Arg3: u128, Arg4: &Clock, Arg5: &mut TxContext) {
+L6:	loc0: bool
+L7:	loc1: u32
+L8:	loc2: ID
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: CopyLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[6](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[6](loc0: bool)
+B3:
+	14: MoveLoc[6](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(29)
+B5:
+	17: MoveLoc[2](Arg2: &RewarderGlobalVault)
+	18: Pop
+	19: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	20: Pop
+	21: MoveLoc[5](Arg5: &mut TxContext)
+	22: Pop
+	23: MoveLoc[0](Arg0: &GlobalConfig)
+	24: Pop
+	25: MoveLoc[4](Arg4: &Clock)
+	26: Pop
+	27: LdConst[15](u64: 2033)
+	28: Abort
+B6:
+	29: MoveLoc[0](Arg0: &GlobalConfig)
+	30: MoveLoc[5](Arg5: &mut TxContext)
+	31: FreezeRef
+	32: Call tx_context::sender(&TxContext): address
+	33: Call config::check_reward_role(&GlobalConfig, address)
+	34: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	35: FreezeRef
+	36: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	37: StLoc[8](loc2: ID)
+	38: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	39: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	40: Call pair_parameter_helper::get_active_id(&PairParameters): u32
+	41: StLoc[7](loc1: u32)
+	42: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	43: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	44: CopyLoc[7](loc1: u32)
+	45: Call bin_manager::contains(&BinManager, u32): bool
+	46: BrFalse(57)
+B7:
+	47: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	48: MutBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	49: MoveLoc[7](loc1: u32)
+	50: Call bin_manager::get_bin_mut(&mut BinManager, u32): &mut Bin
+	51: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	52: MutBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	53: MoveLoc[4](Arg4: &Clock)
+	54: Call bin_manager::settle_active_bin_reward_growths(&mut Bin, &mut RewarderManager, &Clock): vector<u128>
+	55: Pop
+	56: Branch(62)
+B8:
+	57: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	58: MutBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	59: MoveLoc[4](Arg4: &Clock)
+	60: Call rewarder::settle_reward(&mut RewarderManager, &Clock): vector<u128>
+	61: Pop
+B9:
+	62: MoveLoc[2](Arg2: &RewarderGlobalVault)
+	63: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	64: MutBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	65: MoveLoc[8](loc2: ID)
+	66: MoveLoc[3](Arg3: u128)
+	67: Call rewarder::update_reward_emission<Ty2>(&RewarderGlobalVault, &mut RewarderManager, ID, u128)
+	68: Ret
+}
+
+public get_reward_emission<Ty0, Ty1, Ty2>(Arg0: &LBPair<Ty0, Ty1>, Arg1: &Clock): u128 {
+B0:
+	0: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	2: MoveLoc[1](Arg1: &Clock)
+	3: Call rewarder::get_reward_emission<Ty2>(&RewarderManager, &Clock): u128
+	4: Ret
+}
+
+public collect_position_fees<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: &mut LBPosition, Arg3: vector<u32>, Arg4: &mut TxContext): Coin<Ty0> * Coin<Ty1> {
+L5:	loc0: bool
+L6:	loc1: u8
+L7:	loc2: PackedBins
+L8:	loc3: PackedBins
+L9:	loc4: u32
+L10:	loc5: u8
+L11:	loc6: &mut Bin
+L12:	loc7: u32
+L13:	loc8: u32
+L14:	loc9: u64
+L15:	loc10: u8
+L16:	loc11: &mut Table<u32, PackedBins>
+L17:	loc12: &mut PackedBins
+L18:	loc13: u32
+L19:	loc14: &mut PackedBins
+L20:	loc15: u64
+L21:	loc16: u64
+L22:	loc17: &mut LBBinPosition
+L23:	loc18: &mut Table<u32, PackedBins>
+L24:	loc19: u8
+L25:	loc20: u64
+L26:	loc21: u64
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[5](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[5](loc0: bool)
+B3:
+	14: MoveLoc[5](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(25)
+B5:
+	17: MoveLoc[2](Arg2: &mut LBPosition)
+	18: Pop
+	19: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	20: Pop
+	21: MoveLoc[4](Arg4: &mut TxContext)
+	22: Pop
+	23: LdConst[15](u64: 2033)
+	24: Abort
+B6:
+	25: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	26: FreezeRef
+	27: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	28: CopyLoc[2](Arg2: &mut LBPosition)
+	29: FreezeRef
+	30: Call lb_position::pair_id(&LBPosition): ID
+	31: Eq
+	32: BrFalse(34)
+B7:
+	33: Branch(42)
+B8:
+	34: MoveLoc[2](Arg2: &mut LBPosition)
+	35: Pop
+	36: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	37: Pop
+	38: MoveLoc[4](Arg4: &mut TxContext)
+	39: Pop
+	40: LdConst[12](u64: 2030)
+	41: Abort
+B9:
+	42: ImmBorrowLoc[3](Arg3: vector<u32>)
+	43: VecLen(8)
+	44: StLoc[21](loc16: u64)
+	45: CopyLoc[21](loc16: u64)
+	46: Call validate_bin_length(u64)
+	47: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	48: MutBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	49: Call bin_manager::borrow_bins_table_mut(&mut BinManager): &mut Table<u32, PackedBins>
+	50: StLoc[16](loc11: &mut Table<u32, PackedBins>)
+	51: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	52: MutBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	53: CopyLoc[2](Arg2: &mut LBPosition)
+	54: FreezeRef
+	55: Call lb_position::borrow_position_info_mut(&mut LBPositionManager, &LBPosition): &mut LBPositionInfo
+	56: Call lb_position::borrow_position_bins_mut(&mut LBPositionInfo): &mut Table<u32, PackedBins>
+	57: StLoc[23](loc18: &mut Table<u32, PackedBins>)
+	58: Call constants::max_u32(): u32
+	59: StLoc[18](loc13: u32)
+	60: Call bin_manager::create_empty_pack(): PackedBins
+	61: StLoc[7](loc2: PackedBins)
+	62: MutBorrowLoc[7](loc2: PackedBins)
+	63: StLoc[17](loc12: &mut PackedBins)
+	64: Call lb_position::create_empty_pack(): PackedBins
+	65: StLoc[8](loc3: PackedBins)
+	66: MutBorrowLoc[8](loc3: PackedBins)
+	67: StLoc[19](loc14: &mut PackedBins)
+	68: LdU64(0)
+	69: StLoc[20](loc15: u64)
+B10:
+	70: CopyLoc[20](loc15: u64)
+	71: CopyLoc[21](loc16: u64)
+	72: Lt
+	73: BrFalse(209)
+B11:
+	74: Branch(75)
+B12:
+	75: ImmBorrowLoc[3](Arg3: vector<u32>)
+	76: CopyLoc[20](loc15: u64)
+	77: VecImmBorrow(8)
+	78: ReadRef
+	79: StLoc[13](loc8: u32)
+	80: CopyLoc[13](loc8: u32)
+	81: Call price_helper::validate_bin_id(u32)
+	82: MoveLoc[13](loc8: u32)
+	83: Call bin_manager::resolve_bin_group_index(u32): u32 * u8
+	84: StLoc[15](loc10: u8)
+	85: StLoc[12](loc7: u32)
+	86: CopyLoc[12](loc7: u32)
+	87: CopyLoc[18](loc13: u32)
+	88: Neq
+	89: BrFalse(124)
+B13:
+	90: MoveLoc[19](loc14: &mut PackedBins)
+	91: Pop
+	92: MoveLoc[17](loc12: &mut PackedBins)
+	93: Pop
+	94: CopyLoc[16](loc11: &mut Table<u32, PackedBins>)
+	95: CopyLoc[12](loc7: u32)
+	96: StLoc[9](loc4: u32)
+	97: FreezeRef
+	98: MoveLoc[9](loc4: u32)
+	99: Call table::contains<u32, PackedBins>(&Table<u32, PackedBins>, u32): bool
+	100: BrFalse(102)
+B14:
+	101: Branch(114)
+B15:
+	102: MoveLoc[2](Arg2: &mut LBPosition)
+	103: Pop
+	104: MoveLoc[23](loc18: &mut Table<u32, PackedBins>)
+	105: Pop
+	106: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	107: Pop
+	108: MoveLoc[4](Arg4: &mut TxContext)
+	109: Pop
+	110: MoveLoc[16](loc11: &mut Table<u32, PackedBins>)
+	111: Pop
+	112: LdConst[20](u64: 2039)
+	113: Abort
+B16:
+	114: CopyLoc[16](loc11: &mut Table<u32, PackedBins>)
+	115: CopyLoc[12](loc7: u32)
+	116: Call table::borrow_mut<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): &mut PackedBins
+	117: StLoc[17](loc12: &mut PackedBins)
+	118: CopyLoc[23](loc18: &mut Table<u32, PackedBins>)
+	119: CopyLoc[12](loc7: u32)
+	120: Call table::borrow_mut<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): &mut PackedBins
+	121: StLoc[19](loc14: &mut PackedBins)
+	122: MoveLoc[12](loc7: u32)
+	123: StLoc[18](loc13: u32)
+B17:
+	124: CopyLoc[17](loc12: &mut PackedBins)
+	125: CopyLoc[15](loc10: u8)
+	126: StLoc[10](loc5: u8)
+	127: FreezeRef
+	128: MoveLoc[10](loc5: u8)
+	129: Call bin_manager::bin_exists_in_pack(&PackedBins, u8): bool
+	130: BrFalse(132)
+B18:
+	131: Branch(148)
+B19:
+	132: MoveLoc[2](Arg2: &mut LBPosition)
+	133: Pop
+	134: MoveLoc[23](loc18: &mut Table<u32, PackedBins>)
+	135: Pop
+	136: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	137: Pop
+	138: MoveLoc[19](loc14: &mut PackedBins)
+	139: Pop
+	140: MoveLoc[17](loc12: &mut PackedBins)
+	141: Pop
+	142: MoveLoc[4](Arg4: &mut TxContext)
+	143: Pop
+	144: MoveLoc[16](loc11: &mut Table<u32, PackedBins>)
+	145: Pop
+	146: LdConst[20](u64: 2039)
+	147: Abort
+B20:
+	148: CopyLoc[17](loc12: &mut PackedBins)
+	149: CopyLoc[15](loc10: u8)
+	150: StLoc[6](loc1: u8)
+	151: FreezeRef
+	152: MoveLoc[6](loc1: u8)
+	153: Call bin_manager::get_bin_index_in_pack(&PackedBins, u8): u64
+	154: StLoc[14](loc9: u64)
+	155: CopyLoc[17](loc12: &mut PackedBins)
+	156: MoveLoc[14](loc9: u64)
+	157: Call bin_manager::get_bin_mut_from_pack(&mut PackedBins, u64): &mut Bin
+	158: StLoc[11](loc6: &mut Bin)
+	159: CopyLoc[19](loc14: &mut PackedBins)
+	160: FreezeRef
+	161: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	162: CopyLoc[15](loc10: u8)
+	163: Call lb_position::is_bin_active_in_bitmap(u8, u8): bool
+	164: BrFalse(166)
+B21:
+	165: Branch(184)
+B22:
+	166: MoveLoc[2](Arg2: &mut LBPosition)
+	167: Pop
+	168: MoveLoc[23](loc18: &mut Table<u32, PackedBins>)
+	169: Pop
+	170: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	171: Pop
+	172: MoveLoc[19](loc14: &mut PackedBins)
+	173: Pop
+	174: MoveLoc[17](loc12: &mut PackedBins)
+	175: Pop
+	176: MoveLoc[4](Arg4: &mut TxContext)
+	177: Pop
+	178: MoveLoc[16](loc11: &mut Table<u32, PackedBins>)
+	179: Pop
+	180: MoveLoc[11](loc6: &mut Bin)
+	181: Pop
+	182: LdConst[20](u64: 2039)
+	183: Abort
+B23:
+	184: CopyLoc[19](loc14: &mut PackedBins)
+	185: FreezeRef
+	186: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	187: MoveLoc[15](loc10: u8)
+	188: Call lb_position::count_active_bins_before_position(u8, u8): u8
+	189: StLoc[24](loc19: u8)
+	190: CopyLoc[19](loc14: &mut PackedBins)
+	191: MoveLoc[24](loc19: u8)
+	192: CastU64
+	193: Call lb_position::borrow_position_bin_mut_from_pack(&mut PackedBins, u64): &mut LBBinPosition
+	194: StLoc[22](loc17: &mut LBBinPosition)
+	195: CopyLoc[2](Arg2: &mut LBPosition)
+	196: MoveLoc[22](loc17: &mut LBBinPosition)
+	197: CopyLoc[11](loc6: &mut Bin)
+	198: FreezeRef
+	199: Call bin_manager::get_fee_growth_x(&Bin): u128
+	200: MoveLoc[11](loc6: &mut Bin)
+	201: FreezeRef
+	202: Call bin_manager::get_fee_growth_y(&Bin): u128
+	203: Call lb_position::settle_position_fees(&mut LBPosition, &mut LBBinPosition, u128, u128)
+	204: MoveLoc[20](loc15: u64)
+	205: LdU64(1)
+	206: Add
+	207: StLoc[20](loc15: u64)
+	208: Branch(70)
+B24:
+	209: MoveLoc[23](loc18: &mut Table<u32, PackedBins>)
+	210: Pop
+	211: MoveLoc[19](loc14: &mut PackedBins)
+	212: Pop
+	213: MoveLoc[17](loc12: &mut PackedBins)
+	214: Pop
+	215: MoveLoc[16](loc11: &mut Table<u32, PackedBins>)
+	216: Pop
+	217: CopyLoc[2](Arg2: &mut LBPosition)
+	218: Call lb_position::collect_saved_fees(&mut LBPosition): u64 * u64
+	219: StLoc[26](loc21: u64)
+	220: StLoc[25](loc20: u64)
+	221: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	222: FreezeRef
+	223: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	224: MoveLoc[2](Arg2: &mut LBPosition)
+	225: FreezeRef
+	226: Call object::id<LBPosition>(&LBPosition): ID
+	227: MoveLoc[3](Arg3: vector<u32>)
+	228: CopyLoc[25](loc20: u64)
+	229: CopyLoc[26](loc21: u64)
+	230: Pack[8](FeesCollectedEvent)
+	231: Call event::emit<FeesCollectedEvent>(FeesCollectedEvent)
+	232: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	233: MutBorrowFieldGeneric[8](LBPair.balance_x: Balance<Ty0>)
+	234: MoveLoc[25](loc20: u64)
+	235: CopyLoc[4](Arg4: &mut TxContext)
+	236: Call coin::take<Ty0>(&mut Balance<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	237: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	238: MutBorrowFieldGeneric[9](LBPair.balance_y: Balance<Ty1>)
+	239: MoveLoc[26](loc21: u64)
+	240: MoveLoc[4](Arg4: &mut TxContext)
+	241: Call coin::take<Ty1>(&mut Balance<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	242: Ret
+}
+
+public collect_position_rewards<Ty0, Ty1, Ty2>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: vector<u32>, Arg3: &mut LBPosition, Arg4: &mut RewarderGlobalVault, Arg5: &Clock, Arg6: &mut TxContext): Coin<Ty2> {
+L7:	loc0: bool
+L8:	loc1: u8
+L9:	loc2: vector<u128>
+L10:	loc3: Coin<Ty2>
+L11:	loc4: PackedBins
+L12:	loc5: PackedBins
+L13:	loc6: u32
+L14:	loc7: u8
+L15:	loc8: &mut Bin
+L16:	loc9: u32
+L17:	loc10: u64
+L18:	loc11: u8
+L19:	loc12: &mut Table<u32, PackedBins>
+L20:	loc13: &mut PackedBins
+L21:	loc14: u32
+L22:	loc15: &mut PackedBins
+L23:	loc16: u64
+L24:	loc17: u32
+L25:	loc18: u64
+L26:	loc19: &mut LBBinPosition
+L27:	loc20: &mut Table<u32, PackedBins>
+L28:	loc21: u8
+L29:	loc22: Coin<Ty2>
+L30:	loc23: vector<u128>
+L31:	loc24: u64
+L32:	loc25: Option<u64>
+L33:	loc26: u64
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[7](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[7](loc0: bool)
+B3:
+	14: MoveLoc[7](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(29)
+B5:
+	17: MoveLoc[4](Arg4: &mut RewarderGlobalVault)
+	18: Pop
+	19: MoveLoc[3](Arg3: &mut LBPosition)
+	20: Pop
+	21: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	22: Pop
+	23: MoveLoc[6](Arg6: &mut TxContext)
+	24: Pop
+	25: MoveLoc[5](Arg5: &Clock)
+	26: Pop
+	27: LdConst[15](u64: 2033)
+	28: Abort
+B6:
+	29: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	30: FreezeRef
+	31: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	32: CopyLoc[3](Arg3: &mut LBPosition)
+	33: FreezeRef
+	34: Call lb_position::pair_id(&LBPosition): ID
+	35: Eq
+	36: BrFalse(38)
+B7:
+	37: Branch(50)
+B8:
+	38: MoveLoc[4](Arg4: &mut RewarderGlobalVault)
+	39: Pop
+	40: MoveLoc[3](Arg3: &mut LBPosition)
+	41: Pop
+	42: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	43: Pop
+	44: MoveLoc[6](Arg6: &mut TxContext)
+	45: Pop
+	46: MoveLoc[5](Arg5: &Clock)
+	47: Pop
+	48: LdConst[12](u64: 2030)
+	49: Abort
+B9:
+	50: ImmBorrowLoc[2](Arg2: vector<u32>)
+	51: VecLen(8)
+	52: StLoc[25](loc18: u64)
+	53: CopyLoc[25](loc18: u64)
+	54: Call constants::max_bins(): u64
+	55: Le
+	56: BrFalse(58)
+B10:
+	57: Branch(70)
+B11:
+	58: MoveLoc[4](Arg4: &mut RewarderGlobalVault)
+	59: Pop
+	60: MoveLoc[3](Arg3: &mut LBPosition)
+	61: Pop
+	62: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	63: Pop
+	64: MoveLoc[6](Arg6: &mut TxContext)
+	65: Pop
+	66: MoveLoc[5](Arg5: &Clock)
+	67: Pop
+	68: LdConst[21](u64: 2041)
+	69: Abort
+B12:
+	70: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	71: MutBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	72: Call bin_manager::borrow_bins_table_mut(&mut BinManager): &mut Table<u32, PackedBins>
+	73: StLoc[19](loc12: &mut Table<u32, PackedBins>)
+	74: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	75: MutBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	76: CopyLoc[3](Arg3: &mut LBPosition)
+	77: FreezeRef
+	78: Call lb_position::borrow_position_info_mut(&mut LBPositionManager, &LBPosition): &mut LBPositionInfo
+	79: Call lb_position::borrow_position_bins_mut(&mut LBPositionInfo): &mut Table<u32, PackedBins>
+	80: StLoc[27](loc20: &mut Table<u32, PackedBins>)
+	81: Call constants::max_u32(): u32
+	82: StLoc[21](loc14: u32)
+	83: Call bin_manager::create_empty_pack(): PackedBins
+	84: StLoc[11](loc4: PackedBins)
+	85: MutBorrowLoc[11](loc4: PackedBins)
+	86: StLoc[20](loc13: &mut PackedBins)
+	87: Call lb_position::create_empty_pack(): PackedBins
+	88: StLoc[12](loc5: PackedBins)
+	89: MutBorrowLoc[12](loc5: PackedBins)
+	90: StLoc[22](loc15: &mut PackedBins)
+	91: LdU64(0)
+	92: StLoc[23](loc16: u64)
+B13:
+	93: CopyLoc[23](loc16: u64)
+	94: CopyLoc[25](loc18: u64)
+	95: Lt
+	96: BrFalse(258)
+B14:
+	97: Branch(98)
+B15:
+	98: ImmBorrowLoc[2](Arg2: vector<u32>)
+	99: CopyLoc[23](loc16: u64)
+	100: VecImmBorrow(8)
+	101: ReadRef
+	102: StLoc[24](loc17: u32)
+	103: CopyLoc[24](loc17: u32)
+	104: Call price_helper::validate_bin_id(u32)
+	105: CopyLoc[24](loc17: u32)
+	106: Call bin_manager::resolve_bin_group_index(u32): u32 * u8
+	107: StLoc[18](loc11: u8)
+	108: StLoc[16](loc9: u32)
+	109: CopyLoc[16](loc9: u32)
+	110: CopyLoc[21](loc14: u32)
+	111: Neq
+	112: BrFalse(151)
+B16:
+	113: MoveLoc[22](loc15: &mut PackedBins)
+	114: Pop
+	115: MoveLoc[20](loc13: &mut PackedBins)
+	116: Pop
+	117: CopyLoc[19](loc12: &mut Table<u32, PackedBins>)
+	118: CopyLoc[16](loc9: u32)
+	119: StLoc[13](loc6: u32)
+	120: FreezeRef
+	121: MoveLoc[13](loc6: u32)
+	122: Call table::contains<u32, PackedBins>(&Table<u32, PackedBins>, u32): bool
+	123: BrFalse(125)
+B17:
+	124: Branch(141)
+B18:
+	125: MoveLoc[4](Arg4: &mut RewarderGlobalVault)
+	126: Pop
+	127: MoveLoc[3](Arg3: &mut LBPosition)
+	128: Pop
+	129: MoveLoc[27](loc20: &mut Table<u32, PackedBins>)
+	130: Pop
+	131: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	132: Pop
+	133: MoveLoc[6](Arg6: &mut TxContext)
+	134: Pop
+	135: MoveLoc[5](Arg5: &Clock)
+	136: Pop
+	137: MoveLoc[19](loc12: &mut Table<u32, PackedBins>)
+	138: Pop
+	139: LdConst[20](u64: 2039)
+	140: Abort
+B19:
+	141: CopyLoc[19](loc12: &mut Table<u32, PackedBins>)
+	142: CopyLoc[16](loc9: u32)
+	143: Call table::borrow_mut<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): &mut PackedBins
+	144: StLoc[20](loc13: &mut PackedBins)
+	145: CopyLoc[27](loc20: &mut Table<u32, PackedBins>)
+	146: CopyLoc[16](loc9: u32)
+	147: Call table::borrow_mut<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): &mut PackedBins
+	148: StLoc[22](loc15: &mut PackedBins)
+	149: MoveLoc[16](loc9: u32)
+	150: StLoc[21](loc14: u32)
+B20:
+	151: CopyLoc[20](loc13: &mut PackedBins)
+	152: CopyLoc[18](loc11: u8)
+	153: StLoc[14](loc7: u8)
+	154: FreezeRef
+	155: MoveLoc[14](loc7: u8)
+	156: Call bin_manager::bin_exists_in_pack(&PackedBins, u8): bool
+	157: BrFalse(159)
+B21:
+	158: Branch(179)
+B22:
+	159: MoveLoc[4](Arg4: &mut RewarderGlobalVault)
+	160: Pop
+	161: MoveLoc[3](Arg3: &mut LBPosition)
+	162: Pop
+	163: MoveLoc[27](loc20: &mut Table<u32, PackedBins>)
+	164: Pop
+	165: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	166: Pop
+	167: MoveLoc[22](loc15: &mut PackedBins)
+	168: Pop
+	169: MoveLoc[20](loc13: &mut PackedBins)
+	170: Pop
+	171: MoveLoc[6](Arg6: &mut TxContext)
+	172: Pop
+	173: MoveLoc[5](Arg5: &Clock)
+	174: Pop
+	175: MoveLoc[19](loc12: &mut Table<u32, PackedBins>)
+	176: Pop
+	177: LdConst[20](u64: 2039)
+	178: Abort
+B23:
+	179: CopyLoc[20](loc13: &mut PackedBins)
+	180: CopyLoc[18](loc11: u8)
+	181: StLoc[8](loc1: u8)
+	182: FreezeRef
+	183: MoveLoc[8](loc1: u8)
+	184: Call bin_manager::get_bin_index_in_pack(&PackedBins, u8): u64
+	185: StLoc[17](loc10: u64)
+	186: CopyLoc[20](loc13: &mut PackedBins)
+	187: MoveLoc[17](loc10: u64)
+	188: Call bin_manager::get_bin_mut_from_pack(&mut PackedBins, u64): &mut Bin
+	189: StLoc[15](loc8: &mut Bin)
+	190: CopyLoc[22](loc15: &mut PackedBins)
+	191: FreezeRef
+	192: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	193: CopyLoc[18](loc11: u8)
+	194: Call lb_position::is_bin_active_in_bitmap(u8, u8): bool
+	195: BrFalse(197)
+B24:
+	196: Branch(219)
+B25:
+	197: MoveLoc[4](Arg4: &mut RewarderGlobalVault)
+	198: Pop
+	199: MoveLoc[3](Arg3: &mut LBPosition)
+	200: Pop
+	201: MoveLoc[27](loc20: &mut Table<u32, PackedBins>)
+	202: Pop
+	203: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	204: Pop
+	205: MoveLoc[22](loc15: &mut PackedBins)
+	206: Pop
+	207: MoveLoc[20](loc13: &mut PackedBins)
+	208: Pop
+	209: MoveLoc[6](Arg6: &mut TxContext)
+	210: Pop
+	211: MoveLoc[5](Arg5: &Clock)
+	212: Pop
+	213: MoveLoc[19](loc12: &mut Table<u32, PackedBins>)
+	214: Pop
+	215: MoveLoc[15](loc8: &mut Bin)
+	216: Pop
+	217: LdConst[20](u64: 2039)
+	218: Abort
+B26:
+	219: CopyLoc[22](loc15: &mut PackedBins)
+	220: FreezeRef
+	221: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	222: MoveLoc[18](loc11: u8)
+	223: Call lb_position::count_active_bins_before_position(u8, u8): u8
+	224: StLoc[28](loc21: u8)
+	225: CopyLoc[22](loc15: &mut PackedBins)
+	226: MoveLoc[28](loc21: u8)
+	227: CastU64
+	228: Call lb_position::borrow_position_bin_mut_from_pack(&mut PackedBins, u64): &mut LBBinPosition
+	229: StLoc[26](loc19: &mut LBBinPosition)
+	230: MoveLoc[24](loc17: u32)
+	231: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	232: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	233: Call pair_parameter_helper::get_active_id(&PairParameters): u32
+	234: Eq
+	235: BrFalse(243)
+B27:
+	236: MoveLoc[15](loc8: &mut Bin)
+	237: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	238: MutBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	239: CopyLoc[5](Arg5: &Clock)
+	240: Call bin_manager::settle_active_bin_reward_growths(&mut Bin, &mut RewarderManager, &Clock): vector<u128>
+	241: StLoc[9](loc2: vector<u128>)
+	242: Branch(247)
+B28:
+	243: MoveLoc[15](loc8: &mut Bin)
+	244: FreezeRef
+	245: Call bin_manager::get_reward_growths(&Bin): vector<u128>
+	246: StLoc[9](loc2: vector<u128>)
+B29:
+	247: MoveLoc[9](loc2: vector<u128>)
+	248: StLoc[30](loc23: vector<u128>)
+	249: CopyLoc[3](Arg3: &mut LBPosition)
+	250: MoveLoc[26](loc19: &mut LBBinPosition)
+	251: MoveLoc[30](loc23: vector<u128>)
+	252: Call lb_position::settle_position_rewards(&mut LBPosition, &mut LBBinPosition, vector<u128>)
+	253: MoveLoc[23](loc16: u64)
+	254: LdU64(1)
+	255: Add
+	256: StLoc[23](loc16: u64)
+	257: Branch(93)
+B30:
+	258: MoveLoc[27](loc20: &mut Table<u32, PackedBins>)
+	259: Pop
+	260: MoveLoc[22](loc15: &mut PackedBins)
+	261: Pop
+	262: MoveLoc[20](loc13: &mut PackedBins)
+	263: Pop
+	264: MoveLoc[5](Arg5: &Clock)
+	265: Pop
+	266: MoveLoc[19](loc12: &mut Table<u32, PackedBins>)
+	267: Pop
+	268: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	269: ImmBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	270: Call rewarder::rewarder_index<Ty2>(&RewarderManager): Option<u64>
+	271: StLoc[32](loc25: Option<u64>)
+	272: ImmBorrowLoc[32](loc25: Option<u64>)
+	273: Call option::is_some<u64>(&Option<u64>): bool
+	274: BrFalse(276)
+B31:
+	275: Branch(286)
+B32:
+	276: MoveLoc[4](Arg4: &mut RewarderGlobalVault)
+	277: Pop
+	278: MoveLoc[3](Arg3: &mut LBPosition)
+	279: Pop
+	280: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	281: Pop
+	282: MoveLoc[6](Arg6: &mut TxContext)
+	283: Pop
+	284: LdConst[23](u64: 2044)
+	285: Abort
+B33:
+	286: ImmBorrowLoc[32](loc25: Option<u64>)
+	287: Call option::borrow<u64>(&Option<u64>): &u64
+	288: ReadRef
+	289: StLoc[31](loc24: u64)
+	290: CopyLoc[3](Arg3: &mut LBPosition)
+	291: MoveLoc[31](loc24: u64)
+	292: Call lb_position::collect_saved_rewards(&mut LBPosition, u64): u64
+	293: StLoc[33](loc26: u64)
+	294: CopyLoc[33](loc26: u64)
+	295: LdU64(0)
+	296: Eq
+	297: BrFalse(304)
+B34:
+	298: MoveLoc[4](Arg4: &mut RewarderGlobalVault)
+	299: Pop
+	300: MoveLoc[6](Arg6: &mut TxContext)
+	301: Call coin::zero<Ty2>(&mut TxContext): Coin<Ty2>
+	302: StLoc[10](loc3: Coin<Ty2>)
+	303: Branch(310)
+B35:
+	304: MoveLoc[4](Arg4: &mut RewarderGlobalVault)
+	305: CopyLoc[33](loc26: u64)
+	306: Call rewarder::withdraw_reward<Ty2>(&mut RewarderGlobalVault, u64): Balance<Ty2>
+	307: MoveLoc[6](Arg6: &mut TxContext)
+	308: Call coin::from_balance<Ty2>(Balance<Ty2>, &mut TxContext): Coin<Ty2>
+	309: StLoc[10](loc3: Coin<Ty2>)
+B36:
+	310: MoveLoc[10](loc3: Coin<Ty2>)
+	311: StLoc[29](loc22: Coin<Ty2>)
+	312: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	313: FreezeRef
+	314: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	315: MoveLoc[3](Arg3: &mut LBPosition)
+	316: FreezeRef
+	317: Call object::id<LBPosition>(&LBPosition): ID
+	318: Call type_name::get<Ty2>(): TypeName
+	319: MoveLoc[33](loc26: u64)
+	320: Pack[10](RewardsCollectedEvent)
+	321: Call event::emit<RewardsCollectedEvent>(RewardsCollectedEvent)
+	322: MoveLoc[29](loc22: Coin<Ty2>)
+	323: Ret
+}
+
+public get_pending_rewards<Ty0, Ty1, Ty2>(Arg0: &LBPair<Ty0, Ty1>, Arg1: &LBPosition, Arg2: vector<u32>, Arg3: &Clock): u64 {
+L4:	loc0: PackedBins
+L5:	loc1: PackedBins
+L6:	loc2: vector<u128>
+L7:	loc3: &Bin
+L8:	loc4: u32
+L9:	loc5: u64
+L10:	loc6: u8
+L11:	loc7: &Table<u32, PackedBins>
+L12:	loc8: &PackedBins
+L13:	loc9: u32
+L14:	loc10: &PackedBins
+L15:	loc11: u64
+L16:	loc12: u32
+L17:	loc13: vector<u128>
+L18:	loc14: u128
+L19:	loc15: &LBBinPosition
+L20:	loc16: &Table<u32, PackedBins>
+L21:	loc17: u8
+L22:	loc18: vector<u128>
+L23:	loc19: vector<u128>
+L24:	loc20: u64
+L25:	loc21: Option<u64>
+L26:	loc22: u128
+B0:
+	0: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	2: Call bin_manager::borrow_bins_table(&BinManager): &Table<u32, PackedBins>
+	3: StLoc[11](loc7: &Table<u32, PackedBins>)
+	4: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	5: ImmBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	6: CopyLoc[1](Arg1: &LBPosition)
+	7: Call lb_position::borrow_position_info(&LBPositionManager, &LBPosition): &LBPositionInfo
+	8: Call lb_position::borrow_position_bins(&LBPositionInfo): &Table<u32, PackedBins>
+	9: StLoc[20](loc16: &Table<u32, PackedBins>)
+	10: Call constants::max_u32(): u32
+	11: StLoc[13](loc9: u32)
+	12: Call bin_manager::create_empty_pack(): PackedBins
+	13: StLoc[4](loc0: PackedBins)
+	14: ImmBorrowLoc[4](loc0: PackedBins)
+	15: StLoc[12](loc8: &PackedBins)
+	16: Call lb_position::create_empty_pack(): PackedBins
+	17: StLoc[5](loc1: PackedBins)
+	18: ImmBorrowLoc[5](loc1: PackedBins)
+	19: StLoc[14](loc10: &PackedBins)
+	20: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	21: ImmBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	22: Call rewarder::rewarder_index<Ty2>(&RewarderManager): Option<u64>
+	23: StLoc[25](loc21: Option<u64>)
+	24: ImmBorrowLoc[25](loc21: Option<u64>)
+	25: Call option::is_some<u64>(&Option<u64>): bool
+	26: Not
+	27: BrFalse(44)
+B1:
+	28: MoveLoc[1](Arg1: &LBPosition)
+	29: Pop
+	30: MoveLoc[20](loc16: &Table<u32, PackedBins>)
+	31: Pop
+	32: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	33: Pop
+	34: MoveLoc[14](loc10: &PackedBins)
+	35: Pop
+	36: MoveLoc[12](loc8: &PackedBins)
+	37: Pop
+	38: MoveLoc[3](Arg3: &Clock)
+	39: Pop
+	40: MoveLoc[11](loc7: &Table<u32, PackedBins>)
+	41: Pop
+	42: LdU64(0)
+	43: Ret
+B2:
+	44: ImmBorrowLoc[25](loc21: Option<u64>)
+	45: Call option::borrow<u64>(&Option<u64>): &u64
+	46: ReadRef
+	47: StLoc[24](loc20: u64)
+	48: LdU128(0)
+	49: StLoc[18](loc14: u128)
+	50: LdU64(0)
+	51: StLoc[15](loc11: u64)
+B3:
+	52: CopyLoc[15](loc11: u64)
+	53: ImmBorrowLoc[2](Arg2: vector<u32>)
+	54: VecLen(8)
+	55: Lt
+	56: BrFalse(210)
+B4:
+	57: Branch(58)
+B5:
+	58: ImmBorrowLoc[2](Arg2: vector<u32>)
+	59: CopyLoc[15](loc11: u64)
+	60: VecImmBorrow(8)
+	61: ReadRef
+	62: StLoc[16](loc12: u32)
+	63: CopyLoc[16](loc12: u32)
+	64: Call price_helper::validate_bin_id(u32)
+	65: CopyLoc[16](loc12: u32)
+	66: Call bin_manager::resolve_bin_group_index(u32): u32 * u8
+	67: StLoc[10](loc6: u8)
+	68: StLoc[8](loc4: u32)
+	69: CopyLoc[8](loc4: u32)
+	70: CopyLoc[13](loc9: u32)
+	71: Neq
+	72: BrFalse(104)
+B6:
+	73: MoveLoc[14](loc10: &PackedBins)
+	74: Pop
+	75: MoveLoc[12](loc8: &PackedBins)
+	76: Pop
+	77: CopyLoc[11](loc7: &Table<u32, PackedBins>)
+	78: CopyLoc[8](loc4: u32)
+	79: Call table::contains<u32, PackedBins>(&Table<u32, PackedBins>, u32): bool
+	80: BrFalse(82)
+B7:
+	81: Branch(94)
+B8:
+	82: MoveLoc[1](Arg1: &LBPosition)
+	83: Pop
+	84: MoveLoc[20](loc16: &Table<u32, PackedBins>)
+	85: Pop
+	86: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	87: Pop
+	88: MoveLoc[3](Arg3: &Clock)
+	89: Pop
+	90: MoveLoc[11](loc7: &Table<u32, PackedBins>)
+	91: Pop
+	92: LdConst[20](u64: 2039)
+	93: Abort
+B9:
+	94: CopyLoc[11](loc7: &Table<u32, PackedBins>)
+	95: CopyLoc[8](loc4: u32)
+	96: Call table::borrow<u32, PackedBins>(&Table<u32, PackedBins>, u32): &PackedBins
+	97: StLoc[12](loc8: &PackedBins)
+	98: CopyLoc[20](loc16: &Table<u32, PackedBins>)
+	99: CopyLoc[8](loc4: u32)
+	100: Call table::borrow<u32, PackedBins>(&Table<u32, PackedBins>, u32): &PackedBins
+	101: StLoc[14](loc10: &PackedBins)
+	102: MoveLoc[8](loc4: u32)
+	103: StLoc[13](loc9: u32)
+B10:
+	104: CopyLoc[12](loc8: &PackedBins)
+	105: CopyLoc[10](loc6: u8)
+	106: Call bin_manager::bin_exists_in_pack(&PackedBins, u8): bool
+	107: BrFalse(109)
+B11:
+	108: Branch(125)
+B12:
+	109: MoveLoc[1](Arg1: &LBPosition)
+	110: Pop
+	111: MoveLoc[20](loc16: &Table<u32, PackedBins>)
+	112: Pop
+	113: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	114: Pop
+	115: MoveLoc[14](loc10: &PackedBins)
+	116: Pop
+	117: MoveLoc[12](loc8: &PackedBins)
+	118: Pop
+	119: MoveLoc[3](Arg3: &Clock)
+	120: Pop
+	121: MoveLoc[11](loc7: &Table<u32, PackedBins>)
+	122: Pop
+	123: LdConst[20](u64: 2039)
+	124: Abort
+B13:
+	125: CopyLoc[12](loc8: &PackedBins)
+	126: CopyLoc[10](loc6: u8)
+	127: Call bin_manager::get_bin_index_in_pack(&PackedBins, u8): u64
+	128: StLoc[9](loc5: u64)
+	129: CopyLoc[12](loc8: &PackedBins)
+	130: MoveLoc[9](loc5: u64)
+	131: Call bin_manager::get_bin_from_pack(&PackedBins, u64): &Bin
+	132: StLoc[7](loc3: &Bin)
+	133: CopyLoc[14](loc10: &PackedBins)
+	134: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	135: CopyLoc[10](loc6: u8)
+	136: Call lb_position::is_bin_active_in_bitmap(u8, u8): bool
+	137: BrFalse(139)
+B14:
+	138: Branch(157)
+B15:
+	139: MoveLoc[1](Arg1: &LBPosition)
+	140: Pop
+	141: MoveLoc[20](loc16: &Table<u32, PackedBins>)
+	142: Pop
+	143: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	144: Pop
+	145: MoveLoc[14](loc10: &PackedBins)
+	146: Pop
+	147: MoveLoc[12](loc8: &PackedBins)
+	148: Pop
+	149: MoveLoc[3](Arg3: &Clock)
+	150: Pop
+	151: MoveLoc[11](loc7: &Table<u32, PackedBins>)
+	152: Pop
+	153: MoveLoc[7](loc3: &Bin)
+	154: Pop
+	155: LdConst[20](u64: 2039)
+	156: Abort
+B16:
+	157: CopyLoc[14](loc10: &PackedBins)
+	158: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	159: MoveLoc[10](loc6: u8)
+	160: Call lb_position::count_active_bins_before_position(u8, u8): u8
+	161: StLoc[21](loc17: u8)
+	162: CopyLoc[14](loc10: &PackedBins)
+	163: MoveLoc[21](loc17: u8)
+	164: CastU64
+	165: Call lb_position::borrow_position_bin_from_pack(&PackedBins, u64): &LBBinPosition
+	166: StLoc[19](loc15: &LBBinPosition)
+	167: MoveLoc[16](loc12: u32)
+	168: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	169: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	170: Call pair_parameter_helper::get_active_id(&PairParameters): u32
+	171: Eq
+	172: BrFalse(184)
+B17:
+	173: MoveLoc[7](loc3: &Bin)
+	174: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	175: ImmBorrowFieldGeneric[2](LBPair.reward_manager: RewarderManager)
+	176: CopyLoc[3](Arg3: &Clock)
+	177: Call bin_manager::simulate_settle_active_bin_reward_growths(&Bin, &RewarderManager, &Clock): vector<u128>
+	178: StLoc[22](loc18: vector<u128>)
+	179: MoveLoc[19](loc15: &LBBinPosition)
+	180: MoveLoc[22](loc18: vector<u128>)
+	181: Call lb_position::simulate_settle_position_rewards(&LBBinPosition, vector<u128>): vector<u128>
+	182: StLoc[6](loc2: vector<u128>)
+	183: Branch(191)
+B18:
+	184: MoveLoc[7](loc3: &Bin)
+	185: Call bin_manager::get_reward_growths(&Bin): vector<u128>
+	186: StLoc[23](loc19: vector<u128>)
+	187: MoveLoc[19](loc15: &LBBinPosition)
+	188: MoveLoc[23](loc19: vector<u128>)
+	189: Call lb_position::simulate_settle_position_rewards(&LBBinPosition, vector<u128>): vector<u128>
+	190: StLoc[6](loc2: vector<u128>)
+B19:
+	191: MoveLoc[6](loc2: vector<u128>)
+	192: StLoc[17](loc13: vector<u128>)
+	193: CopyLoc[24](loc20: u64)
+	194: ImmBorrowLoc[17](loc13: vector<u128>)
+	195: VecLen(11)
+	196: Lt
+	197: BrFalse(205)
+B20:
+	198: MoveLoc[18](loc14: u128)
+	199: ImmBorrowLoc[17](loc13: vector<u128>)
+	200: CopyLoc[24](loc20: u64)
+	201: VecImmBorrow(11)
+	202: ReadRef
+	203: Call safe_math::add_u128(u128, u128): u128
+	204: StLoc[18](loc14: u128)
+B21:
+	205: MoveLoc[15](loc11: u64)
+	206: LdU64(1)
+	207: Add
+	208: StLoc[15](loc11: u64)
+	209: Branch(52)
+B22:
+	210: MoveLoc[20](loc16: &Table<u32, PackedBins>)
+	211: Pop
+	212: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	213: Pop
+	214: MoveLoc[14](loc10: &PackedBins)
+	215: Pop
+	216: MoveLoc[12](loc8: &PackedBins)
+	217: Pop
+	218: MoveLoc[3](Arg3: &Clock)
+	219: Pop
+	220: MoveLoc[11](loc7: &Table<u32, PackedBins>)
+	221: Pop
+	222: MoveLoc[1](Arg1: &LBPosition)
+	223: MoveLoc[24](loc20: u64)
+	224: Call lb_position::get_saved_rewards(&LBPosition, u64): u128
+	225: StLoc[26](loc22: u128)
+	226: MoveLoc[18](loc14: u128)
+	227: MoveLoc[26](loc22: u128)
+	228: Call safe_math::add_u128(u128, u128): u128
+	229: Call q64x64::scale_offset(): u8
+	230: Shr
+	231: Call safe_math::u128_to_u64(u128): u64
+	232: Ret
+}
+
+public get_pending_fees<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>, Arg1: &LBPosition, Arg2: vector<u32>): u64 * u64 {
+L3:	loc0: PackedBins
+L4:	loc1: PackedBins
+L5:	loc2: &Bin
+L6:	loc3: u32
+L7:	loc4: u32
+L8:	loc5: u64
+L9:	loc6: u8
+L10:	loc7: &Table<u32, PackedBins>
+L11:	loc8: &PackedBins
+L12:	loc9: u32
+L13:	loc10: u128
+L14:	loc11: u128
+L15:	loc12: &PackedBins
+L16:	loc13: u64
+L17:	loc14: u64
+L18:	loc15: &LBBinPosition
+L19:	loc16: &Table<u32, PackedBins>
+L20:	loc17: u8
+L21:	loc18: u128
+L22:	loc19: u128
+L23:	loc20: u128
+L24:	loc21: u128
+L25:	loc22: u128
+L26:	loc23: u128
+B0:
+	0: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	2: Call bin_manager::borrow_bins_table(&BinManager): &Table<u32, PackedBins>
+	3: StLoc[10](loc7: &Table<u32, PackedBins>)
+	4: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	5: ImmBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	6: CopyLoc[1](Arg1: &LBPosition)
+	7: Call lb_position::borrow_position_info(&LBPositionManager, &LBPosition): &LBPositionInfo
+	8: Call lb_position::borrow_position_bins(&LBPositionInfo): &Table<u32, PackedBins>
+	9: StLoc[19](loc16: &Table<u32, PackedBins>)
+	10: Call constants::max_u32(): u32
+	11: StLoc[12](loc9: u32)
+	12: Call bin_manager::create_empty_pack(): PackedBins
+	13: StLoc[3](loc0: PackedBins)
+	14: ImmBorrowLoc[3](loc0: PackedBins)
+	15: StLoc[11](loc8: &PackedBins)
+	16: Call lb_position::create_empty_pack(): PackedBins
+	17: StLoc[4](loc1: PackedBins)
+	18: ImmBorrowLoc[4](loc1: PackedBins)
+	19: StLoc[15](loc12: &PackedBins)
+	20: LdU128(0)
+	21: StLoc[25](loc22: u128)
+	22: LdU128(0)
+	23: StLoc[26](loc23: u128)
+	24: LdU64(0)
+	25: StLoc[16](loc13: u64)
+	26: ImmBorrowLoc[2](Arg2: vector<u32>)
+	27: VecLen(8)
+	28: StLoc[17](loc14: u64)
+B1:
+	29: CopyLoc[16](loc13: u64)
+	30: CopyLoc[17](loc14: u64)
+	31: Lt
+	32: BrFalse(156)
+B2:
+	33: Branch(34)
+B3:
+	34: ImmBorrowLoc[2](Arg2: vector<u32>)
+	35: CopyLoc[16](loc13: u64)
+	36: VecImmBorrow(8)
+	37: ReadRef
+	38: StLoc[7](loc4: u32)
+	39: CopyLoc[7](loc4: u32)
+	40: Call price_helper::validate_bin_id(u32)
+	41: MoveLoc[7](loc4: u32)
+	42: Call bin_manager::resolve_bin_group_index(u32): u32 * u8
+	43: StLoc[9](loc6: u8)
+	44: StLoc[6](loc3: u32)
+	45: CopyLoc[6](loc3: u32)
+	46: CopyLoc[12](loc9: u32)
+	47: Neq
+	48: BrFalse(76)
+B4:
+	49: MoveLoc[15](loc12: &PackedBins)
+	50: Pop
+	51: MoveLoc[11](loc8: &PackedBins)
+	52: Pop
+	53: CopyLoc[10](loc7: &Table<u32, PackedBins>)
+	54: CopyLoc[6](loc3: u32)
+	55: Call table::contains<u32, PackedBins>(&Table<u32, PackedBins>, u32): bool
+	56: BrFalse(58)
+B5:
+	57: Branch(66)
+B6:
+	58: MoveLoc[1](Arg1: &LBPosition)
+	59: Pop
+	60: MoveLoc[19](loc16: &Table<u32, PackedBins>)
+	61: Pop
+	62: MoveLoc[10](loc7: &Table<u32, PackedBins>)
+	63: Pop
+	64: LdConst[20](u64: 2039)
+	65: Abort
+B7:
+	66: CopyLoc[10](loc7: &Table<u32, PackedBins>)
+	67: CopyLoc[6](loc3: u32)
+	68: Call table::borrow<u32, PackedBins>(&Table<u32, PackedBins>, u32): &PackedBins
+	69: StLoc[11](loc8: &PackedBins)
+	70: CopyLoc[19](loc16: &Table<u32, PackedBins>)
+	71: CopyLoc[6](loc3: u32)
+	72: Call table::borrow<u32, PackedBins>(&Table<u32, PackedBins>, u32): &PackedBins
+	73: StLoc[15](loc12: &PackedBins)
+	74: MoveLoc[6](loc3: u32)
+	75: StLoc[12](loc9: u32)
+B8:
+	76: CopyLoc[11](loc8: &PackedBins)
+	77: CopyLoc[9](loc6: u8)
+	78: Call bin_manager::bin_exists_in_pack(&PackedBins, u8): bool
+	79: BrFalse(81)
+B9:
+	80: Branch(93)
+B10:
+	81: MoveLoc[1](Arg1: &LBPosition)
+	82: Pop
+	83: MoveLoc[19](loc16: &Table<u32, PackedBins>)
+	84: Pop
+	85: MoveLoc[15](loc12: &PackedBins)
+	86: Pop
+	87: MoveLoc[11](loc8: &PackedBins)
+	88: Pop
+	89: MoveLoc[10](loc7: &Table<u32, PackedBins>)
+	90: Pop
+	91: LdConst[20](u64: 2039)
+	92: Abort
+B11:
+	93: CopyLoc[11](loc8: &PackedBins)
+	94: CopyLoc[9](loc6: u8)
+	95: Call bin_manager::get_bin_index_in_pack(&PackedBins, u8): u64
+	96: StLoc[8](loc5: u64)
+	97: CopyLoc[11](loc8: &PackedBins)
+	98: MoveLoc[8](loc5: u64)
+	99: Call bin_manager::get_bin_from_pack(&PackedBins, u64): &Bin
+	100: StLoc[5](loc2: &Bin)
+	101: CopyLoc[15](loc12: &PackedBins)
+	102: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	103: CopyLoc[9](loc6: u8)
+	104: Call lb_position::is_bin_active_in_bitmap(u8, u8): bool
+	105: BrFalse(107)
+B12:
+	106: Branch(121)
+B13:
+	107: MoveLoc[1](Arg1: &LBPosition)
+	108: Pop
+	109: MoveLoc[19](loc16: &Table<u32, PackedBins>)
+	110: Pop
+	111: MoveLoc[15](loc12: &PackedBins)
+	112: Pop
+	113: MoveLoc[11](loc8: &PackedBins)
+	114: Pop
+	115: MoveLoc[10](loc7: &Table<u32, PackedBins>)
+	116: Pop
+	117: MoveLoc[5](loc2: &Bin)
+	118: Pop
+	119: LdConst[20](u64: 2039)
+	120: Abort
+B14:
+	121: CopyLoc[15](loc12: &PackedBins)
+	122: Call lb_position::get_active_bins_bitmap(&PackedBins): u8
+	123: MoveLoc[9](loc6: u8)
+	124: Call lb_position::count_active_bins_before_position(u8, u8): u8
+	125: StLoc[20](loc17: u8)
+	126: CopyLoc[15](loc12: &PackedBins)
+	127: MoveLoc[20](loc17: u8)
+	128: CastU64
+	129: Call lb_position::borrow_position_bin_from_pack(&PackedBins, u64): &LBBinPosition
+	130: StLoc[18](loc15: &LBBinPosition)
+	131: CopyLoc[5](loc2: &Bin)
+	132: Call bin_manager::get_fee_growth_x(&Bin): u128
+	133: StLoc[13](loc10: u128)
+	134: MoveLoc[5](loc2: &Bin)
+	135: Call bin_manager::get_fee_growth_y(&Bin): u128
+	136: StLoc[14](loc11: u128)
+	137: MoveLoc[18](loc15: &LBBinPosition)
+	138: MoveLoc[13](loc10: u128)
+	139: MoveLoc[14](loc11: u128)
+	140: Call lb_position::get_pending_fees(&LBBinPosition, u128, u128): u128 * u128
+	141: StLoc[24](loc21: u128)
+	142: StLoc[23](loc20: u128)
+	143: MoveLoc[25](loc22: u128)
+	144: MoveLoc[23](loc20: u128)
+	145: Call safe_math::add_u128(u128, u128): u128
+	146: StLoc[25](loc22: u128)
+	147: MoveLoc[26](loc23: u128)
+	148: MoveLoc[24](loc21: u128)
+	149: Call safe_math::add_u128(u128, u128): u128
+	150: StLoc[26](loc23: u128)
+	151: MoveLoc[16](loc13: u64)
+	152: LdU64(1)
+	153: Add
+	154: StLoc[16](loc13: u64)
+	155: Branch(29)
+B15:
+	156: MoveLoc[19](loc16: &Table<u32, PackedBins>)
+	157: Pop
+	158: MoveLoc[15](loc12: &PackedBins)
+	159: Pop
+	160: MoveLoc[11](loc8: &PackedBins)
+	161: Pop
+	162: MoveLoc[10](loc7: &Table<u32, PackedBins>)
+	163: Pop
+	164: MoveLoc[1](Arg1: &LBPosition)
+	165: Call lb_position::get_saved_fees(&LBPosition): u128 * u128
+	166: StLoc[22](loc19: u128)
+	167: StLoc[21](loc18: u128)
+	168: MoveLoc[25](loc22: u128)
+	169: MoveLoc[21](loc18: u128)
+	170: Call safe_math::add_u128(u128, u128): u128
+	171: StLoc[25](loc22: u128)
+	172: MoveLoc[26](loc23: u128)
+	173: MoveLoc[22](loc19: u128)
+	174: Call safe_math::add_u128(u128, u128): u128
+	175: StLoc[26](loc23: u128)
+	176: MoveLoc[25](loc22: u128)
+	177: Call q64x64::scale_offset(): u8
+	178: Shr
+	179: Call safe_math::u128_to_u64(u128): u64
+	180: MoveLoc[26](loc23: u128)
+	181: Call q64x64::scale_offset(): u8
+	182: Shr
+	183: Call safe_math::u128_to_u64(u128): u64
+	184: Ret
+}
+
+public collect_protocol_fees<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: &mut TxContext) {
+L3:	loc0: bool
+L4:	loc1: u64
+L5:	loc2: u64
+L6:	loc3: bool
+L7:	loc4: u64
+L8:	loc5: u64
+L9:	loc6: address
+L10:	loc7: u64
+L11:	loc8: u64
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: CopyLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(12)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: StLoc[3](loc0: bool)
+	11: Branch(14)
+B2:
+	12: LdFalse
+	13: StLoc[3](loc0: bool)
+B3:
+	14: MoveLoc[3](loc0: bool)
+	15: BrFalse(17)
+B4:
+	16: Branch(25)
+B5:
+	17: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	18: Pop
+	19: MoveLoc[2](Arg2: &mut TxContext)
+	20: Pop
+	21: MoveLoc[0](Arg0: &GlobalConfig)
+	22: Pop
+	23: LdConst[15](u64: 2033)
+	24: Abort
+B6:
+	25: CopyLoc[0](Arg0: &GlobalConfig)
+	26: CopyLoc[2](Arg2: &mut TxContext)
+	27: FreezeRef
+	28: Call tx_context::sender(&TxContext): address
+	29: Call config::check_pool_manager_role(&GlobalConfig, address)
+	30: MoveLoc[0](Arg0: &GlobalConfig)
+	31: Call config::get_fund_receiver(&GlobalConfig): address
+	32: StLoc[9](loc6: address)
+	33: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	34: ImmBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	35: ReadRef
+	36: StLoc[10](loc7: u64)
+	37: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	38: ImmBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	39: ReadRef
+	40: StLoc[11](loc8: u64)
+	41: CopyLoc[10](loc7: u64)
+	42: LdConst[2](u64: 1)
+	43: Gt
+	44: BrFalse(50)
+B7:
+	45: MoveLoc[10](loc7: u64)
+	46: LdConst[2](u64: 1)
+	47: Call safe_math::sub_u64(u64, u64): u64
+	48: StLoc[4](loc1: u64)
+	49: Branch(52)
+B8:
+	50: LdU64(0)
+	51: StLoc[4](loc1: u64)
+B9:
+	52: MoveLoc[4](loc1: u64)
+	53: StLoc[7](loc4: u64)
+	54: CopyLoc[11](loc8: u64)
+	55: LdConst[2](u64: 1)
+	56: Gt
+	57: BrFalse(63)
+B10:
+	58: MoveLoc[11](loc8: u64)
+	59: LdConst[2](u64: 1)
+	60: Call safe_math::sub_u64(u64, u64): u64
+	61: StLoc[5](loc2: u64)
+	62: Branch(65)
+B11:
+	63: LdU64(0)
+	64: StLoc[5](loc2: u64)
+B12:
+	65: MoveLoc[5](loc2: u64)
+	66: StLoc[8](loc5: u64)
+	67: CopyLoc[7](loc4: u64)
+	68: LdU64(0)
+	69: Gt
+	70: BrFalse(74)
+B13:
+	71: LdTrue
+	72: StLoc[6](loc3: bool)
+	73: Branch(78)
+B14:
+	74: CopyLoc[8](loc5: u64)
+	75: LdU64(0)
+	76: Gt
+	77: StLoc[6](loc3: bool)
+B15:
+	78: MoveLoc[6](loc3: bool)
+	79: BrFalse(81)
+B16:
+	80: Branch(87)
+B17:
+	81: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	82: Pop
+	83: MoveLoc[2](Arg2: &mut TxContext)
+	84: Pop
+	85: LdConst[8](u64: 2014)
+	86: Abort
+B18:
+	87: CopyLoc[7](loc4: u64)
+	88: LdU64(0)
+	89: Gt
+	90: BrFalse(106)
+B19:
+	91: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	92: ImmBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	93: ReadRef
+	94: CopyLoc[7](loc4: u64)
+	95: Sub
+	96: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	97: MutBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	98: WriteRef
+	99: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	100: MutBorrowFieldGeneric[8](LBPair.balance_x: Balance<Ty0>)
+	101: CopyLoc[7](loc4: u64)
+	102: CopyLoc[2](Arg2: &mut TxContext)
+	103: Call coin::take<Ty0>(&mut Balance<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	104: CopyLoc[9](loc6: address)
+	105: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+B20:
+	106: CopyLoc[8](loc5: u64)
+	107: LdU64(0)
+	108: Gt
+	109: BrFalse(126)
+B21:
+	110: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	111: ImmBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	112: ReadRef
+	113: CopyLoc[8](loc5: u64)
+	114: Sub
+	115: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	116: MutBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	117: WriteRef
+	118: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	119: MutBorrowFieldGeneric[9](LBPair.balance_y: Balance<Ty1>)
+	120: CopyLoc[8](loc5: u64)
+	121: CopyLoc[2](Arg2: &mut TxContext)
+	122: Call coin::take<Ty1>(&mut Balance<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	123: MoveLoc[9](loc6: address)
+	124: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	125: Branch(128)
+B22:
+	126: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	127: Pop
+B23:
+	128: MoveLoc[2](Arg2: &mut TxContext)
+	129: FreezeRef
+	130: Call tx_context::sender(&TxContext): address
+	131: MoveLoc[7](loc4: u64)
+	132: MoveLoc[8](loc5: u64)
+	133: Pack[4](CollectedProtocolFeesEvent)
+	134: Call event::emit<CollectedProtocolFeesEvent>(CollectedProtocolFeesEvent)
+	135: Ret
+}
+
+public flash_loan<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: bool, Arg3: u64): Balance<Ty0> * Balance<Ty1> * FlashLoanReceipt {
+L4:	loc0: bool
+L5:	loc1: u64
+L6:	loc2: Balance<Ty0>
+L7:	loc3: Balance<Ty1>
+L8:	loc4: Balance<Ty0>
+L9:	loc5: Balance<Ty1>
+L10:	loc6: u64
+L11:	loc7: u64
+L12:	loc8: u64
+L13:	loc9: FlashLoanReceipt
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: CopyLoc[0](Arg0: &GlobalConfig)
+	3: Call config::global_paused(&GlobalConfig): bool
+	4: Not
+	5: BrFalse(18)
+B1:
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: Not
+	10: BrFalse(15)
+B2:
+	11: CopyLoc[0](Arg0: &GlobalConfig)
+	12: Call config::flash_loan_enable(&GlobalConfig): bool
+	13: StLoc[4](loc0: bool)
+	14: Branch(17)
+B3:
+	15: LdFalse
+	16: StLoc[4](loc0: bool)
+B4:
+	17: Branch(20)
+B5:
+	18: LdFalse
+	19: StLoc[4](loc0: bool)
+B6:
+	20: MoveLoc[4](loc0: bool)
+	21: BrFalse(23)
+B7:
+	22: Branch(29)
+B8:
+	23: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	24: Pop
+	25: MoveLoc[0](Arg0: &GlobalConfig)
+	26: Pop
+	27: LdConst[15](u64: 2033)
+	28: Abort
+B9:
+	29: CopyLoc[3](Arg3: u64)
+	30: LdU64(0)
+	31: Gt
+	32: BrFalse(34)
+B10:
+	33: Branch(40)
+B11:
+	34: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	35: Pop
+	36: MoveLoc[0](Arg0: &GlobalConfig)
+	37: Pop
+	38: LdConst[16](u64: 2034)
+	39: Abort
+B12:
+	40: CopyLoc[2](Arg2: bool)
+	41: BrFalse(47)
+B13:
+	42: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	43: ImmBorrowFieldGeneric[8](LBPair.balance_x: Balance<Ty0>)
+	44: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	45: StLoc[5](loc1: u64)
+	46: Branch(51)
+B14:
+	47: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	48: ImmBorrowFieldGeneric[9](LBPair.balance_y: Balance<Ty1>)
+	49: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	50: StLoc[5](loc1: u64)
+B15:
+	51: MoveLoc[5](loc1: u64)
+	52: CopyLoc[0](Arg0: &GlobalConfig)
+	53: Call config::flash_loan_max_amount(&GlobalConfig): u64
+	54: Call constants::precision(): u64
+	55: Call safe_math::mul_div_u64(u64, u64, u64): u64
+	56: StLoc[12](loc8: u64)
+	57: CopyLoc[3](Arg3: u64)
+	58: MoveLoc[12](loc8: u64)
+	59: Le
+	60: BrFalse(62)
+B16:
+	61: Branch(68)
+B17:
+	62: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	63: Pop
+	64: MoveLoc[0](Arg0: &GlobalConfig)
+	65: Pop
+	66: LdConst[4](u64: 2005)
+	67: Abort
+B18:
+	68: MoveLoc[0](Arg0: &GlobalConfig)
+	69: Call config::flash_loan_fee_rate(&GlobalConfig): u64
+	70: StLoc[11](loc7: u64)
+	71: CopyLoc[3](Arg3: u64)
+	72: MoveLoc[11](loc7: u64)
+	73: Call safe_math::mul_u64(u64, u64): u64
+	74: Call constants::precision(): u64
+	75: Call safe_math::div_round_up_u64(u64, u64): u64
+	76: StLoc[10](loc6: u64)
+	77: CopyLoc[2](Arg2: bool)
+	78: BrFalse(88)
+B19:
+	79: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	80: ImmBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	81: ReadRef
+	82: CopyLoc[10](loc6: u64)
+	83: Call safe_math::add_u64(u64, u64): u64
+	84: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	85: MutBorrowFieldGeneric[5](LBPair.protocol_fee_x: u64)
+	86: WriteRef
+	87: Branch(96)
+B20:
+	88: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	89: ImmBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	90: ReadRef
+	91: CopyLoc[10](loc6: u64)
+	92: Call safe_math::add_u64(u64, u64): u64
+	93: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	94: MutBorrowFieldGeneric[6](LBPair.protocol_fee_y: u64)
+	95: WriteRef
+B21:
+	96: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	97: FreezeRef
+	98: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	99: CopyLoc[2](Arg2: bool)
+	100: CopyLoc[3](Arg3: u64)
+	101: CopyLoc[10](loc6: u64)
+	102: Pack[1](FlashLoanReceipt)
+	103: StLoc[13](loc9: FlashLoanReceipt)
+	104: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	105: FreezeRef
+	106: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	107: CopyLoc[2](Arg2: bool)
+	108: CopyLoc[3](Arg3: u64)
+	109: MoveLoc[10](loc6: u64)
+	110: Pack[13](FlashLoanEvent)
+	111: Call event::emit<FlashLoanEvent>(FlashLoanEvent)
+	112: MoveLoc[2](Arg2: bool)
+	113: BrFalse(122)
+B22:
+	114: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	115: MutBorrowFieldGeneric[8](LBPair.balance_x: Balance<Ty0>)
+	116: MoveLoc[3](Arg3: u64)
+	117: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	118: Call balance::zero<Ty1>(): Balance<Ty1>
+	119: StLoc[7](loc3: Balance<Ty1>)
+	120: StLoc[6](loc2: Balance<Ty0>)
+	121: Branch(129)
+B23:
+	122: Call balance::zero<Ty0>(): Balance<Ty0>
+	123: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	124: MutBorrowFieldGeneric[9](LBPair.balance_y: Balance<Ty1>)
+	125: MoveLoc[3](Arg3: u64)
+	126: Call balance::split<Ty1>(&mut Balance<Ty1>, u64): Balance<Ty1>
+	127: StLoc[7](loc3: Balance<Ty1>)
+	128: StLoc[6](loc2: Balance<Ty0>)
+B24:
+	129: MoveLoc[6](loc2: Balance<Ty0>)
+	130: MoveLoc[7](loc3: Balance<Ty1>)
+	131: StLoc[9](loc5: Balance<Ty1>)
+	132: StLoc[8](loc4: Balance<Ty0>)
+	133: LdTrue
+	134: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	135: MutBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	136: WriteRef
+	137: MoveLoc[8](loc4: Balance<Ty0>)
+	138: MoveLoc[9](loc5: Balance<Ty1>)
+	139: MoveLoc[13](loc9: FlashLoanReceipt)
+	140: Ret
+}
+
+public repay_flash_loan<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: Balance<Ty0>, Arg3: Balance<Ty1>, Arg4: FlashLoanReceipt) {
+L5:	loc0: u64
+L6:	loc1: u64
+L7:	loc2: bool
+B0:
+	0: MoveLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[4](Arg4: FlashLoanReceipt)
+	3: Unpack[1](FlashLoanReceipt)
+	4: StLoc[6](loc1: u64)
+	5: StLoc[5](loc0: u64)
+	6: StLoc[7](loc2: bool)
+	7: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	8: FreezeRef
+	9: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	10: Eq
+	11: BrFalse(13)
+B1:
+	12: Branch(17)
+B2:
+	13: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	14: Pop
+	15: LdConst[5](u64: 2007)
+	16: Abort
+B3:
+	17: MoveLoc[7](loc2: bool)
+	18: BrFalse(39)
+B4:
+	19: ImmBorrowLoc[2](Arg2: Balance<Ty0>)
+	20: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	21: MoveLoc[5](loc0: u64)
+	22: MoveLoc[6](loc1: u64)
+	23: Add
+	24: Eq
+	25: BrFalse(27)
+B5:
+	26: Branch(31)
+B6:
+	27: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	28: Pop
+	29: LdConst[4](u64: 2005)
+	30: Abort
+B7:
+	31: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	32: MutBorrowFieldGeneric[8](LBPair.balance_x: Balance<Ty0>)
+	33: MoveLoc[2](Arg2: Balance<Ty0>)
+	34: Call balance::join<Ty0>(&mut Balance<Ty0>, Balance<Ty0>): u64
+	35: Pop
+	36: MoveLoc[3](Arg3: Balance<Ty1>)
+	37: Call balance::destroy_zero<Ty1>(Balance<Ty1>)
+	38: Branch(58)
+B8:
+	39: ImmBorrowLoc[3](Arg3: Balance<Ty1>)
+	40: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	41: MoveLoc[5](loc0: u64)
+	42: MoveLoc[6](loc1: u64)
+	43: Add
+	44: Eq
+	45: BrFalse(47)
+B9:
+	46: Branch(51)
+B10:
+	47: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	48: Pop
+	49: LdConst[4](u64: 2005)
+	50: Abort
+B11:
+	51: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	52: MutBorrowFieldGeneric[9](LBPair.balance_y: Balance<Ty1>)
+	53: MoveLoc[3](Arg3: Balance<Ty1>)
+	54: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	55: Pop
+	56: MoveLoc[2](Arg2: Balance<Ty0>)
+	57: Call balance::destroy_zero<Ty0>(Balance<Ty0>)
+B12:
+	58: LdFalse
+	59: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	60: MutBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	61: WriteRef
+	62: Ret
+}
+
+public pause_pair<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: bool, Arg3: &TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: MoveLoc[3](Arg3: &TxContext)
+	4: Call tx_context::sender(&TxContext): address
+	5: Call config::check_pool_manager_role(&GlobalConfig, address)
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	8: ReadRef
+	9: CopyLoc[2](Arg2: bool)
+	10: Neq
+	11: BrFalse(13)
+B1:
+	12: Branch(17)
+B2:
+	13: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	14: Pop
+	15: LdConst[14](u64: 2032)
+	16: Abort
+B3:
+	17: CopyLoc[2](Arg2: bool)
+	18: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	19: MutBorrowFieldGeneric[7](LBPair.is_pause: bool)
+	20: WriteRef
+	21: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	22: FreezeRef
+	23: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	24: MoveLoc[2](Arg2: bool)
+	25: Pack[19](PairPausedEvent)
+	26: Call event::emit<PairPausedEvent>(PairPausedEvent)
+	27: Ret
+}
+
+public force_decay<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: &TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: CopyLoc[2](Arg2: &TxContext)
+	4: Call tx_context::sender(&TxContext): address
+	5: Call config::check_pool_manager_role(&GlobalConfig, address)
+	6: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: MutBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	8: Call pair_parameter_helper::update_id_reference(&mut PairParameters)
+	9: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	10: MutBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	11: Call pair_parameter_helper::update_volatility_reference(&mut PairParameters)
+	12: MoveLoc[2](Arg2: &TxContext)
+	13: Call tx_context::sender(&TxContext): address
+	14: CopyLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	15: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	16: Call pair_parameter_helper::get_id_reference(&PairParameters): u32
+	17: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	18: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	19: Call pair_parameter_helper::get_volatility_reference(&PairParameters): u32
+	20: Pack[5](ForcedDecayEvent)
+	21: Call event::emit<ForcedDecayEvent>(ForcedDecayEvent)
+	22: Ret
+}
+
+public set_static_fee_parameters<Ty0, Ty1>(Arg0: &GlobalConfig, Arg1: &mut LBPair<Ty0, Ty1>, Arg2: u32, Arg3: u16, Arg4: u16, Arg5: u16, Arg6: u32, Arg7: u16, Arg8: u32, Arg9: &TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &GlobalConfig)
+	1: Call config::checked_package_version(&GlobalConfig)
+	2: MoveLoc[0](Arg0: &GlobalConfig)
+	3: CopyLoc[9](Arg9: &TxContext)
+	4: Call tx_context::sender(&TxContext): address
+	5: Call config::check_pool_manager_role(&GlobalConfig, address)
+	6: MoveLoc[1](Arg1: &mut LBPair<Ty0, Ty1>)
+	7: MoveLoc[2](Arg2: u32)
+	8: MoveLoc[3](Arg3: u16)
+	9: MoveLoc[4](Arg4: u16)
+	10: MoveLoc[5](Arg5: u16)
+	11: MoveLoc[6](Arg6: u32)
+	12: MoveLoc[7](Arg7: u16)
+	13: MoveLoc[8](Arg8: u32)
+	14: MoveLoc[9](Arg9: &TxContext)
+	15: Call set_static_fee_parameters_internal<Ty0, Ty1>(&mut LBPair<Ty0, Ty1>, u32, u16, u16, u16, u32, u16, u32, &TxContext)
+	16: Ret
+}
+
+public get_position_reserves_for_bins<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>, Arg1: &LBPosition, Arg2: vector<u32>): vector<u64> * vector<u64> {
+L3:	loc0: u32
+L4:	loc1: u64
+L5:	loc2: u64
+L6:	loc3: u64
+L7:	loc4: u64
+L8:	loc5: vector<u64>
+L9:	loc6: vector<u64>
+B0:
+	0: VecPack(30, 0)
+	1: StLoc[8](loc5: vector<u64>)
+	2: VecPack(30, 0)
+	3: StLoc[9](loc6: vector<u64>)
+	4: LdU64(0)
+	5: StLoc[4](loc1: u64)
+	6: ImmBorrowLoc[2](Arg2: vector<u32>)
+	7: VecLen(8)
+	8: StLoc[5](loc2: u64)
+B1:
+	9: CopyLoc[4](loc1: u64)
+	10: CopyLoc[5](loc2: u64)
+	11: Lt
+	12: BrFalse(36)
+B2:
+	13: Branch(14)
+B3:
+	14: ImmBorrowLoc[2](Arg2: vector<u32>)
+	15: CopyLoc[4](loc1: u64)
+	16: VecImmBorrow(8)
+	17: ReadRef
+	18: StLoc[3](loc0: u32)
+	19: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	20: CopyLoc[1](Arg1: &LBPosition)
+	21: MoveLoc[3](loc0: u32)
+	22: Call get_position_bin_reserves<Ty0, Ty1>(&LBPair<Ty0, Ty1>, &LBPosition, u32): u64 * u64
+	23: StLoc[7](loc4: u64)
+	24: StLoc[6](loc3: u64)
+	25: MutBorrowLoc[8](loc5: vector<u64>)
+	26: MoveLoc[6](loc3: u64)
+	27: VecPushBack(30)
+	28: MutBorrowLoc[9](loc6: vector<u64>)
+	29: MoveLoc[7](loc4: u64)
+	30: VecPushBack(30)
+	31: MoveLoc[4](loc1: u64)
+	32: LdU64(1)
+	33: Add
+	34: StLoc[4](loc1: u64)
+	35: Branch(9)
+B4:
+	36: MoveLoc[1](Arg1: &LBPosition)
+	37: Pop
+	38: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	39: Pop
+	40: MoveLoc[8](loc5: vector<u64>)
+	41: MoveLoc[9](loc6: vector<u64>)
+	42: Ret
+}
+
+get_position_bin_reserves<Ty0, Ty1>(Arg0: &LBPair<Ty0, Ty1>, Arg1: &LBPosition, Arg2: u32): u64 * u64 {
+L3:	loc0: u128
+L4:	loc1: u64
+L5:	loc2: u64
+L6:	loc3: u128
+B0:
+	0: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[1](LBPair.position_manager: LBPositionManager)
+	2: MoveLoc[1](Arg1: &LBPosition)
+	3: CopyLoc[2](Arg2: u32)
+	4: Call lb_position::borrow_bin(&LBPositionManager, &LBPosition, u32): &LBBinPosition
+	5: Call lb_position::position_token_amount(&LBBinPosition): u128
+	6: StLoc[3](loc0: u128)
+	7: CopyLoc[3](loc0: u128)
+	8: LdU128(0)
+	9: Eq
+	10: BrFalse(16)
+B1:
+	11: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	12: Pop
+	13: LdU64(0)
+	14: LdU64(0)
+	15: Ret
+B2:
+	16: CopyLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	17: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	18: CopyLoc[2](Arg2: u32)
+	19: Call bin_manager::contains(&BinManager, u32): bool
+	20: Not
+	21: BrFalse(27)
+B3:
+	22: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	23: Pop
+	24: LdU64(0)
+	25: LdU64(0)
+	26: Ret
+B4:
+	27: MoveLoc[0](Arg0: &LBPair<Ty0, Ty1>)
+	28: ImmBorrowFieldGeneric[0](LBPair.bin_manager: BinManager)
+	29: MoveLoc[2](Arg2: u32)
+	30: Call bin_manager::get_bin_reserves_supply(&BinManager, u32): u64 * u64 * u128
+	31: StLoc[6](loc3: u128)
+	32: StLoc[5](loc2: u64)
+	33: StLoc[4](loc1: u64)
+	34: CopyLoc[6](loc3: u128)
+	35: LdU128(0)
+	36: Eq
+	37: BrFalse(41)
+B5:
+	38: LdU64(0)
+	39: LdU64(0)
+	40: Ret
+B6:
+	41: CopyLoc[3](loc0: u128)
+	42: MoveLoc[4](loc1: u64)
+	43: CastU128
+	44: CopyLoc[6](loc3: u128)
+	45: Call safe_math::mul_div_u128_to_u64(u128, u128, u128): u64
+	46: MoveLoc[3](loc0: u128)
+	47: MoveLoc[5](loc2: u64)
+	48: CastU128
+	49: MoveLoc[6](loc3: u128)
+	50: Call safe_math::mul_div_u128_to_u64(u128, u128, u128): u64
+	51: Ret
+}
+
+set_static_fee_parameters_internal<Ty0, Ty1>(Arg0: &mut LBPair<Ty0, Ty1>, Arg1: u32, Arg2: u16, Arg3: u16, Arg4: u16, Arg5: u32, Arg6: u16, Arg7: u32, Arg8: &TxContext) {
+L9:	loc0: bool
+L10:	loc1: u64
+L11:	loc2: u16
+L12:	loc3: PairParameters
+L13:	loc4: u64
+B0:
+	0: CopyLoc[1](Arg1: u32)
+	1: LdU32(0)
+	2: Neq
+	3: BrFalse(44)
+B1:
+	4: CopyLoc[2](Arg2: u16)
+	5: LdU16(0)
+	6: Neq
+	7: BrFalse(41)
+B2:
+	8: CopyLoc[3](Arg3: u16)
+	9: LdU16(0)
+	10: Neq
+	11: BrFalse(38)
+B3:
+	12: CopyLoc[4](Arg4: u16)
+	13: LdU16(0)
+	14: Neq
+	15: BrFalse(35)
+B4:
+	16: CopyLoc[5](Arg5: u32)
+	17: LdU32(0)
+	18: Neq
+	19: BrFalse(32)
+B5:
+	20: CopyLoc[6](Arg6: u16)
+	21: LdU16(0)
+	22: Neq
+	23: BrFalse(29)
+B6:
+	24: CopyLoc[7](Arg7: u32)
+	25: LdU32(0)
+	26: Neq
+	27: StLoc[9](loc0: bool)
+	28: Branch(31)
+B7:
+	29: LdFalse
+	30: StLoc[9](loc0: bool)
+B8:
+	31: Branch(34)
+B9:
+	32: LdFalse
+	33: StLoc[9](loc0: bool)
+B10:
+	34: Branch(37)
+B11:
+	35: LdFalse
+	36: StLoc[9](loc0: bool)
+B12:
+	37: Branch(40)
+B13:
+	38: LdFalse
+	39: StLoc[9](loc0: bool)
+B14:
+	40: Branch(43)
+B15:
+	41: LdFalse
+	42: StLoc[9](loc0: bool)
+B16:
+	43: Branch(46)
+B17:
+	44: LdFalse
+	45: StLoc[9](loc0: bool)
+B18:
+	46: MoveLoc[9](loc0: bool)
+	47: BrFalse(49)
+B19:
+	48: Branch(55)
+B20:
+	49: MoveLoc[0](Arg0: &mut LBPair<Ty0, Ty1>)
+	50: Pop
+	51: MoveLoc[8](Arg8: &TxContext)
+	52: Pop
+	53: LdConst[6](u64: 2008)
+	54: Abort
+B21:
+	55: CopyLoc[0](Arg0: &mut LBPair<Ty0, Ty1>)
+	56: MutBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	57: CopyLoc[1](Arg1: u32)
+	58: CopyLoc[2](Arg2: u16)
+	59: CopyLoc[3](Arg3: u16)
+	60: CopyLoc[4](Arg4: u16)
+	61: CopyLoc[5](Arg5: u32)
+	62: CopyLoc[6](Arg6: u16)
+	63: CopyLoc[7](Arg7: u32)
+	64: Call pair_parameter_helper::set_static_fee_parameters(&mut PairParameters, u32, u16, u16, u16, u32, u16, u32)
+	65: CopyLoc[0](Arg0: &mut LBPair<Ty0, Ty1>)
+	66: ImmBorrowFieldGeneric[3](LBPair.bin_step: u16)
+	67: ReadRef
+	68: StLoc[11](loc2: u16)
+	69: MoveLoc[0](Arg0: &mut LBPair<Ty0, Ty1>)
+	70: ImmBorrowFieldGeneric[4](LBPair.parameters: PairParameters)
+	71: ReadRef
+	72: StLoc[12](loc3: PairParameters)
+	73: MutBorrowLoc[12](loc3: PairParameters)
+	74: CopyLoc[7](Arg7: u32)
+	75: Call pair_parameter_helper::set_volatility_accumulator(&mut PairParameters, u32)
+	76: ImmBorrowLoc[12](loc3: PairParameters)
+	77: CopyLoc[11](loc2: u16)
+	78: Call pair_parameter_helper::get_base_fee(&PairParameters, u16): u64
+	79: StLoc[10](loc1: u64)
+	80: ImmBorrowLoc[12](loc3: PairParameters)
+	81: MoveLoc[11](loc2: u16)
+	82: Call pair_parameter_helper::get_variable_fee(&PairParameters, u16): u64
+	83: StLoc[13](loc4: u64)
+	84: MoveLoc[10](loc1: u64)
+	85: MoveLoc[13](loc4: u64)
+	86: Call safe_math::add_u64(u64, u64): u64
+	87: Call constants::max_fee_rate(): u64
+	88: Le
+	89: BrFalse(91)
+B22:
+	90: Branch(95)
+B23:
+	91: MoveLoc[8](Arg8: &TxContext)
+	92: Pop
+	93: LdConst[10](u64: 2016)
+	94: Abort
+B24:
+	95: MoveLoc[8](Arg8: &TxContext)
+	96: Call tx_context::sender(&TxContext): address
+	97: MoveLoc[1](Arg1: u32)
+	98: MoveLoc[2](Arg2: u16)
+	99: MoveLoc[3](Arg3: u16)
+	100: MoveLoc[4](Arg4: u16)
+	101: MoveLoc[5](Arg5: u32)
+	102: MoveLoc[6](Arg6: u16)
+	103: CastU64
+	104: MoveLoc[7](Arg7: u32)
+	105: Pack[6](StaticFeeParametersSetEvent)
+	106: Call event::emit<StaticFeeParametersSetEvent>(StaticFeeParametersSetEvent)
+	107: Ret
+}
+
+validate_bin_length(Arg0: u64) {
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: LdU64(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[22](u64: 2042)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u64)
+	8: Call constants::max_bins(): u64
+	9: Le
+	10: BrFalse(12)
+B4:
+	11: Branch(14)
+B5:
+	12: LdConst[21](u64: 2041)
+	13: Abort
+B6:
+	14: Ret
+}
+
+push_swap_event(Arg0: &mut SwapEvent, Arg1: u32, Arg2: u64, Arg3: u64, Arg4: u64, Arg5: u64, Arg6: u64, Arg7: u64, Arg8: u64, Arg9: u64, Arg10: u32) {
+B0:
+	0: CopyLoc[0](Arg0: &mut SwapEvent)
+	1: MutBorrowField[12](SwapEvent.bin_ids: vector<u32>)
+	2: MoveLoc[1](Arg1: u32)
+	3: VecPushBack(8)
+	4: CopyLoc[0](Arg0: &mut SwapEvent)
+	5: MutBorrowField[13](SwapEvent.amounts_in_x: vector<u64>)
+	6: MoveLoc[2](Arg2: u64)
+	7: VecPushBack(30)
+	8: CopyLoc[0](Arg0: &mut SwapEvent)
+	9: MutBorrowField[14](SwapEvent.amounts_in_y: vector<u64>)
+	10: MoveLoc[3](Arg3: u64)
+	11: VecPushBack(30)
+	12: CopyLoc[0](Arg0: &mut SwapEvent)
+	13: MutBorrowField[15](SwapEvent.amounts_out_x: vector<u64>)
+	14: MoveLoc[4](Arg4: u64)
+	15: VecPushBack(30)
+	16: CopyLoc[0](Arg0: &mut SwapEvent)
+	17: MutBorrowField[16](SwapEvent.amounts_out_y: vector<u64>)
+	18: MoveLoc[5](Arg5: u64)
+	19: VecPushBack(30)
+	20: CopyLoc[0](Arg0: &mut SwapEvent)
+	21: MutBorrowField[17](SwapEvent.total_fees_x: vector<u64>)
+	22: MoveLoc[6](Arg6: u64)
+	23: VecPushBack(30)
+	24: CopyLoc[0](Arg0: &mut SwapEvent)
+	25: MutBorrowField[18](SwapEvent.total_fees_y: vector<u64>)
+	26: MoveLoc[7](Arg7: u64)
+	27: VecPushBack(30)
+	28: CopyLoc[0](Arg0: &mut SwapEvent)
+	29: MutBorrowField[19](SwapEvent.protocol_fees_x: vector<u64>)
+	30: MoveLoc[8](Arg8: u64)
+	31: VecPushBack(30)
+	32: CopyLoc[0](Arg0: &mut SwapEvent)
+	33: MutBorrowField[20](SwapEvent.protocol_fees_y: vector<u64>)
+	34: MoveLoc[9](Arg9: u64)
+	35: VecPushBack(30)
+	36: MoveLoc[0](Arg0: &mut SwapEvent)
+	37: MutBorrowField[21](SwapEvent.volatility_accumulators: vector<u32>)
+	38: MoveLoc[10](Arg10: u32)
+	39: VecPushBack(8)
+	40: Ret
+}
+
+make_swap_event<Ty0, Ty1>(Arg0: address, Arg1: &LBPair<Ty0, Ty1>, Arg2: bool): SwapEvent {
+B0:
+	0: MoveLoc[0](Arg0: address)
+	1: MoveLoc[1](Arg1: &LBPair<Ty0, Ty1>)
+	2: Call object::id<LBPair<Ty0, Ty1>>(&LBPair<Ty0, Ty1>): ID
+	3: MoveLoc[2](Arg2: bool)
+	4: VecPack(8, 0)
+	5: VecPack(30, 0)
+	6: VecPack(30, 0)
+	7: VecPack(30, 0)
+	8: VecPack(30, 0)
+	9: VecPack(30, 0)
+	10: VecPack(30, 0)
+	11: VecPack(30, 0)
+	12: VecPack(30, 0)
+	13: VecPack(8, 0)
+	14: Pack[3](SwapEvent)
+	15: Ret
+}
+
+make_amount(): Amount {
+B0:
+	0: LdU64(0)
+	1: LdU64(0)
+	2: Pack[0](Amount)
+	3: Ret
+}
+
+make_amount_with(Arg0: u64, Arg1: u64): Amount {
+B0:
+	0: MoveLoc[0](Arg0: u64)
+	1: MoveLoc[1](Arg1: u64)
+	2: Pack[0](Amount)
+	3: Ret
+}
+
+add_amount(Arg0: &mut Amount, Arg1: u64, Arg2: u64) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Amount)
+	1: ImmBorrowField[9](Amount.x: u64)
+	2: ReadRef
+	3: MoveLoc[1](Arg1: u64)
+	4: Call safe_math::add_u64(u64, u64): u64
+	5: CopyLoc[0](Arg0: &mut Amount)
+	6: MutBorrowField[9](Amount.x: u64)
+	7: WriteRef
+	8: CopyLoc[0](Arg0: &mut Amount)
+	9: ImmBorrowField[8](Amount.y: u64)
+	10: ReadRef
+	11: MoveLoc[2](Arg2: u64)
+	12: Call safe_math::add_u64(u64, u64): u64
+	13: MoveLoc[0](Arg0: &mut Amount)
+	14: MutBorrowField[8](Amount.y: u64)
+	15: WriteRef
+	16: Ret
+}
+
+sub_amount(Arg0: &mut Amount, Arg1: u64, Arg2: u64) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Amount)
+	1: ImmBorrowField[9](Amount.x: u64)
+	2: ReadRef
+	3: MoveLoc[1](Arg1: u64)
+	4: Call safe_math::sub_u64(u64, u64): u64
+	5: CopyLoc[0](Arg0: &mut Amount)
+	6: MutBorrowField[9](Amount.x: u64)
+	7: WriteRef
+	8: CopyLoc[0](Arg0: &mut Amount)
+	9: ImmBorrowField[8](Amount.y: u64)
+	10: ReadRef
+	11: MoveLoc[2](Arg2: u64)
+	12: Call safe_math::sub_u64(u64, u64): u64
+	13: MoveLoc[0](Arg0: &mut Amount)
+	14: MutBorrowField[8](Amount.y: u64)
+	15: WriteRef
+	16: Ret
+}
+
+Constants [
+	0 => u64: 5315360000000
+	1 => u64: 1000
+	2 => u64: 1
+	3 => u64: 2001
+	4 => u64: 2005
+	5 => u64: 2007
+	6 => u64: 2008
+	7 => u64: 2011
+	8 => u64: 2014
+	9 => u64: 2015
+	10 => u64: 2016
+	11 => u64: 2020
+	12 => u64: 2030
+	13 => u64: 2031
+	14 => u64: 2032
+	15 => u64: 2033
+	16 => u64: 2034
+	17 => u64: 2035
+	18 => u64: 2037
+	19 => u64: 2038
+	20 => u64: 2039
+	21 => u64: 2041
+	22 => u64: 2042
+	23 => u64: 2044
+]
+}

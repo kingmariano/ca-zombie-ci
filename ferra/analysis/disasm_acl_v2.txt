@@ -1,0 +1,1640 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.acl {
+use 0000000000000000000000000000000000000000000000000000000000000001::option;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::package;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 0000000000000000000000000000000000000000000000000000000000000002::vec_set;
+
+struct ACL has store {
+	admins: VecSet<address>,
+	roles: Table<u8, VecSet<address>>,
+	upgrade_cap: Option<UpgradeCap>,
+	publisher: Option<Publisher>,
+	fund_receiver: Option<address>,
+	reward_receiver: Option<address>,
+	proposals: Table<u64, Proposal>,
+	next_proposal_id: u64
+}
+
+struct Proposal has drop, store {
+	id: u64,
+	proposal_type: u8,
+	proposer: address,
+	role: u8,
+	target: address,
+	supporters: VecSet<address>,
+	created_at: u64,
+	expired_at: u64,
+	executable_after: u64
+}
+
+struct ProposalCreated has copy, drop {
+	proposal_id: u64,
+	proposal_type: u8,
+	proposer: address,
+	target: address,
+	executable_after: u64
+}
+
+struct ProposalVoted has copy, drop {
+	proposal_id: u64,
+	voter: address,
+	total_votes: u64
+}
+
+struct ProposalExecuted has copy, drop {
+	proposal_id: u64,
+	executor: address,
+	executed_at: u64
+}
+
+struct ProposalCancelled has copy, drop {
+	proposal_id: u64,
+	cancelled_by: address,
+	cancelled_at: u64
+}
+
+struct UpgradeCapSet has copy, drop {
+	set_by: address,
+	set_at: u64
+}
+
+struct PublisherSet has copy, drop {
+	set_by: address,
+	set_at: u64
+}
+
+struct UpgradeCapTransferred has copy, drop {
+	transferred_to: address,
+	transferred_at: u64
+}
+
+struct PublisherTransferred has copy, drop {
+	transferred_to: address,
+	transferred_at: u64
+}
+
+struct ProposalAutoRemoved has copy, drop {
+	proposal_id: u64,
+	removed_by: address,
+	removed_at: u64,
+	is_expired: bool
+}
+
+public(friend) new(Arg0: &mut TxContext): ACL {
+L1:	loc0: VecSet<address>
+L2:	loc1: Table<u8, VecSet<address>>
+B0:
+	0: Call vec_set::empty<address>(): VecSet<address>
+	1: StLoc[1](loc0: VecSet<address>)
+	2: MutBorrowLoc[1](loc0: VecSet<address>)
+	3: LdConst[30](address: 0x58..)
+	4: Call vec_set::insert<address>(&mut VecSet<address>, address)
+	5: MutBorrowLoc[1](loc0: VecSet<address>)
+	6: LdConst[31](address: 0x2d..)
+	7: Call vec_set::insert<address>(&mut VecSet<address>, address)
+	8: MutBorrowLoc[1](loc0: VecSet<address>)
+	9: LdConst[32](address: 0x2c..)
+	10: Call vec_set::insert<address>(&mut VecSet<address>, address)
+	11: CopyLoc[0](Arg0: &mut TxContext)
+	12: Call table::new<u8, VecSet<address>>(&mut TxContext): Table<u8, VecSet<address>>
+	13: StLoc[2](loc1: Table<u8, VecSet<address>>)
+	14: MutBorrowLoc[2](loc1: Table<u8, VecSet<address>>)
+	15: LdConst[0](u8: 0)
+	16: Call vec_set::empty<address>(): VecSet<address>
+	17: Call table::add<u8, VecSet<address>>(&mut Table<u8, VecSet<address>>, u8, VecSet<address>)
+	18: MutBorrowLoc[2](loc1: Table<u8, VecSet<address>>)
+	19: LdConst[1](u8: 1)
+	20: Call vec_set::empty<address>(): VecSet<address>
+	21: Call table::add<u8, VecSet<address>>(&mut Table<u8, VecSet<address>>, u8, VecSet<address>)
+	22: MutBorrowLoc[2](loc1: Table<u8, VecSet<address>>)
+	23: LdConst[2](u8: 2)
+	24: Call vec_set::empty<address>(): VecSet<address>
+	25: Call table::add<u8, VecSet<address>>(&mut Table<u8, VecSet<address>>, u8, VecSet<address>)
+	26: MutBorrowLoc[2](loc1: Table<u8, VecSet<address>>)
+	27: LdConst[3](u8: 3)
+	28: Call vec_set::empty<address>(): VecSet<address>
+	29: Call table::add<u8, VecSet<address>>(&mut Table<u8, VecSet<address>>, u8, VecSet<address>)
+	30: MoveLoc[1](loc0: VecSet<address>)
+	31: MoveLoc[2](loc1: Table<u8, VecSet<address>>)
+	32: Call option::none<UpgradeCap>(): Option<UpgradeCap>
+	33: Call option::none<Publisher>(): Option<Publisher>
+	34: Call option::none<address>(): Option<address>
+	35: Call option::none<address>(): Option<address>
+	36: MoveLoc[0](Arg0: &mut TxContext)
+	37: Call table::new<u64, Proposal>(&mut TxContext): Table<u64, Proposal>
+	38: LdU64(0)
+	39: Pack[0](ACL)
+	40: Ret
+}
+
+public(friend) set_upgrade_cap(Arg0: &mut ACL, Arg1: UpgradeCap, Arg2: &Clock, Arg3: &TxContext) {
+L4:	loc0: address
+L5:	loc1: address
+L6:	loc2: address
+B0:
+	0: MoveLoc[3](Arg3: &TxContext)
+	1: Call tx_context::sender(&TxContext): address
+	2: StLoc[5](loc1: address)
+	3: ImmBorrowLoc[1](Arg1: UpgradeCap)
+	4: Call get_upgrade_cap_id(&UpgradeCap): address
+	5: StLoc[6](loc2: address)
+	6: CopyLoc[0](Arg0: &mut ACL)
+	7: ImmBorrowField[0](ACL.upgrade_cap: Option<UpgradeCap>)
+	8: Call option::is_none<UpgradeCap>(&Option<UpgradeCap>): bool
+	9: BrFalse(11)
+B1:
+	10: Branch(17)
+B2:
+	11: MoveLoc[2](Arg2: &Clock)
+	12: Pop
+	13: MoveLoc[0](Arg0: &mut ACL)
+	14: Pop
+	15: LdConst[15](u64: 7)
+	16: Abort
+B3:
+	17: CopyLoc[0](Arg0: &mut ACL)
+	18: CopyLoc[5](loc1: address)
+	19: StLoc[4](loc0: address)
+	20: FreezeRef
+	21: MoveLoc[4](loc0: address)
+	22: Call is_admin(&ACL, address): bool
+	23: BrFalse(25)
+B4:
+	24: Branch(31)
+B5:
+	25: MoveLoc[2](Arg2: &Clock)
+	26: Pop
+	27: MoveLoc[0](Arg0: &mut ACL)
+	28: Pop
+	29: LdConst[9](u64: 1)
+	30: Abort
+B6:
+	31: MoveLoc[6](loc2: address)
+	32: LdConst[33](address: 0x13..)
+	33: Eq
+	34: BrFalse(36)
+B7:
+	35: Branch(42)
+B8:
+	36: MoveLoc[2](Arg2: &Clock)
+	37: Pop
+	38: MoveLoc[0](Arg0: &mut ACL)
+	39: Pop
+	40: LdConst[24](u64: 16)
+	41: Abort
+B9:
+	42: MoveLoc[0](Arg0: &mut ACL)
+	43: MutBorrowField[0](ACL.upgrade_cap: Option<UpgradeCap>)
+	44: MoveLoc[1](Arg1: UpgradeCap)
+	45: Call option::fill<UpgradeCap>(&mut Option<UpgradeCap>, UpgradeCap)
+	46: MoveLoc[5](loc1: address)
+	47: MoveLoc[2](Arg2: &Clock)
+	48: Call clock::timestamp_ms(&Clock): u64
+	49: Pack[6](UpgradeCapSet)
+	50: Call event::emit<UpgradeCapSet>(UpgradeCapSet)
+	51: Ret
+}
+
+public(friend) set_publisher(Arg0: &mut ACL, Arg1: Publisher, Arg2: &Clock, Arg3: &TxContext) {
+L4:	loc0: address
+L5:	loc1: address
+B0:
+	0: MoveLoc[3](Arg3: &TxContext)
+	1: Call tx_context::sender(&TxContext): address
+	2: StLoc[5](loc1: address)
+	3: CopyLoc[0](Arg0: &mut ACL)
+	4: ImmBorrowField[1](ACL.publisher: Option<Publisher>)
+	5: Call option::is_none<Publisher>(&Option<Publisher>): bool
+	6: BrFalse(8)
+B1:
+	7: Branch(14)
+B2:
+	8: MoveLoc[2](Arg2: &Clock)
+	9: Pop
+	10: MoveLoc[0](Arg0: &mut ACL)
+	11: Pop
+	12: LdConst[16](u64: 8)
+	13: Abort
+B3:
+	14: CopyLoc[0](Arg0: &mut ACL)
+	15: CopyLoc[5](loc1: address)
+	16: StLoc[4](loc0: address)
+	17: FreezeRef
+	18: MoveLoc[4](loc0: address)
+	19: Call is_admin(&ACL, address): bool
+	20: BrFalse(22)
+B4:
+	21: Branch(28)
+B5:
+	22: MoveLoc[2](Arg2: &Clock)
+	23: Pop
+	24: MoveLoc[0](Arg0: &mut ACL)
+	25: Pop
+	26: LdConst[9](u64: 1)
+	27: Abort
+B6:
+	28: ImmBorrowLoc[1](Arg1: Publisher)
+	29: Call package::from_package<ACL>(&Publisher): bool
+	30: BrFalse(32)
+B7:
+	31: Branch(38)
+B8:
+	32: MoveLoc[2](Arg2: &Clock)
+	33: Pop
+	34: MoveLoc[0](Arg0: &mut ACL)
+	35: Pop
+	36: LdConst[24](u64: 16)
+	37: Abort
+B9:
+	38: MoveLoc[0](Arg0: &mut ACL)
+	39: MutBorrowField[1](ACL.publisher: Option<Publisher>)
+	40: MoveLoc[1](Arg1: Publisher)
+	41: Call option::fill<Publisher>(&mut Option<Publisher>, Publisher)
+	42: MoveLoc[5](loc1: address)
+	43: MoveLoc[2](Arg2: &Clock)
+	44: Call clock::timestamp_ms(&Clock): u64
+	45: Pack[7](PublisherSet)
+	46: Call event::emit<PublisherSet>(PublisherSet)
+	47: Ret
+}
+
+public(friend) propose(Arg0: &mut ACL, Arg1: u8, Arg2: u8, Arg3: address, Arg4: &Clock, Arg5: &TxContext): u64 {
+L6:	loc0: u8
+L7:	loc1: address
+L8:	loc2: address
+L9:	loc3: u8
+L10:	loc4: VecSet<address>
+L11:	loc5: u64
+L12:	loc6: u64
+L13:	loc7: u64
+L14:	loc8: address
+L15:	loc9: u8
+L16:	loc10: address
+L17:	loc11: u8
+L18:	loc12: u64
+L19:	loc13: u64
+L20:	loc14: u64
+L21:	loc15: u64
+L22:	loc16: u64
+L23:	loc17: Proposal
+L24:	loc18: u64
+L25:	loc19: address
+L26:	loc20: VecSet<address>
+L27:	loc21: u64
+B0:
+	0: MoveLoc[5](Arg5: &TxContext)
+	1: Call tx_context::sender(&TxContext): address
+	2: StLoc[25](loc19: address)
+	3: CopyLoc[0](Arg0: &mut ACL)
+	4: CopyLoc[25](loc19: address)
+	5: StLoc[14](loc8: address)
+	6: FreezeRef
+	7: MoveLoc[14](loc8: address)
+	8: Call is_admin(&ACL, address): bool
+	9: BrFalse(11)
+B1:
+	10: Branch(17)
+B2:
+	11: MoveLoc[4](Arg4: &Clock)
+	12: Pop
+	13: MoveLoc[0](Arg0: &mut ACL)
+	14: Pop
+	15: LdConst[9](u64: 1)
+	16: Abort
+B3:
+	17: CopyLoc[1](Arg1: u8)
+	18: LdConst[8](u8: 8)
+	19: Lt
+	20: BrFalse(22)
+B4:
+	21: Branch(28)
+B5:
+	22: MoveLoc[4](Arg4: &Clock)
+	23: Pop
+	24: MoveLoc[0](Arg0: &mut ACL)
+	25: Pop
+	26: LdConst[20](u64: 12)
+	27: Abort
+B6:
+	28: CopyLoc[2](Arg2: u8)
+	29: LdConst[4](u8: 4)
+	30: Lt
+	31: BrFalse(33)
+B7:
+	32: Branch(39)
+B8:
+	33: MoveLoc[4](Arg4: &Clock)
+	34: Pop
+	35: MoveLoc[0](Arg0: &mut ACL)
+	36: Pop
+	37: LdConst[23](u64: 15)
+	38: Abort
+B9:
+	39: CopyLoc[0](Arg0: &mut ACL)
+	40: CopyLoc[1](Arg1: u8)
+	41: CopyLoc[3](Arg3: address)
+	42: CopyLoc[2](Arg2: u8)
+	43: StLoc[17](loc11: u8)
+	44: StLoc[16](loc10: address)
+	45: StLoc[15](loc9: u8)
+	46: FreezeRef
+	47: MoveLoc[15](loc9: u8)
+	48: MoveLoc[16](loc10: address)
+	49: MoveLoc[17](loc11: u8)
+	50: Call validate_proposal_creation(&ACL, u8, address, u8)
+	51: CopyLoc[0](Arg0: &mut ACL)
+	52: ImmBorrowField[2](ACL.next_proposal_id: u64)
+	53: ReadRef
+	54: StLoc[24](loc18: u64)
+	55: CopyLoc[24](loc18: u64)
+	56: LdU64(1)
+	57: Add
+	58: CopyLoc[0](Arg0: &mut ACL)
+	59: MutBorrowField[2](ACL.next_proposal_id: u64)
+	60: WriteRef
+	61: MoveLoc[4](Arg4: &Clock)
+	62: Call clock::timestamp_ms(&Clock): u64
+	63: StLoc[21](loc15: u64)
+	64: CopyLoc[1](Arg1: u8)
+	65: LdConst[0](u8: 0)
+	66: Eq
+	67: BrFalse(79)
+B10:
+	68: CopyLoc[21](loc15: u64)
+	69: LdConst[29](u64: 8640..)
+	70: Add
+	71: CopyLoc[21](loc15: u64)
+	72: LdConst[29](u64: 8640..)
+	73: LdU64(2)
+	74: Mul
+	75: Add
+	76: StLoc[19](loc13: u64)
+	77: StLoc[18](loc12: u64)
+	78: Branch(85)
+B11:
+	79: CopyLoc[21](loc15: u64)
+	80: CopyLoc[21](loc15: u64)
+	81: LdConst[29](u64: 8640..)
+	82: Add
+	83: StLoc[19](loc13: u64)
+	84: StLoc[18](loc12: u64)
+B12:
+	85: MoveLoc[18](loc12: u64)
+	86: MoveLoc[19](loc13: u64)
+	87: StLoc[22](loc16: u64)
+	88: StLoc[27](loc21: u64)
+	89: Call vec_set::empty<address>(): VecSet<address>
+	90: StLoc[26](loc20: VecSet<address>)
+	91: MutBorrowLoc[26](loc20: VecSet<address>)
+	92: CopyLoc[25](loc19: address)
+	93: Call vec_set::insert<address>(&mut VecSet<address>, address)
+	94: CopyLoc[24](loc18: u64)
+	95: StLoc[20](loc14: u64)
+	96: CopyLoc[1](Arg1: u8)
+	97: StLoc[6](loc0: u8)
+	98: CopyLoc[25](loc19: address)
+	99: StLoc[7](loc1: address)
+	100: CopyLoc[3](Arg3: address)
+	101: StLoc[8](loc2: address)
+	102: MoveLoc[2](Arg2: u8)
+	103: StLoc[9](loc3: u8)
+	104: MoveLoc[26](loc20: VecSet<address>)
+	105: StLoc[10](loc4: VecSet<address>)
+	106: MoveLoc[22](loc16: u64)
+	107: StLoc[11](loc5: u64)
+	108: MoveLoc[21](loc15: u64)
+	109: StLoc[12](loc6: u64)
+	110: CopyLoc[27](loc21: u64)
+	111: StLoc[13](loc7: u64)
+	112: MoveLoc[20](loc14: u64)
+	113: MoveLoc[6](loc0: u8)
+	114: MoveLoc[7](loc1: address)
+	115: MoveLoc[9](loc3: u8)
+	116: MoveLoc[8](loc2: address)
+	117: MoveLoc[10](loc4: VecSet<address>)
+	118: MoveLoc[12](loc6: u64)
+	119: MoveLoc[11](loc5: u64)
+	120: MoveLoc[13](loc7: u64)
+	121: Pack[1](Proposal)
+	122: StLoc[23](loc17: Proposal)
+	123: MoveLoc[0](Arg0: &mut ACL)
+	124: MutBorrowField[3](ACL.proposals: Table<u64, Proposal>)
+	125: CopyLoc[24](loc18: u64)
+	126: MoveLoc[23](loc17: Proposal)
+	127: Call table::add<u64, Proposal>(&mut Table<u64, Proposal>, u64, Proposal)
+	128: CopyLoc[24](loc18: u64)
+	129: MoveLoc[1](Arg1: u8)
+	130: MoveLoc[25](loc19: address)
+	131: MoveLoc[3](Arg3: address)
+	132: MoveLoc[27](loc21: u64)
+	133: Pack[2](ProposalCreated)
+	134: Call event::emit<ProposalCreated>(ProposalCreated)
+	135: MoveLoc[24](loc18: u64)
+	136: Ret
+}
+
+public(friend) vote(Arg0: &mut ACL, Arg1: u64, Arg2: &Clock, Arg3: &TxContext) {
+L4:	loc0: address
+L5:	loc1: &mut Proposal
+L6:	loc2: address
+B0:
+	0: MoveLoc[3](Arg3: &TxContext)
+	1: Call tx_context::sender(&TxContext): address
+	2: StLoc[6](loc2: address)
+	3: CopyLoc[0](Arg0: &mut ACL)
+	4: CopyLoc[6](loc2: address)
+	5: StLoc[4](loc0: address)
+	6: FreezeRef
+	7: MoveLoc[4](loc0: address)
+	8: Call is_admin(&ACL, address): bool
+	9: BrFalse(11)
+B1:
+	10: Branch(17)
+B2:
+	11: MoveLoc[2](Arg2: &Clock)
+	12: Pop
+	13: MoveLoc[0](Arg0: &mut ACL)
+	14: Pop
+	15: LdConst[9](u64: 1)
+	16: Abort
+B3:
+	17: CopyLoc[0](Arg0: &mut ACL)
+	18: ImmBorrowField[3](ACL.proposals: Table<u64, Proposal>)
+	19: CopyLoc[1](Arg1: u64)
+	20: Call table::contains<u64, Proposal>(&Table<u64, Proposal>, u64): bool
+	21: BrFalse(23)
+B4:
+	22: Branch(29)
+B5:
+	23: MoveLoc[2](Arg2: &Clock)
+	24: Pop
+	25: MoveLoc[0](Arg0: &mut ACL)
+	26: Pop
+	27: LdConst[13](u64: 5)
+	28: Abort
+B6:
+	29: MoveLoc[0](Arg0: &mut ACL)
+	30: MutBorrowField[3](ACL.proposals: Table<u64, Proposal>)
+	31: CopyLoc[1](Arg1: u64)
+	32: Call table::borrow_mut<u64, Proposal>(&mut Table<u64, Proposal>, u64): &mut Proposal
+	33: StLoc[5](loc1: &mut Proposal)
+	34: CopyLoc[5](loc1: &mut Proposal)
+	35: ImmBorrowField[4](Proposal.supporters: VecSet<address>)
+	36: ImmBorrowLoc[6](loc2: address)
+	37: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	38: Not
+	39: BrFalse(41)
+B7:
+	40: Branch(47)
+B8:
+	41: MoveLoc[5](loc1: &mut Proposal)
+	42: Pop
+	43: MoveLoc[2](Arg2: &Clock)
+	44: Pop
+	45: LdConst[12](u64: 4)
+	46: Abort
+B9:
+	47: MoveLoc[2](Arg2: &Clock)
+	48: Call clock::timestamp_ms(&Clock): u64
+	49: CopyLoc[5](loc1: &mut Proposal)
+	50: ImmBorrowField[5](Proposal.expired_at: u64)
+	51: ReadRef
+	52: Lt
+	53: BrFalse(55)
+B10:
+	54: Branch(59)
+B11:
+	55: MoveLoc[5](loc1: &mut Proposal)
+	56: Pop
+	57: LdConst[18](u64: 10)
+	58: Abort
+B12:
+	59: CopyLoc[5](loc1: &mut Proposal)
+	60: MutBorrowField[4](Proposal.supporters: VecSet<address>)
+	61: CopyLoc[6](loc2: address)
+	62: Call vec_set::insert<address>(&mut VecSet<address>, address)
+	63: MoveLoc[1](Arg1: u64)
+	64: MoveLoc[6](loc2: address)
+	65: MoveLoc[5](loc1: &mut Proposal)
+	66: ImmBorrowField[4](Proposal.supporters: VecSet<address>)
+	67: Call vec_set::size<address>(&VecSet<address>): u64
+	68: Pack[3](ProposalVoted)
+	69: Call event::emit<ProposalVoted>(ProposalVoted)
+	70: Ret
+}
+
+public(friend) execute(Arg0: &mut ACL, Arg1: u64, Arg2: &Clock, Arg3: &TxContext) {
+L4:	loc0: address
+L5:	loc1: bool
+L6:	loc2: &Proposal
+L7:	loc3: &VecSet<address>
+L8:	loc4: bool
+L9:	loc5: u64
+L10:	loc6: bool
+L11:	loc7: bool
+L12:	loc8: bool
+L13:	loc9: bool
+L14:	loc10: &Proposal
+L15:	loc11: Proposal
+L16:	loc12: u64
+L17:	loc13: address
+L18:	loc14: bool
+L19:	loc15: u64
+L20:	loc16: bool
+B0:
+	0: MoveLoc[3](Arg3: &TxContext)
+	1: Call tx_context::sender(&TxContext): address
+	2: StLoc[17](loc13: address)
+	3: CopyLoc[0](Arg0: &mut ACL)
+	4: CopyLoc[17](loc13: address)
+	5: StLoc[4](loc0: address)
+	6: FreezeRef
+	7: MoveLoc[4](loc0: address)
+	8: Call is_admin(&ACL, address): bool
+	9: BrFalse(11)
+B1:
+	10: Branch(17)
+B2:
+	11: MoveLoc[2](Arg2: &Clock)
+	12: Pop
+	13: MoveLoc[0](Arg0: &mut ACL)
+	14: Pop
+	15: LdConst[9](u64: 1)
+	16: Abort
+B3:
+	17: CopyLoc[0](Arg0: &mut ACL)
+	18: ImmBorrowField[3](ACL.proposals: Table<u64, Proposal>)
+	19: CopyLoc[1](Arg1: u64)
+	20: Call table::contains<u64, Proposal>(&Table<u64, Proposal>, u64): bool
+	21: BrFalse(23)
+B4:
+	22: Branch(29)
+B5:
+	23: MoveLoc[2](Arg2: &Clock)
+	24: Pop
+	25: MoveLoc[0](Arg0: &mut ACL)
+	26: Pop
+	27: LdConst[13](u64: 5)
+	28: Abort
+B6:
+	29: CopyLoc[2](Arg2: &Clock)
+	30: Call clock::timestamp_ms(&Clock): u64
+	31: StLoc[9](loc5: u64)
+	32: CopyLoc[0](Arg0: &mut ACL)
+	33: ImmBorrowField[3](ACL.proposals: Table<u64, Proposal>)
+	34: CopyLoc[1](Arg1: u64)
+	35: Call table::borrow<u64, Proposal>(&Table<u64, Proposal>, u64): &Proposal
+	36: StLoc[14](loc10: &Proposal)
+	37: CopyLoc[9](loc5: u64)
+	38: CopyLoc[14](loc10: &Proposal)
+	39: ImmBorrowField[5](Proposal.expired_at: u64)
+	40: ReadRef
+	41: Gt
+	42: StLoc[10](loc6: bool)
+	43: CopyLoc[10](loc6: bool)
+	44: Not
+	45: BrFalse(54)
+B7:
+	46: CopyLoc[0](Arg0: &mut ACL)
+	47: CopyLoc[14](loc10: &Proposal)
+	48: StLoc[6](loc2: &Proposal)
+	49: FreezeRef
+	50: MoveLoc[6](loc2: &Proposal)
+	51: Call is_proposal_still_valid(&ACL, &Proposal): bool
+	52: StLoc[5](loc1: bool)
+	53: Branch(56)
+B8:
+	54: LdFalse
+	55: StLoc[5](loc1: bool)
+B9:
+	56: MoveLoc[5](loc1: bool)
+	57: StLoc[18](loc14: bool)
+	58: CopyLoc[0](Arg0: &mut ACL)
+	59: CopyLoc[14](loc10: &Proposal)
+	60: ImmBorrowField[4](Proposal.supporters: VecSet<address>)
+	61: StLoc[7](loc3: &VecSet<address>)
+	62: FreezeRef
+	63: MoveLoc[7](loc3: &VecSet<address>)
+	64: Call count_valid_admin_votes(&ACL, &VecSet<address>): u64
+	65: StLoc[19](loc15: u64)
+	66: CopyLoc[0](Arg0: &mut ACL)
+	67: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	68: Call vec_set::size<address>(&VecSet<address>): u64
+	69: LdU64(2)
+	70: Div
+	71: LdU64(1)
+	72: Add
+	73: StLoc[16](loc12: u64)
+	74: MoveLoc[19](loc15: u64)
+	75: MoveLoc[16](loc12: u64)
+	76: Ge
+	77: StLoc[20](loc16: bool)
+	78: CopyLoc[9](loc5: u64)
+	79: MoveLoc[14](loc10: &Proposal)
+	80: ImmBorrowField[7](Proposal.executable_after: u64)
+	81: ReadRef
+	82: Ge
+	83: BrFalse(85)
+B10:
+	84: Branch(91)
+B11:
+	85: MoveLoc[2](Arg2: &Clock)
+	86: Pop
+	87: MoveLoc[0](Arg0: &mut ACL)
+	88: Pop
+	89: LdConst[11](u64: 3)
+	90: Abort
+B12:
+	91: MoveLoc[10](loc6: bool)
+	92: MoveLoc[18](loc14: bool)
+	93: MoveLoc[20](loc16: bool)
+	94: StLoc[11](loc7: bool)
+	95: StLoc[13](loc9: bool)
+	96: StLoc[12](loc8: bool)
+	97: CopyLoc[12](loc8: bool)
+	98: BrFalse(102)
+B13:
+	99: LdTrue
+	100: StLoc[8](loc4: bool)
+	101: Branch(105)
+B14:
+	102: MoveLoc[13](loc9: bool)
+	103: Not
+	104: StLoc[8](loc4: bool)
+B15:
+	105: MoveLoc[8](loc4: bool)
+	106: BrFalse(121)
+B16:
+	107: MoveLoc[2](Arg2: &Clock)
+	108: Pop
+	109: MoveLoc[0](Arg0: &mut ACL)
+	110: MutBorrowField[3](ACL.proposals: Table<u64, Proposal>)
+	111: CopyLoc[1](Arg1: u64)
+	112: Call table::remove<u64, Proposal>(&mut Table<u64, Proposal>, u64): Proposal
+	113: Pop
+	114: MoveLoc[1](Arg1: u64)
+	115: MoveLoc[17](loc13: address)
+	116: MoveLoc[9](loc5: u64)
+	117: MoveLoc[12](loc8: bool)
+	118: Pack[10](ProposalAutoRemoved)
+	119: Call event::emit<ProposalAutoRemoved>(ProposalAutoRemoved)
+	120: Ret
+B17:
+	121: MoveLoc[11](loc7: bool)
+	122: BrFalse(124)
+B18:
+	123: Branch(130)
+B19:
+	124: MoveLoc[2](Arg2: &Clock)
+	125: Pop
+	126: MoveLoc[0](Arg0: &mut ACL)
+	127: Pop
+	128: LdConst[10](u64: 2)
+	129: Abort
+B20:
+	130: CopyLoc[0](Arg0: &mut ACL)
+	131: MutBorrowField[3](ACL.proposals: Table<u64, Proposal>)
+	132: CopyLoc[1](Arg1: u64)
+	133: Call table::remove<u64, Proposal>(&mut Table<u64, Proposal>, u64): Proposal
+	134: StLoc[15](loc11: Proposal)
+	135: MoveLoc[0](Arg0: &mut ACL)
+	136: ImmBorrowLoc[15](loc11: Proposal)
+	137: MoveLoc[2](Arg2: &Clock)
+	138: Call execute_proposal_action(&mut ACL, &Proposal, &Clock)
+	139: MoveLoc[1](Arg1: u64)
+	140: MoveLoc[17](loc13: address)
+	141: MoveLoc[9](loc5: u64)
+	142: Pack[4](ProposalExecuted)
+	143: Call event::emit<ProposalExecuted>(ProposalExecuted)
+	144: Ret
+}
+
+public(friend) cancel(Arg0: &mut ACL, Arg1: u64, Arg2: &Clock, Arg3: &TxContext) {
+L4:	loc0: address
+L5:	loc1: bool
+L6:	loc2: bool
+L7:	loc3: u64
+L8:	loc4: &Proposal
+L9:	loc5: u64
+L10:	loc6: address
+L11:	loc7: u64
+B0:
+	0: MoveLoc[3](Arg3: &TxContext)
+	1: Call tx_context::sender(&TxContext): address
+	2: StLoc[10](loc6: address)
+	3: CopyLoc[2](Arg2: &Clock)
+	4: Call clock::timestamp_ms(&Clock): u64
+	5: StLoc[7](loc3: u64)
+	6: CopyLoc[0](Arg0: &mut ACL)
+	7: CopyLoc[10](loc6: address)
+	8: StLoc[4](loc0: address)
+	9: FreezeRef
+	10: MoveLoc[4](loc0: address)
+	11: Call is_admin(&ACL, address): bool
+	12: BrFalse(14)
+B1:
+	13: Branch(20)
+B2:
+	14: MoveLoc[2](Arg2: &Clock)
+	15: Pop
+	16: MoveLoc[0](Arg0: &mut ACL)
+	17: Pop
+	18: LdConst[9](u64: 1)
+	19: Abort
+B3:
+	20: CopyLoc[0](Arg0: &mut ACL)
+	21: ImmBorrowField[3](ACL.proposals: Table<u64, Proposal>)
+	22: CopyLoc[1](Arg1: u64)
+	23: Call table::contains<u64, Proposal>(&Table<u64, Proposal>, u64): bool
+	24: BrFalse(26)
+B4:
+	25: Branch(32)
+B5:
+	26: MoveLoc[2](Arg2: &Clock)
+	27: Pop
+	28: MoveLoc[0](Arg0: &mut ACL)
+	29: Pop
+	30: LdConst[13](u64: 5)
+	31: Abort
+B6:
+	32: CopyLoc[0](Arg0: &mut ACL)
+	33: ImmBorrowField[3](ACL.proposals: Table<u64, Proposal>)
+	34: CopyLoc[1](Arg1: u64)
+	35: Call table::borrow<u64, Proposal>(&Table<u64, Proposal>, u64): &Proposal
+	36: StLoc[8](loc4: &Proposal)
+	37: CopyLoc[8](loc4: &Proposal)
+	38: ImmBorrowField[8](Proposal.proposal_type: u8)
+	39: ReadRef
+	40: LdConst[1](u8: 1)
+	41: Eq
+	42: BrFalse(46)
+B7:
+	43: LdTrue
+	44: StLoc[5](loc1: bool)
+	45: Branch(52)
+B8:
+	46: CopyLoc[8](loc4: &Proposal)
+	47: ImmBorrowField[8](Proposal.proposal_type: u8)
+	48: ReadRef
+	49: LdConst[3](u8: 3)
+	50: Eq
+	51: StLoc[5](loc1: bool)
+B9:
+	52: MoveLoc[5](loc1: bool)
+	53: BrFalse(69)
+B10:
+	54: CopyLoc[8](loc4: &Proposal)
+	55: ImmBorrowField[9](Proposal.target: address)
+	56: ReadRef
+	57: CopyLoc[10](loc6: address)
+	58: Neq
+	59: BrFalse(61)
+B11:
+	60: Branch(69)
+B12:
+	61: MoveLoc[8](loc4: &Proposal)
+	62: Pop
+	63: MoveLoc[2](Arg2: &Clock)
+	64: Pop
+	65: MoveLoc[0](Arg0: &mut ACL)
+	66: Pop
+	67: LdConst[17](u64: 9)
+	68: Abort
+B13:
+	69: CopyLoc[8](loc4: &Proposal)
+	70: ImmBorrowField[4](Proposal.supporters: VecSet<address>)
+	71: Call vec_set::size<address>(&VecSet<address>): u64
+	72: StLoc[11](loc7: u64)
+	73: CopyLoc[0](Arg0: &mut ACL)
+	74: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	75: Call vec_set::size<address>(&VecSet<address>): u64
+	76: LdU64(2)
+	77: Div
+	78: LdU64(1)
+	79: Add
+	80: StLoc[9](loc5: u64)
+	81: MoveLoc[11](loc7: u64)
+	82: MoveLoc[9](loc5: u64)
+	83: Ge
+	84: BrFalse(92)
+B14:
+	85: MoveLoc[7](loc3: u64)
+	86: MoveLoc[8](loc4: &Proposal)
+	87: ImmBorrowField[5](Proposal.expired_at: u64)
+	88: ReadRef
+	89: Lt
+	90: StLoc[6](loc2: bool)
+	91: Branch(96)
+B15:
+	92: MoveLoc[8](loc4: &Proposal)
+	93: Pop
+	94: LdFalse
+	95: StLoc[6](loc2: bool)
+B16:
+	96: MoveLoc[6](loc2: bool)
+	97: BrFalse(104)
+B17:
+	98: MoveLoc[2](Arg2: &Clock)
+	99: Pop
+	100: MoveLoc[0](Arg0: &mut ACL)
+	101: Pop
+	102: LdConst[19](u64: 11)
+	103: Abort
+B18:
+	104: MoveLoc[0](Arg0: &mut ACL)
+	105: MutBorrowField[3](ACL.proposals: Table<u64, Proposal>)
+	106: CopyLoc[1](Arg1: u64)
+	107: Call table::remove<u64, Proposal>(&mut Table<u64, Proposal>, u64): Proposal
+	108: Pop
+	109: MoveLoc[1](Arg1: u64)
+	110: MoveLoc[10](loc6: address)
+	111: MoveLoc[2](Arg2: &Clock)
+	112: Call clock::timestamp_ms(&Clock): u64
+	113: Pack[5](ProposalCancelled)
+	114: Call event::emit<ProposalCancelled>(ProposalCancelled)
+	115: Ret
+}
+
+execute_proposal_action(Arg0: &mut ACL, Arg1: &Proposal, Arg2: &Clock) {
+L3:	loc0: u8
+B0:
+	0: CopyLoc[1](Arg1: &Proposal)
+	1: ImmBorrowField[8](Proposal.proposal_type: u8)
+	2: ReadRef
+	3: StLoc[3](loc0: u8)
+	4: CopyLoc[3](loc0: u8)
+	5: LdConst[0](u8: 0)
+	6: Eq
+	7: BrFalse(17)
+B1:
+	8: MoveLoc[2](Arg2: &Clock)
+	9: Pop
+	10: MoveLoc[0](Arg0: &mut ACL)
+	11: MutBorrowField[6](ACL.admins: VecSet<address>)
+	12: MoveLoc[1](Arg1: &Proposal)
+	13: ImmBorrowField[9](Proposal.target: address)
+	14: ReadRef
+	15: Call vec_set::insert<address>(&mut VecSet<address>, address)
+	16: Branch(176)
+B2:
+	17: CopyLoc[3](loc0: u8)
+	18: LdConst[1](u8: 1)
+	19: Eq
+	20: BrFalse(47)
+B3:
+	21: MoveLoc[2](Arg2: &Clock)
+	22: Pop
+	23: CopyLoc[0](Arg0: &mut ACL)
+	24: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	25: Call vec_set::size<address>(&VecSet<address>): u64
+	26: LdU64(1)
+	27: Gt
+	28: BrFalse(30)
+B4:
+	29: Branch(36)
+B5:
+	30: MoveLoc[1](Arg1: &Proposal)
+	31: Pop
+	32: MoveLoc[0](Arg0: &mut ACL)
+	33: Pop
+	34: LdConst[14](u64: 6)
+	35: Abort
+B6:
+	36: CopyLoc[0](Arg0: &mut ACL)
+	37: MutBorrowField[6](ACL.admins: VecSet<address>)
+	38: CopyLoc[1](Arg1: &Proposal)
+	39: ImmBorrowField[9](Proposal.target: address)
+	40: Call vec_set::remove<address>(&mut VecSet<address>, &address)
+	41: MoveLoc[0](Arg0: &mut ACL)
+	42: MoveLoc[1](Arg1: &Proposal)
+	43: ImmBorrowField[9](Proposal.target: address)
+	44: ReadRef
+	45: Call remove_from_all_roles(&mut ACL, address)
+	46: Branch(176)
+B7:
+	47: CopyLoc[3](loc0: u8)
+	48: LdConst[2](u8: 2)
+	49: Eq
+	50: BrFalse(62)
+B8:
+	51: MoveLoc[2](Arg2: &Clock)
+	52: Pop
+	53: MoveLoc[0](Arg0: &mut ACL)
+	54: CopyLoc[1](Arg1: &Proposal)
+	55: ImmBorrowField[9](Proposal.target: address)
+	56: ReadRef
+	57: MoveLoc[1](Arg1: &Proposal)
+	58: ImmBorrowField[10](Proposal.role: u8)
+	59: ReadRef
+	60: Call grant_role_internal(&mut ACL, address, u8)
+	61: Branch(176)
+B9:
+	62: CopyLoc[3](loc0: u8)
+	63: LdConst[3](u8: 3)
+	64: Eq
+	65: BrFalse(77)
+B10:
+	66: MoveLoc[2](Arg2: &Clock)
+	67: Pop
+	68: MoveLoc[0](Arg0: &mut ACL)
+	69: CopyLoc[1](Arg1: &Proposal)
+	70: ImmBorrowField[9](Proposal.target: address)
+	71: ReadRef
+	72: MoveLoc[1](Arg1: &Proposal)
+	73: ImmBorrowField[10](Proposal.role: u8)
+	74: ReadRef
+	75: Call revoke_role_internal(&mut ACL, address, u8)
+	76: Branch(176)
+B11:
+	77: CopyLoc[3](loc0: u8)
+	78: LdConst[4](u8: 4)
+	79: Eq
+	80: BrFalse(91)
+B12:
+	81: MoveLoc[2](Arg2: &Clock)
+	82: Pop
+	83: MoveLoc[1](Arg1: &Proposal)
+	84: ImmBorrowField[9](Proposal.target: address)
+	85: ReadRef
+	86: Call option::some<address>(address): Option<address>
+	87: MoveLoc[0](Arg0: &mut ACL)
+	88: MutBorrowField[11](ACL.fund_receiver: Option<address>)
+	89: WriteRef
+	90: Branch(176)
+B13:
+	91: CopyLoc[3](loc0: u8)
+	92: LdConst[5](u8: 5)
+	93: Eq
+	94: BrFalse(105)
+B14:
+	95: MoveLoc[2](Arg2: &Clock)
+	96: Pop
+	97: MoveLoc[1](Arg1: &Proposal)
+	98: ImmBorrowField[9](Proposal.target: address)
+	99: ReadRef
+	100: Call option::some<address>(address): Option<address>
+	101: MoveLoc[0](Arg0: &mut ACL)
+	102: MutBorrowField[12](ACL.reward_receiver: Option<address>)
+	103: WriteRef
+	104: Branch(176)
+B15:
+	105: CopyLoc[3](loc0: u8)
+	106: LdConst[6](u8: 6)
+	107: Eq
+	108: BrFalse(137)
+B16:
+	109: CopyLoc[0](Arg0: &mut ACL)
+	110: ImmBorrowField[0](ACL.upgrade_cap: Option<UpgradeCap>)
+	111: Call option::is_some<UpgradeCap>(&Option<UpgradeCap>): bool
+	112: BrFalse(114)
+B17:
+	113: Branch(122)
+B18:
+	114: MoveLoc[1](Arg1: &Proposal)
+	115: Pop
+	116: MoveLoc[2](Arg2: &Clock)
+	117: Pop
+	118: MoveLoc[0](Arg0: &mut ACL)
+	119: Pop
+	120: LdConst[15](u64: 7)
+	121: Abort
+B19:
+	122: MoveLoc[0](Arg0: &mut ACL)
+	123: MutBorrowField[0](ACL.upgrade_cap: Option<UpgradeCap>)
+	124: Call option::extract<UpgradeCap>(&mut Option<UpgradeCap>): UpgradeCap
+	125: CopyLoc[1](Arg1: &Proposal)
+	126: ImmBorrowField[9](Proposal.target: address)
+	127: ReadRef
+	128: Call transfer::public_transfer<UpgradeCap>(UpgradeCap, address)
+	129: MoveLoc[1](Arg1: &Proposal)
+	130: ImmBorrowField[9](Proposal.target: address)
+	131: ReadRef
+	132: MoveLoc[2](Arg2: &Clock)
+	133: Call clock::timestamp_ms(&Clock): u64
+	134: Pack[8](UpgradeCapTransferred)
+	135: Call event::emit<UpgradeCapTransferred>(UpgradeCapTransferred)
+	136: Branch(176)
+B20:
+	137: MoveLoc[3](loc0: u8)
+	138: LdConst[7](u8: 7)
+	139: Eq
+	140: BrFalse(154)
+B21:
+	141: CopyLoc[0](Arg0: &mut ACL)
+	142: ImmBorrowField[1](ACL.publisher: Option<Publisher>)
+	143: Call option::is_some<Publisher>(&Option<Publisher>): bool
+	144: BrFalse(146)
+B22:
+	145: Branch(162)
+B23:
+	146: MoveLoc[1](Arg1: &Proposal)
+	147: Pop
+	148: MoveLoc[2](Arg2: &Clock)
+	149: Pop
+	150: MoveLoc[0](Arg0: &mut ACL)
+	151: Pop
+	152: LdConst[16](u64: 8)
+	153: Abort
+B24:
+	154: MoveLoc[1](Arg1: &Proposal)
+	155: Pop
+	156: MoveLoc[2](Arg2: &Clock)
+	157: Pop
+	158: MoveLoc[0](Arg0: &mut ACL)
+	159: Pop
+	160: LdConst[20](u64: 12)
+	161: Abort
+B25:
+	162: MoveLoc[0](Arg0: &mut ACL)
+	163: MutBorrowField[1](ACL.publisher: Option<Publisher>)
+	164: Call option::extract<Publisher>(&mut Option<Publisher>): Publisher
+	165: CopyLoc[1](Arg1: &Proposal)
+	166: ImmBorrowField[9](Proposal.target: address)
+	167: ReadRef
+	168: Call transfer::public_transfer<Publisher>(Publisher, address)
+	169: MoveLoc[1](Arg1: &Proposal)
+	170: ImmBorrowField[9](Proposal.target: address)
+	171: ReadRef
+	172: MoveLoc[2](Arg2: &Clock)
+	173: Call clock::timestamp_ms(&Clock): u64
+	174: Pack[9](PublisherTransferred)
+	175: Call event::emit<PublisherTransferred>(PublisherTransferred)
+B26:
+	176: Ret
+}
+
+grant_role_internal(Arg0: &mut ACL, Arg1: address, Arg2: u8) {
+B0:
+	0: MoveLoc[0](Arg0: &mut ACL)
+	1: MutBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	2: MoveLoc[2](Arg2: u8)
+	3: Call table::borrow_mut<u8, VecSet<address>>(&mut Table<u8, VecSet<address>>, u8): &mut VecSet<address>
+	4: MoveLoc[1](Arg1: address)
+	5: Call vec_set::insert<address>(&mut VecSet<address>, address)
+	6: Ret
+}
+
+revoke_role_internal(Arg0: &mut ACL, Arg1: address, Arg2: u8) {
+L3:	loc0: &address
+L4:	loc1: &mut VecSet<address>
+B0:
+	0: MoveLoc[0](Arg0: &mut ACL)
+	1: MutBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	2: MoveLoc[2](Arg2: u8)
+	3: Call table::borrow_mut<u8, VecSet<address>>(&mut Table<u8, VecSet<address>>, u8): &mut VecSet<address>
+	4: StLoc[4](loc1: &mut VecSet<address>)
+	5: CopyLoc[4](loc1: &mut VecSet<address>)
+	6: ImmBorrowLoc[1](Arg1: address)
+	7: StLoc[3](loc0: &address)
+	8: FreezeRef
+	9: MoveLoc[3](loc0: &address)
+	10: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	11: BrFalse(16)
+B1:
+	12: MoveLoc[4](loc1: &mut VecSet<address>)
+	13: ImmBorrowLoc[1](Arg1: address)
+	14: Call vec_set::remove<address>(&mut VecSet<address>, &address)
+	15: Branch(18)
+B2:
+	16: MoveLoc[4](loc1: &mut VecSet<address>)
+	17: Pop
+B3:
+	18: Ret
+}
+
+remove_from_all_roles(Arg0: &mut ACL, Arg1: address) {
+L2:	loc0: &address
+L3:	loc1: &address
+L4:	loc2: &address
+L5:	loc3: &address
+L6:	loc4: &mut VecSet<address>
+L7:	loc5: &mut VecSet<address>
+L8:	loc6: &mut VecSet<address>
+L9:	loc7: &mut VecSet<address>
+B0:
+	0: CopyLoc[0](Arg0: &mut ACL)
+	1: MutBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	2: LdConst[0](u8: 0)
+	3: Call table::borrow_mut<u8, VecSet<address>>(&mut Table<u8, VecSet<address>>, u8): &mut VecSet<address>
+	4: StLoc[6](loc4: &mut VecSet<address>)
+	5: CopyLoc[6](loc4: &mut VecSet<address>)
+	6: ImmBorrowLoc[1](Arg1: address)
+	7: StLoc[2](loc0: &address)
+	8: FreezeRef
+	9: MoveLoc[2](loc0: &address)
+	10: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	11: BrFalse(16)
+B1:
+	12: MoveLoc[6](loc4: &mut VecSet<address>)
+	13: ImmBorrowLoc[1](Arg1: address)
+	14: Call vec_set::remove<address>(&mut VecSet<address>, &address)
+	15: Branch(18)
+B2:
+	16: MoveLoc[6](loc4: &mut VecSet<address>)
+	17: Pop
+B3:
+	18: CopyLoc[0](Arg0: &mut ACL)
+	19: MutBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	20: LdConst[1](u8: 1)
+	21: Call table::borrow_mut<u8, VecSet<address>>(&mut Table<u8, VecSet<address>>, u8): &mut VecSet<address>
+	22: StLoc[7](loc5: &mut VecSet<address>)
+	23: CopyLoc[7](loc5: &mut VecSet<address>)
+	24: ImmBorrowLoc[1](Arg1: address)
+	25: StLoc[3](loc1: &address)
+	26: FreezeRef
+	27: MoveLoc[3](loc1: &address)
+	28: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	29: BrFalse(34)
+B4:
+	30: MoveLoc[7](loc5: &mut VecSet<address>)
+	31: ImmBorrowLoc[1](Arg1: address)
+	32: Call vec_set::remove<address>(&mut VecSet<address>, &address)
+	33: Branch(36)
+B5:
+	34: MoveLoc[7](loc5: &mut VecSet<address>)
+	35: Pop
+B6:
+	36: CopyLoc[0](Arg0: &mut ACL)
+	37: MutBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	38: LdConst[2](u8: 2)
+	39: Call table::borrow_mut<u8, VecSet<address>>(&mut Table<u8, VecSet<address>>, u8): &mut VecSet<address>
+	40: StLoc[8](loc6: &mut VecSet<address>)
+	41: CopyLoc[8](loc6: &mut VecSet<address>)
+	42: ImmBorrowLoc[1](Arg1: address)
+	43: StLoc[4](loc2: &address)
+	44: FreezeRef
+	45: MoveLoc[4](loc2: &address)
+	46: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	47: BrFalse(52)
+B7:
+	48: MoveLoc[8](loc6: &mut VecSet<address>)
+	49: ImmBorrowLoc[1](Arg1: address)
+	50: Call vec_set::remove<address>(&mut VecSet<address>, &address)
+	51: Branch(54)
+B8:
+	52: MoveLoc[8](loc6: &mut VecSet<address>)
+	53: Pop
+B9:
+	54: MoveLoc[0](Arg0: &mut ACL)
+	55: MutBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	56: LdConst[3](u8: 3)
+	57: Call table::borrow_mut<u8, VecSet<address>>(&mut Table<u8, VecSet<address>>, u8): &mut VecSet<address>
+	58: StLoc[9](loc7: &mut VecSet<address>)
+	59: CopyLoc[9](loc7: &mut VecSet<address>)
+	60: ImmBorrowLoc[1](Arg1: address)
+	61: StLoc[5](loc3: &address)
+	62: FreezeRef
+	63: MoveLoc[5](loc3: &address)
+	64: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	65: BrFalse(70)
+B10:
+	66: MoveLoc[9](loc7: &mut VecSet<address>)
+	67: ImmBorrowLoc[1](Arg1: address)
+	68: Call vec_set::remove<address>(&mut VecSet<address>, &address)
+	69: Branch(72)
+B11:
+	70: MoveLoc[9](loc7: &mut VecSet<address>)
+	71: Pop
+B12:
+	72: Ret
+}
+
+count_valid_admin_votes(Arg0: &ACL, Arg1: &VecSet<address>): u64 {
+L2:	loc0: u64
+L3:	loc1: u64
+L4:	loc2: address
+L5:	loc3: vector<address>
+B0:
+	0: LdU64(0)
+	1: StLoc[2](loc0: u64)
+	2: MoveLoc[1](Arg1: &VecSet<address>)
+	3: ReadRef
+	4: Call vec_set::into_keys<address>(VecSet<address>): vector<address>
+	5: StLoc[5](loc3: vector<address>)
+	6: LdU64(0)
+	7: StLoc[3](loc1: u64)
+B1:
+	8: CopyLoc[3](loc1: u64)
+	9: ImmBorrowLoc[5](loc3: vector<address>)
+	10: VecLen(18)
+	11: Lt
+	12: BrFalse(32)
+B2:
+	13: Branch(14)
+B3:
+	14: ImmBorrowLoc[5](loc3: vector<address>)
+	15: CopyLoc[3](loc1: u64)
+	16: VecImmBorrow(18)
+	17: ReadRef
+	18: StLoc[4](loc2: address)
+	19: CopyLoc[0](Arg0: &ACL)
+	20: MoveLoc[4](loc2: address)
+	21: Call is_admin(&ACL, address): bool
+	22: BrFalse(27)
+B4:
+	23: MoveLoc[2](loc0: u64)
+	24: LdU64(1)
+	25: Add
+	26: StLoc[2](loc0: u64)
+B5:
+	27: MoveLoc[3](loc1: u64)
+	28: LdU64(1)
+	29: Add
+	30: StLoc[3](loc1: u64)
+	31: Branch(8)
+B6:
+	32: MoveLoc[0](Arg0: &ACL)
+	33: Pop
+	34: MoveLoc[2](loc0: u64)
+	35: Ret
+}
+
+validate_proposal_creation(Arg0: &ACL, Arg1: u8, Arg2: address, Arg3: u8) {
+B0:
+	0: CopyLoc[1](Arg1: u8)
+	1: LdConst[0](u8: 0)
+	2: Eq
+	3: BrFalse(14)
+B1:
+	4: MoveLoc[0](Arg0: &ACL)
+	5: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	6: ImmBorrowLoc[2](Arg2: address)
+	7: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	8: Not
+	9: BrFalse(11)
+B2:
+	10: Branch(13)
+B3:
+	11: LdConst[25](u64: 17)
+	12: Abort
+B4:
+	13: Branch(71)
+B5:
+	14: CopyLoc[1](Arg1: u8)
+	15: LdConst[1](u8: 1)
+	16: Eq
+	17: BrFalse(38)
+B6:
+	18: CopyLoc[0](Arg0: &ACL)
+	19: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	20: ImmBorrowLoc[2](Arg2: address)
+	21: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	22: BrFalse(24)
+B7:
+	23: Branch(28)
+B8:
+	24: MoveLoc[0](Arg0: &ACL)
+	25: Pop
+	26: LdConst[26](u64: 18)
+	27: Abort
+B9:
+	28: MoveLoc[0](Arg0: &ACL)
+	29: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	30: Call vec_set::size<address>(&VecSet<address>): u64
+	31: LdU64(1)
+	32: Gt
+	33: BrFalse(35)
+B10:
+	34: Branch(37)
+B11:
+	35: LdConst[14](u64: 6)
+	36: Abort
+B12:
+	37: Branch(71)
+B13:
+	38: CopyLoc[1](Arg1: u8)
+	39: LdConst[2](u8: 2)
+	40: Eq
+	41: BrFalse(54)
+B14:
+	42: MoveLoc[0](Arg0: &ACL)
+	43: ImmBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	44: MoveLoc[3](Arg3: u8)
+	45: Call table::borrow<u8, VecSet<address>>(&Table<u8, VecSet<address>>, u8): &VecSet<address>
+	46: ImmBorrowLoc[2](Arg2: address)
+	47: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	48: Not
+	49: BrFalse(51)
+B15:
+	50: Branch(53)
+B16:
+	51: LdConst[27](u64: 19)
+	52: Abort
+B17:
+	53: Branch(71)
+B18:
+	54: MoveLoc[1](Arg1: u8)
+	55: LdConst[3](u8: 3)
+	56: Eq
+	57: BrFalse(69)
+B19:
+	58: MoveLoc[0](Arg0: &ACL)
+	59: ImmBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	60: MoveLoc[3](Arg3: u8)
+	61: Call table::borrow<u8, VecSet<address>>(&Table<u8, VecSet<address>>, u8): &VecSet<address>
+	62: ImmBorrowLoc[2](Arg2: address)
+	63: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	64: BrFalse(66)
+B20:
+	65: Branch(68)
+B21:
+	66: LdConst[28](u64: 20)
+	67: Abort
+B22:
+	68: Branch(71)
+B23:
+	69: MoveLoc[0](Arg0: &ACL)
+	70: Pop
+B24:
+	71: Ret
+}
+
+is_proposal_still_valid(Arg0: &ACL, Arg1: &Proposal): bool {
+L2:	loc0: bool
+L3:	loc1: bool
+L4:	loc2: bool
+L5:	loc3: bool
+L6:	loc4: bool
+B0:
+	0: CopyLoc[1](Arg1: &Proposal)
+	1: ImmBorrowField[8](Proposal.proposal_type: u8)
+	2: ReadRef
+	3: LdConst[0](u8: 0)
+	4: Eq
+	5: BrFalse(14)
+B1:
+	6: MoveLoc[0](Arg0: &ACL)
+	7: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	8: MoveLoc[1](Arg1: &Proposal)
+	9: ImmBorrowField[9](Proposal.target: address)
+	10: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	11: Not
+	12: StLoc[6](loc4: bool)
+	13: Branch(87)
+B2:
+	14: CopyLoc[1](Arg1: &Proposal)
+	15: ImmBorrowField[8](Proposal.proposal_type: u8)
+	16: ReadRef
+	17: LdConst[1](u8: 1)
+	18: Eq
+	19: BrFalse(40)
+B3:
+	20: CopyLoc[0](Arg0: &ACL)
+	21: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	22: MoveLoc[1](Arg1: &Proposal)
+	23: ImmBorrowField[9](Proposal.target: address)
+	24: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	25: BrFalse(33)
+B4:
+	26: MoveLoc[0](Arg0: &ACL)
+	27: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	28: Call vec_set::size<address>(&VecSet<address>): u64
+	29: LdU64(1)
+	30: Gt
+	31: StLoc[2](loc0: bool)
+	32: Branch(37)
+B5:
+	33: MoveLoc[0](Arg0: &ACL)
+	34: Pop
+	35: LdFalse
+	36: StLoc[2](loc0: bool)
+B6:
+	37: MoveLoc[2](loc0: bool)
+	38: StLoc[5](loc3: bool)
+	39: Branch(85)
+B7:
+	40: CopyLoc[1](Arg1: &Proposal)
+	41: ImmBorrowField[8](Proposal.proposal_type: u8)
+	42: ReadRef
+	43: LdConst[2](u8: 2)
+	44: Eq
+	45: BrFalse(58)
+B8:
+	46: MoveLoc[0](Arg0: &ACL)
+	47: ImmBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	48: CopyLoc[1](Arg1: &Proposal)
+	49: ImmBorrowField[10](Proposal.role: u8)
+	50: ReadRef
+	51: Call table::borrow<u8, VecSet<address>>(&Table<u8, VecSet<address>>, u8): &VecSet<address>
+	52: MoveLoc[1](Arg1: &Proposal)
+	53: ImmBorrowField[9](Proposal.target: address)
+	54: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	55: Not
+	56: StLoc[4](loc2: bool)
+	57: Branch(83)
+B9:
+	58: CopyLoc[1](Arg1: &Proposal)
+	59: ImmBorrowField[8](Proposal.proposal_type: u8)
+	60: ReadRef
+	61: LdConst[3](u8: 3)
+	62: Eq
+	63: BrFalse(75)
+B10:
+	64: MoveLoc[0](Arg0: &ACL)
+	65: ImmBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	66: CopyLoc[1](Arg1: &Proposal)
+	67: ImmBorrowField[10](Proposal.role: u8)
+	68: ReadRef
+	69: Call table::borrow<u8, VecSet<address>>(&Table<u8, VecSet<address>>, u8): &VecSet<address>
+	70: MoveLoc[1](Arg1: &Proposal)
+	71: ImmBorrowField[9](Proposal.target: address)
+	72: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	73: StLoc[3](loc1: bool)
+	74: Branch(81)
+B11:
+	75: MoveLoc[1](Arg1: &Proposal)
+	76: Pop
+	77: MoveLoc[0](Arg0: &ACL)
+	78: Pop
+	79: LdTrue
+	80: StLoc[3](loc1: bool)
+B12:
+	81: MoveLoc[3](loc1: bool)
+	82: StLoc[4](loc2: bool)
+B13:
+	83: MoveLoc[4](loc2: bool)
+	84: StLoc[5](loc3: bool)
+B14:
+	85: MoveLoc[5](loc3: bool)
+	86: StLoc[6](loc4: bool)
+B15:
+	87: MoveLoc[6](loc4: bool)
+	88: Ret
+}
+
+public is_admin(Arg0: &ACL, Arg1: address): bool {
+B0:
+	0: MoveLoc[0](Arg0: &ACL)
+	1: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	2: ImmBorrowLoc[1](Arg1: address)
+	3: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	4: Ret
+}
+
+public has_role(Arg0: &ACL, Arg1: address, Arg2: u8): bool {
+L3:	loc0: bool
+B0:
+	0: CopyLoc[0](Arg0: &ACL)
+	1: ImmBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	2: CopyLoc[2](Arg2: u8)
+	3: Call table::contains<u8, VecSet<address>>(&Table<u8, VecSet<address>>, u8): bool
+	4: BrFalse(13)
+B1:
+	5: MoveLoc[0](Arg0: &ACL)
+	6: ImmBorrowField[13](ACL.roles: Table<u8, VecSet<address>>)
+	7: MoveLoc[2](Arg2: u8)
+	8: Call table::borrow<u8, VecSet<address>>(&Table<u8, VecSet<address>>, u8): &VecSet<address>
+	9: ImmBorrowLoc[1](Arg1: address)
+	10: Call vec_set::contains<address>(&VecSet<address>, &address): bool
+	11: StLoc[3](loc0: bool)
+	12: Branch(17)
+B2:
+	13: MoveLoc[0](Arg0: &ACL)
+	14: Pop
+	15: LdFalse
+	16: StLoc[3](loc0: bool)
+B3:
+	17: MoveLoc[3](loc0: bool)
+	18: Ret
+}
+
+public get_fund_receiver(Arg0: &ACL): address {
+B0:
+	0: CopyLoc[0](Arg0: &ACL)
+	1: ImmBorrowField[11](ACL.fund_receiver: Option<address>)
+	2: Call option::is_some<address>(&Option<address>): bool
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &ACL)
+	6: Pop
+	7: LdConst[21](u64: 13)
+	8: Abort
+B3:
+	9: MoveLoc[0](Arg0: &ACL)
+	10: ImmBorrowField[11](ACL.fund_receiver: Option<address>)
+	11: Call option::borrow<address>(&Option<address>): &address
+	12: ReadRef
+	13: Ret
+}
+
+public get_reward_receiver(Arg0: &ACL): address {
+B0:
+	0: CopyLoc[0](Arg0: &ACL)
+	1: ImmBorrowField[12](ACL.reward_receiver: Option<address>)
+	2: Call option::is_some<address>(&Option<address>): bool
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &ACL)
+	6: Pop
+	7: LdConst[22](u64: 14)
+	8: Abort
+B3:
+	9: MoveLoc[0](Arg0: &ACL)
+	10: ImmBorrowField[12](ACL.reward_receiver: Option<address>)
+	11: Call option::borrow<address>(&Option<address>): &address
+	12: ReadRef
+	13: Ret
+}
+
+public get_admin_count(Arg0: &ACL): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &ACL)
+	1: ImmBorrowField[6](ACL.admins: VecSet<address>)
+	2: Call vec_set::size<address>(&VecSet<address>): u64
+	3: Ret
+}
+
+public config_role(): u8 {
+B0:
+	0: LdConst[0](u8: 0)
+	1: Ret
+}
+
+public pool_manager_role(): u8 {
+B0:
+	0: LdConst[1](u8: 1)
+	1: Ret
+}
+
+public reward_role(): u8 {
+B0:
+	0: LdConst[2](u8: 2)
+	1: Ret
+}
+
+public upgrade_role(): u8 {
+B0:
+	0: LdConst[3](u8: 3)
+	1: Ret
+}
+
+public has_upgrade_cap(Arg0: &ACL): bool {
+B0:
+	0: MoveLoc[0](Arg0: &ACL)
+	1: ImmBorrowField[0](ACL.upgrade_cap: Option<UpgradeCap>)
+	2: Call option::is_some<UpgradeCap>(&Option<UpgradeCap>): bool
+	3: Ret
+}
+
+public has_publisher(Arg0: &ACL): bool {
+B0:
+	0: MoveLoc[0](Arg0: &ACL)
+	1: ImmBorrowField[1](ACL.publisher: Option<Publisher>)
+	2: Call option::is_some<Publisher>(&Option<Publisher>): bool
+	3: Ret
+}
+
+public get_upgrade_cap_id(Arg0: &UpgradeCap): address {
+B0:
+	0: MoveLoc[0](Arg0: &UpgradeCap)
+	1: Call object::id_address<UpgradeCap>(&UpgradeCap): address
+	2: Ret
+}
+
+Constants [
+	0 => u8: 0
+	1 => u8: 1
+	2 => u8: 2
+	3 => u8: 3
+	4 => u8: 4
+	5 => u8: 5
+	6 => u8: 6
+	7 => u8: 7
+	8 => u8: 8
+	9 => u64: 1
+	10 => u64: 2
+	11 => u64: 3
+	12 => u64: 4
+	13 => u64: 5
+	14 => u64: 6
+	15 => u64: 7
+	16 => u64: 8
+	17 => u64: 9
+	18 => u64: 10
+	19 => u64: 11
+	20 => u64: 12
+	21 => u64: 13
+	22 => u64: 14
+	23 => u64: 15
+	24 => u64: 16
+	25 => u64: 17
+	26 => u64: 18
+	27 => u64: 19
+	28 => u64: 20
+	29 => u64: 86400000
+	30 => address: 0x586ce4f16b94006599955337bc8a49569e8c64c029a1a6deef2e7a4e52c78d5d
+	31 => address: 0x2d0db5434bfce8a9dcdd9cb0b1192581acfc91c59d84846c90211846c7c2d931
+	32 => address: 0x2cf885600322cd77510ef1b07accc403878c9724e2608c7e8ad5a5db5efad78c
+	33 => address: 0x13bd64310147dcaa5687af515de25c71fea048233a228ce63fcfcc64ca587585
+]
+}

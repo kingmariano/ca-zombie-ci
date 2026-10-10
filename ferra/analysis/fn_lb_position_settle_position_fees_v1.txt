@@ -1,0 +1,69 @@
+public(friend) settle_position_fees(Arg0: &mut LBPosition, Arg1: &mut LBBinPosition, Arg2: u128, Arg3: u128) {
+L4:	loc0: u128
+L5:	loc1: u128
+B0:
+	0: CopyLoc[1](Arg1: &mut LBBinPosition)
+	1: ImmBorrowField[6](LBBinPosition.amount: u128)
+	2: ReadRef
+	3: LdU128(0)
+	4: Eq
+	5: BrFalse(17)
+B1:
+	6: MoveLoc[0](Arg0: &mut LBPosition)
+	7: Pop
+	8: MoveLoc[2](Arg2: u128)
+	9: CopyLoc[1](Arg1: &mut LBBinPosition)
+	10: MutBorrowField[7](LBBinPosition.fee_growth_inside_last_x: u128)
+	11: WriteRef
+	12: MoveLoc[3](Arg3: u128)
+	13: MoveLoc[1](Arg1: &mut LBBinPosition)
+	14: MutBorrowField[8](LBBinPosition.fee_growth_inside_last_y: u128)
+	15: WriteRef
+	16: Ret
+B2:
+	17: CopyLoc[1](Arg1: &mut LBBinPosition)
+	18: ImmBorrowField[6](LBBinPosition.amount: u128)
+	19: ReadRef
+	20: CopyLoc[2](Arg2: u128)
+	21: CopyLoc[1](Arg1: &mut LBBinPosition)
+	22: ImmBorrowField[7](LBBinPosition.fee_growth_inside_last_x: u128)
+	23: ReadRef
+	24: Call safe_math::sub_u128(u128, u128): u128
+	25: Mul
+	26: StLoc[4](loc0: u128)
+	27: CopyLoc[1](Arg1: &mut LBBinPosition)
+	28: ImmBorrowField[6](LBBinPosition.amount: u128)
+	29: ReadRef
+	30: CopyLoc[3](Arg3: u128)
+	31: CopyLoc[1](Arg1: &mut LBBinPosition)
+	32: ImmBorrowField[8](LBBinPosition.fee_growth_inside_last_y: u128)
+	33: ReadRef
+	34: Call safe_math::sub_u128(u128, u128): u128
+	35: Mul
+	36: StLoc[5](loc1: u128)
+	37: CopyLoc[0](Arg0: &mut LBPosition)
+	38: ImmBorrowField[9](LBPosition.saved_fees_x: u128)
+	39: ReadRef
+	40: MoveLoc[4](loc0: u128)
+	41: Call safe_math::add_u128(u128, u128): u128
+	42: CopyLoc[0](Arg0: &mut LBPosition)
+	43: MutBorrowField[9](LBPosition.saved_fees_x: u128)
+	44: WriteRef
+	45: CopyLoc[0](Arg0: &mut LBPosition)
+	46: ImmBorrowField[10](LBPosition.saved_fees_y: u128)
+	47: ReadRef
+	48: MoveLoc[5](loc1: u128)
+	49: Call safe_math::add_u128(u128, u128): u128
+	50: MoveLoc[0](Arg0: &mut LBPosition)
+	51: MutBorrowField[10](LBPosition.saved_fees_y: u128)
+	52: WriteRef
+	53: MoveLoc[2](Arg2: u128)
+	54: CopyLoc[1](Arg1: &mut LBBinPosition)
+	55: MutBorrowField[7](LBBinPosition.fee_growth_inside_last_x: u128)
+	56: WriteRef
+	57: MoveLoc[3](Arg3: u128)
+	58: MoveLoc[1](Arg1: &mut LBBinPosition)
+	59: MutBorrowField[8](LBBinPosition.fee_growth_inside_last_y: u128)
+	60: WriteRef
+	61: Ret
+}

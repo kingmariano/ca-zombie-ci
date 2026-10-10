@@ -1,0 +1,483 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.pair_parameter_helper {
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::constants;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::safe_math;
+use 0000000000000000000000000000000000000000000000000000000000000001::u32;
+use 0000000000000000000000000000000000000000000000000000000000000001::u64;
+
+struct PairParameters has copy, drop, store {
+	base_factor: u32,
+	filter_period: u16,
+	decay_period: u16,
+	reduction_factor: u16,
+	variable_fee_control: u32,
+	protocol_share: u64,
+	max_volatility_accumulator: u32,
+	volatility_accumulator: u32,
+	volatility_reference: u32,
+	id_reference: u32,
+	time_of_last_update: u64,
+	active_id: u32
+}
+
+public(friend) new(Arg0: u32): PairParameters {
+B0:
+	0: LdU32(0)
+	1: LdU16(0)
+	2: LdU16(0)
+	3: LdU16(0)
+	4: LdU32(0)
+	5: LdU64(0)
+	6: LdU32(0)
+	7: LdU32(0)
+	8: LdU32(0)
+	9: CopyLoc[0](Arg0: u32)
+	10: LdU64(0)
+	11: MoveLoc[0](Arg0: u32)
+	12: Pack[0](PairParameters)
+	13: Ret
+}
+
+public get_base_factor(Arg0: &PairParameters): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[0](PairParameters.base_factor: u32)
+	2: ReadRef
+	3: Ret
+}
+
+public get_filter_period(Arg0: &PairParameters): u16 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[1](PairParameters.filter_period: u16)
+	2: ReadRef
+	3: Ret
+}
+
+public get_decay_period(Arg0: &PairParameters): u16 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[2](PairParameters.decay_period: u16)
+	2: ReadRef
+	3: Ret
+}
+
+public get_reduction_factor(Arg0: &PairParameters): u16 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[3](PairParameters.reduction_factor: u16)
+	2: ReadRef
+	3: Ret
+}
+
+public get_variable_fee_control(Arg0: &PairParameters): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[4](PairParameters.variable_fee_control: u32)
+	2: ReadRef
+	3: Ret
+}
+
+public get_protocol_share(Arg0: &PairParameters): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[5](PairParameters.protocol_share: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public get_max_volatility_accumulator(Arg0: &PairParameters): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[6](PairParameters.max_volatility_accumulator: u32)
+	2: ReadRef
+	3: Ret
+}
+
+public get_volatility_accumulator(Arg0: &PairParameters): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[7](PairParameters.volatility_accumulator: u32)
+	2: ReadRef
+	3: Ret
+}
+
+public get_volatility_reference(Arg0: &PairParameters): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[8](PairParameters.volatility_reference: u32)
+	2: ReadRef
+	3: Ret
+}
+
+public get_id_reference(Arg0: &PairParameters): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[9](PairParameters.id_reference: u32)
+	2: ReadRef
+	3: Ret
+}
+
+public get_time_of_last_update(Arg0: &PairParameters): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[10](PairParameters.time_of_last_update: u64)
+	2: ReadRef
+	3: Ret
+}
+
+public get_active_id(Arg0: &PairParameters): u32 {
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[11](PairParameters.active_id: u32)
+	2: ReadRef
+	3: Ret
+}
+
+public get_delta_id(Arg0: &PairParameters, Arg1: u32): u32 {
+L2:	loc0: u32
+L3:	loc1: u32
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[11](PairParameters.active_id: u32)
+	2: ReadRef
+	3: StLoc[3](loc1: u32)
+	4: CopyLoc[1](Arg1: u32)
+	5: CopyLoc[3](loc1: u32)
+	6: Gt
+	7: BrFalse(13)
+B1:
+	8: MoveLoc[1](Arg1: u32)
+	9: MoveLoc[3](loc1: u32)
+	10: Sub
+	11: StLoc[2](loc0: u32)
+	12: Branch(17)
+B2:
+	13: MoveLoc[3](loc1: u32)
+	14: MoveLoc[1](Arg1: u32)
+	15: Sub
+	16: StLoc[2](loc0: u32)
+B3:
+	17: MoveLoc[2](loc0: u32)
+	18: Ret
+}
+
+public(friend) set_volatility_reference(Arg0: &mut PairParameters, Arg1: u32) {
+B0:
+	0: CopyLoc[1](Arg1: u32)
+	1: LdU32(1048575)
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &mut PairParameters)
+	6: Pop
+	7: LdConst[0](u64: 900)
+	8: Abort
+B3:
+	9: MoveLoc[1](Arg1: u32)
+	10: MoveLoc[0](Arg0: &mut PairParameters)
+	11: MutBorrowField[8](PairParameters.volatility_reference: u32)
+	12: WriteRef
+	13: Ret
+}
+
+public(friend) set_volatility_accumulator(Arg0: &mut PairParameters, Arg1: u32) {
+B0:
+	0: CopyLoc[1](Arg1: u32)
+	1: LdU32(1048575)
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &mut PairParameters)
+	6: Pop
+	7: LdConst[0](u64: 900)
+	8: Abort
+B3:
+	9: MoveLoc[1](Arg1: u32)
+	10: MoveLoc[0](Arg0: &mut PairParameters)
+	11: MutBorrowField[7](PairParameters.volatility_accumulator: u32)
+	12: WriteRef
+	13: Ret
+}
+
+public(friend) set_active_id(Arg0: &mut PairParameters, Arg1: u32) {
+B0:
+	0: MoveLoc[1](Arg1: u32)
+	1: MoveLoc[0](Arg0: &mut PairParameters)
+	2: MutBorrowField[11](PairParameters.active_id: u32)
+	3: WriteRef
+	4: Ret
+}
+
+public(friend) set_static_fee_parameters(Arg0: &mut PairParameters, Arg1: u32, Arg2: u16, Arg3: u16, Arg4: u16, Arg5: u32, Arg6: u16, Arg7: u32) {
+B0:
+	0: MoveLoc[1](Arg1: u32)
+	1: CopyLoc[0](Arg0: &mut PairParameters)
+	2: MutBorrowField[0](PairParameters.base_factor: u32)
+	3: WriteRef
+	4: MoveLoc[2](Arg2: u16)
+	5: CopyLoc[0](Arg0: &mut PairParameters)
+	6: MutBorrowField[1](PairParameters.filter_period: u16)
+	7: WriteRef
+	8: MoveLoc[3](Arg3: u16)
+	9: CopyLoc[0](Arg0: &mut PairParameters)
+	10: MutBorrowField[2](PairParameters.decay_period: u16)
+	11: WriteRef
+	12: MoveLoc[4](Arg4: u16)
+	13: CopyLoc[0](Arg0: &mut PairParameters)
+	14: MutBorrowField[3](PairParameters.reduction_factor: u16)
+	15: WriteRef
+	16: MoveLoc[5](Arg5: u32)
+	17: CopyLoc[0](Arg0: &mut PairParameters)
+	18: MutBorrowField[4](PairParameters.variable_fee_control: u32)
+	19: WriteRef
+	20: MoveLoc[6](Arg6: u16)
+	21: CastU64
+	22: CopyLoc[0](Arg0: &mut PairParameters)
+	23: MutBorrowField[5](PairParameters.protocol_share: u64)
+	24: WriteRef
+	25: MoveLoc[7](Arg7: u32)
+	26: MoveLoc[0](Arg0: &mut PairParameters)
+	27: MutBorrowField[6](PairParameters.max_volatility_accumulator: u32)
+	28: WriteRef
+	29: Ret
+}
+
+public get_base_fee(Arg0: &PairParameters, Arg1: u16): u64 {
+L2:	loc0: u64
+L3:	loc1: u64
+B0:
+	0: MoveLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[0](PairParameters.base_factor: u32)
+	2: ReadRef
+	3: CastU64
+	4: StLoc[2](loc0: u64)
+	5: MoveLoc[1](Arg1: u16)
+	6: CastU64
+	7: StLoc[3](loc1: u64)
+	8: MoveLoc[2](loc0: u64)
+	9: MoveLoc[3](loc1: u64)
+	10: Call safe_math::mul_u64(u64, u64): u64
+	11: Ret
+}
+
+public get_variable_fee(Arg0: &PairParameters, Arg1: u16): u64 {
+L2:	loc0: u64
+L3:	loc1: u64
+L4:	loc2: u64
+L5:	loc3: u64
+L6:	loc4: u64
+B0:
+	0: CopyLoc[0](Arg0: &PairParameters)
+	1: ImmBorrowField[4](PairParameters.variable_fee_control: u32)
+	2: ReadRef
+	3: CastU64
+	4: StLoc[5](loc3: u64)
+	5: CopyLoc[5](loc3: u64)
+	6: LdU64(0)
+	7: Neq
+	8: BrFalse(32)
+B1:
+	9: MoveLoc[0](Arg0: &PairParameters)
+	10: ImmBorrowField[7](PairParameters.volatility_accumulator: u32)
+	11: ReadRef
+	12: CastU64
+	13: StLoc[6](loc4: u64)
+	14: MoveLoc[1](Arg1: u16)
+	15: CastU64
+	16: StLoc[4](loc2: u64)
+	17: MoveLoc[6](loc4: u64)
+	18: MoveLoc[4](loc2: u64)
+	19: Call safe_math::mul_u64(u64, u64): u64
+	20: StLoc[3](loc1: u64)
+	21: CopyLoc[3](loc1: u64)
+	22: MoveLoc[3](loc1: u64)
+	23: Call safe_math::mul_u64(u64, u64): u64
+	24: MoveLoc[5](loc3: u64)
+	25: Call safe_math::mul_u64(u64, u64): u64
+	26: LdU64(99)
+	27: Add
+	28: LdU64(100)
+	29: Div
+	30: StLoc[2](loc0: u64)
+	31: Branch(36)
+B2:
+	32: MoveLoc[0](Arg0: &PairParameters)
+	33: Pop
+	34: LdU64(0)
+	35: StLoc[2](loc0: u64)
+B3:
+	36: MoveLoc[2](loc0: u64)
+	37: Ret
+}
+
+public get_total_fee_rate(Arg0: &PairParameters, Arg1: u16): u64 {
+L2:	loc0: u64
+L3:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &PairParameters)
+	1: CopyLoc[1](Arg1: u16)
+	2: Call get_base_fee(&PairParameters, u16): u64
+	3: StLoc[2](loc0: u64)
+	4: MoveLoc[0](Arg0: &PairParameters)
+	5: MoveLoc[1](Arg1: u16)
+	6: Call get_variable_fee(&PairParameters, u16): u64
+	7: StLoc[3](loc1: u64)
+	8: MoveLoc[2](loc0: u64)
+	9: MoveLoc[3](loc1: u64)
+	10: Call safe_math::add_u64(u64, u64): u64
+	11: Call constants::max_fee_rate(): u64
+	12: Call u64::min(u64, u64): u64
+	13: Ret
+}
+
+public(friend) update_id_reference(Arg0: &mut PairParameters) {
+B0:
+	0: CopyLoc[0](Arg0: &mut PairParameters)
+	1: ImmBorrowField[11](PairParameters.active_id: u32)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &mut PairParameters)
+	4: MutBorrowField[9](PairParameters.id_reference: u32)
+	5: WriteRef
+	6: Ret
+}
+
+public(friend) update_time_of_last_update(Arg0: &mut PairParameters, Arg1: u64) {
+B0:
+	0: MoveLoc[1](Arg1: u64)
+	1: MoveLoc[0](Arg0: &mut PairParameters)
+	2: MutBorrowField[10](PairParameters.time_of_last_update: u64)
+	3: WriteRef
+	4: Ret
+}
+
+public(friend) update_volatility_reference(Arg0: &mut PairParameters) {
+L1:	loc0: u64
+L2:	loc1: u64
+L3:	loc2: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut PairParameters)
+	1: ImmBorrowField[7](PairParameters.volatility_accumulator: u32)
+	2: ReadRef
+	3: CastU64
+	4: StLoc[3](loc2: u64)
+	5: CopyLoc[0](Arg0: &mut PairParameters)
+	6: ImmBorrowField[3](PairParameters.reduction_factor: u16)
+	7: ReadRef
+	8: CastU64
+	9: StLoc[2](loc1: u64)
+	10: Call constants::basis_point_max(): u64
+	11: StLoc[1](loc0: u64)
+	12: MoveLoc[3](loc2: u64)
+	13: MoveLoc[2](loc1: u64)
+	14: MoveLoc[1](loc0: u64)
+	15: Call safe_math::mul_div_u64(u64, u64, u64): u64
+	16: Call safe_math::u64_to_u32(u64): u32
+	17: MoveLoc[0](Arg0: &mut PairParameters)
+	18: MutBorrowField[8](PairParameters.volatility_reference: u32)
+	19: WriteRef
+	20: Ret
+}
+
+public(friend) update_volatility_accumulator(Arg0: &mut PairParameters, Arg1: u32) {
+L2:	loc0: u64
+L3:	loc1: u32
+L4:	loc2: u64
+L5:	loc3: u64
+L6:	loc4: u64
+B0:
+	0: MoveLoc[1](Arg1: u32)
+	1: CopyLoc[0](Arg0: &mut PairParameters)
+	2: ImmBorrowField[9](PairParameters.id_reference: u32)
+	3: ReadRef
+	4: Call u32::diff(u32, u32): u32
+	5: StLoc[3](loc1: u32)
+	6: CopyLoc[0](Arg0: &mut PairParameters)
+	7: ImmBorrowField[8](PairParameters.volatility_reference: u32)
+	8: ReadRef
+	9: CastU64
+	10: StLoc[6](loc4: u64)
+	11: MoveLoc[3](loc1: u32)
+	12: CastU64
+	13: StLoc[2](loc0: u64)
+	14: MoveLoc[6](loc4: u64)
+	15: MoveLoc[2](loc0: u64)
+	16: LdU64(10)
+	17: Call safe_math::mul_u64(u64, u64): u64
+	18: Call safe_math::add_u64(u64, u64): u64
+	19: StLoc[5](loc3: u64)
+	20: CopyLoc[0](Arg0: &mut PairParameters)
+	21: ImmBorrowField[6](PairParameters.max_volatility_accumulator: u32)
+	22: ReadRef
+	23: CastU64
+	24: StLoc[4](loc2: u64)
+	25: MoveLoc[5](loc3: u64)
+	26: MoveLoc[4](loc2: u64)
+	27: Call u64::min(u64, u64): u64
+	28: Call safe_math::u64_to_u32(u64): u32
+	29: MoveLoc[0](Arg0: &mut PairParameters)
+	30: MutBorrowField[7](PairParameters.volatility_accumulator: u32)
+	31: WriteRef
+	32: Ret
+}
+
+public(friend) update_references(Arg0: &mut PairParameters, Arg1: u64) {
+L2:	loc0: u64
+B0:
+	0: CopyLoc[1](Arg1: u64)
+	1: CopyLoc[0](Arg0: &mut PairParameters)
+	2: ImmBorrowField[10](PairParameters.time_of_last_update: u64)
+	3: ReadRef
+	4: Sub
+	5: StLoc[2](loc0: u64)
+	6: CopyLoc[2](loc0: u64)
+	7: CopyLoc[0](Arg0: &mut PairParameters)
+	8: ImmBorrowField[1](PairParameters.filter_period: u16)
+	9: ReadRef
+	10: CastU64
+	11: Ge
+	12: BrFalse(28)
+B1:
+	13: CopyLoc[0](Arg0: &mut PairParameters)
+	14: Call update_id_reference(&mut PairParameters)
+	15: MoveLoc[2](loc0: u64)
+	16: CopyLoc[0](Arg0: &mut PairParameters)
+	17: ImmBorrowField[2](PairParameters.decay_period: u16)
+	18: ReadRef
+	19: CastU64
+	20: Lt
+	21: BrFalse(25)
+B2:
+	22: CopyLoc[0](Arg0: &mut PairParameters)
+	23: Call update_volatility_reference(&mut PairParameters)
+	24: Branch(28)
+B3:
+	25: CopyLoc[0](Arg0: &mut PairParameters)
+	26: LdU32(0)
+	27: Call set_volatility_reference(&mut PairParameters, u32)
+B4:
+	28: MoveLoc[0](Arg0: &mut PairParameters)
+	29: MoveLoc[1](Arg1: u64)
+	30: Call update_time_of_last_update(&mut PairParameters, u64)
+	31: Ret
+}
+
+public(friend) update_volatility_parameters(Arg0: &mut PairParameters, Arg1: u32, Arg2: u64) {
+B0:
+	0: CopyLoc[0](Arg0: &mut PairParameters)
+	1: MoveLoc[2](Arg2: u64)
+	2: Call update_references(&mut PairParameters, u64)
+	3: MoveLoc[0](Arg0: &mut PairParameters)
+	4: MoveLoc[1](Arg1: u32)
+	5: Call update_volatility_accumulator(&mut PairParameters, u32)
+	6: Ret
+}
+
+Constants [
+	0 => u64: 900
+]
+}

@@ -1,0 +1,1448 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.q64x64 {
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::bit_math;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::safe_math;
+
+public scale_offset(): u8 {
+B0:
+	0: LdConst[9](u8: 64)
+	1: Ret
+}
+
+public scale(): u128 {
+B0:
+	0: LdConst[10](u128: 1844..)
+	1: Ret
+}
+
+public liquidity(Arg0: u64, Arg1: u64, Arg2: u128): u128 {
+B0:
+	0: MoveLoc[0](Arg0: u64)
+	1: CastU256
+	2: MoveLoc[2](Arg2: u128)
+	3: CastU256
+	4: Mul
+	5: LdConst[9](u8: 64)
+	6: Shr
+	7: MoveLoc[1](Arg1: u64)
+	8: CastU256
+	9: Add
+	10: Call safe_math::u256_to_u128(u256): u128
+	11: Ret
+}
+
+x_from_y_price(Arg0: u64, Arg1: u128): u64 {
+B0:
+	0: MoveLoc[0](Arg0: u64)
+	1: LdConst[9](u8: 64)
+	2: MoveLoc[1](Arg1: u128)
+	3: Call shift_div_round_down(u64, u8, u128): u64
+	4: Ret
+}
+
+y_from_x_price(Arg0: u64, Arg1: u128): u64 {
+B0:
+	0: MoveLoc[0](Arg0: u64)
+	1: MoveLoc[1](Arg1: u128)
+	2: LdConst[9](u8: 64)
+	3: Call mul_shift_round_down(u64, u128, u8): u64
+	4: Ret
+}
+
+public swap_amount_out(Arg0: u64, Arg1: u128, Arg2: bool): u64 {
+L3:	loc0: u64
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: LdU64(0)
+	2: Eq
+	3: BrFalse(6)
+B1:
+	4: LdU64(0)
+	5: Ret
+B2:
+	6: MoveLoc[2](Arg2: bool)
+	7: BrFalse(13)
+B3:
+	8: MoveLoc[0](Arg0: u64)
+	9: MoveLoc[1](Arg1: u128)
+	10: Call y_from_x_price(u64, u128): u64
+	11: StLoc[3](loc0: u64)
+	12: Branch(17)
+B4:
+	13: MoveLoc[0](Arg0: u64)
+	14: MoveLoc[1](Arg1: u128)
+	15: Call x_from_y_price(u64, u128): u64
+	16: StLoc[3](loc0: u64)
+B5:
+	17: MoveLoc[3](loc0: u64)
+	18: Ret
+}
+
+public max_input_for_exact_output(Arg0: u64, Arg1: u128, Arg2: bool): u64 {
+L3:	loc0: u64
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: LdU64(0)
+	2: Eq
+	3: BrFalse(6)
+B1:
+	4: LdU64(0)
+	5: Ret
+B2:
+	6: MoveLoc[2](Arg2: bool)
+	7: BrFalse(14)
+B3:
+	8: MoveLoc[0](Arg0: u64)
+	9: Call scale_offset(): u8
+	10: MoveLoc[1](Arg1: u128)
+	11: Call shift_div_round_up(u64, u8, u128): u64
+	12: StLoc[3](loc0: u64)
+	13: Branch(19)
+B4:
+	14: MoveLoc[0](Arg0: u64)
+	15: MoveLoc[1](Arg1: u128)
+	16: Call scale_offset(): u8
+	17: Call mul_shift_round_up(u64, u128, u8): u64
+	18: StLoc[3](loc0: u64)
+B5:
+	19: MoveLoc[3](loc0: u64)
+	20: Ret
+}
+
+public mul_div_round_up_u128(Arg0: u128, Arg1: u128, Arg2: u128): u128 {
+L3:	loc0: bool
+L4:	loc1: u256
+L5:	loc2: u256
+B0:
+	0: CopyLoc[2](Arg2: u128)
+	1: LdU128(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[2](u64: 402)
+	6: Abort
+B3:
+	7: CopyLoc[0](Arg0: u128)
+	8: LdU128(0)
+	9: Eq
+	10: BrFalse(14)
+B4:
+	11: LdTrue
+	12: StLoc[3](loc0: bool)
+	13: Branch(18)
+B5:
+	14: CopyLoc[1](Arg1: u128)
+	15: LdU128(0)
+	16: Eq
+	17: StLoc[3](loc0: bool)
+B6:
+	18: MoveLoc[3](loc0: bool)
+	19: BrFalse(22)
+B7:
+	20: LdU128(0)
+	21: Ret
+B8:
+	22: MoveLoc[0](Arg0: u128)
+	23: CastU256
+	24: MoveLoc[1](Arg1: u128)
+	25: CastU256
+	26: Mul
+	27: StLoc[4](loc1: u256)
+	28: MoveLoc[2](Arg2: u128)
+	29: CastU256
+	30: StLoc[5](loc2: u256)
+	31: MoveLoc[4](loc1: u256)
+	32: LdU256(1)
+	33: Sub
+	34: MoveLoc[5](loc2: u256)
+	35: Div
+	36: LdU256(1)
+	37: Add
+	38: Call safe_math::u256_to_u128(u256): u128
+	39: Ret
+}
+
+public mul_shift_round_up(Arg0: u64, Arg1: u128, Arg2: u8): u64 {
+L3:	loc0: bool
+L4:	loc1: u256
+L5:	loc2: u256
+B0:
+	0: CopyLoc[2](Arg2: u8)
+	1: LdConst[9](u8: 64)
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[3](u64: 403)
+	6: Abort
+B3:
+	7: CopyLoc[0](Arg0: u64)
+	8: LdU64(0)
+	9: Eq
+	10: BrFalse(14)
+B4:
+	11: LdTrue
+	12: StLoc[3](loc0: bool)
+	13: Branch(18)
+B5:
+	14: CopyLoc[1](Arg1: u128)
+	15: LdU128(0)
+	16: Eq
+	17: StLoc[3](loc0: bool)
+B6:
+	18: MoveLoc[3](loc0: bool)
+	19: BrFalse(22)
+B7:
+	20: LdU64(0)
+	21: Ret
+B8:
+	22: MoveLoc[0](Arg0: u64)
+	23: CastU256
+	24: MoveLoc[1](Arg1: u128)
+	25: CastU256
+	26: Mul
+	27: StLoc[5](loc2: u256)
+	28: LdU256(1)
+	29: MoveLoc[2](Arg2: u8)
+	30: Shl
+	31: StLoc[4](loc1: u256)
+	32: MoveLoc[5](loc2: u256)
+	33: LdU256(1)
+	34: Sub
+	35: MoveLoc[4](loc1: u256)
+	36: Div
+	37: LdU256(1)
+	38: Add
+	39: Call safe_math::u256_to_u64(u256): u64
+	40: Ret
+}
+
+public mul_shift_round_down(Arg0: u64, Arg1: u128, Arg2: u8): u64 {
+L3:	loc0: bool
+L4:	loc1: u256
+L5:	loc2: u256
+B0:
+	0: CopyLoc[2](Arg2: u8)
+	1: LdConst[9](u8: 64)
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[3](u64: 403)
+	6: Abort
+B3:
+	7: CopyLoc[0](Arg0: u64)
+	8: LdU64(0)
+	9: Eq
+	10: BrFalse(14)
+B4:
+	11: LdTrue
+	12: StLoc[3](loc0: bool)
+	13: Branch(18)
+B5:
+	14: CopyLoc[1](Arg1: u128)
+	15: LdU128(0)
+	16: Eq
+	17: StLoc[3](loc0: bool)
+B6:
+	18: MoveLoc[3](loc0: bool)
+	19: BrFalse(22)
+B7:
+	20: LdU64(0)
+	21: Ret
+B8:
+	22: MoveLoc[0](Arg0: u64)
+	23: CastU256
+	24: MoveLoc[1](Arg1: u128)
+	25: CastU256
+	26: Mul
+	27: StLoc[5](loc2: u256)
+	28: LdU256(1)
+	29: MoveLoc[2](Arg2: u8)
+	30: Shl
+	31: StLoc[4](loc1: u256)
+	32: MoveLoc[5](loc2: u256)
+	33: MoveLoc[4](loc1: u256)
+	34: Div
+	35: Call safe_math::u256_to_u64(u256): u64
+	36: Ret
+}
+
+public shift_div_round_up(Arg0: u64, Arg1: u8, Arg2: u128): u64 {
+B0:
+	0: CopyLoc[2](Arg2: u128)
+	1: LdU128(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[2](u64: 402)
+	6: Abort
+B3:
+	7: CopyLoc[1](Arg1: u8)
+	8: LdConst[9](u8: 64)
+	9: Le
+	10: BrFalse(12)
+B4:
+	11: Branch(14)
+B5:
+	12: LdConst[3](u64: 403)
+	13: Abort
+B6:
+	14: CopyLoc[0](Arg0: u64)
+	15: LdU64(0)
+	16: Eq
+	17: BrFalse(20)
+B7:
+	18: LdU64(0)
+	19: Ret
+B8:
+	20: MoveLoc[0](Arg0: u64)
+	21: CastU128
+	22: MoveLoc[1](Arg1: u8)
+	23: Shl
+	24: LdU128(1)
+	25: Sub
+	26: MoveLoc[2](Arg2: u128)
+	27: Div
+	28: LdU128(1)
+	29: Add
+	30: Call safe_math::u128_to_u64(u128): u64
+	31: Ret
+}
+
+public shift_div_round_down(Arg0: u64, Arg1: u8, Arg2: u128): u64 {
+B0:
+	0: CopyLoc[2](Arg2: u128)
+	1: LdU128(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[2](u64: 402)
+	6: Abort
+B3:
+	7: CopyLoc[1](Arg1: u8)
+	8: LdConst[9](u8: 64)
+	9: Le
+	10: BrFalse(12)
+B4:
+	11: Branch(14)
+B5:
+	12: LdConst[3](u64: 403)
+	13: Abort
+B6:
+	14: CopyLoc[0](Arg0: u64)
+	15: LdU64(0)
+	16: Eq
+	17: BrFalse(20)
+B7:
+	18: LdU64(0)
+	19: Ret
+B8:
+	20: MoveLoc[0](Arg0: u64)
+	21: CastU128
+	22: MoveLoc[1](Arg1: u8)
+	23: Shl
+	24: MoveLoc[2](Arg2: u128)
+	25: Div
+	26: Call safe_math::u128_to_u64(u128): u64
+	27: Ret
+}
+
+get_integer(Arg0: u128): u64 {
+B0:
+	0: MoveLoc[0](Arg0: u128)
+	1: LdConst[9](u8: 64)
+	2: Shr
+	3: CastU64
+	4: Ret
+}
+
+shl(Arg0: u128, Arg1: u128): u128 {
+L2:	loc0: u128
+L3:	loc1: u128
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: LdU128(0)
+	2: Eq
+	3: BrFalse(6)
+B1:
+	4: MoveLoc[0](Arg0: u128)
+	5: Ret
+B2:
+	6: CopyLoc[1](Arg1: u128)
+	7: LdU128(128)
+	8: Ge
+	9: BrFalse(12)
+B3:
+	10: LdConst[5](u64: 406)
+	11: Abort
+B4:
+	12: MoveLoc[0](Arg0: u128)
+	13: StLoc[3](loc1: u128)
+	14: MoveLoc[1](Arg1: u128)
+	15: StLoc[2](loc0: u128)
+	16: CopyLoc[2](loc0: u128)
+	17: LdU128(64)
+	18: Ge
+	19: BrFalse(42)
+B5:
+	20: CopyLoc[3](loc1: u128)
+	21: LdU128(0)
+	22: Eq
+	23: BrFalse(26)
+B6:
+	24: LdU128(0)
+	25: Ret
+B7:
+	26: CopyLoc[3](loc1: u128)
+	27: LdConst[11](u128: 3402..)
+	28: LdConst[10](u128: 1844..)
+	29: Div
+	30: Gt
+	31: BrFalse(34)
+B8:
+	32: LdConst[4](u64: 405)
+	33: Abort
+B9:
+	34: MoveLoc[3](loc1: u128)
+	35: LdConst[10](u128: 1844..)
+	36: Mul
+	37: StLoc[3](loc1: u128)
+	38: MoveLoc[2](loc0: u128)
+	39: LdU128(64)
+	40: Sub
+	41: StLoc[2](loc0: u128)
+B10:
+	42: CopyLoc[2](loc0: u128)
+	43: LdU128(32)
+	44: Ge
+	45: BrFalse(68)
+B11:
+	46: CopyLoc[3](loc1: u128)
+	47: LdU128(0)
+	48: Eq
+	49: BrFalse(52)
+B12:
+	50: LdU128(0)
+	51: Ret
+B13:
+	52: CopyLoc[3](loc1: u128)
+	53: LdConst[11](u128: 3402..)
+	54: LdConst[13](u128: 4294..)
+	55: Div
+	56: Gt
+	57: BrFalse(60)
+B14:
+	58: LdConst[4](u64: 405)
+	59: Abort
+B15:
+	60: MoveLoc[3](loc1: u128)
+	61: LdConst[13](u128: 4294..)
+	62: Mul
+	63: StLoc[3](loc1: u128)
+	64: MoveLoc[2](loc0: u128)
+	65: LdU128(32)
+	66: Sub
+	67: StLoc[2](loc0: u128)
+B16:
+	68: CopyLoc[2](loc0: u128)
+	69: LdU128(16)
+	70: Ge
+	71: BrFalse(94)
+B17:
+	72: CopyLoc[3](loc1: u128)
+	73: LdU128(0)
+	74: Eq
+	75: BrFalse(78)
+B18:
+	76: LdU128(0)
+	77: Ret
+B19:
+	78: CopyLoc[3](loc1: u128)
+	79: LdConst[11](u128: 3402..)
+	80: LdConst[14](u128: 65536)
+	81: Div
+	82: Gt
+	83: BrFalse(86)
+B20:
+	84: LdConst[4](u64: 405)
+	85: Abort
+B21:
+	86: MoveLoc[3](loc1: u128)
+	87: LdConst[14](u128: 65536)
+	88: Mul
+	89: StLoc[3](loc1: u128)
+	90: MoveLoc[2](loc0: u128)
+	91: LdU128(16)
+	92: Sub
+	93: StLoc[2](loc0: u128)
+B22:
+	94: CopyLoc[2](loc0: u128)
+	95: LdU128(8)
+	96: Ge
+	97: BrFalse(120)
+B23:
+	98: CopyLoc[3](loc1: u128)
+	99: LdU128(0)
+	100: Eq
+	101: BrFalse(104)
+B24:
+	102: LdU128(0)
+	103: Ret
+B25:
+	104: CopyLoc[3](loc1: u128)
+	105: LdConst[11](u128: 3402..)
+	106: LdConst[15](u128: 256)
+	107: Div
+	108: Gt
+	109: BrFalse(112)
+B26:
+	110: LdConst[4](u64: 405)
+	111: Abort
+B27:
+	112: MoveLoc[3](loc1: u128)
+	113: LdConst[15](u128: 256)
+	114: Mul
+	115: StLoc[3](loc1: u128)
+	116: MoveLoc[2](loc0: u128)
+	117: LdU128(8)
+	118: Sub
+	119: StLoc[2](loc0: u128)
+B28:
+	120: CopyLoc[2](loc0: u128)
+	121: LdU128(4)
+	122: Ge
+	123: BrFalse(146)
+B29:
+	124: CopyLoc[3](loc1: u128)
+	125: LdU128(0)
+	126: Eq
+	127: BrFalse(130)
+B30:
+	128: LdU128(0)
+	129: Ret
+B31:
+	130: CopyLoc[3](loc1: u128)
+	131: LdConst[11](u128: 3402..)
+	132: LdConst[16](u128: 16)
+	133: Div
+	134: Gt
+	135: BrFalse(138)
+B32:
+	136: LdConst[4](u64: 405)
+	137: Abort
+B33:
+	138: MoveLoc[3](loc1: u128)
+	139: LdConst[16](u128: 16)
+	140: Mul
+	141: StLoc[3](loc1: u128)
+	142: MoveLoc[2](loc0: u128)
+	143: LdU128(4)
+	144: Sub
+	145: StLoc[2](loc0: u128)
+B34:
+	146: CopyLoc[2](loc0: u128)
+	147: LdU128(2)
+	148: Ge
+	149: BrFalse(172)
+B35:
+	150: CopyLoc[3](loc1: u128)
+	151: LdU128(0)
+	152: Eq
+	153: BrFalse(156)
+B36:
+	154: LdU128(0)
+	155: Ret
+B37:
+	156: CopyLoc[3](loc1: u128)
+	157: LdConst[11](u128: 3402..)
+	158: LdConst[17](u128: 4)
+	159: Div
+	160: Gt
+	161: BrFalse(164)
+B38:
+	162: LdConst[4](u64: 405)
+	163: Abort
+B39:
+	164: MoveLoc[3](loc1: u128)
+	165: LdConst[17](u128: 4)
+	166: Mul
+	167: StLoc[3](loc1: u128)
+	168: MoveLoc[2](loc0: u128)
+	169: LdU128(2)
+	170: Sub
+	171: StLoc[2](loc0: u128)
+B40:
+	172: MoveLoc[2](loc0: u128)
+	173: LdU128(1)
+	174: Ge
+	175: BrFalse(194)
+B41:
+	176: CopyLoc[3](loc1: u128)
+	177: LdU128(0)
+	178: Eq
+	179: BrFalse(182)
+B42:
+	180: LdU128(0)
+	181: Ret
+B43:
+	182: CopyLoc[3](loc1: u128)
+	183: LdConst[11](u128: 3402..)
+	184: LdConst[18](u128: 2)
+	185: Div
+	186: Gt
+	187: BrFalse(190)
+B44:
+	188: LdConst[4](u64: 405)
+	189: Abort
+B45:
+	190: MoveLoc[3](loc1: u128)
+	191: LdConst[18](u128: 2)
+	192: Mul
+	193: StLoc[3](loc1: u128)
+B46:
+	194: MoveLoc[3](loc1: u128)
+	195: Ret
+}
+
+shr(Arg0: u128, Arg1: u128): u128 {
+L2:	loc0: u128
+L3:	loc1: u128
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: LdU128(0)
+	2: Eq
+	3: BrFalse(6)
+B1:
+	4: MoveLoc[0](Arg0: u128)
+	5: Ret
+B2:
+	6: CopyLoc[1](Arg1: u128)
+	7: LdU128(128)
+	8: Ge
+	9: BrFalse(12)
+B3:
+	10: LdConst[5](u64: 406)
+	11: Abort
+B4:
+	12: MoveLoc[0](Arg0: u128)
+	13: StLoc[3](loc1: u128)
+	14: MoveLoc[1](Arg1: u128)
+	15: StLoc[2](loc0: u128)
+	16: CopyLoc[2](loc0: u128)
+	17: LdU128(64)
+	18: Ge
+	19: BrFalse(28)
+B5:
+	20: MoveLoc[3](loc1: u128)
+	21: LdConst[10](u128: 1844..)
+	22: Div
+	23: StLoc[3](loc1: u128)
+	24: MoveLoc[2](loc0: u128)
+	25: LdU128(64)
+	26: Sub
+	27: StLoc[2](loc0: u128)
+B6:
+	28: CopyLoc[2](loc0: u128)
+	29: LdU128(32)
+	30: Ge
+	31: BrFalse(40)
+B7:
+	32: MoveLoc[3](loc1: u128)
+	33: LdConst[13](u128: 4294..)
+	34: Div
+	35: StLoc[3](loc1: u128)
+	36: MoveLoc[2](loc0: u128)
+	37: LdU128(32)
+	38: Sub
+	39: StLoc[2](loc0: u128)
+B8:
+	40: CopyLoc[2](loc0: u128)
+	41: LdU128(16)
+	42: Ge
+	43: BrFalse(52)
+B9:
+	44: MoveLoc[3](loc1: u128)
+	45: LdConst[14](u128: 65536)
+	46: Div
+	47: StLoc[3](loc1: u128)
+	48: MoveLoc[2](loc0: u128)
+	49: LdU128(16)
+	50: Sub
+	51: StLoc[2](loc0: u128)
+B10:
+	52: CopyLoc[2](loc0: u128)
+	53: LdU128(8)
+	54: Ge
+	55: BrFalse(64)
+B11:
+	56: MoveLoc[3](loc1: u128)
+	57: LdConst[15](u128: 256)
+	58: Div
+	59: StLoc[3](loc1: u128)
+	60: MoveLoc[2](loc0: u128)
+	61: LdU128(8)
+	62: Sub
+	63: StLoc[2](loc0: u128)
+B12:
+	64: CopyLoc[2](loc0: u128)
+	65: LdU128(4)
+	66: Ge
+	67: BrFalse(76)
+B13:
+	68: MoveLoc[3](loc1: u128)
+	69: LdConst[16](u128: 16)
+	70: Div
+	71: StLoc[3](loc1: u128)
+	72: MoveLoc[2](loc0: u128)
+	73: LdU128(4)
+	74: Sub
+	75: StLoc[2](loc0: u128)
+B14:
+	76: CopyLoc[2](loc0: u128)
+	77: LdU128(2)
+	78: Ge
+	79: BrFalse(88)
+B15:
+	80: MoveLoc[3](loc1: u128)
+	81: LdConst[17](u128: 4)
+	82: Div
+	83: StLoc[3](loc1: u128)
+	84: MoveLoc[2](loc0: u128)
+	85: LdU128(2)
+	86: Sub
+	87: StLoc[2](loc0: u128)
+B16:
+	88: MoveLoc[2](loc0: u128)
+	89: LdU128(1)
+	90: Ge
+	91: BrFalse(96)
+B17:
+	92: MoveLoc[3](loc1: u128)
+	93: LdConst[18](u128: 2)
+	94: Div
+	95: StLoc[3](loc1: u128)
+B18:
+	96: MoveLoc[3](loc1: u128)
+	97: Ret
+}
+
+public mul_div_round_down_u128(Arg0: u128, Arg1: u128, Arg2: u128): u128 {
+L3:	loc0: bool
+L4:	loc1: u256
+L5:	loc2: u256
+L6:	loc3: u256
+B0:
+	0: CopyLoc[2](Arg2: u128)
+	1: LdU128(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[2](u64: 402)
+	6: Abort
+B3:
+	7: CopyLoc[0](Arg0: u128)
+	8: LdU128(0)
+	9: Eq
+	10: BrFalse(14)
+B4:
+	11: LdTrue
+	12: StLoc[3](loc0: bool)
+	13: Branch(18)
+B5:
+	14: CopyLoc[1](Arg1: u128)
+	15: LdU128(0)
+	16: Eq
+	17: StLoc[3](loc0: bool)
+B6:
+	18: MoveLoc[3](loc0: bool)
+	19: BrFalse(22)
+B7:
+	20: LdU128(0)
+	21: Ret
+B8:
+	22: CopyLoc[0](Arg0: u128)
+	23: CopyLoc[2](Arg2: u128)
+	24: Eq
+	25: BrFalse(28)
+B9:
+	26: MoveLoc[1](Arg1: u128)
+	27: Ret
+B10:
+	28: CopyLoc[1](Arg1: u128)
+	29: CopyLoc[2](Arg2: u128)
+	30: Eq
+	31: BrFalse(34)
+B11:
+	32: MoveLoc[0](Arg0: u128)
+	33: Ret
+B12:
+	34: CopyLoc[0](Arg0: u128)
+	35: LdConst[11](u128: 3402..)
+	36: CopyLoc[1](Arg1: u128)
+	37: Div
+	38: Le
+	39: BrFalse(46)
+B13:
+	40: MoveLoc[0](Arg0: u128)
+	41: MoveLoc[1](Arg1: u128)
+	42: Mul
+	43: MoveLoc[2](Arg2: u128)
+	44: Div
+	45: Ret
+B14:
+	46: MoveLoc[0](Arg0: u128)
+	47: CastU256
+	48: StLoc[5](loc2: u256)
+	49: MoveLoc[1](Arg1: u128)
+	50: CastU256
+	51: StLoc[6](loc3: u256)
+	52: MoveLoc[2](Arg2: u128)
+	53: CastU256
+	54: StLoc[4](loc1: u256)
+	55: MoveLoc[5](loc2: u256)
+	56: MoveLoc[6](loc3: u256)
+	57: Mul
+	58: MoveLoc[4](loc1: u256)
+	59: Div
+	60: Call safe_math::u256_to_u128(u256): u128
+	61: Ret
+}
+
+public log2(Arg0: u128): u128 {
+L1:	loc0: u128
+L2:	loc1: u128
+L3:	loc2: u8
+L4:	loc3: u128
+L5:	loc4: u128
+L6:	loc5: u128
+L7:	loc6: u128
+L8:	loc7: u128
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdU128(1)
+	2: Eq
+	3: BrFalse(12)
+B1:
+	4: LdU128(64)
+	5: LdConst[9](u8: 64)
+	6: Shl
+	7: LdConst[11](u128: 3402..)
+	8: Xor
+	9: LdU128(1)
+	10: Add
+	11: Ret
+B2:
+	12: CopyLoc[0](Arg0: u128)
+	13: LdU128(0)
+	14: Eq
+	15: BrFalse(18)
+B3:
+	16: LdConst[0](u64: 400)
+	17: Abort
+B4:
+	18: MoveLoc[0](Arg0: u128)
+	19: LdU8(1)
+	20: Shr
+	21: StLoc[7](loc6: u128)
+	22: CopyLoc[7](loc6: u128)
+	23: LdConst[7](u128: 9223..)
+	24: Ge
+	25: BrFalse(29)
+B5:
+	26: LdU128(1)
+	27: StLoc[6](loc5: u128)
+	28: Branch(35)
+B6:
+	29: LdConst[11](u128: 3402..)
+	30: StLoc[6](loc5: u128)
+	31: LdConst[8](u128: 8507..)
+	32: MoveLoc[7](loc6: u128)
+	33: Call safe_math::div_u128(u128, u128): u128
+	34: StLoc[7](loc6: u128)
+B7:
+	35: CopyLoc[7](loc6: u128)
+	36: LdConst[6](u8: 63)
+	37: Shr
+	38: Call bit_math::most_significant_bit(u128): u8
+	39: StLoc[3](loc2: u8)
+	40: CopyLoc[3](loc2: u8)
+	41: CastU128
+	42: LdConst[6](u8: 63)
+	43: Shl
+	44: StLoc[4](loc3: u128)
+	45: MoveLoc[7](loc6: u128)
+	46: MoveLoc[3](loc2: u8)
+	47: Shr
+	48: StLoc[8](loc7: u128)
+	49: CopyLoc[8](loc7: u128)
+	50: LdConst[7](u128: 9223..)
+	51: Neq
+	52: BrFalse(91)
+B8:
+	53: LdU128(1)
+	54: LdConst[6](u8: 63)
+	55: LdU8(1)
+	56: Sub
+	57: Shl
+	58: StLoc[2](loc1: u128)
+B9:
+	59: CopyLoc[2](loc1: u128)
+	60: LdU128(0)
+	61: Gt
+	62: BrFalse(91)
+B10:
+	63: Branch(64)
+B11:
+	64: CopyLoc[8](loc7: u128)
+	65: MoveLoc[8](loc7: u128)
+	66: Mul
+	67: LdConst[6](u8: 63)
+	68: Shr
+	69: StLoc[8](loc7: u128)
+	70: CopyLoc[8](loc7: u128)
+	71: LdU128(1)
+	72: LdConst[6](u8: 63)
+	73: LdU8(1)
+	74: Add
+	75: Shl
+	76: Ge
+	77: BrFalse(86)
+B12:
+	78: MoveLoc[4](loc3: u128)
+	79: CopyLoc[2](loc1: u128)
+	80: Add
+	81: StLoc[4](loc3: u128)
+	82: MoveLoc[8](loc7: u128)
+	83: LdU8(1)
+	84: Shr
+	85: StLoc[8](loc7: u128)
+B13:
+	86: MoveLoc[2](loc1: u128)
+	87: LdU8(1)
+	88: Shr
+	89: StLoc[2](loc1: u128)
+	90: Branch(59)
+B14:
+	91: MoveLoc[6](loc5: u128)
+	92: LdU128(1)
+	93: Eq
+	94: BrFalse(100)
+B15:
+	95: MoveLoc[4](loc3: u128)
+	96: LdU8(1)
+	97: Shl
+	98: StLoc[1](loc0: u128)
+	99: Branch(110)
+B16:
+	100: MoveLoc[4](loc3: u128)
+	101: LdU8(1)
+	102: Shl
+	103: StLoc[5](loc4: u128)
+	104: LdConst[11](u128: 3402..)
+	105: MoveLoc[5](loc4: u128)
+	106: Sub
+	107: LdU128(1)
+	108: Add
+	109: StLoc[1](loc0: u128)
+B17:
+	110: MoveLoc[1](loc0: u128)
+	111: Ret
+}
+
+public pow(Arg0: u128, Arg1: u128): u128 {
+L2:	loc0: u128
+L3:	loc1: bool
+L4:	loc2: u128
+L5:	loc3: u128
+L6:	loc4: u128
+L7:	loc5: bool
+L8:	loc6: u128
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: LdU128(0)
+	2: Eq
+	3: BrFalse(6)
+B1:
+	4: LdConst[10](u128: 1844..)
+	5: Ret
+B2:
+	6: CopyLoc[0](Arg0: u128)
+	7: LdU128(0)
+	8: Eq
+	9: BrFalse(12)
+B3:
+	10: LdU128(0)
+	11: Ret
+B4:
+	12: CopyLoc[0](Arg0: u128)
+	13: LdConst[10](u128: 1844..)
+	14: Eq
+	15: BrFalse(18)
+B5:
+	16: LdConst[10](u128: 1844..)
+	17: Ret
+B6:
+	18: CopyLoc[1](Arg1: u128)
+	19: LdConst[12](u128: 1701..)
+	20: Gt
+	21: StLoc[7](loc5: bool)
+	22: CopyLoc[7](loc5: bool)
+	23: BrFalse(31)
+B7:
+	24: LdConst[11](u128: 3402..)
+	25: MoveLoc[1](Arg1: u128)
+	26: Sub
+	27: LdU128(1)
+	28: Add
+	29: StLoc[2](loc0: u128)
+	30: Branch(33)
+B8:
+	31: MoveLoc[1](Arg1: u128)
+	32: StLoc[2](loc0: u128)
+B9:
+	33: MoveLoc[2](loc0: u128)
+	34: StLoc[6](loc4: u128)
+	35: CopyLoc[6](loc4: u128)
+	36: LdConst[19](u128: 1048..)
+	37: Lt
+	38: BrFalse(40)
+B10:
+	39: Branch(42)
+B11:
+	40: LdConst[1](u64: 401)
+	41: Abort
+B12:
+	42: CopyLoc[0](Arg0: u128)
+	43: LdConst[10](u128: 1844..)
+	44: Gt
+	45: BrFalse(51)
+B13:
+	46: CopyLoc[6](loc4: u128)
+	47: LdU128(64)
+	48: Gt
+	49: StLoc[3](loc1: bool)
+	50: Branch(53)
+B14:
+	51: LdFalse
+	52: StLoc[3](loc1: bool)
+B15:
+	53: MoveLoc[3](loc1: bool)
+	54: BrFalse(67)
+B16:
+	55: CopyLoc[0](Arg0: u128)
+	56: Call get_integer(u128): u64
+	57: LdU64(2)
+	58: Ge
+	59: BrFalse(67)
+B17:
+	60: CopyLoc[6](loc4: u128)
+	61: LdU128(64)
+	62: Le
+	63: BrFalse(65)
+B18:
+	64: Branch(67)
+B19:
+	65: LdConst[3](u64: 403)
+	66: Abort
+B20:
+	67: CopyLoc[6](loc4: u128)
+	68: LdU128(1000)
+	69: Gt
+	70: BrFalse(77)
+B21:
+	71: MoveLoc[0](Arg0: u128)
+	72: MoveLoc[6](loc4: u128)
+	73: LdConst[10](u128: 1844..)
+	74: Call pow_iterative(u128, u128, u128): u128
+	75: StLoc[4](loc2: u128)
+	76: Branch(82)
+B22:
+	77: MoveLoc[0](Arg0: u128)
+	78: MoveLoc[6](loc4: u128)
+	79: LdConst[10](u128: 1844..)
+	80: Call pow_recursive(u128, u128, u128): u128
+	81: StLoc[4](loc2: u128)
+B23:
+	82: MoveLoc[4](loc2: u128)
+	83: StLoc[8](loc6: u128)
+	84: CopyLoc[8](loc6: u128)
+	85: LdU128(0)
+	86: Gt
+	87: BrFalse(89)
+B24:
+	88: Branch(91)
+B25:
+	89: LdConst[1](u64: 401)
+	90: Abort
+B26:
+	91: MoveLoc[7](loc5: bool)
+	92: BrFalse(99)
+B27:
+	93: LdConst[10](u128: 1844..)
+	94: LdConst[10](u128: 1844..)
+	95: MoveLoc[8](loc6: u128)
+	96: Call mul_div_round_down_u128(u128, u128, u128): u128
+	97: StLoc[5](loc3: u128)
+	98: Branch(101)
+B28:
+	99: MoveLoc[8](loc6: u128)
+	100: StLoc[5](loc3: u128)
+B29:
+	101: MoveLoc[5](loc3: u128)
+	102: Ret
+}
+
+pow_iterative(Arg0: u128, Arg1: u128, Arg2: u128): u128 {
+L3:	loc0: u128
+L4:	loc1: u128
+L5:	loc2: u128
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: LdU128(0)
+	2: Eq
+	3: BrFalse(6)
+B1:
+	4: MoveLoc[2](Arg2: u128)
+	5: Ret
+B2:
+	6: CopyLoc[1](Arg1: u128)
+	7: LdU128(1)
+	8: Eq
+	9: BrFalse(12)
+B3:
+	10: MoveLoc[0](Arg0: u128)
+	11: Ret
+B4:
+	12: CopyLoc[2](Arg2: u128)
+	13: StLoc[5](loc2: u128)
+	14: MoveLoc[0](Arg0: u128)
+	15: StLoc[3](loc0: u128)
+	16: MoveLoc[1](Arg1: u128)
+	17: StLoc[4](loc1: u128)
+B5:
+	18: CopyLoc[4](loc1: u128)
+	19: LdU128(0)
+	20: Gt
+	21: BrFalse(48)
+B6:
+	22: Branch(23)
+B7:
+	23: CopyLoc[4](loc1: u128)
+	24: LdU128(1)
+	25: BitAnd
+	26: LdU128(1)
+	27: Eq
+	28: BrFalse(34)
+B8:
+	29: MoveLoc[5](loc2: u128)
+	30: CopyLoc[3](loc0: u128)
+	31: CopyLoc[2](Arg2: u128)
+	32: Call mul_div_round_down_u128(u128, u128, u128): u128
+	33: StLoc[5](loc2: u128)
+B9:
+	34: MoveLoc[4](loc1: u128)
+	35: LdU8(1)
+	36: Shr
+	37: StLoc[4](loc1: u128)
+	38: CopyLoc[4](loc1: u128)
+	39: LdU128(0)
+	40: Gt
+	41: BrFalse(47)
+B10:
+	42: CopyLoc[3](loc0: u128)
+	43: MoveLoc[3](loc0: u128)
+	44: CopyLoc[2](Arg2: u128)
+	45: Call mul_div_round_down_u128(u128, u128, u128): u128
+	46: StLoc[3](loc0: u128)
+B11:
+	47: Branch(18)
+B12:
+	48: MoveLoc[5](loc2: u128)
+	49: Ret
+}
+
+pow_recursive(Arg0: u128, Arg1: u128, Arg2: u128): u128 {
+L3:	loc0: u128
+L4:	loc1: u128
+L5:	loc2: u128
+L6:	loc3: u128
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: LdU128(1000)
+	2: Gt
+	3: BrFalse(9)
+B1:
+	4: MoveLoc[0](Arg0: u128)
+	5: MoveLoc[1](Arg1: u128)
+	6: MoveLoc[2](Arg2: u128)
+	7: Call pow_iterative(u128, u128, u128): u128
+	8: Ret
+B2:
+	9: CopyLoc[1](Arg1: u128)
+	10: LdU128(0)
+	11: Eq
+	12: BrFalse(16)
+B3:
+	13: MoveLoc[2](Arg2: u128)
+	14: StLoc[5](loc2: u128)
+	15: Branch(56)
+B4:
+	16: CopyLoc[1](Arg1: u128)
+	17: LdU128(1)
+	18: Eq
+	19: BrFalse(23)
+B5:
+	20: MoveLoc[0](Arg0: u128)
+	21: StLoc[4](loc1: u128)
+	22: Branch(54)
+B6:
+	23: CopyLoc[1](Arg1: u128)
+	24: LdU128(1)
+	25: BitAnd
+	26: LdU128(0)
+	27: Eq
+	28: BrFalse(40)
+B7:
+	29: CopyLoc[0](Arg0: u128)
+	30: MoveLoc[0](Arg0: u128)
+	31: CopyLoc[2](Arg2: u128)
+	32: Call mul_div_round_down_u128(u128, u128, u128): u128
+	33: MoveLoc[1](Arg1: u128)
+	34: LdU8(1)
+	35: Shr
+	36: MoveLoc[2](Arg2: u128)
+	37: Call pow_recursive(u128, u128, u128): u128
+	38: StLoc[3](loc0: u128)
+	39: Branch(52)
+B8:
+	40: CopyLoc[0](Arg0: u128)
+	41: MoveLoc[1](Arg1: u128)
+	42: LdU128(1)
+	43: Sub
+	44: CopyLoc[2](Arg2: u128)
+	45: Call pow_recursive(u128, u128, u128): u128
+	46: StLoc[6](loc3: u128)
+	47: MoveLoc[0](Arg0: u128)
+	48: MoveLoc[6](loc3: u128)
+	49: MoveLoc[2](Arg2: u128)
+	50: Call mul_div_round_down_u128(u128, u128, u128): u128
+	51: StLoc[3](loc0: u128)
+B9:
+	52: MoveLoc[3](loc0: u128)
+	53: StLoc[4](loc1: u128)
+B10:
+	54: MoveLoc[4](loc1: u128)
+	55: StLoc[5](loc2: u128)
+B11:
+	56: MoveLoc[5](loc2: u128)
+	57: Ret
+}
+
+public mul(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: MoveLoc[0](Arg0: u128)
+	1: MoveLoc[1](Arg1: u128)
+	2: LdConst[10](u128: 1844..)
+	3: Call mul_div_round_down_u128(u128, u128, u128): u128
+	4: Ret
+}
+
+public div(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[1](Arg1: u128)
+	1: LdU128(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[2](u64: 402)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u128)
+	8: LdConst[10](u128: 1844..)
+	9: MoveLoc[1](Arg1: u128)
+	10: Call mul_div_round_down_u128(u128, u128, u128): u128
+	11: Ret
+}
+
+public add(Arg0: u128, Arg1: u128): u128 {
+L2:	loc0: u128
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: MoveLoc[1](Arg1: u128)
+	2: Add
+	3: StLoc[2](loc0: u128)
+	4: CopyLoc[2](loc0: u128)
+	5: MoveLoc[0](Arg0: u128)
+	6: Ge
+	7: BrFalse(9)
+B1:
+	8: Branch(11)
+B2:
+	9: LdConst[3](u64: 403)
+	10: Abort
+B3:
+	11: MoveLoc[2](loc0: u128)
+	12: Ret
+}
+
+public sub(Arg0: u128, Arg1: u128): u128 {
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: CopyLoc[1](Arg1: u128)
+	2: Ge
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[3](u64: 403)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u128)
+	8: MoveLoc[1](Arg1: u128)
+	9: Sub
+	10: Ret
+}
+
+public sqrt(Arg0: u128): u128 {
+L1:	loc0: u128
+L2:	loc1: u8
+L3:	loc2: u128
+L4:	loc3: u128
+L5:	loc4: u128
+L6:	loc5: u128
+L7:	loc6: u128
+L8:	loc7: u128
+L9:	loc8: u128
+L10:	loc9: u128
+L11:	loc10: u128
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdU128(0)
+	2: Eq
+	3: BrFalse(6)
+B1:
+	4: LdU128(0)
+	5: Ret
+B2:
+	6: CopyLoc[0](Arg0: u128)
+	7: Call bit_math::most_significant_bit(u128): u8
+	8: StLoc[2](loc1: u8)
+	9: LdU128(1)
+	10: MoveLoc[2](loc1: u8)
+	11: CastU128
+	12: LdU128(1)
+	13: Call shr(u128, u128): u128
+	14: Call shl(u128, u128): u128
+	15: StLoc[3](loc2: u128)
+	16: CopyLoc[3](loc2: u128)
+	17: CopyLoc[0](Arg0: u128)
+	18: MoveLoc[3](loc2: u128)
+	19: Call safe_math::div_u128(u128, u128): u128
+	20: Call add(u128, u128): u128
+	21: LdU128(1)
+	22: Call shr(u128, u128): u128
+	23: StLoc[4](loc3: u128)
+	24: CopyLoc[4](loc3: u128)
+	25: CopyLoc[0](Arg0: u128)
+	26: MoveLoc[4](loc3: u128)
+	27: Call safe_math::div_u128(u128, u128): u128
+	28: Call add(u128, u128): u128
+	29: LdU128(1)
+	30: Call shr(u128, u128): u128
+	31: StLoc[5](loc4: u128)
+	32: CopyLoc[5](loc4: u128)
+	33: CopyLoc[0](Arg0: u128)
+	34: MoveLoc[5](loc4: u128)
+	35: Call safe_math::div_u128(u128, u128): u128
+	36: Call add(u128, u128): u128
+	37: LdU128(1)
+	38: Call shr(u128, u128): u128
+	39: StLoc[6](loc5: u128)
+	40: CopyLoc[6](loc5: u128)
+	41: CopyLoc[0](Arg0: u128)
+	42: MoveLoc[6](loc5: u128)
+	43: Call safe_math::div_u128(u128, u128): u128
+	44: Call add(u128, u128): u128
+	45: LdU128(1)
+	46: Call shr(u128, u128): u128
+	47: StLoc[7](loc6: u128)
+	48: CopyLoc[7](loc6: u128)
+	49: CopyLoc[0](Arg0: u128)
+	50: MoveLoc[7](loc6: u128)
+	51: Call safe_math::div_u128(u128, u128): u128
+	52: Call add(u128, u128): u128
+	53: LdU128(1)
+	54: Call shr(u128, u128): u128
+	55: StLoc[8](loc7: u128)
+	56: CopyLoc[8](loc7: u128)
+	57: CopyLoc[0](Arg0: u128)
+	58: MoveLoc[8](loc7: u128)
+	59: Call safe_math::div_u128(u128, u128): u128
+	60: Call add(u128, u128): u128
+	61: LdU128(1)
+	62: Call shr(u128, u128): u128
+	63: StLoc[9](loc8: u128)
+	64: CopyLoc[9](loc8: u128)
+	65: CopyLoc[0](Arg0: u128)
+	66: MoveLoc[9](loc8: u128)
+	67: Call safe_math::div_u128(u128, u128): u128
+	68: Call add(u128, u128): u128
+	69: LdU128(1)
+	70: Call shr(u128, u128): u128
+	71: StLoc[10](loc9: u128)
+	72: MoveLoc[0](Arg0: u128)
+	73: CopyLoc[10](loc9: u128)
+	74: Call safe_math::div_u128(u128, u128): u128
+	75: StLoc[11](loc10: u128)
+	76: CopyLoc[10](loc9: u128)
+	77: CopyLoc[11](loc10: u128)
+	78: Lt
+	79: BrFalse(83)
+B3:
+	80: MoveLoc[10](loc9: u128)
+	81: StLoc[1](loc0: u128)
+	82: Branch(85)
+B4:
+	83: MoveLoc[11](loc10: u128)
+	84: StLoc[1](loc0: u128)
+B5:
+	85: MoveLoc[1](loc0: u128)
+	86: Ret
+}
+
+Constants [
+	0 => u64: 400
+	1 => u64: 401
+	2 => u64: 402
+	3 => u64: 403
+	4 => u64: 405
+	5 => u64: 406
+	6 => u8: 63
+	7 => u128: 9223372036854775808
+	8 => u128: 85070591730234615865843651857942052864
+	9 => u8: 64
+	10 => u128: 18446744073709551616
+	11 => u128: 340282366920938463463374607431768211455
+	12 => u128: 170141183460469231731687303715884105727
+	13 => u128: 4294967296
+	14 => u128: 65536
+	15 => u128: 256
+	16 => u128: 16
+	17 => u128: 4
+	18 => u128: 2
+	19 => u128: 1048576
+]
+}

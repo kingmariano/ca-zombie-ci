@@ -1,0 +1,245 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.fee_helper {
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::constants;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::q64x64;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::safe_math;
+
+public verify_protocol_share(Arg0: u16) {
+B0:
+	0: LdU64(0)
+	1: Abort
+}
+
+public validate_fee_parameters(Arg0: u32, Arg1: u16, Arg2: u16, Arg3: u16, Arg4: u32, Arg5: u16, Arg6: u32) {
+L7:	loc0: bool
+L8:	loc1: bool
+L9:	loc2: bool
+B0:
+	0: MoveLoc[0](Arg0: u32)
+	1: Call constants::max_base_factor(): u32
+	2: Le
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[2](u64: 503)
+	6: Abort
+B3:
+	7: MoveLoc[1](Arg1: u16)
+	8: CopyLoc[2](Arg2: u16)
+	9: Le
+	10: BrFalse(12)
+B4:
+	11: Branch(14)
+B5:
+	12: LdConst[7](u64: 509)
+	13: Abort
+B6:
+	14: CopyLoc[2](Arg2: u16)
+	15: Call constants::max_decay_period(): u16
+	16: Le
+	17: BrFalse(23)
+B7:
+	18: MoveLoc[2](Arg2: u16)
+	19: LdU16(0)
+	20: Neq
+	21: StLoc[7](loc0: bool)
+	22: Branch(25)
+B8:
+	23: LdFalse
+	24: StLoc[7](loc0: bool)
+B9:
+	25: MoveLoc[7](loc0: bool)
+	26: BrFalse(28)
+B10:
+	27: Branch(30)
+B11:
+	28: LdConst[3](u64: 505)
+	29: Abort
+B12:
+	30: CopyLoc[3](Arg3: u16)
+	31: CastU64
+	32: Call constants::basis_point_max(): u64
+	33: Le
+	34: BrFalse(40)
+B13:
+	35: MoveLoc[3](Arg3: u16)
+	36: LdU16(0)
+	37: Neq
+	38: StLoc[8](loc1: bool)
+	39: Branch(42)
+B14:
+	40: LdFalse
+	41: StLoc[8](loc1: bool)
+B15:
+	42: MoveLoc[8](loc1: bool)
+	43: BrFalse(45)
+B16:
+	44: Branch(47)
+B17:
+	45: LdConst[4](u64: 506)
+	46: Abort
+B18:
+	47: MoveLoc[4](Arg4: u32)
+	48: Call constants::max_variable_fee_control(): u32
+	49: Le
+	50: BrFalse(52)
+B19:
+	51: Branch(54)
+B20:
+	52: LdConst[5](u64: 507)
+	53: Abort
+B21:
+	54: MoveLoc[5](Arg5: u16)
+	55: Call constants::max_protocol_share(): u16
+	56: Le
+	57: BrFalse(59)
+B22:
+	58: Branch(61)
+B23:
+	59: LdConst[0](u64: 501)
+	60: Abort
+B24:
+	61: CopyLoc[6](Arg6: u32)
+	62: Call constants::max_volatility_accumulator(): u32
+	63: Le
+	64: BrFalse(70)
+B25:
+	65: MoveLoc[6](Arg6: u32)
+	66: LdU32(0)
+	67: Neq
+	68: StLoc[9](loc2: bool)
+	69: Branch(72)
+B26:
+	70: LdFalse
+	71: StLoc[9](loc2: bool)
+B27:
+	72: MoveLoc[9](loc2: bool)
+	73: BrFalse(75)
+B28:
+	74: Branch(77)
+B29:
+	75: LdConst[6](u64: 508)
+	76: Abort
+B30:
+	77: Ret
+}
+
+public get_fee_amount_inclusive(Arg0: u64, Arg1: u64): u64 {
+B0:
+	0: CopyLoc[1](Arg1: u64)
+	1: Call constants::precision(): u64
+	2: Lt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[1](u64: 502)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u64)
+	8: CastU128
+	9: MoveLoc[1](Arg1: u64)
+	10: CastU128
+	11: Call constants::precision(): u64
+	12: CastU128
+	13: Call q64x64::mul_div_round_up_u128(u128, u128, u128): u128
+	14: Call safe_math::u128_to_u64(u128): u64
+	15: Ret
+}
+
+public get_fee_amount_exclusive(Arg0: u64, Arg1: u64): u64 {
+L2:	loc0: u64
+B0:
+	0: CopyLoc[1](Arg1: u64)
+	1: Call constants::precision(): u64
+	2: Lt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[1](u64: 502)
+	6: Abort
+B3:
+	7: Call constants::precision(): u64
+	8: CopyLoc[1](Arg1: u64)
+	9: Call safe_math::sub_u64(u64, u64): u64
+	10: StLoc[2](loc0: u64)
+	11: MoveLoc[0](Arg0: u64)
+	12: CastU128
+	13: MoveLoc[1](Arg1: u64)
+	14: CastU128
+	15: MoveLoc[2](loc0: u64)
+	16: CastU128
+	17: Call q64x64::mul_div_round_up_u128(u128, u128, u128): u128
+	18: Call safe_math::u128_to_u64(u128): u64
+	19: Ret
+}
+
+public get_composition_fee(Arg0: u64, Arg1: u64): u64 {
+L2:	loc0: bool
+L3:	loc1: u64
+L4:	loc2: u64
+L5:	loc3: u128
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: LdU64(0)
+	2: Eq
+	3: BrFalse(7)
+B1:
+	4: LdTrue
+	5: StLoc[2](loc0: bool)
+	6: Branch(11)
+B2:
+	7: CopyLoc[1](Arg1: u64)
+	8: LdU64(0)
+	9: Eq
+	10: StLoc[2](loc0: bool)
+B3:
+	11: MoveLoc[2](loc0: bool)
+	12: BrFalse(15)
+B4:
+	13: LdU64(0)
+	14: Ret
+B5:
+	15: Call constants::precision(): u64
+	16: StLoc[4](loc2: u64)
+	17: Call constants::squared_precision(): u64
+	18: CastU128
+	19: StLoc[5](loc3: u128)
+	20: CopyLoc[1](Arg1: u64)
+	21: MoveLoc[4](loc2: u64)
+	22: Call safe_math::add_u64(u64, u64): u64
+	23: StLoc[3](loc1: u64)
+	24: MoveLoc[0](Arg0: u64)
+	25: CastU128
+	26: MoveLoc[1](Arg1: u64)
+	27: CastU128
+	28: MoveLoc[3](loc1: u64)
+	29: CastU128
+	30: Call safe_math::mul_u128(u128, u128): u128
+	31: MoveLoc[5](loc3: u128)
+	32: Call safe_math::mul_div_u128_to_u64(u128, u128, u128): u64
+	33: Ret
+}
+
+public get_protocol_fee_amount(Arg0: u64, Arg1: u64): u64 {
+B0:
+	0: MoveLoc[0](Arg0: u64)
+	1: MoveLoc[1](Arg1: u64)
+	2: Call constants::basis_point_max(): u64
+	3: Call safe_math::mul_div_u64(u64, u64, u64): u64
+	4: Ret
+}
+
+Constants [
+	0 => u64: 501
+	1 => u64: 502
+	2 => u64: 503
+	3 => u64: 505
+	4 => u64: 506
+	5 => u64: 507
+	6 => u64: 508
+	7 => u64: 509
+]
+}

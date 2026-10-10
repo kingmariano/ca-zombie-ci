@@ -1,0 +1,358 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.price_helper {
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::config;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::constants;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::q64x64;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::safe_math;
+
+public get_base(Arg0: u16): u128 {
+L1:	loc0: u64
+L2:	loc1: u128
+B0:
+	0: CopyLoc[0](Arg0: u16)
+	1: LdU16(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[2](u64: 602)
+	6: Abort
+B3:
+	7: Call q64x64::scale(): u128
+	8: StLoc[2](loc1: u128)
+	9: Call constants::basis_point_max(): u64
+	10: StLoc[1](loc0: u64)
+	11: CopyLoc[2](loc1: u128)
+	12: MoveLoc[0](Arg0: u16)
+	13: CastU128
+	14: MoveLoc[2](loc1: u128)
+	15: MoveLoc[1](loc0: u64)
+	16: CastU128
+	17: Call q64x64::mul_div_round_down_u128(u128, u128, u128): u128
+	18: Call safe_math::add_u128(u128, u128): u128
+	19: Ret
+}
+
+public validate_bin_id(Arg0: u32) {
+L1:	loc0: bool
+B0:
+	0: CopyLoc[0](Arg0: u32)
+	1: LdConst[4](u32: 7340..)
+	2: Ge
+	3: BrFalse(9)
+B1:
+	4: MoveLoc[0](Arg0: u32)
+	5: LdConst[5](u32: 9437..)
+	6: Le
+	7: StLoc[1](loc0: bool)
+	8: Branch(11)
+B2:
+	9: LdFalse
+	10: StLoc[1](loc0: bool)
+B3:
+	11: MoveLoc[1](loc0: bool)
+	12: BrFalse(14)
+B4:
+	13: Branch(16)
+B5:
+	14: LdConst[1](u64: 601)
+	15: Abort
+B6:
+	16: Ret
+}
+
+public get_exponent(Arg0: u32): u128 {
+L1:	loc0: bool
+L2:	loc1: u128
+L3:	loc2: u128
+L4:	loc3: u128
+L5:	loc4: u128
+B0:
+	0: CopyLoc[0](Arg0: u32)
+	1: LdConst[4](u32: 7340..)
+	2: Ge
+	3: BrFalse(9)
+B1:
+	4: CopyLoc[0](Arg0: u32)
+	5: LdConst[5](u32: 9437..)
+	6: Le
+	7: StLoc[1](loc0: bool)
+	8: Branch(11)
+B2:
+	9: LdFalse
+	10: StLoc[1](loc0: bool)
+B3:
+	11: MoveLoc[1](loc0: bool)
+	12: BrFalse(14)
+B4:
+	13: Branch(16)
+B5:
+	14: LdConst[1](u64: 601)
+	15: Abort
+B6:
+	16: MoveLoc[0](Arg0: u32)
+	17: CastU128
+	18: StLoc[4](loc3: u128)
+	19: LdConst[3](u32: 8388..)
+	20: CastU128
+	21: StLoc[5](loc4: u128)
+	22: CopyLoc[4](loc3: u128)
+	23: CopyLoc[5](loc4: u128)
+	24: Ge
+	25: BrFalse(31)
+B7:
+	26: MoveLoc[4](loc3: u128)
+	27: MoveLoc[5](loc4: u128)
+	28: Sub
+	29: StLoc[2](loc1: u128)
+	30: Branch(41)
+B8:
+	31: MoveLoc[5](loc4: u128)
+	32: MoveLoc[4](loc3: u128)
+	33: Sub
+	34: StLoc[3](loc2: u128)
+	35: LdConst[7](u128: 3402..)
+	36: MoveLoc[3](loc2: u128)
+	37: Sub
+	38: LdU128(1)
+	39: Add
+	40: StLoc[2](loc1: u128)
+B9:
+	41: MoveLoc[2](loc1: u128)
+	42: Ret
+}
+
+public get_price_from_id(Arg0: u32, Arg1: u16): u128 {
+L2:	loc0: u128
+L3:	loc1: u128
+B0:
+	0: MoveLoc[1](Arg1: u16)
+	1: Call get_base(u16): u128
+	2: StLoc[2](loc0: u128)
+	3: MoveLoc[0](Arg0: u32)
+	4: Call get_exponent(u32): u128
+	5: StLoc[3](loc1: u128)
+	6: MoveLoc[2](loc0: u128)
+	7: MoveLoc[3](loc1: u128)
+	8: Call q64x64::pow(u128, u128): u128
+	9: Ret
+}
+
+public get_id_from_price(Arg0: u128, Arg1: u16): u32 {
+L2:	loc0: u128
+L3:	loc1: u128
+L4:	loc2: u32
+L5:	loc3: bool
+L6:	loc4: u128
+L7:	loc5: u128
+L8:	loc6: u128
+L9:	loc7: u128
+L10:	loc8: u32
+L11:	loc9: u128
+L12:	loc10: u128
+L13:	loc11: bool
+L14:	loc12: u128
+L15:	loc13: bool
+L16:	loc14: u128
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdU128(0)
+	2: Gt
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 600)
+	6: Abort
+B3:
+	7: CopyLoc[1](Arg1: u16)
+	8: Call config::validate_bin_step(u16)
+	9: MoveLoc[1](Arg1: u16)
+	10: Call get_base(u16): u128
+	11: StLoc[9](loc7: u128)
+	12: Call q64x64::scale(): u128
+	13: LdU8(40)
+	14: Shr
+	15: StLoc[16](loc14: u128)
+	16: CopyLoc[0](Arg0: u128)
+	17: MoveLoc[16](loc14: u128)
+	18: Lt
+	19: BrFalse(22)
+B4:
+	20: LdConst[4](u32: 7340..)
+	21: Ret
+B5:
+	22: MoveLoc[9](loc7: u128)
+	23: Call q64x64::log2(u128): u128
+	24: StLoc[12](loc10: u128)
+	25: MoveLoc[0](Arg0: u128)
+	26: Call q64x64::log2(u128): u128
+	27: StLoc[14](loc12: u128)
+	28: CopyLoc[14](loc12: u128)
+	29: LdConst[6](u128: 1701..)
+	30: Gt
+	31: StLoc[15](loc13: bool)
+	32: CopyLoc[12](loc10: u128)
+	33: LdConst[6](u128: 1701..)
+	34: Gt
+	35: StLoc[13](loc11: bool)
+	36: CopyLoc[15](loc13: bool)
+	37: BrFalse(45)
+B6:
+	38: LdConst[7](u128: 3402..)
+	39: MoveLoc[14](loc12: u128)
+	40: Sub
+	41: LdU128(1)
+	42: Add
+	43: StLoc[2](loc0: u128)
+	44: Branch(47)
+B7:
+	45: MoveLoc[14](loc12: u128)
+	46: StLoc[2](loc0: u128)
+B8:
+	47: MoveLoc[2](loc0: u128)
+	48: StLoc[8](loc6: u128)
+	49: CopyLoc[13](loc11: bool)
+	50: BrFalse(58)
+B9:
+	51: LdConst[7](u128: 3402..)
+	52: MoveLoc[12](loc10: u128)
+	53: Sub
+	54: LdU128(1)
+	55: Add
+	56: StLoc[3](loc1: u128)
+	57: Branch(60)
+B10:
+	58: MoveLoc[12](loc10: u128)
+	59: StLoc[3](loc1: u128)
+B11:
+	60: MoveLoc[3](loc1: u128)
+	61: StLoc[7](loc5: u128)
+	62: MoveLoc[8](loc6: u128)
+	63: MoveLoc[7](loc5: u128)
+	64: Call q64x64::div(u128, u128): u128
+	65: Call q64x64::scale_offset(): u8
+	66: Shr
+	67: StLoc[6](loc4: u128)
+	68: MoveLoc[15](loc13: bool)
+	69: MoveLoc[13](loc11: bool)
+	70: Neq
+	71: Not
+	72: BrFalse(90)
+B12:
+	73: LdConst[3](u32: 8388..)
+	74: CastU128
+	75: MoveLoc[6](loc4: u128)
+	76: Add
+	77: StLoc[11](loc9: u128)
+	78: CopyLoc[11](loc9: u128)
+	79: LdConst[5](u32: 9437..)
+	80: CastU128
+	81: Le
+	82: BrFalse(84)
+B13:
+	83: Branch(86)
+B14:
+	84: LdConst[1](u64: 601)
+	85: Abort
+B15:
+	86: MoveLoc[11](loc9: u128)
+	87: Call safe_math::u128_to_u32(u128): u32
+	88: StLoc[4](loc2: u32)
+	89: Branch(107)
+B16:
+	90: CopyLoc[6](loc4: u128)
+	91: LdConst[3](u32: 8388..)
+	92: CastU128
+	93: LdConst[4](u32: 7340..)
+	94: CastU128
+	95: Sub
+	96: Le
+	97: BrFalse(99)
+B17:
+	98: Branch(101)
+B18:
+	99: LdConst[1](u64: 601)
+	100: Abort
+B19:
+	101: LdConst[3](u32: 8388..)
+	102: CastU128
+	103: MoveLoc[6](loc4: u128)
+	104: Sub
+	105: Call safe_math::u128_to_u32(u128): u32
+	106: StLoc[4](loc2: u32)
+B20:
+	107: MoveLoc[4](loc2: u32)
+	108: StLoc[10](loc8: u32)
+	109: CopyLoc[10](loc8: u32)
+	110: LdConst[4](u32: 7340..)
+	111: Ge
+	112: BrFalse(118)
+B21:
+	113: CopyLoc[10](loc8: u32)
+	114: LdConst[5](u32: 9437..)
+	115: Le
+	116: StLoc[5](loc3: bool)
+	117: Branch(120)
+B22:
+	118: LdFalse
+	119: StLoc[5](loc3: bool)
+B23:
+	120: MoveLoc[5](loc3: bool)
+	121: BrFalse(123)
+B24:
+	122: Branch(125)
+B25:
+	123: LdConst[1](u64: 601)
+	124: Abort
+B26:
+	125: MoveLoc[10](loc8: u32)
+	126: Ret
+}
+
+public is_valid_id(Arg0: u32): bool {
+L1:	loc0: bool
+B0:
+	0: CopyLoc[0](Arg0: u32)
+	1: LdConst[4](u32: 7340..)
+	2: Ge
+	3: BrFalse(9)
+B1:
+	4: MoveLoc[0](Arg0: u32)
+	5: LdConst[5](u32: 9437..)
+	6: Le
+	7: StLoc[1](loc0: bool)
+	8: Branch(11)
+B2:
+	9: LdFalse
+	10: StLoc[1](loc0: bool)
+B3:
+	11: MoveLoc[1](loc0: bool)
+	12: Ret
+}
+
+public get_valid_id_range(): u32 * u32 {
+B0:
+	0: LdConst[4](u32: 7340..)
+	1: LdConst[5](u32: 9437..)
+	2: Ret
+}
+
+public get_id_for_price_one(): u32 {
+B0:
+	0: LdConst[3](u32: 8388..)
+	1: Ret
+}
+
+Constants [
+	0 => u64: 600
+	1 => u64: 601
+	2 => u64: 602
+	3 => u32: 8388608
+	4 => u32: 7340033
+	5 => u32: 9437183
+	6 => u128: 170141183460469231731687303715884105727
+	7 => u128: 340282366920938463463374607431768211455
+]
+}

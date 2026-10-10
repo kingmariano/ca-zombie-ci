@@ -1,0 +1,1735 @@
+// Move bytecode v6
+module 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac.lb_position {
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::constants;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::q64x64;
+use 5a5c1d10e4782dbbdec3eb8327ede04bd078b294b97cfdba447b11b846b383ac::safe_math;
+use 0000000000000000000000000000000000000000000000000000000000000001::string;
+use 0000000000000000000000000000000000000000000000000000000000000001::type_name;
+use 0000000000000000000000000000000000000000000000000000000000000001::vector;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::display;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::package;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct LBBinPosition has copy, drop, store {
+	bin_id: u32,
+	amount: u128,
+	fee_growth_inside_last_x: u128,
+	fee_growth_inside_last_y: u128,
+	reward_growth_inside_last: vector<u128>
+}
+
+struct PackedBins has drop, store {
+	active_bins_bitmap: u8,
+	bin_data: vector<LBBinPosition>
+}
+
+struct LBPositionManager has store {
+	positions: Table<ID, LBPositionInfo>
+}
+
+struct LBPositionInfo has store {
+	position_id: ID,
+	pair_id: ID,
+	bins: Table<u32, PackedBins>,
+	toggle: u16
+}
+
+struct LBPosition has store, key {
+	id: UID,
+	pair_id: ID,
+	my_id: ID,
+	saved_fees_x: u128,
+	saved_fees_y: u128,
+	saved_rewards: vector<u128>,
+	coin_type_a: TypeName,
+	coin_type_b: TypeName,
+	lock_until: u64,
+	total_bins: u64
+}
+
+struct LB_POSITION has drop {
+	dummy_field: bool
+}
+
+init(Arg0: LB_POSITION, Arg1: &mut TxContext) {
+L2:	loc0: Display<LBPosition>
+L3:	loc1: vector<String>
+L4:	loc2: &mut vector<String>
+L5:	loc3: Publisher
+L6:	loc4: vector<String>
+L7:	loc5: &mut vector<String>
+B0:
+	0: VecPack(50, 0)
+	1: StLoc[3](loc1: vector<String>)
+	2: MutBorrowLoc[3](loc1: vector<String>)
+	3: StLoc[4](loc2: &mut vector<String>)
+	4: CopyLoc[4](loc2: &mut vector<String>)
+	5: LdConst[7](vector<u8>: "nam..)
+	6: Call string::utf8(vector<u8>): String
+	7: VecPushBack(50)
+	8: CopyLoc[4](loc2: &mut vector<String>)
+	9: LdConst[8](vector<u8>: "coi..)
+	10: Call string::utf8(vector<u8>): String
+	11: VecPushBack(50)
+	12: CopyLoc[4](loc2: &mut vector<String>)
+	13: LdConst[9](vector<u8>: "coi..)
+	14: Call string::utf8(vector<u8>): String
+	15: VecPushBack(50)
+	16: CopyLoc[4](loc2: &mut vector<String>)
+	17: LdConst[10](vector<u8>: "lin..)
+	18: Call string::utf8(vector<u8>): String
+	19: VecPushBack(50)
+	20: CopyLoc[4](loc2: &mut vector<String>)
+	21: LdConst[11](vector<u8>: "ima..)
+	22: Call string::utf8(vector<u8>): String
+	23: VecPushBack(50)
+	24: CopyLoc[4](loc2: &mut vector<String>)
+	25: LdConst[12](vector<u8>: "des..)
+	26: Call string::utf8(vector<u8>): String
+	27: VecPushBack(50)
+	28: CopyLoc[4](loc2: &mut vector<String>)
+	29: LdConst[13](vector<u8>: "pro..)
+	30: Call string::utf8(vector<u8>): String
+	31: VecPushBack(50)
+	32: MoveLoc[4](loc2: &mut vector<String>)
+	33: LdConst[14](vector<u8>: "cre..)
+	34: Call string::utf8(vector<u8>): String
+	35: VecPushBack(50)
+	36: VecPack(50, 0)
+	37: StLoc[6](loc4: vector<String>)
+	38: MutBorrowLoc[6](loc4: vector<String>)
+	39: StLoc[7](loc5: &mut vector<String>)
+	40: CopyLoc[7](loc5: &mut vector<String>)
+	41: LdConst[15](vector<u8>: "Fer..)
+	42: Call string::utf8(vector<u8>): String
+	43: VecPushBack(50)
+	44: CopyLoc[7](loc5: &mut vector<String>)
+	45: LdConst[16](vector<u8>: "{co..)
+	46: Call string::utf8(vector<u8>): String
+	47: VecPushBack(50)
+	48: CopyLoc[7](loc5: &mut vector<String>)
+	49: LdConst[17](vector<u8>: "{co..)
+	50: Call string::utf8(vector<u8>): String
+	51: VecPushBack(50)
+	52: CopyLoc[7](loc5: &mut vector<String>)
+	53: LdConst[18](vector<u8>: "htt..)
+	54: Call string::utf8(vector<u8>): String
+	55: VecPushBack(50)
+	56: CopyLoc[7](loc5: &mut vector<String>)
+	57: LdConst[19](vector<u8>: "htt..)
+	58: Call string::utf8(vector<u8>): String
+	59: VecPushBack(50)
+	60: CopyLoc[7](loc5: &mut vector<String>)
+	61: LdConst[20](vector<u8>: "Pro..)
+	62: Call string::utf8(vector<u8>): String
+	63: VecPushBack(50)
+	64: CopyLoc[7](loc5: &mut vector<String>)
+	65: LdConst[21](vector<u8>: "htt..)
+	66: Call string::utf8(vector<u8>): String
+	67: VecPushBack(50)
+	68: MoveLoc[7](loc5: &mut vector<String>)
+	69: LdConst[22](vector<u8>: "Fer..)
+	70: Call string::utf8(vector<u8>): String
+	71: VecPushBack(50)
+	72: MoveLoc[0](Arg0: LB_POSITION)
+	73: CopyLoc[1](Arg1: &mut TxContext)
+	74: Call package::claim<LB_POSITION>(LB_POSITION, &mut TxContext): Publisher
+	75: StLoc[5](loc3: Publisher)
+	76: ImmBorrowLoc[5](loc3: Publisher)
+	77: MoveLoc[3](loc1: vector<String>)
+	78: MoveLoc[6](loc4: vector<String>)
+	79: CopyLoc[1](Arg1: &mut TxContext)
+	80: Call display::new_with_fields<LBPosition>(&Publisher, vector<String>, vector<String>, &mut TxContext): Display<LBPosition>
+	81: StLoc[2](loc0: Display<LBPosition>)
+	82: MutBorrowLoc[2](loc0: Display<LBPosition>)
+	83: Call display::update_version<LBPosition>(&mut Display<LBPosition>)
+	84: MoveLoc[5](loc3: Publisher)
+	85: CopyLoc[1](Arg1: &mut TxContext)
+	86: FreezeRef
+	87: Call tx_context::sender(&TxContext): address
+	88: Call transfer::public_transfer<Publisher>(Publisher, address)
+	89: MoveLoc[2](loc0: Display<LBPosition>)
+	90: MoveLoc[1](Arg1: &mut TxContext)
+	91: FreezeRef
+	92: Call tx_context::sender(&TxContext): address
+	93: Call transfer::public_transfer<Display<LBPosition>>(Display<LBPosition>, address)
+	94: Ret
+}
+
+public(friend) create_empty_pack(): PackedBins {
+B0:
+	0: LdU8(0)
+	1: VecPack(31, 0)
+	2: Pack[1](PackedBins)
+	3: Ret
+}
+
+public(friend) get_active_bins_bitmap(Arg0: &PackedBins): u8 {
+B0:
+	0: MoveLoc[0](Arg0: &PackedBins)
+	1: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	2: ReadRef
+	3: Ret
+}
+
+public(friend) borrow_position_bin_mut_from_pack(Arg0: &mut PackedBins, Arg1: u64): &mut LBBinPosition {
+B0:
+	0: MoveLoc[0](Arg0: &mut PackedBins)
+	1: MutBorrowField[1](PackedBins.bin_data: vector<LBBinPosition>)
+	2: MoveLoc[1](Arg1: u64)
+	3: VecMutBorrow(31)
+	4: Ret
+}
+
+public borrow_position_bin_from_pack(Arg0: &PackedBins, Arg1: u64): &LBBinPosition {
+B0:
+	0: MoveLoc[0](Arg0: &PackedBins)
+	1: ImmBorrowField[1](PackedBins.bin_data: vector<LBBinPosition>)
+	2: MoveLoc[1](Arg1: u64)
+	3: VecImmBorrow(31)
+	4: Ret
+}
+
+public(friend) borrow_position_bins_mut(Arg0: &mut LBPositionInfo): &mut Table<u32, PackedBins> {
+B0:
+	0: MoveLoc[0](Arg0: &mut LBPositionInfo)
+	1: MutBorrowField[2](LBPositionInfo.bins: Table<u32, PackedBins>)
+	2: Ret
+}
+
+public borrow_position_bins(Arg0: &LBPositionInfo): &Table<u32, PackedBins> {
+B0:
+	0: MoveLoc[0](Arg0: &LBPositionInfo)
+	1: ImmBorrowField[2](LBPositionInfo.bins: Table<u32, PackedBins>)
+	2: Ret
+}
+
+public(friend) resolve_bin_group_index(Arg0: u32): u32 * u8 {
+L1:	loc0: u32
+L2:	loc1: u8
+B0:
+	0: CopyLoc[0](Arg0: u32)
+	1: LdConst[6](u8: 3)
+	2: Shr
+	3: StLoc[1](loc0: u32)
+	4: MoveLoc[0](Arg0: u32)
+	5: LdConst[5](u32: 7)
+	6: BitAnd
+	7: CastU8
+	8: StLoc[2](loc1: u8)
+	9: MoveLoc[1](loc0: u32)
+	10: MoveLoc[2](loc1: u8)
+	11: Ret
+}
+
+public(friend) count_active_bins(Arg0: u8): u8 {
+L1:	loc0: u8
+L2:	loc1: u8
+L3:	loc2: u8
+B0:
+	0: MoveLoc[0](Arg0: u8)
+	1: StLoc[3](loc2: u8)
+	2: CopyLoc[3](loc2: u8)
+	3: MoveLoc[3](loc2: u8)
+	4: LdU8(1)
+	5: Shr
+	6: LdU8(85)
+	7: BitAnd
+	8: Sub
+	9: StLoc[3](loc2: u8)
+	10: CopyLoc[3](loc2: u8)
+	11: LdU8(51)
+	12: BitAnd
+	13: StLoc[2](loc1: u8)
+	14: MoveLoc[3](loc2: u8)
+	15: LdU8(2)
+	16: Shr
+	17: LdU8(51)
+	18: BitAnd
+	19: StLoc[1](loc0: u8)
+	20: MoveLoc[2](loc1: u8)
+	21: MoveLoc[1](loc0: u8)
+	22: Add
+	23: StLoc[3](loc2: u8)
+	24: CopyLoc[3](loc2: u8)
+	25: LdU8(15)
+	26: BitAnd
+	27: MoveLoc[3](loc2: u8)
+	28: LdU8(4)
+	29: Shr
+	30: Add
+	31: Ret
+}
+
+public(friend) count_active_bins_before_position(Arg0: u8, Arg1: u8): u8 {
+L2:	loc0: u8
+B0:
+	0: CopyLoc[1](Arg1: u8)
+	1: LdU8(0)
+	2: Eq
+	3: BrFalse(6)
+B1:
+	4: LdU8(0)
+	5: Ret
+B2:
+	6: LdU8(1)
+	7: MoveLoc[1](Arg1: u8)
+	8: Shl
+	9: LdU8(1)
+	10: Sub
+	11: StLoc[2](loc0: u8)
+	12: MoveLoc[0](Arg0: u8)
+	13: MoveLoc[2](loc0: u8)
+	14: BitAnd
+	15: Call count_active_bins(u8): u8
+	16: Ret
+}
+
+public(friend) is_bin_active_in_bitmap(Arg0: u8, Arg1: u8): bool {
+B0:
+	0: MoveLoc[0](Arg0: u8)
+	1: MoveLoc[1](Arg1: u8)
+	2: Shr
+	3: LdU8(1)
+	4: BitAnd
+	5: LdU8(1)
+	6: Eq
+	7: Ret
+}
+
+set_bit_in_bitmap(Arg0: u8, Arg1: u8): u8 {
+B0:
+	0: MoveLoc[0](Arg0: u8)
+	1: LdU8(1)
+	2: MoveLoc[1](Arg1: u8)
+	3: Shl
+	4: BitOr
+	5: Ret
+}
+
+clear_bit_in_bitmap(Arg0: u8, Arg1: u8): u8 {
+B0:
+	0: MoveLoc[0](Arg0: u8)
+	1: LdU8(255)
+	2: LdU8(1)
+	3: MoveLoc[1](Arg1: u8)
+	4: Shl
+	5: Sub
+	6: BitAnd
+	7: Ret
+}
+
+public(friend) borrow_bin_mut(Arg0: &mut LBPositionManager, Arg1: &LBPosition, Arg2: u32): &mut LBBinPosition {
+L3:	loc0: &mut PackedBins
+L4:	loc1: u32
+L5:	loc2: &mut LBPositionInfo
+L6:	loc3: u8
+L7:	loc4: u8
+B0:
+	0: MoveLoc[0](Arg0: &mut LBPositionManager)
+	1: MutBorrowField[3](LBPositionManager.positions: Table<ID, LBPositionInfo>)
+	2: MoveLoc[1](Arg1: &LBPosition)
+	3: ImmBorrowField[4](LBPosition.my_id: ID)
+	4: ReadRef
+	5: Call table::borrow_mut<ID, LBPositionInfo>(&mut Table<ID, LBPositionInfo>, ID): &mut LBPositionInfo
+	6: StLoc[5](loc2: &mut LBPositionInfo)
+	7: MoveLoc[2](Arg2: u32)
+	8: Call resolve_bin_group_index(u32): u32 * u8
+	9: StLoc[6](loc3: u8)
+	10: StLoc[4](loc1: u32)
+	11: MoveLoc[5](loc2: &mut LBPositionInfo)
+	12: MutBorrowField[2](LBPositionInfo.bins: Table<u32, PackedBins>)
+	13: MoveLoc[4](loc1: u32)
+	14: Call table::borrow_mut<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): &mut PackedBins
+	15: StLoc[3](loc0: &mut PackedBins)
+	16: CopyLoc[3](loc0: &mut PackedBins)
+	17: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	18: ReadRef
+	19: CopyLoc[6](loc3: u8)
+	20: Call is_bin_active_in_bitmap(u8, u8): bool
+	21: BrFalse(23)
+B1:
+	22: Branch(27)
+B2:
+	23: MoveLoc[3](loc0: &mut PackedBins)
+	24: Pop
+	25: LdConst[0](u64: 201)
+	26: Abort
+B3:
+	27: CopyLoc[3](loc0: &mut PackedBins)
+	28: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	29: ReadRef
+	30: MoveLoc[6](loc3: u8)
+	31: Call count_active_bins_before_position(u8, u8): u8
+	32: StLoc[7](loc4: u8)
+	33: MoveLoc[3](loc0: &mut PackedBins)
+	34: MutBorrowField[1](PackedBins.bin_data: vector<LBBinPosition>)
+	35: MoveLoc[7](loc4: u8)
+	36: CastU64
+	37: VecMutBorrow(31)
+	38: Ret
+}
+
+public(friend) borrow_bin(Arg0: &LBPositionManager, Arg1: &LBPosition, Arg2: u32): &LBBinPosition {
+L3:	loc0: &PackedBins
+L4:	loc1: u32
+L5:	loc2: &LBPositionInfo
+L6:	loc3: u8
+L7:	loc4: u8
+B0:
+	0: MoveLoc[0](Arg0: &LBPositionManager)
+	1: ImmBorrowField[3](LBPositionManager.positions: Table<ID, LBPositionInfo>)
+	2: MoveLoc[1](Arg1: &LBPosition)
+	3: ImmBorrowField[4](LBPosition.my_id: ID)
+	4: ReadRef
+	5: Call table::borrow<ID, LBPositionInfo>(&Table<ID, LBPositionInfo>, ID): &LBPositionInfo
+	6: StLoc[5](loc2: &LBPositionInfo)
+	7: MoveLoc[2](Arg2: u32)
+	8: Call resolve_bin_group_index(u32): u32 * u8
+	9: StLoc[6](loc3: u8)
+	10: StLoc[4](loc1: u32)
+	11: MoveLoc[5](loc2: &LBPositionInfo)
+	12: ImmBorrowField[2](LBPositionInfo.bins: Table<u32, PackedBins>)
+	13: MoveLoc[4](loc1: u32)
+	14: Call table::borrow<u32, PackedBins>(&Table<u32, PackedBins>, u32): &PackedBins
+	15: StLoc[3](loc0: &PackedBins)
+	16: CopyLoc[3](loc0: &PackedBins)
+	17: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	18: ReadRef
+	19: CopyLoc[6](loc3: u8)
+	20: Call is_bin_active_in_bitmap(u8, u8): bool
+	21: BrFalse(23)
+B1:
+	22: Branch(27)
+B2:
+	23: MoveLoc[3](loc0: &PackedBins)
+	24: Pop
+	25: LdConst[0](u64: 201)
+	26: Abort
+B3:
+	27: CopyLoc[3](loc0: &PackedBins)
+	28: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	29: ReadRef
+	30: MoveLoc[6](loc3: u8)
+	31: Call count_active_bins_before_position(u8, u8): u8
+	32: StLoc[7](loc4: u8)
+	33: MoveLoc[3](loc0: &PackedBins)
+	34: ImmBorrowField[1](PackedBins.bin_data: vector<LBBinPosition>)
+	35: MoveLoc[7](loc4: u8)
+	36: CastU64
+	37: VecImmBorrow(31)
+	38: Ret
+}
+
+public(friend) new(Arg0: &mut TxContext): LBPositionManager {
+B0:
+	0: MoveLoc[0](Arg0: &mut TxContext)
+	1: Call table::new<ID, LBPositionInfo>(&mut TxContext): Table<ID, LBPositionInfo>
+	2: Pack[2](LBPositionManager)
+	3: Ret
+}
+
+public pair_id(Arg0: &LBPosition): ID {
+B0:
+	0: MoveLoc[0](Arg0: &LBPosition)
+	1: ImmBorrowField[5](LBPosition.pair_id: ID)
+	2: ReadRef
+	3: Ret
+}
+
+public(friend) open_position<Ty0, Ty1>(Arg0: &mut LBPositionManager, Arg1: ID, Arg2: &mut TxContext): LBPosition {
+L3:	loc0: UID
+L4:	loc1: ID
+L5:	loc2: ID
+L6:	loc3: Table<u32, PackedBins>
+L7:	loc4: ID
+L8:	loc5: ID
+L9:	loc6: TypeName
+L10:	loc7: TypeName
+L11:	loc8: vector<u128>
+L12:	loc9: ID
+L13:	loc10: LBPosition
+L14:	loc11: UID
+L15:	loc12: ID
+L16:	loc13: LBPositionInfo
+B0:
+	0: CopyLoc[2](Arg2: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: StLoc[14](loc11: UID)
+	3: ImmBorrowLoc[14](loc11: UID)
+	4: Call object::uid_to_inner(&UID): ID
+	5: StLoc[12](loc9: ID)
+	6: MoveLoc[14](loc11: UID)
+	7: StLoc[3](loc0: UID)
+	8: CopyLoc[1](Arg1: ID)
+	9: StLoc[7](loc4: ID)
+	10: MoveLoc[12](loc9: ID)
+	11: StLoc[8](loc5: ID)
+	12: Call type_name::get<Ty0>(): TypeName
+	13: StLoc[9](loc6: TypeName)
+	14: Call type_name::get<Ty1>(): TypeName
+	15: StLoc[10](loc7: TypeName)
+	16: VecPack(39, 0)
+	17: StLoc[11](loc8: vector<u128>)
+	18: MoveLoc[3](loc0: UID)
+	19: MoveLoc[7](loc4: ID)
+	20: MoveLoc[8](loc5: ID)
+	21: LdU128(0)
+	22: LdU128(0)
+	23: MoveLoc[11](loc8: vector<u128>)
+	24: MoveLoc[9](loc6: TypeName)
+	25: MoveLoc[10](loc7: TypeName)
+	26: LdU64(0)
+	27: LdU64(0)
+	28: Pack[4](LBPosition)
+	29: StLoc[13](loc10: LBPosition)
+	30: ImmBorrowLoc[13](loc10: LBPosition)
+	31: Call object::id<LBPosition>(&LBPosition): ID
+	32: StLoc[15](loc12: ID)
+	33: MoveLoc[1](Arg1: ID)
+	34: StLoc[4](loc1: ID)
+	35: CopyLoc[15](loc12: ID)
+	36: StLoc[5](loc2: ID)
+	37: MoveLoc[2](Arg2: &mut TxContext)
+	38: Call table::new<u32, PackedBins>(&mut TxContext): Table<u32, PackedBins>
+	39: StLoc[6](loc3: Table<u32, PackedBins>)
+	40: MoveLoc[5](loc2: ID)
+	41: MoveLoc[4](loc1: ID)
+	42: MoveLoc[6](loc3: Table<u32, PackedBins>)
+	43: LdU16(0)
+	44: Pack[3](LBPositionInfo)
+	45: StLoc[16](loc13: LBPositionInfo)
+	46: MoveLoc[0](Arg0: &mut LBPositionManager)
+	47: MutBorrowField[3](LBPositionManager.positions: Table<ID, LBPositionInfo>)
+	48: MoveLoc[15](loc12: ID)
+	49: MoveLoc[16](loc13: LBPositionInfo)
+	50: Call table::add<ID, LBPositionInfo>(&mut Table<ID, LBPositionInfo>, ID, LBPositionInfo)
+	51: MoveLoc[13](loc10: LBPosition)
+	52: Ret
+}
+
+public(friend) increase_bin_liquidity(Arg0: &mut LBBinPosition, Arg1: u128) {
+B0:
+	0: CopyLoc[0](Arg0: &mut LBBinPosition)
+	1: ImmBorrowField[6](LBBinPosition.amount: u128)
+	2: ReadRef
+	3: MoveLoc[1](Arg1: u128)
+	4: Call safe_math::add_u128(u128, u128): u128
+	5: MoveLoc[0](Arg0: &mut LBBinPosition)
+	6: MutBorrowField[6](LBBinPosition.amount: u128)
+	7: WriteRef
+	8: Ret
+}
+
+public(friend) decrease_bin_liquidity(Arg0: &mut LBBinPosition, Arg1: u128) {
+B0:
+	0: CopyLoc[0](Arg0: &mut LBBinPosition)
+	1: ImmBorrowField[6](LBBinPosition.amount: u128)
+	2: ReadRef
+	3: CopyLoc[1](Arg1: u128)
+	4: Ge
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[0](Arg0: &mut LBBinPosition)
+	8: Pop
+	9: LdConst[4](u64: 206)
+	10: Abort
+B3:
+	11: CopyLoc[0](Arg0: &mut LBBinPosition)
+	12: ImmBorrowField[6](LBBinPosition.amount: u128)
+	13: ReadRef
+	14: MoveLoc[1](Arg1: u128)
+	15: Call safe_math::sub_u128(u128, u128): u128
+	16: MoveLoc[0](Arg0: &mut LBBinPosition)
+	17: MutBorrowField[6](LBBinPosition.amount: u128)
+	18: WriteRef
+	19: Ret
+}
+
+public(friend) settle_position_fees(Arg0: &mut LBPosition, Arg1: &mut LBBinPosition, Arg2: u128, Arg3: u128) {
+L4:	loc0: u128
+L5:	loc1: u128
+B0:
+	0: CopyLoc[1](Arg1: &mut LBBinPosition)
+	1: ImmBorrowField[6](LBBinPosition.amount: u128)
+	2: ReadRef
+	3: LdU128(0)
+	4: Eq
+	5: BrFalse(17)
+B1:
+	6: MoveLoc[0](Arg0: &mut LBPosition)
+	7: Pop
+	8: MoveLoc[2](Arg2: u128)
+	9: CopyLoc[1](Arg1: &mut LBBinPosition)
+	10: MutBorrowField[7](LBBinPosition.fee_growth_inside_last_x: u128)
+	11: WriteRef
+	12: MoveLoc[3](Arg3: u128)
+	13: MoveLoc[1](Arg1: &mut LBBinPosition)
+	14: MutBorrowField[8](LBBinPosition.fee_growth_inside_last_y: u128)
+	15: WriteRef
+	16: Ret
+B2:
+	17: CopyLoc[1](Arg1: &mut LBBinPosition)
+	18: ImmBorrowField[6](LBBinPosition.amount: u128)
+	19: ReadRef
+	20: CopyLoc[2](Arg2: u128)
+	21: CopyLoc[1](Arg1: &mut LBBinPosition)
+	22: ImmBorrowField[7](LBBinPosition.fee_growth_inside_last_x: u128)
+	23: ReadRef
+	24: Call safe_math::sub_u128(u128, u128): u128
+	25: Mul
+	26: StLoc[4](loc0: u128)
+	27: CopyLoc[1](Arg1: &mut LBBinPosition)
+	28: ImmBorrowField[6](LBBinPosition.amount: u128)
+	29: ReadRef
+	30: CopyLoc[3](Arg3: u128)
+	31: CopyLoc[1](Arg1: &mut LBBinPosition)
+	32: ImmBorrowField[8](LBBinPosition.fee_growth_inside_last_y: u128)
+	33: ReadRef
+	34: Call safe_math::sub_u128(u128, u128): u128
+	35: Mul
+	36: StLoc[5](loc1: u128)
+	37: CopyLoc[0](Arg0: &mut LBPosition)
+	38: ImmBorrowField[9](LBPosition.saved_fees_x: u128)
+	39: ReadRef
+	40: MoveLoc[4](loc0: u128)
+	41: Call safe_math::add_u128(u128, u128): u128
+	42: CopyLoc[0](Arg0: &mut LBPosition)
+	43: MutBorrowField[9](LBPosition.saved_fees_x: u128)
+	44: WriteRef
+	45: CopyLoc[0](Arg0: &mut LBPosition)
+	46: ImmBorrowField[10](LBPosition.saved_fees_y: u128)
+	47: ReadRef
+	48: MoveLoc[5](loc1: u128)
+	49: Call safe_math::add_u128(u128, u128): u128
+	50: MoveLoc[0](Arg0: &mut LBPosition)
+	51: MutBorrowField[10](LBPosition.saved_fees_y: u128)
+	52: WriteRef
+	53: MoveLoc[2](Arg2: u128)
+	54: CopyLoc[1](Arg1: &mut LBBinPosition)
+	55: MutBorrowField[7](LBBinPosition.fee_growth_inside_last_x: u128)
+	56: WriteRef
+	57: MoveLoc[3](Arg3: u128)
+	58: MoveLoc[1](Arg1: &mut LBBinPosition)
+	59: MutBorrowField[8](LBBinPosition.fee_growth_inside_last_y: u128)
+	60: WriteRef
+	61: Ret
+}
+
+public simulate_settle_position_rewards(Arg0: &LBBinPosition, Arg1: vector<u128>): vector<u128> {
+L2:	loc0: u128
+L3:	loc1: u128
+L4:	loc2: u64
+L5:	loc3: u128
+L6:	loc4: u128
+L7:	loc5: vector<u128>
+B0:
+	0: VecPack(39, 0)
+	1: StLoc[7](loc5: vector<u128>)
+	2: CopyLoc[0](Arg0: &LBBinPosition)
+	3: ImmBorrowField[6](LBBinPosition.amount: u128)
+	4: ReadRef
+	5: LdU128(0)
+	6: Eq
+	7: BrFalse(12)
+B1:
+	8: MoveLoc[0](Arg0: &LBBinPosition)
+	9: Pop
+	10: MoveLoc[7](loc5: vector<u128>)
+	11: Ret
+B2:
+	12: LdU64(0)
+	13: StLoc[4](loc2: u64)
+B3:
+	14: CopyLoc[4](loc2: u64)
+	15: ImmBorrowLoc[1](Arg1: vector<u128>)
+	16: VecLen(39)
+	17: Lt
+	18: BrFalse(66)
+B4:
+	19: Branch(20)
+B5:
+	20: ImmBorrowLoc[1](Arg1: vector<u128>)
+	21: CopyLoc[4](loc2: u64)
+	22: VecImmBorrow(39)
+	23: ReadRef
+	24: StLoc[3](loc1: u128)
+	25: CopyLoc[4](loc2: u64)
+	26: CopyLoc[0](Arg0: &LBBinPosition)
+	27: ImmBorrowField[11](LBBinPosition.reward_growth_inside_last: vector<u128>)
+	28: VecLen(39)
+	29: Lt
+	30: BrFalse(38)
+B6:
+	31: CopyLoc[0](Arg0: &LBBinPosition)
+	32: ImmBorrowField[11](LBBinPosition.reward_growth_inside_last: vector<u128>)
+	33: CopyLoc[4](loc2: u64)
+	34: VecImmBorrow(39)
+	35: ReadRef
+	36: StLoc[2](loc0: u128)
+	37: Branch(40)
+B7:
+	38: LdU128(0)
+	39: StLoc[2](loc0: u128)
+B8:
+	40: MoveLoc[2](loc0: u128)
+	41: StLoc[5](loc3: u128)
+	42: CopyLoc[3](loc1: u128)
+	43: CopyLoc[5](loc3: u128)
+	44: Gt
+	45: BrFalse(58)
+B9:
+	46: CopyLoc[0](Arg0: &LBBinPosition)
+	47: ImmBorrowField[6](LBBinPosition.amount: u128)
+	48: ReadRef
+	49: MoveLoc[3](loc1: u128)
+	50: MoveLoc[5](loc3: u128)
+	51: Sub
+	52: Mul
+	53: StLoc[6](loc4: u128)
+	54: MutBorrowLoc[7](loc5: vector<u128>)
+	55: MoveLoc[6](loc4: u128)
+	56: VecPushBack(39)
+	57: Branch(61)
+B10:
+	58: MutBorrowLoc[7](loc5: vector<u128>)
+	59: LdU128(0)
+	60: VecPushBack(39)
+B11:
+	61: MoveLoc[4](loc2: u64)
+	62: LdU64(1)
+	63: Add
+	64: StLoc[4](loc2: u64)
+	65: Branch(14)
+B12:
+	66: MoveLoc[0](Arg0: &LBBinPosition)
+	67: Pop
+	68: MoveLoc[7](loc5: vector<u128>)
+	69: Ret
+}
+
+public(friend) settle_position_rewards(Arg0: &mut LBPosition, Arg1: &mut LBBinPosition, Arg2: vector<u128>) {
+L3:	loc0: u128
+L4:	loc1: u128
+L5:	loc2: u64
+L6:	loc3: u128
+L7:	loc4: u128
+B0:
+	0: CopyLoc[1](Arg1: &mut LBBinPosition)
+	1: ImmBorrowField[6](LBBinPosition.amount: u128)
+	2: ReadRef
+	3: LdU128(0)
+	4: Eq
+	5: BrFalse(13)
+B1:
+	6: MoveLoc[0](Arg0: &mut LBPosition)
+	7: Pop
+	8: MoveLoc[2](Arg2: vector<u128>)
+	9: MoveLoc[1](Arg1: &mut LBBinPosition)
+	10: MutBorrowField[11](LBBinPosition.reward_growth_inside_last: vector<u128>)
+	11: WriteRef
+	12: Ret
+B2:
+	13: LdU64(0)
+	14: StLoc[5](loc2: u64)
+B3:
+	15: CopyLoc[5](loc2: u64)
+	16: ImmBorrowLoc[2](Arg2: vector<u128>)
+	17: VecLen(39)
+	18: Lt
+	19: BrFalse(88)
+B4:
+	20: Branch(21)
+B5:
+	21: ImmBorrowLoc[2](Arg2: vector<u128>)
+	22: CopyLoc[5](loc2: u64)
+	23: VecImmBorrow(39)
+	24: ReadRef
+	25: StLoc[4](loc1: u128)
+	26: CopyLoc[5](loc2: u64)
+	27: CopyLoc[1](Arg1: &mut LBBinPosition)
+	28: ImmBorrowField[11](LBBinPosition.reward_growth_inside_last: vector<u128>)
+	29: VecLen(39)
+	30: Lt
+	31: BrFalse(39)
+B6:
+	32: CopyLoc[1](Arg1: &mut LBBinPosition)
+	33: ImmBorrowField[11](LBBinPosition.reward_growth_inside_last: vector<u128>)
+	34: CopyLoc[5](loc2: u64)
+	35: VecImmBorrow(39)
+	36: ReadRef
+	37: StLoc[3](loc0: u128)
+	38: Branch(41)
+B7:
+	39: LdU128(0)
+	40: StLoc[3](loc0: u128)
+B8:
+	41: MoveLoc[3](loc0: u128)
+	42: StLoc[6](loc3: u128)
+	43: CopyLoc[4](loc1: u128)
+	44: CopyLoc[6](loc3: u128)
+	45: Gt
+	46: BrFalse(83)
+B9:
+	47: CopyLoc[1](Arg1: &mut LBBinPosition)
+	48: ImmBorrowField[6](LBBinPosition.amount: u128)
+	49: ReadRef
+	50: MoveLoc[4](loc1: u128)
+	51: MoveLoc[6](loc3: u128)
+	52: Sub
+	53: Mul
+	54: StLoc[7](loc4: u128)
+	55: CopyLoc[7](loc4: u128)
+	56: LdU128(0)
+	57: Gt
+	58: BrFalse(83)
+B10:
+	59: CopyLoc[0](Arg0: &mut LBPosition)
+	60: ImmBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	61: VecLen(39)
+	62: CopyLoc[5](loc2: u64)
+	63: Le
+	64: BrFalse(71)
+B11:
+	65: Branch(66)
+B12:
+	66: CopyLoc[0](Arg0: &mut LBPosition)
+	67: MutBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	68: LdU128(0)
+	69: VecPushBack(39)
+	70: Branch(59)
+B13:
+	71: CopyLoc[0](Arg0: &mut LBPosition)
+	72: ImmBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	73: CopyLoc[5](loc2: u64)
+	74: VecImmBorrow(39)
+	75: ReadRef
+	76: MoveLoc[7](loc4: u128)
+	77: Call safe_math::add_u128(u128, u128): u128
+	78: CopyLoc[0](Arg0: &mut LBPosition)
+	79: MutBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	80: CopyLoc[5](loc2: u64)
+	81: VecMutBorrow(39)
+	82: WriteRef
+B14:
+	83: MoveLoc[5](loc2: u64)
+	84: LdU64(1)
+	85: Add
+	86: StLoc[5](loc2: u64)
+	87: Branch(15)
+B15:
+	88: MoveLoc[0](Arg0: &mut LBPosition)
+	89: Pop
+	90: MoveLoc[2](Arg2: vector<u128>)
+	91: MoveLoc[1](Arg1: &mut LBBinPosition)
+	92: MutBorrowField[11](LBBinPosition.reward_growth_inside_last: vector<u128>)
+	93: WriteRef
+	94: Ret
+}
+
+new_bin_position(Arg0: u32, Arg1: u128): LBBinPosition {
+B0:
+	0: MoveLoc[0](Arg0: u32)
+	1: MoveLoc[1](Arg1: u128)
+	2: LdU128(0)
+	3: LdU128(0)
+	4: VecPack(39, 0)
+	5: Pack[0](LBBinPosition)
+	6: Ret
+}
+
+public(friend) create_bin_in_pack(Arg0: &mut PackedBins, Arg1: u32, Arg2: u8) {
+L3:	loc0: u8
+L4:	loc1: u8
+L5:	loc2: LBBinPosition
+B0:
+	0: MoveLoc[1](Arg1: u32)
+	1: LdU128(0)
+	2: Call new_bin_position(u32, u128): LBBinPosition
+	3: StLoc[5](loc2: LBBinPosition)
+	4: CopyLoc[0](Arg0: &mut PackedBins)
+	5: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	6: ReadRef
+	7: StLoc[3](loc0: u8)
+	8: CopyLoc[3](loc0: u8)
+	9: CopyLoc[2](Arg2: u8)
+	10: Call count_active_bins_before_position(u8, u8): u8
+	11: StLoc[4](loc1: u8)
+	12: CopyLoc[0](Arg0: &mut PackedBins)
+	13: MutBorrowField[1](PackedBins.bin_data: vector<LBBinPosition>)
+	14: MoveLoc[5](loc2: LBBinPosition)
+	15: MoveLoc[4](loc1: u8)
+	16: CastU64
+	17: Call vector::insert<LBBinPosition>(&mut vector<LBBinPosition>, LBBinPosition, u64)
+	18: MoveLoc[3](loc0: u8)
+	19: MoveLoc[2](Arg2: u8)
+	20: Call set_bit_in_bitmap(u8, u8): u8
+	21: MoveLoc[0](Arg0: &mut PackedBins)
+	22: MutBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	23: WriteRef
+	24: Ret
+}
+
+public(friend) increase_position_total_bins(Arg0: &mut LBPosition, Arg1: u64) {
+B0:
+	0: CopyLoc[0](Arg0: &mut LBPosition)
+	1: ImmBorrowField[13](LBPosition.total_bins: u64)
+	2: ReadRef
+	3: CopyLoc[1](Arg1: u64)
+	4: Add
+	5: Call constants::max_bins(): u64
+	6: Gt
+	7: BrFalse(12)
+B1:
+	8: MoveLoc[0](Arg0: &mut LBPosition)
+	9: Pop
+	10: LdConst[3](u64: 205)
+	11: Abort
+B2:
+	12: CopyLoc[0](Arg0: &mut LBPosition)
+	13: ImmBorrowField[13](LBPosition.total_bins: u64)
+	14: ReadRef
+	15: MoveLoc[1](Arg1: u64)
+	16: Add
+	17: MoveLoc[0](Arg0: &mut LBPosition)
+	18: MutBorrowField[13](LBPosition.total_bins: u64)
+	19: WriteRef
+	20: Ret
+}
+
+public(friend) borrow_position_info(Arg0: &LBPositionManager, Arg1: &LBPosition): &LBPositionInfo {
+L2:	loc0: ID
+L3:	loc1: &LBPositionInfo
+B0:
+	0: MoveLoc[1](Arg1: &LBPosition)
+	1: Call object::id<LBPosition>(&LBPosition): ID
+	2: StLoc[2](loc0: ID)
+	3: CopyLoc[0](Arg0: &LBPositionManager)
+	4: ImmBorrowField[3](LBPositionManager.positions: Table<ID, LBPositionInfo>)
+	5: CopyLoc[2](loc0: ID)
+	6: Call table::contains<ID, LBPositionInfo>(&Table<ID, LBPositionInfo>, ID): bool
+	7: BrFalse(9)
+B1:
+	8: Branch(13)
+B2:
+	9: MoveLoc[0](Arg0: &LBPositionManager)
+	10: Pop
+	11: LdConst[1](u64: 202)
+	12: Abort
+B3:
+	13: MoveLoc[0](Arg0: &LBPositionManager)
+	14: ImmBorrowField[3](LBPositionManager.positions: Table<ID, LBPositionInfo>)
+	15: CopyLoc[2](loc0: ID)
+	16: Call table::borrow<ID, LBPositionInfo>(&Table<ID, LBPositionInfo>, ID): &LBPositionInfo
+	17: StLoc[3](loc1: &LBPositionInfo)
+	18: CopyLoc[3](loc1: &LBPositionInfo)
+	19: ImmBorrowField[14](LBPositionInfo.position_id: ID)
+	20: ReadRef
+	21: MoveLoc[2](loc0: ID)
+	22: Eq
+	23: BrFalse(25)
+B4:
+	24: Branch(29)
+B5:
+	25: MoveLoc[3](loc1: &LBPositionInfo)
+	26: Pop
+	27: LdConst[1](u64: 202)
+	28: Abort
+B6:
+	29: MoveLoc[3](loc1: &LBPositionInfo)
+	30: Ret
+}
+
+public(friend) change_toggle(Arg0: &mut LBPositionInfo) {
+B0:
+	0: CopyLoc[0](Arg0: &mut LBPositionInfo)
+	1: ImmBorrowField[15](LBPositionInfo.toggle: u16)
+	2: ReadRef
+	3: LdU16(1)
+	4: Add
+	5: CopyLoc[0](Arg0: &mut LBPositionInfo)
+	6: MutBorrowField[15](LBPositionInfo.toggle: u16)
+	7: WriteRef
+	8: CopyLoc[0](Arg0: &mut LBPositionInfo)
+	9: ImmBorrowField[15](LBPositionInfo.toggle: u16)
+	10: ReadRef
+	11: Call constants::max_u16(): u16
+	12: Eq
+	13: BrFalse(19)
+B1:
+	14: LdU16(0)
+	15: MoveLoc[0](Arg0: &mut LBPositionInfo)
+	16: MutBorrowField[15](LBPositionInfo.toggle: u16)
+	17: WriteRef
+	18: Branch(21)
+B2:
+	19: MoveLoc[0](Arg0: &mut LBPositionInfo)
+	20: Pop
+B3:
+	21: Ret
+}
+
+public(friend) borrow_position_info_mut(Arg0: &mut LBPositionManager, Arg1: &LBPosition): &mut LBPositionInfo {
+L2:	loc0: ID
+L3:	loc1: &mut LBPositionInfo
+B0:
+	0: MoveLoc[1](Arg1: &LBPosition)
+	1: ImmBorrowField[4](LBPosition.my_id: ID)
+	2: ReadRef
+	3: StLoc[2](loc0: ID)
+	4: CopyLoc[0](Arg0: &mut LBPositionManager)
+	5: ImmBorrowField[3](LBPositionManager.positions: Table<ID, LBPositionInfo>)
+	6: CopyLoc[2](loc0: ID)
+	7: Call table::contains<ID, LBPositionInfo>(&Table<ID, LBPositionInfo>, ID): bool
+	8: BrFalse(10)
+B1:
+	9: Branch(14)
+B2:
+	10: MoveLoc[0](Arg0: &mut LBPositionManager)
+	11: Pop
+	12: LdConst[1](u64: 202)
+	13: Abort
+B3:
+	14: MoveLoc[0](Arg0: &mut LBPositionManager)
+	15: MutBorrowField[3](LBPositionManager.positions: Table<ID, LBPositionInfo>)
+	16: CopyLoc[2](loc0: ID)
+	17: Call table::borrow_mut<ID, LBPositionInfo>(&mut Table<ID, LBPositionInfo>, ID): &mut LBPositionInfo
+	18: StLoc[3](loc1: &mut LBPositionInfo)
+	19: CopyLoc[3](loc1: &mut LBPositionInfo)
+	20: ImmBorrowField[14](LBPositionInfo.position_id: ID)
+	21: ReadRef
+	22: MoveLoc[2](loc0: ID)
+	23: Eq
+	24: BrFalse(26)
+B4:
+	25: Branch(30)
+B5:
+	26: MoveLoc[3](loc1: &mut LBPositionInfo)
+	27: Pop
+	28: LdConst[1](u64: 202)
+	29: Abort
+B6:
+	30: CopyLoc[3](loc1: &mut LBPositionInfo)
+	31: Call change_toggle(&mut LBPositionInfo)
+	32: MoveLoc[3](loc1: &mut LBPositionInfo)
+	33: Ret
+}
+
+public(friend) remove_bins(Arg0: &mut LBPositionManager, Arg1: &mut LBPosition, Arg2: vector<u32>) {
+L3:	loc0: PackedBins
+L4:	loc1: bool
+L5:	loc2: bool
+L6:	loc3: &mut PackedBins
+L7:	loc4: u32
+L8:	loc5: vector<u32>
+L9:	loc6: u32
+L10:	loc7: u64
+L11:	loc8: u64
+L12:	loc9: u64
+L13:	loc10: u8
+L14:	loc11: &mut LBPositionInfo
+L15:	loc12: u8
+B0:
+	0: MoveLoc[0](Arg0: &mut LBPositionManager)
+	1: MutBorrowField[3](LBPositionManager.positions: Table<ID, LBPositionInfo>)
+	2: CopyLoc[1](Arg1: &mut LBPosition)
+	3: ImmBorrowField[4](LBPosition.my_id: ID)
+	4: ReadRef
+	5: Call table::borrow_mut<ID, LBPositionInfo>(&mut Table<ID, LBPositionInfo>, ID): &mut LBPositionInfo
+	6: StLoc[14](loc11: &mut LBPositionInfo)
+	7: VecPack(13, 0)
+	8: StLoc[8](loc5: vector<u32>)
+	9: LdU64(0)
+	10: StLoc[10](loc7: u64)
+	11: Call constants::max_u32(): u32
+	12: StLoc[7](loc4: u32)
+	13: LdU8(0)
+	14: VecPack(31, 0)
+	15: Pack[1](PackedBins)
+	16: StLoc[3](loc0: PackedBins)
+	17: MutBorrowLoc[3](loc0: PackedBins)
+	18: StLoc[6](loc3: &mut PackedBins)
+	19: ImmBorrowLoc[2](Arg2: vector<u32>)
+	20: VecLen(13)
+	21: StLoc[12](loc9: u64)
+B1:
+	22: CopyLoc[10](loc7: u64)
+	23: CopyLoc[12](loc9: u64)
+	24: Lt
+	25: BrFalse(112)
+B2:
+	26: Branch(27)
+B3:
+	27: ImmBorrowLoc[2](Arg2: vector<u32>)
+	28: CopyLoc[10](loc7: u64)
+	29: VecImmBorrow(13)
+	30: ReadRef
+	31: Call resolve_bin_group_index(u32): u32 * u8
+	32: StLoc[13](loc10: u8)
+	33: StLoc[9](loc6: u32)
+	34: CopyLoc[9](loc6: u32)
+	35: CopyLoc[7](loc4: u32)
+	36: Neq
+	37: BrFalse(73)
+B4:
+	38: CopyLoc[7](loc4: u32)
+	39: Call constants::max_u32(): u32
+	40: Neq
+	41: BrFalse(57)
+B5:
+	42: MoveLoc[6](loc3: &mut PackedBins)
+	43: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	44: ReadRef
+	45: LdU8(0)
+	46: Eq
+	47: BrFalse(54)
+B6:
+	48: ImmBorrowLoc[8](loc5: vector<u32>)
+	49: ImmBorrowLoc[7](loc4: u32)
+	50: Call vector::contains<u32>(&vector<u32>, &u32): bool
+	51: Not
+	52: StLoc[4](loc1: bool)
+	53: Branch(56)
+B7:
+	54: LdFalse
+	55: StLoc[4](loc1: bool)
+B8:
+	56: Branch(61)
+B9:
+	57: MoveLoc[6](loc3: &mut PackedBins)
+	58: Pop
+	59: LdFalse
+	60: StLoc[4](loc1: bool)
+B10:
+	61: MoveLoc[4](loc1: bool)
+	62: BrFalse(66)
+B11:
+	63: MutBorrowLoc[8](loc5: vector<u32>)
+	64: MoveLoc[7](loc4: u32)
+	65: VecPushBack(13)
+B12:
+	66: CopyLoc[14](loc11: &mut LBPositionInfo)
+	67: MutBorrowField[2](LBPositionInfo.bins: Table<u32, PackedBins>)
+	68: CopyLoc[9](loc6: u32)
+	69: Call table::borrow_mut<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): &mut PackedBins
+	70: StLoc[6](loc3: &mut PackedBins)
+	71: MoveLoc[9](loc6: u32)
+	72: StLoc[7](loc4: u32)
+B13:
+	73: CopyLoc[6](loc3: &mut PackedBins)
+	74: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	75: ReadRef
+	76: CopyLoc[13](loc10: u8)
+	77: Call is_bin_active_in_bitmap(u8, u8): bool
+	78: BrFalse(107)
+B14:
+	79: CopyLoc[6](loc3: &mut PackedBins)
+	80: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	81: ReadRef
+	82: CopyLoc[13](loc10: u8)
+	83: Call count_active_bins_before_position(u8, u8): u8
+	84: StLoc[15](loc12: u8)
+	85: CopyLoc[1](Arg1: &mut LBPosition)
+	86: ImmBorrowField[13](LBPosition.total_bins: u64)
+	87: ReadRef
+	88: LdU64(1)
+	89: Call safe_math::sub_u64(u64, u64): u64
+	90: CopyLoc[1](Arg1: &mut LBPosition)
+	91: MutBorrowField[13](LBPosition.total_bins: u64)
+	92: WriteRef
+	93: CopyLoc[6](loc3: &mut PackedBins)
+	94: MutBorrowField[1](PackedBins.bin_data: vector<LBBinPosition>)
+	95: MoveLoc[15](loc12: u8)
+	96: CastU64
+	97: Call vector::remove<LBBinPosition>(&mut vector<LBBinPosition>, u64): LBBinPosition
+	98: Pop
+	99: CopyLoc[6](loc3: &mut PackedBins)
+	100: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	101: ReadRef
+	102: MoveLoc[13](loc10: u8)
+	103: Call clear_bit_in_bitmap(u8, u8): u8
+	104: CopyLoc[6](loc3: &mut PackedBins)
+	105: MutBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	106: WriteRef
+B15:
+	107: MoveLoc[10](loc7: u64)
+	108: LdU64(1)
+	109: Add
+	110: StLoc[10](loc7: u64)
+	111: Branch(22)
+B16:
+	112: MoveLoc[1](Arg1: &mut LBPosition)
+	113: Pop
+	114: CopyLoc[7](loc4: u32)
+	115: Call constants::max_u32(): u32
+	116: Neq
+	117: BrFalse(133)
+B17:
+	118: MoveLoc[6](loc3: &mut PackedBins)
+	119: ImmBorrowField[0](PackedBins.active_bins_bitmap: u8)
+	120: ReadRef
+	121: LdU8(0)
+	122: Eq
+	123: BrFalse(130)
+B18:
+	124: ImmBorrowLoc[8](loc5: vector<u32>)
+	125: ImmBorrowLoc[7](loc4: u32)
+	126: Call vector::contains<u32>(&vector<u32>, &u32): bool
+	127: Not
+	128: StLoc[5](loc2: bool)
+	129: Branch(132)
+B19:
+	130: LdFalse
+	131: StLoc[5](loc2: bool)
+B20:
+	132: Branch(137)
+B21:
+	133: MoveLoc[6](loc3: &mut PackedBins)
+	134: Pop
+	135: LdFalse
+	136: StLoc[5](loc2: bool)
+B22:
+	137: MoveLoc[5](loc2: bool)
+	138: BrFalse(142)
+B23:
+	139: MutBorrowLoc[8](loc5: vector<u32>)
+	140: MoveLoc[7](loc4: u32)
+	141: VecPushBack(13)
+B24:
+	142: LdU64(0)
+	143: StLoc[11](loc8: u64)
+B25:
+	144: CopyLoc[11](loc8: u64)
+	145: ImmBorrowLoc[8](loc5: vector<u32>)
+	146: VecLen(13)
+	147: Lt
+	148: BrFalse(163)
+B26:
+	149: Branch(150)
+B27:
+	150: CopyLoc[14](loc11: &mut LBPositionInfo)
+	151: MutBorrowField[2](LBPositionInfo.bins: Table<u32, PackedBins>)
+	152: ImmBorrowLoc[8](loc5: vector<u32>)
+	153: CopyLoc[11](loc8: u64)
+	154: VecImmBorrow(13)
+	155: ReadRef
+	156: Call table::remove<u32, PackedBins>(&mut Table<u32, PackedBins>, u32): PackedBins
+	157: Pop
+	158: MoveLoc[11](loc8: u64)
+	159: LdU64(1)
+	160: Add
+	161: StLoc[11](loc8: u64)
+	162: Branch(144)
+B28:
+	163: MoveLoc[14](loc11: &mut LBPositionInfo)
+	164: Pop
+	165: Ret
+}
+
+public(friend) close_position(Arg0: &mut LBPositionManager, Arg1: LBPosition) {
+L2:	loc0: bool
+L3:	loc1: LBPositionInfo
+B0:
+	0: MoveLoc[0](Arg0: &mut LBPositionManager)
+	1: MutBorrowField[3](LBPositionManager.positions: Table<ID, LBPositionInfo>)
+	2: ImmBorrowLoc[1](Arg1: LBPosition)
+	3: Call object::id<LBPosition>(&LBPosition): ID
+	4: Call table::remove<ID, LBPositionInfo>(&mut Table<ID, LBPositionInfo>, ID): LBPositionInfo
+	5: StLoc[3](loc1: LBPositionInfo)
+	6: ImmBorrowLoc[3](loc1: LBPositionInfo)
+	7: Call is_empty_lp(&LBPositionInfo): bool
+	8: BrFalse(19)
+B1:
+	9: ImmBorrowLoc[1](Arg1: LBPosition)
+	10: Call is_empty_reward(&LBPosition): bool
+	11: BrFalse(16)
+B2:
+	12: ImmBorrowLoc[1](Arg1: LBPosition)
+	13: Call is_empty_fees(&LBPosition): bool
+	14: StLoc[2](loc0: bool)
+	15: Branch(18)
+B3:
+	16: LdFalse
+	17: StLoc[2](loc0: bool)
+B4:
+	18: Branch(21)
+B5:
+	19: LdFalse
+	20: StLoc[2](loc0: bool)
+B6:
+	21: MoveLoc[2](loc0: bool)
+	22: BrFalse(24)
+B7:
+	23: Branch(26)
+B8:
+	24: LdConst[2](u64: 203)
+	25: Abort
+B9:
+	26: MoveLoc[3](loc1: LBPositionInfo)
+	27: Call destroy_position_info(LBPositionInfo)
+	28: MoveLoc[1](Arg1: LBPosition)
+	29: Call destroy(LBPosition)
+	30: Ret
+}
+
+public is_empty_lp(Arg0: &LBPositionInfo): bool {
+B0:
+	0: MoveLoc[0](Arg0: &LBPositionInfo)
+	1: ImmBorrowField[2](LBPositionInfo.bins: Table<u32, PackedBins>)
+	2: Call table::is_empty<u32, PackedBins>(&Table<u32, PackedBins>): bool
+	3: Ret
+}
+
+public is_empty_fees(Arg0: &LBPosition): bool {
+L1:	loc0: bool
+B0:
+	0: CopyLoc[0](Arg0: &LBPosition)
+	1: ImmBorrowField[9](LBPosition.saved_fees_x: u128)
+	2: ReadRef
+	3: LdU128(0)
+	4: Eq
+	5: BrFalse(13)
+B1:
+	6: MoveLoc[0](Arg0: &LBPosition)
+	7: ImmBorrowField[10](LBPosition.saved_fees_y: u128)
+	8: ReadRef
+	9: LdU128(0)
+	10: Eq
+	11: StLoc[1](loc0: bool)
+	12: Branch(17)
+B2:
+	13: MoveLoc[0](Arg0: &LBPosition)
+	14: Pop
+	15: LdFalse
+	16: StLoc[1](loc0: bool)
+B3:
+	17: MoveLoc[1](loc0: bool)
+	18: Ret
+}
+
+public is_empty_reward(Arg0: &LBPosition): bool {
+L1:	loc0: u128
+L2:	loc1: u64
+B0:
+	0: LdU128(0)
+	1: StLoc[1](loc0: u128)
+	2: LdU64(0)
+	3: StLoc[2](loc1: u64)
+B1:
+	4: CopyLoc[2](loc1: u64)
+	5: CopyLoc[0](Arg0: &LBPosition)
+	6: ImmBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	7: VecLen(39)
+	8: Lt
+	9: BrFalse(24)
+B2:
+	10: Branch(11)
+B3:
+	11: MoveLoc[1](loc0: u128)
+	12: CopyLoc[0](Arg0: &LBPosition)
+	13: ImmBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	14: CopyLoc[2](loc1: u64)
+	15: VecImmBorrow(39)
+	16: ReadRef
+	17: Add
+	18: StLoc[1](loc0: u128)
+	19: MoveLoc[2](loc1: u64)
+	20: LdU64(1)
+	21: Add
+	22: StLoc[2](loc1: u64)
+	23: Branch(4)
+B4:
+	24: MoveLoc[0](Arg0: &LBPosition)
+	25: Pop
+	26: MoveLoc[1](loc0: u128)
+	27: LdU128(0)
+	28: Eq
+	29: Ret
+}
+
+destroy(Arg0: LBPosition) {
+B0:
+	0: MoveLoc[0](Arg0: LBPosition)
+	1: Unpack[4](LBPosition)
+	2: Pop
+	3: Pop
+	4: Pop
+	5: Pop
+	6: Pop
+	7: Pop
+	8: Pop
+	9: Pop
+	10: Pop
+	11: Call object::delete(UID)
+	12: Ret
+}
+
+destroy_position_info(Arg0: LBPositionInfo) {
+L1:	loc0: Table<u32, PackedBins>
+B0:
+	0: MoveLoc[0](Arg0: LBPositionInfo)
+	1: Unpack[3](LBPositionInfo)
+	2: Pop
+	3: StLoc[1](loc0: Table<u32, PackedBins>)
+	4: Pop
+	5: Pop
+	6: MoveLoc[1](loc0: Table<u32, PackedBins>)
+	7: Call table::drop<u32, PackedBins>(Table<u32, PackedBins>)
+	8: Ret
+}
+
+public position_token_amount(Arg0: &LBBinPosition): u128 {
+B0:
+	0: MoveLoc[0](Arg0: &LBBinPosition)
+	1: ImmBorrowField[6](LBBinPosition.amount: u128)
+	2: ReadRef
+	3: Ret
+}
+
+public get_tokens_in_position(Arg0: &LBPositionManager, Arg1: &LBPosition, Arg2: u32, Arg3: u32): vector<u32> * vector<u128> {
+L4:	loc0: bool
+L5:	loc1: u64
+L6:	loc2: vector<u128>
+L7:	loc3: &LBBinPosition
+L8:	loc4: vector<u32>
+L9:	loc5: u32
+L10:	loc6: &PackedBins
+L11:	loc7: u64
+L12:	loc8: u32
+L13:	loc9: u32
+L14:	loc10: &LBPositionInfo
+B0:
+	0: VecPack(13, 0)
+	1: StLoc[8](loc4: vector<u32>)
+	2: VecPack(39, 0)
+	3: StLoc[6](loc2: vector<u128>)
+	4: MoveLoc[0](Arg0: &LBPositionManager)
+	5: MoveLoc[1](Arg1: &LBPosition)
+	6: Call borrow_position_info(&LBPositionManager, &LBPosition): &LBPositionInfo
+	7: StLoc[14](loc10: &LBPositionInfo)
+	8: CopyLoc[2](Arg2: u32)
+	9: LdConst[6](u8: 3)
+	10: Shr
+	11: StLoc[13](loc9: u32)
+	12: CopyLoc[3](Arg3: u32)
+	13: LdConst[6](u8: 3)
+	14: Shr
+	15: StLoc[12](loc8: u32)
+	16: MoveLoc[13](loc9: u32)
+	17: StLoc[9](loc5: u32)
+B1:
+	18: CopyLoc[9](loc5: u32)
+	19: CopyLoc[12](loc8: u32)
+	20: Le
+	21: BrFalse(100)
+B2:
+	22: Branch(23)
+B3:
+	23: CopyLoc[14](loc10: &LBPositionInfo)
+	24: ImmBorrowField[2](LBPositionInfo.bins: Table<u32, PackedBins>)
+	25: CopyLoc[9](loc5: u32)
+	26: Call table::contains<u32, PackedBins>(&Table<u32, PackedBins>, u32): bool
+	27: BrFalse(95)
+B4:
+	28: CopyLoc[14](loc10: &LBPositionInfo)
+	29: ImmBorrowField[2](LBPositionInfo.bins: Table<u32, PackedBins>)
+	30: CopyLoc[9](loc5: u32)
+	31: Call table::borrow<u32, PackedBins>(&Table<u32, PackedBins>, u32): &PackedBins
+	32: StLoc[10](loc6: &PackedBins)
+	33: LdU64(0)
+	34: StLoc[11](loc7: u64)
+	35: CopyLoc[10](loc6: &PackedBins)
+	36: ImmBorrowField[1](PackedBins.bin_data: vector<LBBinPosition>)
+	37: VecLen(31)
+	38: StLoc[5](loc1: u64)
+B5:
+	39: CopyLoc[11](loc7: u64)
+	40: CopyLoc[5](loc1: u64)
+	41: Lt
+	42: BrFalse(93)
+B6:
+	43: Branch(44)
+B7:
+	44: CopyLoc[10](loc6: &PackedBins)
+	45: ImmBorrowField[1](PackedBins.bin_data: vector<LBBinPosition>)
+	46: CopyLoc[11](loc7: u64)
+	47: VecImmBorrow(31)
+	48: StLoc[7](loc3: &LBBinPosition)
+	49: CopyLoc[7](loc3: &LBBinPosition)
+	50: ImmBorrowField[16](LBBinPosition.bin_id: u32)
+	51: ReadRef
+	52: CopyLoc[2](Arg2: u32)
+	53: Ge
+	54: BrFalse(71)
+B8:
+	55: CopyLoc[7](loc3: &LBBinPosition)
+	56: ImmBorrowField[16](LBBinPosition.bin_id: u32)
+	57: ReadRef
+	58: CopyLoc[3](Arg3: u32)
+	59: Le
+	60: BrFalse(68)
+B9:
+	61: CopyLoc[7](loc3: &LBBinPosition)
+	62: ImmBorrowField[6](LBBinPosition.amount: u128)
+	63: ReadRef
+	64: LdU128(0)
+	65: Gt
+	66: StLoc[4](loc0: bool)
+	67: Branch(70)
+B10:
+	68: LdFalse
+	69: StLoc[4](loc0: bool)
+B11:
+	70: Branch(73)
+B12:
+	71: LdFalse
+	72: StLoc[4](loc0: bool)
+B13:
+	73: MoveLoc[4](loc0: bool)
+	74: BrFalse(86)
+B14:
+	75: MutBorrowLoc[8](loc4: vector<u32>)
+	76: CopyLoc[7](loc3: &LBBinPosition)
+	77: ImmBorrowField[16](LBBinPosition.bin_id: u32)
+	78: ReadRef
+	79: VecPushBack(13)
+	80: MutBorrowLoc[6](loc2: vector<u128>)
+	81: MoveLoc[7](loc3: &LBBinPosition)
+	82: ImmBorrowField[6](LBBinPosition.amount: u128)
+	83: ReadRef
+	84: VecPushBack(39)
+	85: Branch(88)
+B15:
+	86: MoveLoc[7](loc3: &LBBinPosition)
+	87: Pop
+B16:
+	88: MoveLoc[11](loc7: u64)
+	89: LdU64(1)
+	90: Add
+	91: StLoc[11](loc7: u64)
+	92: Branch(39)
+B17:
+	93: MoveLoc[10](loc6: &PackedBins)
+	94: Pop
+B18:
+	95: MoveLoc[9](loc5: u32)
+	96: LdU32(1)
+	97: Call safe_math::add_u32(u32, u32): u32
+	98: StLoc[9](loc5: u32)
+	99: Branch(18)
+B19:
+	100: MoveLoc[14](loc10: &LBPositionInfo)
+	101: Pop
+	102: MoveLoc[8](loc4: vector<u32>)
+	103: MoveLoc[6](loc2: vector<u128>)
+	104: Ret
+}
+
+public(friend) get_pending_fees(Arg0: &LBBinPosition, Arg1: u128, Arg2: u128): u128 * u128 {
+L3:	loc0: u128
+L4:	loc1: u128
+L5:	loc2: u128
+L6:	loc3: u128
+L7:	loc4: u128
+B0:
+	0: CopyLoc[0](Arg0: &LBBinPosition)
+	1: ImmBorrowField[6](LBBinPosition.amount: u128)
+	2: ReadRef
+	3: StLoc[7](loc4: u128)
+	4: CopyLoc[7](loc4: u128)
+	5: LdU128(0)
+	6: Eq
+	7: BrFalse(13)
+B1:
+	8: MoveLoc[0](Arg0: &LBBinPosition)
+	9: Pop
+	10: LdU128(0)
+	11: LdU128(0)
+	12: Ret
+B2:
+	13: MoveLoc[1](Arg1: u128)
+	14: CopyLoc[0](Arg0: &LBBinPosition)
+	15: ImmBorrowField[7](LBBinPosition.fee_growth_inside_last_x: u128)
+	16: ReadRef
+	17: Sub
+	18: StLoc[5](loc2: u128)
+	19: MoveLoc[2](Arg2: u128)
+	20: MoveLoc[0](Arg0: &LBBinPosition)
+	21: ImmBorrowField[8](LBBinPosition.fee_growth_inside_last_y: u128)
+	22: ReadRef
+	23: Sub
+	24: StLoc[6](loc3: u128)
+	25: CopyLoc[7](loc4: u128)
+	26: MoveLoc[5](loc2: u128)
+	27: Mul
+	28: StLoc[3](loc0: u128)
+	29: MoveLoc[7](loc4: u128)
+	30: MoveLoc[6](loc3: u128)
+	31: Mul
+	32: StLoc[4](loc1: u128)
+	33: MoveLoc[3](loc0: u128)
+	34: MoveLoc[4](loc1: u128)
+	35: Ret
+}
+
+public(friend) get_saved_fees(Arg0: &LBPosition): u128 * u128 {
+B0:
+	0: CopyLoc[0](Arg0: &LBPosition)
+	1: ImmBorrowField[9](LBPosition.saved_fees_x: u128)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &LBPosition)
+	4: ImmBorrowField[10](LBPosition.saved_fees_y: u128)
+	5: ReadRef
+	6: Ret
+}
+
+public(friend) collect_saved_fees(Arg0: &mut LBPosition): u64 * u64 {
+L1:	loc0: u64
+L2:	loc1: u64
+B0:
+	0: CopyLoc[0](Arg0: &mut LBPosition)
+	1: ImmBorrowField[9](LBPosition.saved_fees_x: u128)
+	2: ReadRef
+	3: Call q64x64::scale_offset(): u8
+	4: Shr
+	5: Call safe_math::u128_to_u64(u128): u64
+	6: StLoc[1](loc0: u64)
+	7: CopyLoc[0](Arg0: &mut LBPosition)
+	8: ImmBorrowField[10](LBPosition.saved_fees_y: u128)
+	9: ReadRef
+	10: Call q64x64::scale_offset(): u8
+	11: Shr
+	12: Call safe_math::u128_to_u64(u128): u64
+	13: StLoc[2](loc1: u64)
+	14: LdU128(0)
+	15: CopyLoc[0](Arg0: &mut LBPosition)
+	16: MutBorrowField[9](LBPosition.saved_fees_x: u128)
+	17: WriteRef
+	18: LdU128(0)
+	19: MoveLoc[0](Arg0: &mut LBPosition)
+	20: MutBorrowField[10](LBPosition.saved_fees_y: u128)
+	21: WriteRef
+	22: MoveLoc[1](loc0: u64)
+	23: MoveLoc[2](loc1: u64)
+	24: Ret
+}
+
+public(friend) get_saved_rewards(Arg0: &LBPosition, Arg1: u64): u128 {
+B0:
+	0: CopyLoc[1](Arg1: u64)
+	1: CopyLoc[0](Arg0: &LBPosition)
+	2: ImmBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	3: VecLen(39)
+	4: Ge
+	5: BrFalse(10)
+B1:
+	6: MoveLoc[0](Arg0: &LBPosition)
+	7: Pop
+	8: LdU128(0)
+	9: Ret
+B2:
+	10: MoveLoc[0](Arg0: &LBPosition)
+	11: ImmBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	12: MoveLoc[1](Arg1: u64)
+	13: VecImmBorrow(39)
+	14: ReadRef
+	15: Ret
+}
+
+public(friend) collect_saved_rewards(Arg0: &mut LBPosition, Arg1: u64): u64 {
+L2:	loc0: u128
+B0:
+	0: CopyLoc[1](Arg1: u64)
+	1: CopyLoc[0](Arg0: &mut LBPosition)
+	2: ImmBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	3: VecLen(39)
+	4: Ge
+	5: BrFalse(10)
+B1:
+	6: MoveLoc[0](Arg0: &mut LBPosition)
+	7: Pop
+	8: LdU64(0)
+	9: Ret
+B2:
+	10: CopyLoc[0](Arg0: &mut LBPosition)
+	11: ImmBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	12: CopyLoc[1](Arg1: u64)
+	13: VecImmBorrow(39)
+	14: ReadRef
+	15: StLoc[2](loc0: u128)
+	16: LdU128(0)
+	17: MoveLoc[0](Arg0: &mut LBPosition)
+	18: MutBorrowField[12](LBPosition.saved_rewards: vector<u128>)
+	19: MoveLoc[1](Arg1: u64)
+	20: VecMutBorrow(39)
+	21: WriteRef
+	22: MoveLoc[2](loc0: u128)
+	23: Call q64x64::scale_offset(): u8
+	24: Shr
+	25: Call safe_math::u128_to_u64(u128): u64
+	26: Ret
+}
+
+public(friend) lock_position(Arg0: &mut LBPosition, Arg1: u64) {
+B0:
+	0: MoveLoc[1](Arg1: u64)
+	1: MoveLoc[0](Arg0: &mut LBPosition)
+	2: MutBorrowField[17](LBPosition.lock_until: u64)
+	3: WriteRef
+	4: Ret
+}
+
+public is_position_locked(Arg0: &LBPosition, Arg1: &Clock): bool {
+L2:	loc0: u64
+B0:
+	0: MoveLoc[1](Arg1: &Clock)
+	1: Call clock::timestamp_ms(&Clock): u64
+	2: StLoc[2](loc0: u64)
+	3: MoveLoc[0](Arg0: &LBPosition)
+	4: ImmBorrowField[17](LBPosition.lock_until: u64)
+	5: ReadRef
+	6: MoveLoc[2](loc0: u64)
+	7: Gt
+	8: Ret
+}
+
+public get_lock_until(Arg0: &LBPosition): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &LBPosition)
+	1: ImmBorrowField[17](LBPosition.lock_until: u64)
+	2: ReadRef
+	3: Ret
+}
+
+Constants [
+	0 => u64: 201
+	1 => u64: 202
+	2 => u64: 203
+	3 => u64: 205
+	4 => u64: 206
+	5 => u32: 7
+	6 => u8: 3
+	7 => vector<u8>: "name" // interpreted as UTF8 string
+	8 => vector<u8>: "coin_a" // interpreted as UTF8 string
+	9 => vector<u8>: "coin_b" // interpreted as UTF8 string
+	10 => vector<u8>: "link" // interpreted as UTF8 string
+	11 => vector<u8>: "image_url" // interpreted as UTF8 string
+	12 => vector<u8>: "description" // interpreted as UTF8 string
+	13 => vector<u8>: "project_url" // interpreted as UTF8 string
+	14 => vector<u8>: "creator" // interpreted as UTF8 string
+	15 => vector<u8>: "Ferra Liquidity Position" // interpreted as UTF8 string
+	16 => vector<u8>: "{coin_type_a}" // interpreted as UTF8 string
+	17 => vector<u8>: "{coin_type_b}" // interpreted as UTF8 string
+	18 => vector<u8>: "https://ferra.ag/position?id={id}" // interpreted as UTF8 string
+	19 => vector<u8>: "https://ferra.ag/Certified-Ferra-LPer.png" // interpreted as UTF8 string
+	20 => vector<u8>: "Provides liquidity for the Ferra trading pair" // interpreted as UTF8 string
+	21 => vector<u8>: "https://ferra.ag" // interpreted as UTF8 string
+	22 => vector<u8>: "Ferra Labs" // interpreted as UTF8 string
+]
+}
