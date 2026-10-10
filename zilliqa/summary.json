@@ -1,0 +1,52 @@
+{
+  "finding": "C2-58",
+  "title": "Zilliqa legacy staking (SSNList Scilla) / Z2 staking deposit v9",
+  "chains": ["zilliqa-2"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 12562782.31,
+    "P": 19.43,
+    "S": 4875441.33
+  },
+  "latest_block": 37772814,
+  "block_numbers": {
+    "zilliqa-2": 37772814
+  },
+  "targets_checked": 115,
+  "live_targets": 4,
+  "closed_reasons": [
+    "All legacy Zilliqa (Scilla) transactions are rejected since block 31,759,109 (2026-07-20, Ledger-incident hard fork) and rerouted to the escrow contract as plain transfers/LODGE since block 36,383,379 (2026-09-22) - a legacy tx can never invoke a Scilla transition",
+    "The only EVM->Scilla route, the scilla_call precompile (0x...5a494c53), is caller-allowlisted to 100 contracts since block 29,108,584 (2026-06-16); any other caller fails the whole transaction (verified: random caller reverts, allow-listed caller executes)",
+    "Deployed SSNList (audited from on-chain Scilla source, 56 transitions): every transition is IsProxy-gated (47 directly; 9 Migrate* via ValidateMigration = IsPaused+IsProxy+IsAdmin); value outflows are caller-scoped via initiator (set by the proxy to _sender) or admin/verifier gated; DrainContractBalance requires IsPaused+IsProxy+IsAdmin; verifier rewards are bounded by the ZIL attached to AssignStakeReward (AssertCorrectRewards)",
+    "Z2 deposit v9 (0x00000000005a494c4445504f53495450524f5859): unstake/withdraw/depositTopup/setters require msg.sender == staker controlAddress (verified Unauthorised 0xd7a2ae6a); reinitialize() reverts InvalidInitialization 0xf92ee8a9; upgrades system-only (msg.sender == address(0)); proxy has no admin function, admin slot = 0",
+    "Escrow claim vault: claim() requires a Groth16 proof bound to (old_address, new_address, chain_id); garbage proof reverts",
+    "Child allowlist deep-dive (analysis/allowlist/REPORT.md): no allow-listed contract is a generic forwarder (24 are fixed-target ZRC-2->ERC-20 facades; 76 cannot reach the precompile) - allowlist bypass verdict NO, high confidence"
+  ],
+  "poc": {
+    "tests_passed": 21,
+    "tests_total": 21,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38024023094",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38024793214"
+    ]
+  },
+  "key_facts": [
+    "Legacy SSNList implementation 0xa7c67d49c82c7dc1b73d231640b2e4d0661d37c1 holds 1,388,481,925.046 ZIL (~$4.88M at $0.0035113) - frozen (S): nobody, not even holders, can move it today; admin = 2-of-5 multisig 0x38c986f6252a32b1c0fa732784c1a94e9f42a394 (P, unreachable); verifier EOA 0x412b55a0ebc1001f930aba8dc107022a3a2ba484",
+    "Legacy admin multisig also holds 5,533.693 ZIL (~$19.43) - the only extra live value found by the independent enumeration child (analysis/enumeration/REPORT.md); no other phase-0/1.0/1.1 contract holds value (gZIL fully minted-out, 0 ZIL)",
+    "Z2 staking deposit v9 holds 3,575,198,943.17 ZIL (~$12.55M); 24 stakers; total stake 3,568,928,130.68 ZIL; withdrawal period 461,680 blocks; on-chain impl code byte-identical to zq2 deposit_v9.sol (only immutable slots differ)",
+    "Escrow/claim vault holds 2,568,681.35 ZIL (~$9.0k); lodge() is deposit-only; claims are ZK-proof gated (H-O, live recovery path since 2026-09-22)",
+    "Total live value in the cluster: 4,966,255,083.26 ZIL = $17,438,243.07 (at $0.0035113); E-U $0.00",
+    "Post-incident sweep lists (2,070,473 addresses in 3 files) do NOT include the staking contracts, multisig, verifier, deposit proxy or escrow - balances intact",
+    "disable_permanently_scilla_precompiles is scheduled only at block 99,999,999 (~2028); until then the 100-contract caller allowlist is the barrier for EVM->Scilla calls"
+  ],
+  "caveats": [
+    "Balances are point-in-time; the Z2 deposit contract processes deposits/withdrawals continuously (balance moved by ~17k ZIL between local and CI runs)",
+    "debug_traceCall is disabled on the public RPC; revert reasons were obtained from revert data and call semantics",
+    "No faithful local Foundry fork is possible for this chain (custom precompiles and consensus-level legacy-txn routing); verification is live eth_call simulation, re-run in CI (21/21 checks)",
+    "Legacy staking classified S (frozen pending Zilliqa's recovery framework); it would become H-O (stakers) / P (2-of-5 multisig) if legacy execution were ever restored before migration completes",
+    "The workspace folder was lost in a server restart after run 2 and restored from the CI sync copy; child REPORT.md files were re-created by the child sessions from their retained context (raw evidence re-verified)"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from C2-58: the legacy 1.388B ZIL staking pool is frozen by the post-incident fork (all legacy Scilla txns dead/rerouted; the EVM scilla_call precompile is allowlisted to 100 contracts and none is a generic forwarder) with all 56 deployed transitions IsProxy-gated, while the 3.575B ZIL Z2 deposit is staker-scoped with system-only upgrades - the $17.44M cluster is S ($4.88M) / H-O ($12.56M) / P ($19.43), not E-U."
+}
