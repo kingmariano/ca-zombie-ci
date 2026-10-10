@@ -1,0 +1,40 @@
+{
+  "finding": "C2-45",
+  "title": "Swirl stIOTA (IOTA L1) — cap-less rebalance* surface, no unprivileged extraction",
+  "chains": ["iota"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 4235563.74, "P": 0, "S": 0},
+  "latest_block": 201819434,
+  "block_numbers": {"iota": 201819434},
+  "targets_checked": 9,
+  "live_targets": 1,
+  "closed_reasons": [
+    "cap-less rebalance/rebalance_from_validator/rabalance_overstaked move funds only from validators to pool.pending and immediately re-stake via stake_pool(); no recipient parameter, no caller payout (devInspect from random sender: success, no IOTA credited to sender)",
+    "every value-paying or config entry point requires OwnerCap (0x024b8ee182db98e727c4ceca0c5c7202e92933dd96d2a92c38a28eaecb632f52 -> 0x119191cd04c303b5cd872868a1898fe205c1eb9eaee9fb97c1ee87c943e40066) or OperatorCap (0xa78c4b44ea49620200994ba70712074e73675c4bb64989f35bb09dae6f178a5e -> 0x12e6e7b62250a5eb6bc0a8021fb9cf9635ebcbe433cdc2643fc315708f4e18d1); v9 collect_fee is a deprecated stub that always aborts 911, and the live payout path collect_fee_new/collect_fee_non_entry requires &OwnerCap (devInspect: abort 911 from foreign sender)",
+    "old package versions v1-v7 remain deployed but are version-gated out: assert_version accepts pool.version in {N-1,N}, live pool.version=9 accepts only v9 {8,9}; no cap-less unguarded mutator exists in any version",
+    "share math floors both ways (from_shares(to_shares(C)) = C - 1 nano); min_stake 1 IOTA blocks the min-1-share edge",
+    "no MintCap/TreasuryCap object: cert::mint is public(friend), only native_pool::stake can mint"
+  ],
+  "poc": {
+    "tests_passed": 5,
+    "tests_total": 5,
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/38015234723"]
+  },
+  "key_facts": [
+    "NativePool 0x02d641d7b021b1cd7a2c361ac35b415ae8263be0641f9475ec32af4b9d8a8056: total_staked 74,386,217.586698839 IOTA + total_rewards 6,631,092.035759532 IOTA = 81,017,309.622458 IOTA (~$4.24M at $0.05227974); pending 0.046442297 IOTA dust; collectable_fee 0; paused false; version 9",
+    "live package v9 0xa38a034356187b52c603282198fc831f0f710e16a61b141986697372ef16b292; v1 0x3467...7be68c; version chain 1->2->...->7->9 (no v8); all migrations by OwnerCap holder 0x119191cd...",
+    "devInspect (read-only, no signature/submission) from random 0x1111...1111: rebalance -> success with UnstakingRequestEvents from bad validator's system pool, no sender credit; rebalance_from_validator(bad) -> success; rebalance_from_validator(good) -> abort 112; rabalance_overstaked -> success no-op; collect_fee -> abort 911",
+    "one priority-0 (bad) validator 0xd7a5275f14f5297774fdd93cb5691045b38dab9f0a1870f5a1da79706b9d69e2 holds 1,948,434.338 IOTA (marked bad by operator on 2026-10-09); 15 of 22 vaults at the 4,000,000 IOTA cap (independently re-verified); total re-stake headroom ~13,613,730 IOTA",
+    "latent pending-exclusion bound: max profit X^2/(4N) ~ 11,714.77 IOTA (~$612) with X=1.948M pending; requires ~13.6M IOTA attacker capital to exhaust headroom plus an external numerator-restore event; not practically extractable",
+    "operator update_rewards cadence ~daily, delta ~23k IOTA, max +743,862 IOTA per 12h; no public mempool on IOTA (Mysticeti) so no reliable unprivileged front-run",
+    "treasury/fee receiver 0x5b9507f5a0f840f5c203969cdf4ecc50d80930be882948fe0b06f82421f18c0c holds 49.9999804 IOTA; lifetime collected_rewards 26,682.09 IOTA"
+  ],
+  "caveats": [
+    "cap-holder addresses are AddressOwner objects on RPC; whether they are native multisigs could not be verified from public RPC (admin-key compromise would be a P-class risk, not E-U)",
+    "no public indexer available for full-chain object enumeration; other Swirl custody objects not found via version-chain events, docs, or DefiLlama adapter (which reads exactly this NativePool)",
+    "USD figures use DefiLlama coingecko:iota price $0.05227973819565595 at ts 1791597174; token amounts exact at checkpoint 201,819,434 / epoch 522",
+    "devInspect simulates against latest state and never commits; no mainnet transaction was signed or submitted"
+  ],
+  "one_liner": "external unprivileged attacker can extract $0 live: Swirl's cap-less rebalance* functions are callable by anyone but only move the pool's own funds validator->pending->re-stake with no caller payout, while every payout/admin path requires OwnerCap/OperatorCap; only latent risk is a <=$612 pending-exclusion scenario needing >$700k capital plus an external trigger"
+}

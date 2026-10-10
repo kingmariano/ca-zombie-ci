@@ -1,0 +1,164 @@
+// Move bytecode v6
+module 346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c.math {
+
+public mul_div(Arg0: u64, Arg1: u64, Arg2: u64): u64 {
+L3:	loc0: u128
+B0:
+	0: CopyLoc[2](Arg2: u64)
+	1: LdU64(0)
+	2: Neq
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 500)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u64)
+	8: CastU128
+	9: MoveLoc[1](Arg1: u64)
+	10: CastU128
+	11: Mul
+	12: MoveLoc[2](Arg2: u64)
+	13: CastU128
+	14: Div
+	15: StLoc[3](loc0: u128)
+	16: CopyLoc[3](loc0: u128)
+	17: LdConst[3](u128: 1844..)
+	18: Le
+	19: BrFalse(21)
+B4:
+	20: Branch(23)
+B5:
+	21: LdConst[1](u64: 501)
+	22: Abort
+B6:
+	23: MoveLoc[3](loc0: u128)
+	24: CastU64
+	25: Ret
+}
+
+public ratio(Arg0: u64, Arg1: u64): u256 {
+L2:	loc0: u256
+B0:
+	0: CopyLoc[1](Arg1: u64)
+	1: LdU64(0)
+	2: Eq
+	3: BrFalse(6)
+B1:
+	4: LdConst[4](u256: 1000..)
+	5: Ret
+B2:
+	6: MoveLoc[0](Arg0: u64)
+	7: CastU256
+	8: LdConst[4](u256: 1000..)
+	9: Mul
+	10: MoveLoc[1](Arg1: u64)
+	11: CastU256
+	12: Div
+	13: StLoc[2](loc0: u256)
+	14: CopyLoc[2](loc0: u256)
+	15: LdConst[4](u256: 1000..)
+	16: Le
+	17: BrFalse(19)
+B3:
+	18: Branch(21)
+B4:
+	19: LdConst[2](u64: 502)
+	20: Abort
+B5:
+	21: MoveLoc[2](loc0: u256)
+	22: Ret
+}
+
+public to_shares(Arg0: u256, Arg1: u64): u64 {
+L2:	loc0: bool
+L3:	loc1: u256
+B0:
+	0: CopyLoc[1](Arg1: u64)
+	1: CastU256
+	2: MoveLoc[0](Arg0: u256)
+	3: Mul
+	4: LdConst[4](u256: 1000..)
+	5: Div
+	6: StLoc[3](loc1: u256)
+	7: CopyLoc[3](loc1: u256)
+	8: LdConst[3](u128: 1844..)
+	9: CastU256
+	10: Le
+	11: BrFalse(13)
+B1:
+	12: Branch(15)
+B2:
+	13: LdConst[1](u64: 501)
+	14: Abort
+B3:
+	15: MoveLoc[1](Arg1: u64)
+	16: LdU64(0)
+	17: Gt
+	18: BrFalse(24)
+B4:
+	19: CopyLoc[3](loc1: u256)
+	20: LdU256(0)
+	21: Eq
+	22: StLoc[2](loc0: bool)
+	23: Branch(26)
+B5:
+	24: LdFalse
+	25: StLoc[2](loc0: bool)
+B6:
+	26: MoveLoc[2](loc0: bool)
+	27: BrFalse(30)
+B7:
+	28: LdU256(1)
+	29: StLoc[3](loc1: u256)
+B8:
+	30: MoveLoc[3](loc1: u256)
+	31: CastU64
+	32: Ret
+}
+
+public from_shares(Arg0: u256, Arg1: u64): u64 {
+L2:	loc0: u256
+B0:
+	0: CopyLoc[0](Arg0: u256)
+	1: LdU256(0)
+	2: Neq
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 500)
+	6: Abort
+B3:
+	7: MoveLoc[1](Arg1: u64)
+	8: CastU256
+	9: LdConst[4](u256: 1000..)
+	10: Mul
+	11: MoveLoc[0](Arg0: u256)
+	12: Div
+	13: StLoc[2](loc0: u256)
+	14: CopyLoc[2](loc0: u256)
+	15: LdConst[3](u128: 1844..)
+	16: CastU256
+	17: Le
+	18: BrFalse(20)
+B4:
+	19: Branch(22)
+B5:
+	20: LdConst[1](u64: 501)
+	21: Abort
+B6:
+	22: MoveLoc[2](loc0: u256)
+	23: CastU64
+	24: Ret
+}
+
+Constants [
+	0 => u64: 500
+	1 => u64: 501
+	2 => u64: 502
+	3 => u128: 18446744073709551615
+	4 => u256: 1000000000000000000
+]
+}

@@ -1,0 +1,104 @@
+// Move bytecode v6
+module 346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c.ownership {
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct OwnerCap has key {
+	id: UID
+}
+
+struct OperatorCap has key {
+	id: UID
+}
+
+struct OwnerCapTransferred has copy, drop {
+	from: address,
+	to: address
+}
+
+struct OperatorCapTransferred has copy, drop {
+	from: address,
+	to: address
+}
+
+init(Arg0: &mut TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: Pack[0](OwnerCap)
+	3: CopyLoc[0](Arg0: &mut TxContext)
+	4: FreezeRef
+	5: Call tx_context::sender(&TxContext): address
+	6: Call transfer::transfer<OwnerCap>(OwnerCap, address)
+	7: CopyLoc[0](Arg0: &mut TxContext)
+	8: Call object::new(&mut TxContext): UID
+	9: Pack[1](OperatorCap)
+	10: MoveLoc[0](Arg0: &mut TxContext)
+	11: FreezeRef
+	12: Call tx_context::sender(&TxContext): address
+	13: Call transfer::transfer<OperatorCap>(OperatorCap, address)
+	14: Ret
+}
+
+entry public transfer_owner(Arg0: OwnerCap, Arg1: address, Arg2: &mut TxContext) {
+B0:
+	0: CopyLoc[2](Arg2: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: CopyLoc[1](Arg1: address)
+	4: Neq
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[2](Arg2: &mut TxContext)
+	8: Pop
+	9: LdConst[0](u64: 100)
+	10: Abort
+B3:
+	11: MoveLoc[0](Arg0: OwnerCap)
+	12: CopyLoc[1](Arg1: address)
+	13: Call transfer::transfer<OwnerCap>(OwnerCap, address)
+	14: MoveLoc[2](Arg2: &mut TxContext)
+	15: FreezeRef
+	16: Call tx_context::sender(&TxContext): address
+	17: MoveLoc[1](Arg1: address)
+	18: Pack[2](OwnerCapTransferred)
+	19: Call event::emit<OwnerCapTransferred>(OwnerCapTransferred)
+	20: Ret
+}
+
+entry public transfer_operator(Arg0: OperatorCap, Arg1: address, Arg2: &mut TxContext) {
+B0:
+	0: CopyLoc[2](Arg2: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: CopyLoc[1](Arg1: address)
+	4: Neq
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[2](Arg2: &mut TxContext)
+	8: Pop
+	9: LdConst[0](u64: 100)
+	10: Abort
+B3:
+	11: MoveLoc[0](Arg0: OperatorCap)
+	12: CopyLoc[1](Arg1: address)
+	13: Call transfer::transfer<OperatorCap>(OperatorCap, address)
+	14: MoveLoc[2](Arg2: &mut TxContext)
+	15: FreezeRef
+	16: Call tx_context::sender(&TxContext): address
+	17: MoveLoc[1](Arg1: address)
+	18: Pack[3](OperatorCapTransferred)
+	19: Call event::emit<OperatorCapTransferred>(OperatorCapTransferred)
+	20: Ret
+}
+
+Constants [
+	0 => u64: 100
+]
+}

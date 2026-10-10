@@ -1,0 +1,167 @@
+// Move bytecode v6
+module 346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c.cert {
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 0000000000000000000000000000000000000000000000000000000000000002::url;
+use 346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c::ownership;
+use 0000000000000000000000000000000000000000000000000000000000000001::option;
+
+struct MigratedEvent has copy, drop {
+	prev_version: u64,
+	new_version: u64
+}
+
+struct CERT has drop {
+	dummy_field: bool
+}
+
+struct Metadata<phantom Ty0> has store, key {
+	id: UID,
+	version: u64,
+	total_supply: Supply<Ty0>
+}
+
+init(Arg0: CERT, Arg1: &mut TxContext) {
+L2:	loc0: CoinMetadata<CERT>
+L3:	loc1: Supply<CERT>
+L4:	loc2: TreasuryCap<CERT>
+B0:
+	0: MoveLoc[0](Arg0: CERT)
+	1: LdConst[1](u8: 9)
+	2: LdConst[2](vector<u8>: "stI..)
+	3: LdConst[3](vector<u8>: "Sta..)
+	4: LdConst[4](vector<u8>: "IOT..)
+	5: LdConst[5](vector<u8>: "htt..)
+	6: Call url::new_unsafe_from_bytes(vector<u8>): Url
+	7: Call option::some<Url>(Url): Option<Url>
+	8: CopyLoc[1](Arg1: &mut TxContext)
+	9: Call coin::create_currency<CERT>(CERT, u8, vector<u8>, vector<u8>, vector<u8>, Option<Url>, &mut TxContext): TreasuryCap<CERT> * CoinMetadata<CERT>
+	10: StLoc[2](loc0: CoinMetadata<CERT>)
+	11: StLoc[4](loc2: TreasuryCap<CERT>)
+	12: MoveLoc[2](loc0: CoinMetadata<CERT>)
+	13: Call transfer::public_freeze_object<CoinMetadata<CERT>>(CoinMetadata<CERT>)
+	14: MoveLoc[4](loc2: TreasuryCap<CERT>)
+	15: Call coin::treasury_into_supply<CERT>(TreasuryCap<CERT>): Supply<CERT>
+	16: StLoc[3](loc1: Supply<CERT>)
+	17: MoveLoc[1](Arg1: &mut TxContext)
+	18: Call object::new(&mut TxContext): UID
+	19: LdConst[0](u64: 1)
+	20: MoveLoc[3](loc1: Supply<CERT>)
+	21: PackGeneric[0](Metadata<CERT>)
+	22: Call transfer::share_object<Metadata<CERT>>(Metadata<CERT>)
+	23: Ret
+}
+
+public get_total_supply(Arg0: &Metadata<CERT>): &Supply<CERT> {
+B0:
+	0: MoveLoc[0](Arg0: &Metadata<CERT>)
+	1: ImmBorrowFieldGeneric[0](Metadata.total_supply: Supply<CERT>)
+	2: Ret
+}
+
+public get_total_supply_value(Arg0: &Metadata<CERT>): u64 {
+B0:
+	0: MoveLoc[0](Arg0: &Metadata<CERT>)
+	1: ImmBorrowFieldGeneric[0](Metadata.total_supply: Supply<CERT>)
+	2: Call balance::supply_value<CERT>(&Supply<CERT>): u64
+	3: Ret
+}
+
+public(friend) mint(Arg0: &mut Metadata<CERT>, Arg1: u64, Arg2: &mut TxContext): Coin<CERT> {
+B0:
+	0: CopyLoc[0](Arg0: &mut Metadata<CERT>)
+	1: FreezeRef
+	2: Call assert_version(&Metadata<CERT>)
+	3: MoveLoc[0](Arg0: &mut Metadata<CERT>)
+	4: MutBorrowFieldGeneric[0](Metadata.total_supply: Supply<CERT>)
+	5: MoveLoc[1](Arg1: u64)
+	6: Call balance::increase_supply<CERT>(&mut Supply<CERT>, u64): Balance<CERT>
+	7: MoveLoc[2](Arg2: &mut TxContext)
+	8: Call coin::from_balance<CERT>(Balance<CERT>, &mut TxContext): Coin<CERT>
+	9: Ret
+}
+
+public(friend) burn_coin(Arg0: &mut Metadata<CERT>, Arg1: Coin<CERT>): u64 {
+B0:
+	0: CopyLoc[0](Arg0: &mut Metadata<CERT>)
+	1: FreezeRef
+	2: Call assert_version(&Metadata<CERT>)
+	3: MoveLoc[0](Arg0: &mut Metadata<CERT>)
+	4: MutBorrowFieldGeneric[0](Metadata.total_supply: Supply<CERT>)
+	5: MoveLoc[1](Arg1: Coin<CERT>)
+	6: Call coin::into_balance<CERT>(Coin<CERT>): Balance<CERT>
+	7: Call balance::decrease_supply<CERT>(&mut Supply<CERT>, Balance<CERT>): u64
+	8: Ret
+}
+
+public(friend) burn_balance(Arg0: &mut Metadata<CERT>, Arg1: Balance<CERT>): u64 {
+B0:
+	0: CopyLoc[0](Arg0: &mut Metadata<CERT>)
+	1: FreezeRef
+	2: Call assert_version(&Metadata<CERT>)
+	3: MoveLoc[0](Arg0: &mut Metadata<CERT>)
+	4: MutBorrowFieldGeneric[0](Metadata.total_supply: Supply<CERT>)
+	5: MoveLoc[1](Arg1: Balance<CERT>)
+	6: Call balance::decrease_supply<CERT>(&mut Supply<CERT>, Balance<CERT>): u64
+	7: Ret
+}
+
+entry migrate(Arg0: &mut Metadata<CERT>, Arg1: &OwnerCap) {
+B0:
+	0: CopyLoc[0](Arg0: &mut Metadata<CERT>)
+	1: ImmBorrowFieldGeneric[1](Metadata.version: u64)
+	2: ReadRef
+	3: LdConst[0](u64: 1)
+	4: Lt
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[0](Arg0: &mut Metadata<CERT>)
+	8: Pop
+	9: LdConst[0](u64: 1)
+	10: Abort
+B3:
+	11: CopyLoc[0](Arg0: &mut Metadata<CERT>)
+	12: ImmBorrowFieldGeneric[1](Metadata.version: u64)
+	13: ReadRef
+	14: LdConst[0](u64: 1)
+	15: Pack[0](MigratedEvent)
+	16: Call event::emit<MigratedEvent>(MigratedEvent)
+	17: LdConst[0](u64: 1)
+	18: MoveLoc[0](Arg0: &mut Metadata<CERT>)
+	19: MutBorrowFieldGeneric[1](Metadata.version: u64)
+	20: WriteRef
+	21: Ret
+}
+
+assert_version(Arg0: &Metadata<CERT>) {
+B0:
+	0: MoveLoc[0](Arg0: &Metadata<CERT>)
+	1: ImmBorrowFieldGeneric[1](Metadata.version: u64)
+	2: ReadRef
+	3: LdConst[0](u64: 1)
+	4: Eq
+	5: BrFalse(7)
+B1:
+	6: Branch(9)
+B2:
+	7: LdConst[0](u64: 1)
+	8: Abort
+B3:
+	9: Ret
+}
+
+Constants [
+	0 => u64: 1
+	1 => u8: 9
+	2 => vector<u8>: "stIOTA" // interpreted as UTF8 string
+	3 => vector<u8>: "Staked IOTA" // interpreted as UTF8 string
+	4 => vector<u8>: "IOTA staking solution provides the best user experience and highest level of decentralization, security, combined with an attractive reward mechanism and instant staking liquidity through a bond-like synthetic token called stIOTA." // interpreted as UTF8 string
+	5 => vector<u8>: "https://swirlstake.com/logo.svg" // interpreted as UTF8 string
+]
+}

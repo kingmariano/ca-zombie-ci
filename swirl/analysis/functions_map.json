@@ -1,0 +1,518 @@
+{
+ "cert": {
+  "burn_balance": {
+   "visibility": "Friend",
+   "is_entry": false,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"balance\", \"name\": \"Balance\", \"typeArguments\": [{\"Struct\": {\"address\": \"0x346778"
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "burn_coin": {
+   "visibility": "Friend",
+   "is_entry": false,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"coin\", \"name\": \"Coin\", \"typeArguments\": [{\"Struct\": {\"address\": \"0x346778989a9f"
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "get_total_supply": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ce"
+   ],
+   "returns": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"balance\", \"name\": \"Supply"
+   ]
+  },
+  "get_total_supply_value": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ce"
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "migrate": {
+   "visibility": "Private",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow"
+   ],
+   "returns": []
+  },
+  "mint": {
+   "visibility": "Friend",
+   "is_entry": false,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "\"U64\"",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": [
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"coin\", \"name\": \"Coin\", \"typeArguments\":"
+   ]
+  }
+ },
+ "math": {
+  "from_shares": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "\"U256\"",
+    "\"U64\""
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "mul_div": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "\"U64\"",
+    "\"U64\"",
+    "\"U64\""
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "ratio": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "\"U64\"",
+    "\"U64\""
+   ],
+   "returns": [
+    "\"U256\""
+   ]
+  },
+  "to_shares": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "\"U256\"",
+    "\"U64\""
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  }
+ },
+ "native_pool": {
+  "add_pending": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"coin\", \"name\": \"Coin\", \"typeArguments\": [{\"Struct\": {\"address\": \"0x2\", \"module\"",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow"
+   ],
+   "returns": []
+  },
+  "change_base_reward_fee": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow",
+    "\"U64\""
+   ],
+   "returns": []
+  },
+  "change_max_validator_stake_per_epoch": {
+   "visibility": "Friend",
+   "is_entry": false,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow",
+    "\"U64\""
+   ],
+   "returns": []
+  },
+  "change_min_stake": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow",
+    "\"U64\""
+   ],
+   "returns": []
+  },
+  "collect_fee": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "\"Address\"",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": []
+  },
+  "from_shares": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"na",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ce",
+    "\"U64\""
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "get_max_stake_per_epoch": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"na"
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "get_min_stake": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"na"
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "get_pending": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"na"
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "get_ratio": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"na",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ce"
+   ],
+   "returns": [
+    "\"U256\""
+   ]
+  },
+  "get_total_rewards": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"na"
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "get_total_staked": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"na"
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "get_validators": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"na"
+   ],
+   "returns": [
+    "{\"Vector\": \"Address\"}"
+   ]
+  },
+  "migrate": {
+   "visibility": "Private",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow"
+   ],
+   "returns": []
+  },
+  "publish_ratio": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"na",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ce"
+   ],
+   "returns": []
+  },
+  "rebalance": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x3\", \"module\": \"iota_system\", \"name\": \"IotaSystemState\", \"typeArguments\": ",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": []
+  },
+  "set_pause": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow",
+    "\"Bool\""
+   ],
+   "returns": []
+  },
+  "stake": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x3\", \"module\": \"iota_system\", \"name\": \"IotaSystemState\", \"typeArguments\": ",
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"coin\", \"name\": \"Coin\", \"typeArguments\": [{\"Struct\": {\"address\": \"0x2\", \"module\"",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": []
+  },
+  "stake_non_entry": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x3\", \"module\": \"iota_system\", \"name\": \"IotaSystemState\", \"typeArguments\": ",
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"coin\", \"name\": \"Coin\", \"typeArguments\": [{\"Struct\": {\"address\": \"0x2\", \"module\"",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": [
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"coin\", \"name\": \"Coin\", \"typeArguments\":"
+   ]
+  },
+  "to_shares": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"na",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ce",
+    "\"U64\""
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "unstake": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x3\", \"module\": \"iota_system\", \"name\": \"IotaSystemState\", \"typeArguments\": ",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"coin\", \"name\": \"Coin\", \"typeArguments\": [{\"Struct\": {\"address\": \"0x346778989a9f",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": []
+  },
+  "unstake_non_entry": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x3\", \"module\": \"iota_system\", \"name\": \"IotaSystemState\", \"typeArguments\": ",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"coin\", \"name\": \"Coin\", \"typeArguments\": [{\"Struct\": {\"address\": \"0x346778989a9f",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": [
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"coin\", \"name\": \"Coin\", \"typeArguments\":"
+   ]
+  },
+  "update_rewards": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"clock\", \"name\": \"Clock\", \"typeArguments\": []}}}",
+    "\"U64\"",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow"
+   ],
+   "returns": []
+  },
+  "update_rewards_revert": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "\"U64\"",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow"
+   ],
+   "returns": []
+  },
+  "update_rewards_threshold": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow",
+    "\"U64\""
+   ],
+   "returns": []
+  },
+  "update_validators": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Vector\": \"Address\"}",
+    "{\"Vector\": \"U64\"}",
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ow"
+   ],
+   "returns": []
+  }
+ },
+ "ownership": {
+  "transfer_operator": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ownership\", \"nam",
+    "\"Address\"",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": []
+  },
+  "transfer_owner": {
+   "visibility": "Public",
+   "is_entry": true,
+   "params": [
+    "{\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"ownership\", \"nam",
+    "\"Address\"",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": []
+  }
+ },
+ "validator_set": {
+  "add_stake": {
+   "visibility": "Friend",
+   "is_entry": false,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "\"Address\"",
+    "{\"Struct\": {\"address\": \"0x3\", \"module\": \"staking_pool\", \"name\": \"StakedIota\", \"typeArguments\": []}}",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": []
+  },
+  "create": {
+   "visibility": "Friend",
+   "is_entry": false,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": [
+    "{\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd139"
+   ]
+  },
+  "get_bad_validators": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"va"
+   ],
+   "returns": [
+    "{\"Vector\": \"Address\"}"
+   ]
+  },
+  "get_staked_in_epoch": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"va",
+    "\"Address\"",
+    "\"U64\""
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "get_top_validator": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"va"
+   ],
+   "returns": [
+    "\"Address\""
+   ]
+  },
+  "get_total_stake": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"va",
+    "\"Address\""
+   ],
+   "returns": [
+    "\"U64\""
+   ]
+  },
+  "get_validators": {
+   "visibility": "Public",
+   "is_entry": false,
+   "params": [
+    "{\"Reference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"module\": \"va"
+   ],
+   "returns": [
+    "{\"Vector\": \"Address\"}"
+   ]
+  },
+  "remove_stakes": {
+   "visibility": "Friend",
+   "is_entry": false,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x3\", \"module\": \"iota_system\", \"name\": \"IotaSystemState\", \"typeArguments\": ",
+    "\"Address\"",
+    "\"U64\"",
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x2\", \"module\": \"tx_context\", \"name\": \"TxContext\", \"typeArguments\": []}}}"
+   ],
+   "returns": [
+    "{\"Struct\": {\"address\": \"0x2\", \"module\": \"balance\", \"name\": \"Balance\", \"typeArgum",
+    "\"U64\"",
+    "\"U64\""
+   ]
+  },
+  "update_validators": {
+   "visibility": "Friend",
+   "is_entry": false,
+   "params": [
+    "{\"MutableReference\": {\"Struct\": {\"address\": \"0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c\", \"modul",
+    "{\"Vector\": \"Address\"}",
+    "{\"Vector\": \"U64\"}"
+   ],
+   "returns": []
+  }
+ }
+}

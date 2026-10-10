@@ -1,0 +1,840 @@
+// Move bytecode v6
+module 346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c.validator_set {
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::iota;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::object_table;
+use 0000000000000000000000000000000000000000000000000000000000000002::table;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+use 0000000000000000000000000000000000000000000000000000000000000002::vec_map;
+use 0000000000000000000000000000000000000000000000000000000000000003::iota_system;
+use 0000000000000000000000000000000000000000000000000000000000000003::staking_pool;
+use 0000000000000000000000000000000000000000000000000000000000000001::vector;
+
+struct ValidatorPriorUpdated has copy, drop {
+	validator: address,
+	priority: u64
+}
+
+struct Vault has store, key {
+	id: UID,
+	stakes: ObjectTable<u64, StakedIota>,
+	total_staked: u64,
+	stake_epoch: u64,
+	staked_in_epoch: u64
+}
+
+struct ValidatorSet has store, key {
+	id: UID,
+	vaults: Table<address, Vault>,
+	validators: VecMap<address, u64>,
+	sorted_validators: vector<address>
+}
+
+public(friend) create(Arg0: &mut TxContext): ValidatorSet {
+B0:
+	0: CopyLoc[0](Arg0: &mut TxContext)
+	1: Call object::new(&mut TxContext): UID
+	2: MoveLoc[0](Arg0: &mut TxContext)
+	3: Call table::new<address, Vault>(&mut TxContext): Table<address, Vault>
+	4: Call vec_map::empty<address, u64>(): VecMap<address, u64>
+	5: VecPack(4, 0)
+	6: Pack[2](ValidatorSet)
+	7: Ret
+}
+
+public get_validators(Arg0: &ValidatorSet): vector<address> {
+B0:
+	0: MoveLoc[0](Arg0: &ValidatorSet)
+	1: ImmBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	2: ReadRef
+	3: Ret
+}
+
+public get_top_validator(Arg0: &ValidatorSet): address {
+L1:	loc0: address
+B0:
+	0: CopyLoc[0](Arg0: &ValidatorSet)
+	1: ImmBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	2: VecLen(4)
+	3: LdU64(0)
+	4: Neq
+	5: BrFalse(7)
+B1:
+	6: Branch(11)
+B2:
+	7: MoveLoc[0](Arg0: &ValidatorSet)
+	8: Pop
+	9: LdConst[2](u64: 300)
+	10: Abort
+B3:
+	11: CopyLoc[0](Arg0: &ValidatorSet)
+	12: ImmBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	13: LdU64(0)
+	14: VecImmBorrow(4)
+	15: ReadRef
+	16: StLoc[1](loc0: address)
+	17: MoveLoc[0](Arg0: &ValidatorSet)
+	18: ImmBorrowField[1](ValidatorSet.validators: VecMap<address, u64>)
+	19: ImmBorrowLoc[1](loc0: address)
+	20: Call vec_map::get<address, u64>(&VecMap<address, u64>, &address): &u64
+	21: ReadRef
+	22: LdU64(0)
+	23: Gt
+	24: BrFalse(26)
+B4:
+	25: Branch(28)
+B5:
+	26: LdConst[2](u64: 300)
+	27: Abort
+B6:
+	28: MoveLoc[1](loc0: address)
+	29: Ret
+}
+
+public get_bad_validators(Arg0: &ValidatorSet): vector<address> {
+L1:	loc0: u64
+L2:	loc1: u64
+L3:	loc2: vector<address>
+L4:	loc3: &address
+B0:
+	0: CopyLoc[0](Arg0: &ValidatorSet)
+	1: ImmBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	2: VecLen(4)
+	3: StLoc[2](loc1: u64)
+	4: CopyLoc[2](loc1: u64)
+	5: LdU64(0)
+	6: Neq
+	7: BrFalse(9)
+B1:
+	8: Branch(13)
+B2:
+	9: MoveLoc[0](Arg0: &ValidatorSet)
+	10: Pop
+	11: LdConst[2](u64: 300)
+	12: Abort
+B3:
+	13: VecPack(4, 0)
+	14: StLoc[3](loc2: vector<address>)
+	15: LdU64(0)
+	16: StLoc[1](loc0: u64)
+B4:
+	17: CopyLoc[1](loc0: u64)
+	18: CopyLoc[2](loc1: u64)
+	19: Lt
+	20: BrFalse(47)
+B5:
+	21: Branch(22)
+B6:
+	22: CopyLoc[0](Arg0: &ValidatorSet)
+	23: ImmBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	24: CopyLoc[1](loc0: u64)
+	25: VecImmBorrow(4)
+	26: StLoc[4](loc3: &address)
+	27: CopyLoc[0](Arg0: &ValidatorSet)
+	28: ImmBorrowField[1](ValidatorSet.validators: VecMap<address, u64>)
+	29: CopyLoc[4](loc3: &address)
+	30: Call vec_map::get<address, u64>(&VecMap<address, u64>, &address): &u64
+	31: ReadRef
+	32: LdU64(0)
+	33: Eq
+	34: BrFalse(40)
+B7:
+	35: MutBorrowLoc[3](loc2: vector<address>)
+	36: MoveLoc[4](loc3: &address)
+	37: ReadRef
+	38: VecPushBack(4)
+	39: Branch(42)
+B8:
+	40: MoveLoc[4](loc3: &address)
+	41: Pop
+B9:
+	42: MoveLoc[1](loc0: u64)
+	43: LdU64(1)
+	44: Add
+	45: StLoc[1](loc0: u64)
+	46: Branch(17)
+B10:
+	47: MoveLoc[0](Arg0: &ValidatorSet)
+	48: Pop
+	49: MoveLoc[3](loc2: vector<address>)
+	50: Ret
+}
+
+public get_total_stake(Arg0: &ValidatorSet, Arg1: address): u64 {
+B0:
+	0: CopyLoc[0](Arg0: &ValidatorSet)
+	1: ImmBorrowField[2](ValidatorSet.vaults: Table<address, Vault>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, Vault>(&Table<address, Vault>, address): bool
+	4: Not
+	5: BrFalse(10)
+B1:
+	6: MoveLoc[0](Arg0: &ValidatorSet)
+	7: Pop
+	8: LdU64(0)
+	9: Ret
+B2:
+	10: MoveLoc[0](Arg0: &ValidatorSet)
+	11: ImmBorrowField[2](ValidatorSet.vaults: Table<address, Vault>)
+	12: MoveLoc[1](Arg1: address)
+	13: Call table::borrow<address, Vault>(&Table<address, Vault>, address): &Vault
+	14: ImmBorrowField[3](Vault.total_staked: u64)
+	15: ReadRef
+	16: Ret
+}
+
+public get_staked_in_epoch(Arg0: &ValidatorSet, Arg1: address, Arg2: u64): u64 {
+L3:	loc0: &Vault
+B0:
+	0: CopyLoc[0](Arg0: &ValidatorSet)
+	1: ImmBorrowField[2](ValidatorSet.vaults: Table<address, Vault>)
+	2: CopyLoc[1](Arg1: address)
+	3: Call table::contains<address, Vault>(&Table<address, Vault>, address): bool
+	4: Not
+	5: BrFalse(10)
+B1:
+	6: MoveLoc[0](Arg0: &ValidatorSet)
+	7: Pop
+	8: LdU64(0)
+	9: Ret
+B2:
+	10: MoveLoc[0](Arg0: &ValidatorSet)
+	11: ImmBorrowField[2](ValidatorSet.vaults: Table<address, Vault>)
+	12: MoveLoc[1](Arg1: address)
+	13: Call table::borrow<address, Vault>(&Table<address, Vault>, address): &Vault
+	14: StLoc[3](loc0: &Vault)
+	15: CopyLoc[3](loc0: &Vault)
+	16: ImmBorrowField[4](Vault.stake_epoch: u64)
+	17: ReadRef
+	18: MoveLoc[2](Arg2: u64)
+	19: Neq
+	20: BrFalse(25)
+B3:
+	21: MoveLoc[3](loc0: &Vault)
+	22: Pop
+	23: LdU64(0)
+	24: Ret
+B4:
+	25: MoveLoc[3](loc0: &Vault)
+	26: ImmBorrowField[5](Vault.staked_in_epoch: u64)
+	27: ReadRef
+	28: Ret
+}
+
+public(friend) update_validators(Arg0: &mut ValidatorSet, Arg1: vector<address>, Arg2: vector<u64>) {
+L3:	loc0: bool
+L4:	loc1: u64
+L5:	loc2: u64
+L6:	loc3: address
+L7:	loc4: &u64
+L8:	loc5: u64
+L9:	loc6: u64
+L10:	loc7: address
+L11:	loc8: u64
+L12:	loc9: u64
+B0:
+	0: ImmBorrowLoc[1](Arg1: vector<address>)
+	1: VecLen(4)
+	2: StLoc[8](loc5: u64)
+	3: CopyLoc[8](loc5: u64)
+	4: LdConst[1](u64: 16)
+	5: Lt
+	6: BrFalse(8)
+B1:
+	7: Branch(12)
+B2:
+	8: MoveLoc[0](Arg0: &mut ValidatorSet)
+	9: Pop
+	10: LdConst[6](u64: 304)
+	11: Abort
+B3:
+	12: CopyLoc[8](loc5: u64)
+	13: ImmBorrowLoc[2](Arg2: vector<u64>)
+	14: VecLen(6)
+	15: Eq
+	16: BrFalse(18)
+B4:
+	17: Branch(22)
+B5:
+	18: MoveLoc[0](Arg0: &mut ValidatorSet)
+	19: Pop
+	20: LdConst[3](u64: 301)
+	21: Abort
+B6:
+	22: LdU64(0)
+	23: StLoc[4](loc1: u64)
+B7:
+	24: CopyLoc[4](loc1: u64)
+	25: CopyLoc[8](loc5: u64)
+	26: Lt
+	27: BrFalse(122)
+B8:
+	28: Branch(29)
+B9:
+	29: ImmBorrowLoc[1](Arg1: vector<address>)
+	30: CopyLoc[4](loc1: u64)
+	31: VecImmBorrow(4)
+	32: ReadRef
+	33: StLoc[10](loc7: address)
+	34: ImmBorrowLoc[2](Arg2: vector<u64>)
+	35: CopyLoc[4](loc1: u64)
+	36: VecImmBorrow(6)
+	37: ReadRef
+	38: StLoc[11](loc8: u64)
+	39: CopyLoc[0](Arg0: &mut ValidatorSet)
+	40: CopyLoc[10](loc7: address)
+	41: CopyLoc[11](loc8: u64)
+	42: Call update_validator(&mut ValidatorSet, address, u64)
+	43: CopyLoc[0](Arg0: &mut ValidatorSet)
+	44: ImmBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	45: VecLen(4)
+	46: StLoc[9](loc6: u64)
+	47: LdU64(0)
+	48: StLoc[5](loc2: u64)
+	49: CopyLoc[9](loc6: u64)
+	50: StLoc[12](loc9: u64)
+B10:
+	51: CopyLoc[5](loc2: u64)
+	52: CopyLoc[9](loc6: u64)
+	53: Lt
+	54: BrFalse(112)
+B11:
+	55: Branch(56)
+B12:
+	56: CopyLoc[0](Arg0: &mut ValidatorSet)
+	57: ImmBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	58: CopyLoc[5](loc2: u64)
+	59: VecImmBorrow(4)
+	60: ReadRef
+	61: StLoc[6](loc3: address)
+	62: CopyLoc[0](Arg0: &mut ValidatorSet)
+	63: ImmBorrowField[1](ValidatorSet.validators: VecMap<address, u64>)
+	64: ImmBorrowLoc[6](loc3: address)
+	65: Call vec_map::get<address, u64>(&VecMap<address, u64>, &address): &u64
+	66: StLoc[7](loc4: &u64)
+	67: ImmBorrowLoc[6](loc3: address)
+	68: ImmBorrowLoc[10](loc7: address)
+	69: Eq
+	70: BrFalse(91)
+B13:
+	71: MoveLoc[7](loc4: &u64)
+	72: Pop
+	73: CopyLoc[0](Arg0: &mut ValidatorSet)
+	74: MutBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	75: CopyLoc[5](loc2: u64)
+	76: Call vector::remove<address>(&mut vector<address>, u64): address
+	77: Pop
+	78: CopyLoc[12](loc9: u64)
+	79: CopyLoc[9](loc6: u64)
+	80: Eq
+	81: BrFalse(86)
+B14:
+	82: MoveLoc[12](loc9: u64)
+	83: LdU64(1)
+	84: Sub
+	85: StLoc[12](loc9: u64)
+B15:
+	86: MoveLoc[9](loc6: u64)
+	87: LdU64(1)
+	88: Sub
+	89: StLoc[9](loc6: u64)
+	90: Branch(51)
+B16:
+	91: MoveLoc[7](loc4: &u64)
+	92: ReadRef
+	93: CopyLoc[11](loc8: u64)
+	94: Lt
+	95: BrFalse(101)
+B17:
+	96: CopyLoc[12](loc9: u64)
+	97: CopyLoc[9](loc6: u64)
+	98: Eq
+	99: StLoc[3](loc0: bool)
+	100: Branch(103)
+B18:
+	101: LdFalse
+	102: StLoc[3](loc0: bool)
+B19:
+	103: MoveLoc[3](loc0: bool)
+	104: BrFalse(107)
+B20:
+	105: CopyLoc[5](loc2: u64)
+	106: StLoc[12](loc9: u64)
+B21:
+	107: MoveLoc[5](loc2: u64)
+	108: LdU64(1)
+	109: Add
+	110: StLoc[5](loc2: u64)
+	111: Branch(51)
+B22:
+	112: CopyLoc[0](Arg0: &mut ValidatorSet)
+	113: MutBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	114: MoveLoc[10](loc7: address)
+	115: MoveLoc[12](loc9: u64)
+	116: Call vector::insert<address>(&mut vector<address>, address, u64)
+	117: MoveLoc[4](loc1: u64)
+	118: LdU64(1)
+	119: Add
+	120: StLoc[4](loc1: u64)
+	121: Branch(24)
+B23:
+	122: MoveLoc[0](Arg0: &mut ValidatorSet)
+	123: Pop
+	124: Ret
+}
+
+update_validator(Arg0: &mut ValidatorSet, Arg1: address, Arg2: u64) {
+B0:
+	0: CopyLoc[0](Arg0: &mut ValidatorSet)
+	1: ImmBorrowField[1](ValidatorSet.validators: VecMap<address, u64>)
+	2: ImmBorrowLoc[1](Arg1: address)
+	3: Call vec_map::contains<address, u64>(&VecMap<address, u64>, &address): bool
+	4: BrFalse(12)
+B1:
+	5: CopyLoc[2](Arg2: u64)
+	6: MoveLoc[0](Arg0: &mut ValidatorSet)
+	7: MutBorrowField[1](ValidatorSet.validators: VecMap<address, u64>)
+	8: ImmBorrowLoc[1](Arg1: address)
+	9: Call vec_map::get_mut<address, u64>(&mut VecMap<address, u64>, &address): &mut u64
+	10: WriteRef
+	11: Branch(17)
+B2:
+	12: MoveLoc[0](Arg0: &mut ValidatorSet)
+	13: MutBorrowField[1](ValidatorSet.validators: VecMap<address, u64>)
+	14: CopyLoc[1](Arg1: address)
+	15: CopyLoc[2](Arg2: u64)
+	16: Call vec_map::insert<address, u64>(&mut VecMap<address, u64>, address, u64)
+B3:
+	17: MoveLoc[1](Arg1: address)
+	18: MoveLoc[2](Arg2: u64)
+	19: Pack[0](ValidatorPriorUpdated)
+	20: Call event::emit<ValidatorPriorUpdated>(ValidatorPriorUpdated)
+	21: Ret
+}
+
+public(friend) add_stake(Arg0: &mut ValidatorSet, Arg1: address, Arg2: StakedIota, Arg3: &mut TxContext) {
+L4:	loc0: UID
+L5:	loc1: u64
+L6:	loc2: ObjectTable<u64, StakedIota>
+L7:	loc3: u64
+L8:	loc4: u64
+L9:	loc5: u64
+L10:	loc6: u64
+L11:	loc7: u64
+L12:	loc8: u64
+L13:	loc9: &mut Vault
+L14:	loc10: Vault
+B0:
+	0: ImmBorrowLoc[2](Arg2: StakedIota)
+	1: Call staking_pool::staked_iota_amount(&StakedIota): u64
+	2: StLoc[12](loc8: u64)
+	3: CopyLoc[3](Arg3: &mut TxContext)
+	4: FreezeRef
+	5: Call tx_context::epoch(&TxContext): u64
+	6: StLoc[9](loc5: u64)
+	7: CopyLoc[0](Arg0: &mut ValidatorSet)
+	8: ImmBorrowField[2](ValidatorSet.vaults: Table<address, Vault>)
+	9: CopyLoc[1](Arg1: address)
+	10: Call table::contains<address, Vault>(&Table<address, Vault>, address): bool
+	11: BrFalse(62)
+B1:
+	12: MoveLoc[3](Arg3: &mut TxContext)
+	13: Pop
+	14: MoveLoc[0](Arg0: &mut ValidatorSet)
+	15: MutBorrowField[2](ValidatorSet.vaults: Table<address, Vault>)
+	16: MoveLoc[1](Arg1: address)
+	17: Call table::borrow_mut<address, Vault>(&mut Table<address, Vault>, address): &mut Vault
+	18: StLoc[13](loc9: &mut Vault)
+	19: CopyLoc[13](loc9: &mut Vault)
+	20: ImmBorrowField[6](Vault.stakes: ObjectTable<u64, StakedIota>)
+	21: Call object_table::length<u64, StakedIota>(&ObjectTable<u64, StakedIota>): u64
+	22: StLoc[10](loc6: u64)
+	23: CopyLoc[13](loc9: &mut Vault)
+	24: MutBorrowField[6](Vault.stakes: ObjectTable<u64, StakedIota>)
+	25: MoveLoc[10](loc6: u64)
+	26: MoveLoc[2](Arg2: StakedIota)
+	27: Call object_table::add<u64, StakedIota>(&mut ObjectTable<u64, StakedIota>, u64, StakedIota)
+	28: CopyLoc[13](loc9: &mut Vault)
+	29: ImmBorrowField[3](Vault.total_staked: u64)
+	30: ReadRef
+	31: CopyLoc[12](loc8: u64)
+	32: Add
+	33: CopyLoc[13](loc9: &mut Vault)
+	34: MutBorrowField[3](Vault.total_staked: u64)
+	35: WriteRef
+	36: CopyLoc[13](loc9: &mut Vault)
+	37: ImmBorrowField[5](Vault.staked_in_epoch: u64)
+	38: ReadRef
+	39: CopyLoc[12](loc8: u64)
+	40: Add
+	41: CopyLoc[13](loc9: &mut Vault)
+	42: MutBorrowField[5](Vault.staked_in_epoch: u64)
+	43: WriteRef
+	44: CopyLoc[13](loc9: &mut Vault)
+	45: ImmBorrowField[4](Vault.stake_epoch: u64)
+	46: ReadRef
+	47: CopyLoc[9](loc5: u64)
+	48: Neq
+	49: BrFalse(59)
+B2:
+	50: MoveLoc[9](loc5: u64)
+	51: CopyLoc[13](loc9: &mut Vault)
+	52: MutBorrowField[4](Vault.stake_epoch: u64)
+	53: WriteRef
+	54: MoveLoc[12](loc8: u64)
+	55: MoveLoc[13](loc9: &mut Vault)
+	56: MutBorrowField[5](Vault.staked_in_epoch: u64)
+	57: WriteRef
+	58: Branch(61)
+B3:
+	59: MoveLoc[13](loc9: &mut Vault)
+	60: Pop
+B4:
+	61: Branch(95)
+B5:
+	62: CopyLoc[3](Arg3: &mut TxContext)
+	63: Call object::new(&mut TxContext): UID
+	64: StLoc[4](loc0: UID)
+	65: CopyLoc[12](loc8: u64)
+	66: StLoc[5](loc1: u64)
+	67: MoveLoc[3](Arg3: &mut TxContext)
+	68: Call object_table::new<u64, StakedIota>(&mut TxContext): ObjectTable<u64, StakedIota>
+	69: StLoc[6](loc2: ObjectTable<u64, StakedIota>)
+	70: MoveLoc[12](loc8: u64)
+	71: StLoc[7](loc3: u64)
+	72: MoveLoc[9](loc5: u64)
+	73: StLoc[8](loc4: u64)
+	74: MoveLoc[4](loc0: UID)
+	75: MoveLoc[6](loc2: ObjectTable<u64, StakedIota>)
+	76: MoveLoc[5](loc1: u64)
+	77: MoveLoc[8](loc4: u64)
+	78: MoveLoc[7](loc3: u64)
+	79: Pack[1](Vault)
+	80: StLoc[14](loc10: Vault)
+	81: ImmBorrowLoc[14](loc10: Vault)
+	82: ImmBorrowField[6](Vault.stakes: ObjectTable<u64, StakedIota>)
+	83: Call object_table::length<u64, StakedIota>(&ObjectTable<u64, StakedIota>): u64
+	84: StLoc[11](loc7: u64)
+	85: MutBorrowLoc[14](loc10: Vault)
+	86: MutBorrowField[6](Vault.stakes: ObjectTable<u64, StakedIota>)
+	87: MoveLoc[11](loc7: u64)
+	88: MoveLoc[2](Arg2: StakedIota)
+	89: Call object_table::add<u64, StakedIota>(&mut ObjectTable<u64, StakedIota>, u64, StakedIota)
+	90: MoveLoc[0](Arg0: &mut ValidatorSet)
+	91: MutBorrowField[2](ValidatorSet.vaults: Table<address, Vault>)
+	92: MoveLoc[1](Arg1: address)
+	93: MoveLoc[14](loc10: Vault)
+	94: Call table::add<address, Vault>(&mut Table<address, Vault>, address, Vault)
+B6:
+	95: Ret
+}
+
+public(friend) remove_stakes(Arg0: &mut ValidatorSet, Arg1: &mut IotaSystemState, Arg2: address, Arg3: u64, Arg4: &mut TxContext): Balance<IOTA> * u64 * u64 {
+L5:	loc0: bool
+L6:	loc1: bool
+L7:	loc2: u64
+L8:	loc3: u64
+L9:	loc4: u64
+L10:	loc5: u64
+L11:	loc6: u64
+L12:	loc7: u64
+L13:	loc8: &mut StakedIota
+L14:	loc9: StakedIota
+L15:	loc10: Balance<IOTA>
+L16:	loc11: u64
+L17:	loc12: &mut Vault
+L18:	loc13: Balance<IOTA>
+L19:	loc14: u64
+B0:
+	0: Call balance::zero<IOTA>(): Balance<IOTA>
+	1: StLoc[15](loc10: Balance<IOTA>)
+	2: LdU64(0)
+	3: StLoc[16](loc11: u64)
+	4: CopyLoc[0](Arg0: &mut ValidatorSet)
+	5: ImmBorrowField[2](ValidatorSet.vaults: Table<address, Vault>)
+	6: CopyLoc[2](Arg2: address)
+	7: Call table::contains<address, Vault>(&Table<address, Vault>, address): bool
+	8: Not
+	9: BrFalse(51)
+B1:
+	10: MoveLoc[1](Arg1: &mut IotaSystemState)
+	11: Pop
+	12: MoveLoc[4](Arg4: &mut TxContext)
+	13: Pop
+	14: CopyLoc[0](Arg0: &mut ValidatorSet)
+	15: ImmBorrowField[1](ValidatorSet.validators: VecMap<address, u64>)
+	16: ImmBorrowLoc[2](Arg2: address)
+	17: Call vec_map::get<address, u64>(&VecMap<address, u64>, &address): &u64
+	18: ReadRef
+	19: LdU64(0)
+	20: Eq
+	21: BrFalse(45)
+B2:
+	22: CopyLoc[0](Arg0: &mut ValidatorSet)
+	23: MutBorrowField[1](ValidatorSet.validators: VecMap<address, u64>)
+	24: ImmBorrowLoc[2](Arg2: address)
+	25: Call vec_map::remove<address, u64>(&mut VecMap<address, u64>, &address): address * u64
+	26: Pop
+	27: Pop
+	28: CopyLoc[0](Arg0: &mut ValidatorSet)
+	29: ImmBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	30: ImmBorrowLoc[2](Arg2: address)
+	31: Call vector::index_of<address>(&vector<address>, &address): bool * u64
+	32: StLoc[7](loc2: u64)
+	33: BrFalse(35)
+B3:
+	34: Branch(39)
+B4:
+	35: MoveLoc[0](Arg0: &mut ValidatorSet)
+	36: Pop
+	37: LdConst[5](u64: 303)
+	38: Abort
+B5:
+	39: MoveLoc[0](Arg0: &mut ValidatorSet)
+	40: MutBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	41: MoveLoc[7](loc2: u64)
+	42: Call vector::swap_remove<address>(&mut vector<address>, u64): address
+	43: Pop
+	44: Branch(47)
+B6:
+	45: MoveLoc[0](Arg0: &mut ValidatorSet)
+	46: Pop
+B7:
+	47: MoveLoc[15](loc10: Balance<IOTA>)
+	48: LdU64(0)
+	49: LdU64(0)
+	50: Ret
+B8:
+	51: CopyLoc[0](Arg0: &mut ValidatorSet)
+	52: MutBorrowField[2](ValidatorSet.vaults: Table<address, Vault>)
+	53: CopyLoc[2](Arg2: address)
+	54: Call table::borrow_mut<address, Vault>(&mut Table<address, Vault>, address): &mut Vault
+	55: StLoc[17](loc12: &mut Vault)
+	56: CopyLoc[17](loc12: &mut Vault)
+	57: ImmBorrowField[6](Vault.stakes: ObjectTable<u64, StakedIota>)
+	58: Call object_table::length<u64, StakedIota>(&ObjectTable<u64, StakedIota>): u64
+	59: StLoc[9](loc4: u64)
+B9:
+	60: CopyLoc[9](loc4: u64)
+	61: LdU64(0)
+	62: Gt
+	63: BrFalse(71)
+B10:
+	64: Branch(65)
+B11:
+	65: ImmBorrowLoc[15](loc10: Balance<IOTA>)
+	66: Call balance::value<IOTA>(&Balance<IOTA>): u64
+	67: CopyLoc[3](Arg3: u64)
+	68: Lt
+	69: StLoc[5](loc0: bool)
+	70: Branch(73)
+B12:
+	71: LdFalse
+	72: StLoc[5](loc0: bool)
+B13:
+	73: MoveLoc[5](loc0: bool)
+	74: BrFalse(147)
+B14:
+	75: CopyLoc[9](loc4: u64)
+	76: LdU64(1)
+	77: Sub
+	78: StLoc[12](loc7: u64)
+	79: CopyLoc[17](loc12: &mut Vault)
+	80: MutBorrowField[6](Vault.stakes: ObjectTable<u64, StakedIota>)
+	81: CopyLoc[12](loc7: u64)
+	82: Call object_table::borrow_mut<u64, StakedIota>(&mut ObjectTable<u64, StakedIota>, u64): &mut StakedIota
+	83: StLoc[13](loc8: &mut StakedIota)
+	84: CopyLoc[13](loc8: &mut StakedIota)
+	85: FreezeRef
+	86: Call staking_pool::staked_iota_amount(&StakedIota): u64
+	87: StLoc[10](loc5: u64)
+	88: CopyLoc[3](Arg3: u64)
+	89: ImmBorrowLoc[15](loc10: Balance<IOTA>)
+	90: Call balance::value<IOTA>(&Balance<IOTA>): u64
+	91: Sub
+	92: StLoc[11](loc6: u64)
+	93: CopyLoc[11](loc6: u64)
+	94: LdConst[0](u64: 1000..)
+	95: Lt
+	96: BrFalse(99)
+B15:
+	97: LdConst[0](u64: 1000..)
+	98: StLoc[11](loc6: u64)
+B16:
+	99: CopyLoc[10](loc5: u64)
+	100: CopyLoc[11](loc6: u64)
+	101: Gt
+	102: BrFalse(110)
+B17:
+	103: CopyLoc[10](loc5: u64)
+	104: CopyLoc[11](loc6: u64)
+	105: Sub
+	106: LdConst[0](u64: 1000..)
+	107: Ge
+	108: StLoc[6](loc1: bool)
+	109: Branch(112)
+B18:
+	110: LdFalse
+	111: StLoc[6](loc1: bool)
+B19:
+	112: MoveLoc[6](loc1: bool)
+	113: BrFalse(122)
+B20:
+	114: MoveLoc[13](loc8: &mut StakedIota)
+	115: CopyLoc[11](loc6: u64)
+	116: CopyLoc[4](Arg4: &mut TxContext)
+	117: Call staking_pool::split(&mut StakedIota, u64, &mut TxContext): StakedIota
+	118: StLoc[14](loc9: StakedIota)
+	119: MoveLoc[11](loc6: u64)
+	120: StLoc[10](loc5: u64)
+	121: Branch(133)
+B21:
+	122: MoveLoc[13](loc8: &mut StakedIota)
+	123: Pop
+	124: CopyLoc[17](loc12: &mut Vault)
+	125: MutBorrowField[6](Vault.stakes: ObjectTable<u64, StakedIota>)
+	126: MoveLoc[12](loc7: u64)
+	127: Call object_table::remove<u64, StakedIota>(&mut ObjectTable<u64, StakedIota>, u64): StakedIota
+	128: StLoc[14](loc9: StakedIota)
+	129: MoveLoc[9](loc4: u64)
+	130: LdU64(1)
+	131: Sub
+	132: StLoc[9](loc4: u64)
+B22:
+	133: CopyLoc[1](Arg1: &mut IotaSystemState)
+	134: MoveLoc[14](loc9: StakedIota)
+	135: CopyLoc[4](Arg4: &mut TxContext)
+	136: Call iota_system::request_withdraw_stake_non_entry(&mut IotaSystemState, StakedIota, &mut TxContext): Balance<IOTA>
+	137: StLoc[18](loc13: Balance<IOTA>)
+	138: MoveLoc[16](loc11: u64)
+	139: MoveLoc[10](loc5: u64)
+	140: Add
+	141: StLoc[16](loc11: u64)
+	142: MutBorrowLoc[15](loc10: Balance<IOTA>)
+	143: MoveLoc[18](loc13: Balance<IOTA>)
+	144: Call balance::join<IOTA>(&mut Balance<IOTA>, Balance<IOTA>): u64
+	145: Pop
+	146: Branch(60)
+B23:
+	147: MoveLoc[1](Arg1: &mut IotaSystemState)
+	148: Pop
+	149: MoveLoc[4](Arg4: &mut TxContext)
+	150: Pop
+	151: ImmBorrowLoc[15](loc10: Balance<IOTA>)
+	152: Call balance::value<IOTA>(&Balance<IOTA>): u64
+	153: CopyLoc[16](loc11: u64)
+	154: Sub
+	155: StLoc[19](loc14: u64)
+	156: CopyLoc[17](loc12: &mut Vault)
+	157: ImmBorrowField[3](Vault.total_staked: u64)
+	158: ReadRef
+	159: CopyLoc[16](loc11: u64)
+	160: Sub
+	161: CopyLoc[17](loc12: &mut Vault)
+	162: MutBorrowField[3](Vault.total_staked: u64)
+	163: WriteRef
+	164: CopyLoc[17](loc12: &mut Vault)
+	165: ImmBorrowField[6](Vault.stakes: ObjectTable<u64, StakedIota>)
+	166: Call object_table::length<u64, StakedIota>(&ObjectTable<u64, StakedIota>): u64
+	167: LdU64(0)
+	168: Eq
+	169: BrFalse(220)
+B24:
+	170: MoveLoc[17](loc12: &mut Vault)
+	171: ImmBorrowField[3](Vault.total_staked: u64)
+	172: ReadRef
+	173: LdU64(0)
+	174: Eq
+	175: BrFalse(177)
+B25:
+	176: Branch(181)
+B26:
+	177: MoveLoc[0](Arg0: &mut ValidatorSet)
+	178: Pop
+	179: LdConst[4](u64: 302)
+	180: Abort
+B27:
+	181: CopyLoc[0](Arg0: &mut ValidatorSet)
+	182: ImmBorrowField[1](ValidatorSet.validators: VecMap<address, u64>)
+	183: ImmBorrowLoc[2](Arg2: address)
+	184: Call vec_map::get<address, u64>(&VecMap<address, u64>, &address): &u64
+	185: ReadRef
+	186: LdU64(0)
+	187: Eq
+	188: BrFalse(217)
+B28:
+	189: CopyLoc[0](Arg0: &mut ValidatorSet)
+	190: MutBorrowField[2](ValidatorSet.vaults: Table<address, Vault>)
+	191: CopyLoc[2](Arg2: address)
+	192: Call table::remove<address, Vault>(&mut Table<address, Vault>, address): Vault
+	193: Call destroy_vault(Vault)
+	194: CopyLoc[0](Arg0: &mut ValidatorSet)
+	195: MutBorrowField[1](ValidatorSet.validators: VecMap<address, u64>)
+	196: ImmBorrowLoc[2](Arg2: address)
+	197: Call vec_map::remove<address, u64>(&mut VecMap<address, u64>, &address): address * u64
+	198: Pop
+	199: Pop
+	200: CopyLoc[0](Arg0: &mut ValidatorSet)
+	201: ImmBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	202: ImmBorrowLoc[2](Arg2: address)
+	203: Call vector::index_of<address>(&vector<address>, &address): bool * u64
+	204: StLoc[8](loc3: u64)
+	205: BrFalse(207)
+B29:
+	206: Branch(211)
+B30:
+	207: MoveLoc[0](Arg0: &mut ValidatorSet)
+	208: Pop
+	209: LdConst[5](u64: 303)
+	210: Abort
+B31:
+	211: MoveLoc[0](Arg0: &mut ValidatorSet)
+	212: MutBorrowField[0](ValidatorSet.sorted_validators: vector<address>)
+	213: MoveLoc[8](loc3: u64)
+	214: Call vector::swap_remove<address>(&mut vector<address>, u64): address
+	215: Pop
+	216: Branch(219)
+B32:
+	217: MoveLoc[0](Arg0: &mut ValidatorSet)
+	218: Pop
+B33:
+	219: Branch(224)
+B34:
+	220: MoveLoc[17](loc12: &mut Vault)
+	221: Pop
+	222: MoveLoc[0](Arg0: &mut ValidatorSet)
+	223: Pop
+B35:
+	224: MoveLoc[15](loc10: Balance<IOTA>)
+	225: MoveLoc[16](loc11: u64)
+	226: MoveLoc[19](loc14: u64)
+	227: Ret
+}
+
+destroy_vault(Arg0: Vault) {
+L1:	loc0: ObjectTable<u64, StakedIota>
+B0:
+	0: MoveLoc[0](Arg0: Vault)
+	1: Unpack[1](Vault)
+	2: Pop
+	3: Pop
+	4: Pop
+	5: StLoc[1](loc0: ObjectTable<u64, StakedIota>)
+	6: Call object::delete(UID)
+	7: MoveLoc[1](loc0: ObjectTable<u64, StakedIota>)
+	8: Call object_table::destroy_empty<u64, StakedIota>(ObjectTable<u64, StakedIota>)
+	9: Ret
+}
+
+Constants [
+	0 => u64: 1000000000
+	1 => u64: 16
+	2 => u64: 300
+	3 => u64: 301
+	4 => u64: 302
+	5 => u64: 303
+	6 => u64: 304
+]
+}
