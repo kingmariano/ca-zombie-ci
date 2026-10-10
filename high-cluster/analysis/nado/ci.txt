@@ -1,0 +1,13 @@
+# CI runs — Nado (high-cluster, poc-nado)
+
+Final run (all tests pass):
+- https://github.com/kingmariano/ca-zombie-ci/actions/runs/38065395750
+  - fork: Ink mainnet (chainid 57073) at block 58,149,246
+  - result: `poc-nado exit=0` — Suite result: ok. **14 passed; 0 failed; 0 skipped**
+  - log artifact: `ci-out/poc-nado.log`
+
+Iterations (failed, kept for transparency):
+- https://github.com/kingmariano/ca-zombie-ci/actions/runs/38064256027 — compile error (reserved keyword `after`)
+- https://github.com/kingmariano/ca-zombie-ci/actions/runs/38064470718 — compile error (stack-too-deep)
+- https://github.com/kingmariano/ca-zombie-ci/actions/runs/38064953258 — 9 passed / 5 failed (test-side ABI
+  encoding of the signed-tx blob + test-wallet fee funding)

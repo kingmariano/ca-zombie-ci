@@ -1,0 +1,29 @@
+H2-02 — Altura NavVault (HyperEVM) — CI record
+===============================================
+
+FINAL RUN (all green): https://github.com/kingmariano/ca-zombie-ci/actions/runs/38053290770
+  workflow: poc.yml | repo kingmariano/ca-zombie-ci | branch high-cluster
+  result: poc-altura: 17 passed / 0 failed / 0 skipped (forge 1.8.5, solc 0.8.24)
+  fork: HyperEVM chain 999 pinned at block 48,164,864 (keyless https://rpc.hyperliquid.xyz/evm)
+  artifact: result-high-cluster -> ci-out/poc-altura.log
+  local log mirror: /home/heisenberg/CA/high-cluster/ci-log.txt
+
+Earlier iterations (recorded for transparency):
+  38051081661 — compile error (address checksum casing + tuple arity) — fixed
+  38051503558 — compile error (1 remaining checksum) — fixed
+  38052575273 — compiled and ran: 8/17 passed; the 9 failures were test-funding only
+                (the live JIT funder EOA holds ~$2.55 at the pinned block) — fixed by a
+                fork-only vm.store of the USDt0 balance slot (slot 51, discovered by probing)
+
+Selected assertions from the final run (from ci-out/poc-altura.log):
+  - test_C: real queued request #5255, claim value 101,223,195 micro-USDt0 ($101.22) vs vault
+    liquidity 8 micro -> InsufficientLiquidity revert; after JIT funding, claim paid 101,223,195
+    micro in full (no exit fee on the queue path)
+  - test_B1: fresh attacker 9 micro in -> 8 shares -> withdraw 7 micro out (net -2 micro)
+  - test_B2: withdraw(vault balance) reverts; max net payout = balance minus ceil fee; vault never drained
+  - test_G: 16 vault + 2 oracle privileged entrypoints revert (AccessControlUnauthorizedAccount)
+  - test_H2: moveAssets / sweepExitFees revert InsufficientLiquidity even for role holders today
+  - test_J: conditional fork-only scenario payout 100,899,007,301 micro after a simulated +1%
+    reporter pps move with funded liquidity (requires reporter key; NOT a live path)
+
+No mainnet transactions were signed or sent: everything above ran on local forks in CI.

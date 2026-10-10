@@ -1,0 +1,72 @@
+# Attacker eth_call simulations (read-only) — HyperEVM block 48180417
+# from=0x000000000000000000000000000000000000dEaD (not a real user); each line: target :: sighash :: result
+--- MarginPool.transferToUser(USDC,attacker,1)
+Error: execution reverted: MarginPool: Sender is not Controller
+
+Context:
+--- MarginPool.farm(USDC,attacker,1)
+Error: execution reverted: MarginPool: Sender is not farmer
+
+Context:
+--- MarginPool.setFarmer(attacker)
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+--- MMarket.operate([])
+Error: execution reverted: bad operator
+
+Context:
+--- RyskHype.ingresso_newUserPosition(0x)
+Error: execution reverted: bad operator
+
+Context:
+--- RyskHype.ingresso_transferAsset(0x)
+Error: execution reverted: bad operator
+
+Context:
+--- RyskHype.ingresso_redeem([],[])
+Error: execution reverted: bad operator
+
+Context:
+--- RyskHype.ingresso_settle([])
+Error: execution reverted: bad operator
+
+Context:
+--- Controller.operate([])
+Error: execution reverted: C6
+
+Context:
+--- ControllerLogic.handleRedeem
+Error: execution reverted: ControllerLogic: Sender is not Controller
+
+Context:
+--- ControllerLogic.handleSettle
+Error: execution reverted: ControllerLogic: Sender is not Controller
+
+Context:
+--- Oracle.setExpiryPrice
+Error: execution reverted: Oracle: caller is not authorized to set expiry price
+
+Context:
+--- ManualPricer.setExpiryPriceInOracle
+Error: execution reverted: ManualPricer: unauthorized sender
+
+Context:
+--- AddressBook.setOracle(attacker)
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+--- AddressBook.updateImpl(CONTROLLER,attacker)
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+--- Whitelist.whitelistCollateral(attacker)
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+--- Otoken(9548...).mintOtoken(attacker,1)
+Error: execution reverted: Otoken: Only Controller can mint Otokens
+
+Context:
+--- Safe.execTransaction probe (non-owner)
+3

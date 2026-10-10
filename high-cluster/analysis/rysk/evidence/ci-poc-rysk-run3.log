@@ -1,0 +1,215 @@
+Compiling 19 files with Solc 0.8.24
+Solc 0.8.24 finished in 1.60s
+Compiler run successful!
+
+Ran 10 tests for test/RyskV12Gates.t.sol:RyskEthereumGatesTest
+[PASS] test_01_live_state_roles_gates() (gas: 172687)
+Logs:
+  ETHEREUM fork block: 26163148
+  chainid: 1
+  MarginPool USDC: 2369950.000000
+  MarginPool WBTC: 17.05000000
+
+[PASS] test_02_attacker_cannot_move_marginpool_funds() (gas: 363967)
+Logs:
+  ETHEREUM fork block: 26163148
+  chainid: 1
+  revert[transferToUser]: MarginPool: Sender is not Controller
+  revert[farm]: MarginPool: Sender is not farmer
+  revert[setFarmer]: Ownable: caller is not the owner
+  revert[proxy.upgradeTo]: <no reason string>
+  revert[transferProxyOwnership]: <no reason string>
+  revert[re-initialize]: Contract instance has already been initialized
+
+[PASS] test_03_attacker_cannot_operate_mmarket() (gas: 107304)
+Logs:
+  ETHEREUM fork block: 26163148
+  chainid: 1
+  revert[MMarket.operate]: bad operator
+  revert[MMarket.setOperator]: <no reason string>
+
+[PASS] test_04_attacker_cannot_call_rysk_operator_paths() (gas: 558944)
+Logs:
+  ETHEREUM fork block: 26163148
+  chainid: 1
+  revert[ingresso_newUserPosition]: bad operator
+  revert[ingresso_transferAsset]: bad operator
+  revert[ingresso_OTCTrade]: bad operator
+  revert[ingresso_redeem]: bad operator
+  revert[ingresso_settle]: bad operator
+  revert[flashLoanRedeem]: bad operator
+  revert[executeOperation]: Caller is not flashLoanPool
+  revert[setOperator]: <no reason string>
+  revert[setSelfServiceAllowed]: <no reason string>
+
+[PASS] test_05_attacker_cannot_call_gamma_controller() (gas: 287068)
+Logs:
+  ETHEREUM fork block: 26163148
+  chainid: 1
+  revert[Controller.operate]: C6
+  revert[updateVault]: C42
+  revert[setAuthorizedCaller]: Ownable: caller is not the owner
+  revert[donate]: Ownable: caller is not the owner
+
+[PASS] test_06_attacker_cannot_call_controller_logic() (gas: 184969)
+Logs:
+  ETHEREUM fork block: 26163148
+  chainid: 1
+  revert[handleRedeem]: ControllerLogic: Sender is not Controller
+  revert[handleSettle]: ControllerLogic: Sender is not Controller
+
+[PASS] test_07_attacker_cannot_set_oracle_prices() (gas: 248189)
+Logs:
+  ETHEREUM fork block: 26163148
+  chainid: 1
+  revert[setExpiryPrice]: Oracle: caller is not authorized to set expiry price
+  revert[disputeExpiryPrice]: Oracle: caller is not the disputer
+  revert[pricer.setExpiryPriceInOracle]: ManualPricer: unauthorized sender
+
+[PASS] test_08_attacker_cannot_config_whitelist_factory_otoken() (gas: 333774)
+Logs:
+  ETHEREUM fork block: 26163148
+  chainid: 1
+  revert[whitelistCollateral]: Ownable: caller is not the owner
+  revert[whitelistOtoken]: Whitelist: Sender is not OtokenFactory
+  revert[factory.createOtoken(random product)]: OtokenFactory: Unsupported Product
+  revert[otoken.mintOtoken]: Otoken: Only Controller can mint Otokens
+
+[PASS] test_09_upgrade_paths_are_owner_only() (gas: 208081)
+Logs:
+  ETHEREUM fork block: 26163148
+  chainid: 1
+  revert[Rysk upgradeTo]: <no reason string>
+  revert[MMarket upgradeTo]: <no reason string>
+  revert[AddressBook.updateImpl(MARGIN_POOL)]: Ownable: caller is not the owner
+  revert[AddressBook.setOracle]: Ownable: caller is not the owner
+
+[PASS] test_10_operator_branch_is_privileged_only() (gas: 178821)
+Logs:
+  ETHEREUM fork block: 26163148
+  chainid: 1
+  operator ingresso_settle outcome: C35
+  revert[attacker ingresso_settle]: bad operator
+
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 981.47ms (1.86s CPU time)
+
+Ran 11 tests for test/RyskV12Gates.t.sol:RyskHyperEVMGatesTest
+[PASS] test_01_live_state_roles_gates() (gas: 254960)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  safe modules count: 0
+  MarginPool USDC: 10830325.000030
+  MarginPool WHYPE: 73225.000000000000000001
+  MarginPool kHYPE: 37800.000000000000672152
+
+[PASS] test_02_attacker_cannot_move_marginpool_funds() (gas: 640689)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  revert[transferToUser]: MarginPool: Sender is not Controller
+  revert[transferToPool]: MarginPool: Sender is not Controller
+  revert[batchTransferToUser]: MarginPool: Sender is not Controller
+  revert[batchTransferToPool]: MarginPool: Sender is not Controller
+  revert[farm]: MarginPool: Sender is not farmer
+  revert[setFarmer]: Ownable: caller is not the owner
+  revert[proxy.upgradeTo]: <no reason string>
+  revert[transferProxyOwnership]: <no reason string>
+  revert[re-initialize]: Contract instance has already been initialized
+
+[PASS] test_03_attacker_cannot_operate_mmarket() (gas: 140777)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  revert[MMarket.operate]: bad operator
+  revert[MMarket.setOperator]: <no reason string>
+  revert[MMarket.initialize]: <no reason string>
+
+[PASS] test_04_attacker_cannot_call_rysk_operator_paths() (gas: 729753)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  revert[ingresso_newUserPosition]: bad operator
+  revert[ingresso_transferAsset]: bad operator
+  revert[ingresso_OTCTrade]: bad operator
+  revert[ingresso_OTCTradeBatch]: bad operator
+  revert[ingresso_redeem]: bad operator
+  revert[ingresso_settle]: bad operator
+  revert[flashLoanRedeem]: bad operator
+  revert[executeOperation(fake flash loan caller)]: Caller is not flashLoanPool
+  revert[setOperator]: <no reason string>
+  revert[setMarginPool]: <no reason string>
+  revert[setRyskSigner]: <no reason string>
+  revert[setSelfServiceAllowed]: <no reason string>
+  revert[re-initialize Rysk]: <no reason string>
+
+[PASS] test_05_attacker_cannot_call_gamma_controller() (gas: 416395)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  revert[Controller.operate]: C6
+  revert[updateVault]: C42
+  revert[setAuthorizedCaller]: Ownable: caller is not the owner
+  revert[setSystemFullyPaused]: C1
+  revert[donate]: Ownable: caller is not the owner
+  revert[re-init controller]: Contract instance has already been initialized
+
+[PASS] test_06_attacker_cannot_call_controller_logic() (gas: 439760)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  revert[handleRedeem]: ControllerLogic: Sender is not Controller
+  revert[handleSettle]: ControllerLogic: Sender is not Controller
+  revert[handleDepositCollateral]: ControllerLogic: Sender is not Controller
+  revert[handleMintOtoken]: ControllerLogic: Sender is not Controller
+  revert[setRedeemTimePeriod]: Ownable: caller is not the owner
+
+[PASS] test_07_attacker_cannot_set_oracle_prices() (gas: 383866)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  revert[setExpiryPrice]: Oracle: caller is not authorized to set expiry price
+  revert[disputeExpiryPrice]: Oracle: caller is not the disputer
+  revert[setStablePrice]: Ownable: caller is not the owner
+  revert[pricer.setExpiryPriceInOracle]: ManualPricer: unauthorized sender
+  revert[pricer.setPriceTimeValidity]: Ownable: caller is not the owner
+
+[PASS] test_08_attacker_cannot_config_whitelist_factory_otoken() (gas: 412473)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  revert[whitelistCollateral]: Ownable: caller is not the owner
+  revert[whitelistOtoken]: Whitelist: Sender is not OtokenFactory
+  revert[factory.createOtoken(random product)]: OtokenFactory: Unsupported Product
+  revert[otoken.mintOtoken]: Otoken: Only Controller can mint Otokens
+  revert[otoken.burnOtoken]: Otoken: Only Controller can burn Otokens
+
+[PASS] test_09_stored_balances_and_sthype_excess() (gas: 75244)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  stHYPE stored (pool ledger): 0.000000000000000000
+  stHYPE actual (pool balance): 647.077719753299613378
+
+[PASS] test_10_upgrade_paths_are_owner_only() (gas: 308416)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  revert[Rysk upgradeTo]: <no reason string>
+  revert[Rysk upgradeToAndCall]: <no reason string>
+  revert[MMarket upgradeTo]: <no reason string>
+  revert[AddressBook.updateImpl(MARGIN_POOL)]: Ownable: caller is not the owner
+  revert[AddressBook.updateImpl(CONTROLLER)]: Ownable: caller is not the owner
+  revert[AddressBook.setOracle]: Ownable: caller is not the owner
+
+[PASS] test_11_operator_branch_is_privileged_only() (gas: 179062)
+Logs:
+  HYPEREVM fork block: 48181953
+  chainid: 999
+  operator ingresso_settle outcome: C35
+  revert[attacker ingresso_settle]: bad operator
+
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 6.85s (19.51s CPU time)
+
+Ran 2 test suites in 6.86s (7.83s CPU time): 21 tests passed, 0 failed, 0 skipped (21 total tests)
+== poc-rysk exit=0 ==

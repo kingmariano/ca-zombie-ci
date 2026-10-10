@@ -1,0 +1,94 @@
+{
+  "target": "Altura NavVault on HyperEVM (chain 999)",
+  "captured_at_utc": "2026-10-10T11:30:00Z",
+  "read_blocks": {
+    "primary_live_state_block": 48164864,
+    "stability_window_checked": [48164862, 48164863, 48164864, 48164865, 48164866],
+    "contract_deploy_blocks": {"NavOracle": 22282400, "NavVault": 22290174}
+  },
+  "addresses": {
+    "vault": "0xd0ee0cf300dfb598270cd7f4d0c6e0d8f6e13f29",
+    "oracle": "0x314A79618d86309e91aa972CAfd143ffca80AE8F",
+    "asset_usdt0": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb",
+    "liquidityRecipient": "0xFC45cF9323A3057899bc681Bcb7F781f87660ADf",
+    "admin_safe": "0x2ae5173dcd5b5c29dceac77ee767f01d2bf0f832",
+    "safe_singleton": "0xfb1bffc9d739b8d520daf37df666da4c687191ea",
+    "safe_owners": [
+      "0xF1497e1b4FCb32609C8e0F76C64Ff042c5816DDd",
+      "0x20B25BadDC6968ab3cC49981361E775DFBaf684f",
+      "0xBCCaE5158AdED4E5394B35d5E423aB4eE2b271fA"
+    ],
+    "vault_operator_2_and_oracle_guardian": "0x03987d5fa639023904378614537ac4fafe1f8813",
+    "vault_guardian": "0xff0c2fba221cbc1011b294e3803851ee9df009ef",
+    "oracle_reporter": "0xc55e3de9085732317efcfd729d254b8bff7f7ad2",
+    "vault_deployer_and_initial_reporter": "0x12f8f492ca503ca5505b67d42d63c91113e3d967",
+    "observed_jit_liquidity_eoa": "0xfa9573d1b2e5db5bc9588f71d27832bcdd027271",
+    "liquidity_strategy_destination": "0xbd151bef567dabf712a811402a27839768a13d70"
+  },
+  "live_reads_at_block_48164864": {
+    "vault.totalAssets": 32437234873245,
+    "vault.totalSupply_raw_shares": 29636794853910,
+    "vault.usdt0_balance_micro": 8,
+    "oracle.pricePerShare_1e18": 1094492929356520704,
+    "oracle.maxPpsMoveBps": 0,
+    "oracle.maxOracleStaleness": 86400,
+    "oracle.isValid": true,
+    "vault.exitFeeBps": 10,
+    "vault.accruedExitFeesAssets": 26911525034,
+    "vault.maxAllowedStaleness": 86400,
+    "vault.epochSeconds": 259200,
+    "vault.paused": false,
+    "vault.nextRequestId": 5256,
+    "vault.cumulativeDeposits": 77722333127327,
+    "vault.cumulativeWithdrawals": 46300912451657,
+    "vault.pendingOracle": "0x0000000000000000000000000000000000000000",
+    "vault.escrowed_shares_AVLT_balanceOf_vault": 10662103820489,
+    "eip1967_impl_slot_vault": "0x00",
+    "eip1967_admin_slot_vault": "0x00",
+    "eip1967_beacon_slot_vault": "0x00",
+    "eip1967_impl_slot_oracle": "0x00",
+    "eip1967_admin_slot_oracle": "0x00",
+    "safe_threshold": 2,
+    "safe_owners_count": 3,
+    "safe_version": "1.3.0",
+    "safe_nonce": 4,
+    "safe_modules": []
+  },
+  "role_state": {
+    "vault_DEFAULT_ADMIN": ["0x2ae5173dcd5b5c29dceac77ee767f01d2bf0f832 (2/3 Safe)"],
+    "vault_OPERATOR": ["0x2ae5173dcd5b5c29dceac77ee767f01d2bf0f832 (Safe)", "0x03987d5fa639023904378614537ac4fafe1f8813 (EOA)"],
+    "vault_GUARDIAN": ["0xff0c2fba221cbc1011b294e3803851ee9df009ef (EOA)"],
+    "oracle_DEFAULT_ADMIN": ["0x2ae5173dcd5b5c29dceac77ee767f01d2bf0f832 (Safe)"],
+    "oracle_REPORTER": ["0xc55e3de9085732317efcfd729d254b8bff7f7ad2 (EOA)"],
+    "oracle_GUARDIAN": ["0x03987d5fa639023904378614537ac4fafe1f8813 (EOA)"],
+    "history": "RoleGranted/RoleRevoked fully enumerated via Etherscan V2 logs; no further holders. Initial admin 0xbf33f8aac7b90662bf346eb0be42f7761308ef6e and initial reporter 0x12f8f492ca503ca5505b67d42d63c91113e3d967 were revoked (blocks 36227384 / 33251080 resp. 36226587); admin moved to the Safe."
+  },
+  "oracle_history": {
+    "NavReported_cadence": "~every 300s (5 min); pps monotonic up (yield accrual ~0.033%/day since Dec 2025)",
+    "max_relative_move_sampled": 4.75e-6,
+    "OracleConfigured_events": 1,
+    "note": "maxPpsMoveBps = 0 since deployment: the reporter can move pps arbitrarily in one report (staleness-bounded), but reportNav is REPORTER_ROLE-only. ts has no upper bound (reports can carry a future timestamp)."
+  },
+  "usdt0_token": {
+    "proxy": "TransparentUpgradeableProxy (Etherscan Proxy=1)",
+    "implementation": "0xf555a12bffaef20cc201a74ae6513cb4aadb34b9",
+    "decimals": 6,
+    "name": "USD₮0",
+    "price_defillama": 0.9990684286749313,
+    "price_timestamp": 1791632878
+  },
+  "usd_conversions": {
+    "peg": 1.0,
+    "depegged_ref": 0.9990684286749313,
+    "total_nav_usd_peg": 32437234.873245,
+    "total_nav_usd_defillama": 32407017.27537257,
+    "escrowed_queued_value_usd_peg": 11669587.334694,
+    "accrued_exit_fees_usd": 26911.525034,
+    "vault_raw_balance_usd": 0.000008
+  },
+  "transaction_flow_evidence": {
+    "sample": "200 most recent USD₮0 transfers of the vault + 141 of liquidityRecipient (Etherscan V2 tokentx)",
+    "pattern": "deposits accumulate -> operator moveAssets() to liquidityRecipient -> onward transfers to 0xbd151bef567dabf712a811402a27839768a13d70 (70x, e.g. 125,000 USDt0 = 125,000,000,000 micro) -> instant exits are JIT-funded by EOA 0xfa9573d1b2e5db5bc9588f71d27832bcdd027271 into the vault immediately before withdrawals (micro-batches, e.g. 1,100,000 micro = $1.10 at blk 45,970,318-319). All ERC20 liquidity touching the vault is micro-scale; the $32.4M NAV sits off-vault.",
+    "vault_self_transfer_artifact": "ERC4626._withdraw(receiver=address(this)) produces gross in+out self transfers (compliant tokens, no fee-on-transfer observed: gross self-transfer then net out with exactly the bps fee retained)"
+  }
+}

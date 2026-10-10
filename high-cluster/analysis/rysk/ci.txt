@@ -1,0 +1,33 @@
+# Rysk V12 — CI record (GitHub Actions, repo kingmariano/ca-zombie-ci)
+
+All forge compile/test work ran in CI. Runs were triggered with:
+    bash /home/heisenberg/CA/ci/ci-run.sh high-cluster
+(results also land in ci-out/poc-rysk.log inside the artifact result-high-cluster)
+
+## Run 1 — compile fix needed
+URL: https://github.com/kingmariano/ca-zombie-ci/actions/runs/38065780081
+Result: poc-rysk exit=1 — solc rejected two test-constant address literals without EIP-55 checksum.
+Fix: checksummed the two oToken sample addresses. No test ever ran in this attempt.
+
+## Run 2 — first full execution, 4 over-strict assertions
+URL: https://github.com/kingmariano/ca-zombie-ci/actions/runs/38066077677
+Fork blocks: HyperEVM 48,181,471 / Ethereum 26,163,109
+Result: compiled; 21 tests ran; 17 passed, 4 failed.
+Failure cause: the 4 tests asserted a "not the owner" *string* for OZ v5 Ownable reverts, which are
+`OwnableUnauthorizedAccount(address)` custom errors (traces show the custom error; every call still
+reverted, i.e. no gate was open). Fix: relaxed those 4 string assertions to revert-only.
+
+## Run 3 — FINAL, fully green
+URL: https://github.com/kingmariano/ca-zombie-ci/actions/runs/38066632187
+Fork blocks: HyperEVM 48,181,953 / Ethereum 26,163,148
+Result: **poc-rysk exit=0 — 21/21 tests passed, 0 failed**
+  - RyskEthereumGatesTest: 10 passed / 0 failed
+  - RyskHyperEVMGatesTest: 11 passed / 0 failed
+Sample fork-block values from the run (HyperEVM 48,181,953): MarginPool USDC 10,799,125.000030,
+WHYPE 73,200.000000000000000001, kHYPE 37,800.000000000000672152; stHYPE stored=0 vs actual
+647.077719753299613378 (untracked excess); operator ingresso_settle gate opens for operator (business
+error C35) and returns `bad operator` for everyone else.
+Logs: ci-out/poc-rysk.log in artifact `result-high-cluster`; local copy at
+analysis/rysk/evidence/ci-poc-rysk-run3.log.
+
+No mainnet transaction was ever broadcast: all execution was inside forks (read-only PoC).

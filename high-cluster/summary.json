@@ -1,0 +1,63 @@
+{
+  "finding": "H2-02",
+  "title": "Large live-TVL protocols with no extraction path found yet — per-protocol deep dive",
+  "chains": ["hyperevm", "ink", "ethereum", "cronos", "cronos-zkevm", "flare", "plume", "citrea", "bsc", "megaeth", "flow-evm", "abstract", "xdc"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 193380490, "P": 55026826, "S": 64024},
+  "latest_block": 0,
+  "block_numbers": {
+    "hyperevm": 48180034,
+    "ink": 58149983,
+    "ethereum": 26162991,
+    "cronos": 99057951,
+    "flare": 71773173,
+    "plume": 98590683,
+    "bsc": 126853064,
+    "megaeth": 28849478,
+    "flow": 81323287,
+    "abstract": 87353969,
+    "xdc": 108203387
+  },
+  "targets_checked": 11,
+  "live_targets": 11,
+  "closed_reasons": [
+    "Altura: NAV 100% oracle-driven (REPORTER-only reportNav); withdrawals liquidity-gated; 17/17 fork tests close every candidate path; vault holds only 8 micro-USDt0",
+    "Nado: fast-withdraw needs all 3 provisioned ECDSA keys (nSigner=3); user txs sequencer-Schnorr-only; per-owner nonce; EIP-712 chain/contract-bound; engine mutators gated (14/14 fork tests)",
+    "Rysk: 23 gate classes closure-proven live+on forks — pools custody-gated to operator EOA + 3-of-5 Safe, selfServiceAllowed=false, authorizedCallers={Rysk}, proxies initialized, signatures bind all fields, no unauthenticated callback (21/21 fork tests)",
+    "Moonlander: 23-facet diamond fully classified (225 selectors); diamondCut/init/admin role-gated; price feeds PRICE_FEEDER-gated; MLP mint/burn fair (15/15 fork tests)",
+    "Mystic: oracles track market (FTSO fresh, Stork signature, PT ZCB-bounded); zero liquidatable positions (230 Flare HFs); no permissionless value path; curator actions revert (12/12 fork tests)",
+    "HyperSwap V3: deployed pool bytecode == verified source == canonical Uniswap v3-core v1.0.0 logic; collectProtocol onlyFactoryOwner",
+    "Kinza: all major reserves frozen (no new supply/borrow); oracle fresh; only frozen p-markets borrow-disabled",
+    "Kumbaya: pool bytecode == verified source == canonical logic except min feeProtocol bound 2/64; owner 3-of-5 Safe",
+    "KittyPunch: Curve-NG fork math closed in prior corpus (L2-03); balances re-verified; admins 2-of-N Safe",
+    "Aborean: Aerodrome-lineage; FactoryRegistry owner 3-of-N Safe; attacker registry calls revert",
+    "Fathom: CDP debt = 0 both pools (no liquidation); lending oracle fresh; FXD reserve frozen"
+  ],
+  "poc": {
+    "tests_passed": 84,
+    "tests_total": 84,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38053290770",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38065395750",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38066632187",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38057370504",
+      "final consolidated run: see ci-log.txt (all poc-* + ci/check-bytecode.py)"
+    ]
+  },
+  "key_facts": [
+    "Tydro is CLOSED in the source report and was not re-audited",
+    "E-U $0 on all eleven targets; no path found for an external unprivileged attacker",
+    "Rysk live value is ≈$36.62M (HyperEVM $27.32M + Ethereum $9.30M) — larger than the finding's $20.5M; pools are custody-gated (selfServiceAllowed=false)",
+    "HyperSwap V3 factory owner is a single EOA (0xBC7e493f...) able to collect ~$3.3k sampled accrued protocol fees; Kumbaya/Aborean/PunchSwap/Flare-Morpho owners are Safes (3-of-5 / 3-of-N / 2-of-N / 5-of-9)",
+    "Mystic Flare TVL fully attributed: 3 Core VaultV2s ($28.11M) on Morpho Blue; Plume Re7 vault $1.945M; Citrea $4.0M screened",
+    "H-O ≈$193.38M nominal user/holder-owned (self-serviceability varies: instant LP exits vs operator-relayed/queued); P ≈$55.03M privilege-controlled; S ≈$64k; H-O and P overlap by construction"
+  ],
+  "caveats": [
+    "Coverage: fully audited for Altura/Nado/Rysk/Moonlander + HyperSwap/Kumbaya pool code; screened for Kinza/Kumbaya/KittyPunch/Aborean/Fathom, Mystic-remainder (Plume beyond Re7, Citrea) and all peripheries",
+    "Not exhaustively enumerated: liquidation/health books (Kinza, Fathom, Nado), off-chain sequencer/RFQ policy, multisig composition, key custody",
+    "H-O and P figures overlap by construction (the same custody is often controllable by privilege); categories are per-protocol classifications, not additive disjoint pots",
+    "USD values are point-in-time (DefiLlama/CoinGecko 2026-10-10); verify on-chain before acting"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from all eleven H2-02 targets; every candidate path is role/signature/liquidity/oracle-gated (fork-proven or exact live gate) while ≈$193M remains holder/privilege-controlled."
+}

@@ -1,0 +1,123 @@
+{
+  "protocol": "Rysk V12",
+  "chains": {
+    "hyperevm": {"chainId": 999, "snapshot_block": 48180034, "rpc": "https://rpc.hyperliquid.xyz/evm"},
+    "ethereum": {"chainId": 1, "snapshot_block": 26162991, "rpc": "https://ethereum-rpc.publicnode.com"}
+  },
+  "owner_safe": {
+    "address": "0xAFE32eB89391DFd5900F98857f009477e4423Db4",
+    "type": "Gnosis Safe 1.4.1",
+    "threshold": 3,
+    "signers": [
+      "0xAb855506f89DbeB7923fcF45f6585A3A9dBB4251",
+      "0xa0e5aF7b60BFc291E67B447eEA487555BbCeA835",
+      "0x92D97F86aFa95D16405e7210ab55581bB3BD1276",
+      "0x030E9cBD88258eAEc2AAc0FE550F1fF8622376F2",
+      "0xd390F33c230C202Ce2A3721F012eCDd8a8470415"
+    ],
+    "modules": [],
+    "nonce": {"hyperevm": 133, "ethereum": 9},
+    "controls": "owner of all Rysk contracts, proxy admin ownership, AddressBook, pausers, oracle admin/disputer"
+  },
+  "hot_roles": {
+    "operator_eoa": {
+      "address": "0x65802CC308aeA8bb913882696c2df6bF23Ff9e48",
+      "type": "EOA",
+      "nonce_hyperevm": 65026,
+      "powers": [
+        "RyskHype/Rysk operator: sole relayer of ingresso_* flows",
+        "MMarket cannot be operated by anyone else",
+        "bot on every ManualPricer (can push expiry prices within deviation cap)",
+        "can settle ANY expired vault with payout to ANY receiver via ingresso_settle (receiver check is skipped for operator)",
+        "can force-redeem any user's otokens via ingresso_redeem (payout constrained to otoken owner)"
+      ],
+      "note": "Single hot key. Full custody of expired positions; cannot touch unexpired vault collateral or bearer MMarket balances without user signatures."
+    },
+    "rysk_signer_eoa": {
+      "address": "0xea1913BF76F544f420a84F3d3fF0d087Cf80C396",
+      "type": "EOA",
+      "nonce_hyperevm": 1170,
+      "powers": ["signs OTCTrade payloads that move internal MMarket balances between arbitrary users (relayed by operator)"]
+    },
+    "fee_recipient_safe": {
+      "address": "0xFb69f38Eae27705720Eb4AABB04be9edbec5B555",
+      "type": "Gnosis Safe (2-of-3, signers are 3 of the 5 owner-Safe signers)",
+      "accumulated_fees": {
+        "hyperevm": {"USDC": "624362.239520", "USDt0": "9669.865069"},
+        "ethereum": {"USDC": "108927.452194", "USDT": "24426.568469"}
+      }
+    },
+    "gas_fee_recipient": {"hyperevm": "0xAFE32eB89391DFd5900F98857f009477e4423Db4 (owner Safe)", "ethereum": "0xced8efEaC9Df0109a67514CDC915719a4156d426 (EOA)"}
+  },
+  "contracts_hyperevm": [
+    {"name": "MarginPool", "address": "0x24a44f1dc25540c62c1196FfC297dFC951C91aB4", "kind": "OwnedUpgradeabilityProxy (ZOS)", "impl": "0x14907e5f94468a526f97689ccacc93af7184cb98", "impl_verified": true, "impl_name": "MarginPool", "proxy_owner": "0xFfCE2d20e0f68dcEDbCE657175684845f9593f34 (AddressBook)", "owner": "0xAFE32eB89391DFd5900F98857f009477e4423Db4", "farmer": "0x0", "upgrade_path": "AddressBook.updateImpl -> proxy.upgradeTo, onlyOwner = Safe (P)"},
+    {"name": "Rysk", "address": "0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35", "kind": "TransparentUpgradeableProxy", "impl": "0x19f1e31395d6bea34bb8ace81b5d7861aa8b1c76", "impl_verified": true, "impl_name": "RyskHype", "proxy_admin": "0x88960cff17dd8173cd88d6e51df1c478c07b94db (unverified OZ ProxyAdmin; owner() = Safe)", "owner": "0xAFE32eB89391DFd5900F98857f009477e4423Db4", "operator": "0x65802CC308aeA8bb913882696c2df6bF23Ff9e48", "selfServiceAllowed": false, "ryskSigner": "0xea1913BF76F544f420a84F3d3fF0d087Cf80C396", "controller": "0x84d84e481B49B8Bc5a55f17AaF8181c21A29B212", "marginPool": "0x24a44f1dc25540c62c1196FfC297dFC951C91aB4", "mmarket": "0x691a5fc3a81a144e36c6C4fBCa1fC82843c80d0d", "feeRecipient": "0xFb69f38Eae27705720Eb4AABB04be9edbec5B555", "flashLoanPool": "0x00A89d7a5A02160f20150EbEA7a2b5E4879A1A8b (Hyperlend)", "swapRouter": "0x4E2960a8cd19B467b82d26D83fAcb0fAE26b094D", "flashLoanRedeemPeriodStart": 2700},
+    {"name": "MMarket", "address": "0x691a5fc3a81a144e36c6C4fBCa1fC82843c80d0d", "kind": "TransparentUpgradeableProxy", "impl": "0x3d9cb5d2fa4600bf8d75fb59fe01db765dcced15", "impl_verified": true, "impl_name": "MMarket", "proxy_admin": "0x1b2ba667c4732f6a7728c2dddd9222d6ef482b27 (unverified OZ ProxyAdmin; owner() = Safe)", "owner": "0xAFE32eB89391DFd5900F98857f009477e4423Db4", "operator": "0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35 (Rysk)"},
+    {"name": "AddressBook", "address": "0xFfCE2d20e0f68dcEDbCE657175684845f9593f34", "verified": true, "owner": "0xAFE32eB89391DFd5900F98857f009477e4423Db4"},
+    {"name": "Controller", "address": "0x84d84e481B49B8Bc5a55f17AaF8181c21A29B212", "kind": "OwnedUpgradeabilityProxy (ZOS)", "impl": "0x50ccab84450bcbd9a52e30556d12a516f2faf9fc", "impl_verified": true, "impl_name": "Controller", "proxy_owner": "AddressBook", "owner": "Safe", "fullPauser": "Safe", "partialPauser": "Safe", "systemPartiallyPaused": false, "systemFullyPaused": false, "authorizedCallers": ["0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35 (Rysk)"]},
+    {"name": "ControllerLogic", "address": "0x577b846A95711015769452F7f29d8054Cf087964", "kind": "OwnedUpgradeabilityProxy (ZOS)", "impl": "0xeb2c85f517cb1eb86a9a3162fa5c43d0865b4cc6", "impl_verified": true, "impl_name": "ControllerLogic", "proxy_owner": "AddressBook", "owner": "Safe", "redeemTimePeriod": 3600},
+    {"name": "Oracle", "address": "0x664aD80F6891cD663228Dc9d1510a6A5Db57e815", "verified": true, "owner": "Safe", "disputer": "Safe"},
+    {"name": "Whitelist", "address": "0xD11429254441eefe066c40C54170b54179521Ba0", "verified": true, "owner": "Safe"},
+    {"name": "OtokenFactory", "address": "0xD3feD88E2A1723802873e0BB74AB198D01644e18", "verified": true},
+    {"name": "MarginCalculator", "address": "0x9219Ad4BfE15D2a65D96E935aA75f645AA6B9f22", "verified": true},
+    {"name": "OtokenImpl", "address": "0x7E2C588f5f532041a62B2771eaf6Ee5Df2c94fd4", "verified": true},
+    {"name": "ManualPricer(HYPE)", "address": "0x2f79DaA7cA3D868a1CEF33841a964b3F19C76451", "verified": true, "owner": "Safe", "bot": "operator EOA"},
+    {"name": "ManualPricer(UBTC)", "address": "0x3B82edD03482BC76DCfC05316BaC34FB586C6BcA", "verified": true, "owner": "Safe", "bot": "operator EOA"},
+    {"name": "ManualPricer(UETH)", "address": "0x921233d448899f184429821C7011FEeC1D09FD44", "verified": true, "owner": "Safe", "bot": "operator EOA"},
+    {"name": "ManualPricer(kHYPE)", "address": "0x97303114f0Ad852b4A04804e1cA038861E60639E", "verified": true, "owner": "Safe", "bot": "operator EOA"},
+    {"name": "ManualPricer(wstHYPE)", "address": "0x17a5527f5a2ed78046Fd6562f719378AF3f0B217", "verified": true, "owner": "Safe", "bot": "operator EOA"},
+    {"name": "ManualPricer(USOL)", "address": "0x47a818cFa2dB7FdB39dCB0fc36737DF5D218ba21", "verified": true, "owner": "Safe", "bot": "operator EOA"}
+  ],
+  "contracts_ethereum": [
+    {"name": "MarginPool", "address": "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671", "kind": "OwnedUpgradeabilityProxy (ZOS)", "impl": "0xf76f4685765884dd6b1518f1d93adbaf8ad7d5a0", "impl_verified": true, "impl_name": "MarginPool", "proxy_owner": "0x65852e9cf13D1a3F330BE2B95b2c1B4396d562E7 (AddressBook)", "owner": "Safe", "farmer": "0x0"},
+    {"name": "Rysk", "address": "0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd", "kind": "TransparentUpgradeableProxy", "impl": "0xeedb88400b1b14380192b217aa226004705863d0", "impl_verified": true, "impl_name": "Rysk", "proxy_admin": "0x08d371d4806043963bc3d586607c1bef26aa898c (ProxyAdmin, verified, owner = Safe)", "owner": "Safe", "operator": "0x65802CC308aeA8bb913882696c2df6bF23Ff9e48", "selfServiceAllowed": false, "ryskSigner": "0xea1913BF76F544f420a84F3d3fF0d087Cf80C396", "controller": "0xb293323Daf4E5F1313F7804FE58818f633747d0D", "flashLoanPool": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2 (Aave V3 pool)", "swapRouter": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45 (Uniswap SwapRouter02)"},
+    {"name": "MMarket", "address": "0xc01c9EF5de5862354adD9501a29e8765cFF01c32", "kind": "TransparentUpgradeableProxy", "impl": "0x5491530e23e1e39eba1b8db2b018f932e70b1670", "impl_verified": true, "impl_name": "MMarket", "proxy_admin": "0xb2e959ac89044a02be13f5b8491ec2de1f7fadea (ProxyAdmin, verified, owner = Safe)", "owner": "Safe", "operator": "0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd (Rysk)"},
+    {"name": "AddressBook", "address": "0x65852e9cf13D1a3F330BE2B95b2c1B4396d562E7", "verified": true, "owner": "Safe"},
+    {"name": "Controller", "address": "0xb293323Daf4E5F1313F7804FE58818f633747d0D", "kind": "OwnedUpgradeabilityProxy (ZOS)", "impl": "0x4f918d0eb04bdcf47122180a536edae8e37b6e35", "impl_verified": true, "impl_name": "Controller", "proxy_owner": "AddressBook", "owner": "Safe", "authorizedCallers": ["0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd (Rysk)"]},
+    {"name": "ControllerLogic", "address": "0xC64453119e2728e956F0815447efB1E1eB30Df2d", "kind": "OwnedUpgradeabilityProxy (ZOS)", "impl": "0x5fac977c9d05f2fe556ea3ed8364a4360439adcb", "impl_verified": true, "impl_name": "ControllerLogic", "proxy_owner": "AddressBook", "owner": "Safe", "redeemTimePeriod": 3600},
+    {"name": "Oracle", "address": "0xC11A4767D83Fb2ab643CFc30288A7eE9690009A7", "verified": true, "owner": "Safe", "disputer": "Safe"},
+    {"name": "Whitelist", "address": "0x6F878AF459A2EBFeE13bc2b047Cc240D5e08540D", "verified": true, "owner": "Safe"},
+    {"name": "OtokenFactory", "address": "0x73ec54AB513055e211e09A0F9CE9758332088f24", "verified": true},
+    {"name": "MarginCalculator", "address": "0x6C02B4044473668BcD4FB1d5d6d0644567128dDB", "verified": true},
+    {"name": "OtokenImpl", "address": "0x6aEF7Dd5180c3ceD4F58e55Fe99C438bf4f19Ba4", "verified": true},
+    {"name": "ManualPricer(WETH)", "address": "0xb82E16f64fe7bD03cd11eEAD4947FDD65A12cD86", "verified": true, "owner": "Safe", "bot": "operator EOA"},
+    {"name": "ManualPricer(WBTC)", "address": "0x001635b6B8a0bB5dc1E901bD5908db41560b61cd", "verified": true, "owner": "Safe", "bot": "operator EOA"},
+    {"name": "ManualPricer(wstETH)", "address": "0x4c95101Fd9CE9c31af1ACD00546cDb249C6476a6", "verified": true, "owner": "Safe", "bot": "operator EOA"},
+    {"name": "ManualPricer(rETH)", "address": "0x34498508A8716472964386a1c5bca7d4a45125be", "verified": true, "owner": "Safe", "bot": "operator EOA"},
+    {"name": "ManualPricer(weETH)", "address": "0xad7bA54A3869C775A89aBbee482967C0719Cbc28", "verified": true, "owner": "Safe", "bot": "operator EOA"}
+  ],
+  "authorized_caller_history": {
+    "hyperevm": {"events": 1, "set_true": ["Rysk 0x8C8bcb6D..."], "current": ["Rysk"]},
+    "ethereum": {"events": 2, "set_true": ["Rysk 0x7A3dDEac..."], "set_false": ["0xbb5c6025f23d420bf4e82c6d9481738958db28c4 (EOA, now false)"], "current": ["Rysk"]}
+  },
+  "controller_direct_callers_ever": {
+    "hyperevm": ["0xbb5c6025f23d420bf4e82c6d9481738958db28c4 (deploy/admin setup calls only: refreshConfiguration, setManager)"],
+    "ethereum": ["0xbb5c6025f23d420bf4e82c6d9481738958db28c4 (deploy/admin setup calls only: refreshConfiguration, setFullPauser)"]
+  },
+  "whitelisted_collateral_current": {
+    "hyperevm": {
+      "USDC": "0xb88339CB7199b77E23DB6E890353E22632Ba630f",
+      "WHYPE": "0x5555555555555555555555555555555555555555",
+      "UETH": "0xBe6727B535545C67d5cAa73DEA54865b92CF7907",
+      "UBTC": "0x9Fdbda0A5e284c32744D2f17Ee5C74B284993463",
+      "kHYPE": "0xfD739d4e423301CE9385c1fb8850539D657C296D",
+      "USDt0": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb",
+      "USOL": "0x068f321Fa8Fb9f0D135f290Ef6a3e2813e1c8A29",
+      "wstHYPE": "0x94e8396e0869c9F2200760aF0621aFd240E1CF38",
+      "UPUMP": "0x27ec642013bcb3d80ca3706599d3cda04f6f4452",
+      "PT-kHYPE-13NOV2025": "0x311db0fde558689550c68355783c95efdfe25329",
+      "PURR": "0x9b498c3c8a0b8cd8ba1d9851d40d186f1872b44e",
+      "delisted_stHYPE": "0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1 (false; 647.07 excess held)"
+    },
+    "ethereum": {
+      "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "WETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "WBTC": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "USDT": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "wstETH": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+      "weETH": "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+      "rETH": "0xae78736Cd615f374D3085123A210448E74Fc6393",
+      "XAUt": "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+    }
+  }
+}

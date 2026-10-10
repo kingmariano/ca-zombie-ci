@@ -1,0 +1,486 @@
+Compiling 19 files with Solc 0.8.24
+Solc 0.8.24 finished in 1.55s
+Compiler run successful!
+
+Ran 10 tests for test/RyskV12Gates.t.sol:RyskEthereumGatesTest
+[PASS] test_01_live_state_roles_gates() (gas: 172687)
+Logs:
+  ETHEREUM fork block: 26163109
+  chainid: 1
+  MarginPool USDC: 2369950.000000
+  MarginPool WBTC: 17.05000000
+
+[PASS] test_02_attacker_cannot_move_marginpool_funds() (gas: 363967)
+Logs:
+  ETHEREUM fork block: 26163109
+  chainid: 1
+  revert[transferToUser]: MarginPool: Sender is not Controller
+  revert[farm]: MarginPool: Sender is not farmer
+  revert[setFarmer]: Ownable: caller is not the owner
+  revert[proxy.upgradeTo]: <no reason string>
+  revert[transferProxyOwnership]: <no reason string>
+  revert[re-initialize]: Contract instance has already been initialized
+
+[FAIL] test_03_attacker_cannot_operate_mmarket() (block: 26163109) (gas: 136390)
+Logs:
+  ETHEREUM fork block: 26163109
+  chainid: 1
+  revert[MMarket.operate]: bad operator
+  revert[MMarket.setOperator]: <no reason string>
+  unexpected revert reason for: MMarket.setOperator
+
+Traces:
+  [136390] RyskEthereumGatesTest::test_03_attacker_cannot_operate_mmarket()
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [34379] 0xc01c9EF5de5862354adD9501a29e8765cFF01c32::operate([])
+    │   ├─ [8092] 0x5491530E23e1E39EBA1B8dB2B018F932e70b1670::operate([]) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[MMarket.operate]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [28925] 0xc01c9EF5de5862354adD9501a29e8765cFF01c32::setOperator(0x000000000000000000000000000000000000dEaD)
+    │   ├─ [2766] 0x5491530E23e1E39EBA1B8dB2B018F932e70b1670::setOperator(0x000000000000000000000000000000000000dEaD) [delegatecall]
+    │   │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    ├─ emit log_named_string(key: "revert[MMarket.setOperator]", val: "<no reason string>")
+    ├─ emit log_named_string(key: "unexpected revert reason for", val: "MMarket.setOperator")
+    ├─ [0] VM::store(VM: [0x7109709ECfa91a80626fF3989D68f67F5b1DD12D], 0x6661696c65640000000000000000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000000000000000000000000001)
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+Backtrace:
+  at 0x5491530E23e1E39EBA1B8dB2B018F932e70b1670.setOperator
+  at 0xc01c9EF5de5862354adD9501a29e8765cFF01c32.setOperator
+  at RyskEthereumGatesTest.test_03_attacker_cannot_operate_mmarket
+
+[FAIL] test_04_attacker_cannot_call_rysk_operator_paths() (block: 26163109) (gas: 595214)
+Logs:
+  ETHEREUM fork block: 26163109
+  chainid: 1
+  revert[ingresso_newUserPosition]: bad operator
+  revert[ingresso_transferAsset]: bad operator
+  revert[ingresso_OTCTrade]: bad operator
+  revert[ingresso_redeem]: bad operator
+  revert[ingresso_settle]: bad operator
+  revert[flashLoanRedeem]: bad operator
+  revert[executeOperation]: Caller is not flashLoanPool
+  revert[setOperator]: <no reason string>
+  unexpected revert reason for: setOperator
+  revert[setSelfServiceAllowed]: <no reason string>
+  unexpected revert reason for: setSelfServiceAllowed
+
+Traces:
+  [595214] RyskEthereumGatesTest::test_04_attacker_cannot_call_rysk_operator_paths()
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [34262] 0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd::ingresso_newUserPosition(0x)
+    │   ├─ [7975] 0xeeDB88400b1B14380192B217aa226004705863d0::ingresso_newUserPosition(0x) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_newUserPosition]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [34153] 0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd::ingresso_transferAsset(0x)
+    │   ├─ [7866] 0xeeDB88400b1B14380192B217aa226004705863d0::ingresso_transferAsset(0x) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_transferAsset]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [34184] 0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd::ingresso_OTCTrade(0x)
+    │   ├─ [7909] 0xeeDB88400b1B14380192B217aa226004705863d0::ingresso_OTCTrade(0x) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_OTCTrade]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [37348] 0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd::ingresso_redeem([], [])
+    │   ├─ [10784] 0xeeDB88400b1B14380192B217aa226004705863d0::ingresso_redeem([], []) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_redeem]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [36573] 0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd::ingresso_settle([])
+    │   ├─ [10286] 0xeeDB88400b1B14380192B217aa226004705863d0::ingresso_settle([]) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_settle]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [29725] 0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd::flashLoanRedeem(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 1, 0x)
+    │   ├─ [2921] 0xeeDB88400b1B14380192B217aa226004705863d0::flashLoanRedeem(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 1, 0x) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[flashLoanRedeem]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [35206] 0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd::executeOperation(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 1, 0, 0x000000000000000000000000000000000000dEaD, 0x)
+    │   ├─ [8110] 0xeeDB88400b1B14380192B217aa226004705863d0::executeOperation(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48, 1, 0, 0x000000000000000000000000000000000000dEaD, 0x) [delegatecall]
+    │   │   └─ ← [Revert] Caller is not flashLoanPool
+    │   └─ ← [Revert] Caller is not flashLoanPool
+    ├─ emit log_named_string(key: "revert[executeOperation]", val: "Caller is not flashLoanPool")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [28831] 0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd::setOperator(0x000000000000000000000000000000000000dEaD)
+    │   ├─ [2672] 0xeeDB88400b1B14380192B217aa226004705863d0::setOperator(0x000000000000000000000000000000000000dEaD) [delegatecall]
+    │   │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    ├─ emit log_named_string(key: "revert[setOperator]", val: "<no reason string>")
+    ├─ emit log_named_string(key: "unexpected revert reason for", val: "setOperator")
+    ├─ [0] VM::store(VM: [0x7109709ECfa91a80626fF3989D68f67F5b1DD12D], 0x6661696c65640000000000000000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000000000000000000000000001)
+    │   └─ ← [Return]
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [28919] 0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd::setSelfServiceAllowed(true)
+    │   ├─ [2772] 0xeeDB88400b1B14380192B217aa226004705863d0::setSelfServiceAllowed(true) [delegatecall]
+    │   │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    ├─ emit log_named_string(key: "revert[setSelfServiceAllowed]", val: "<no reason string>")
+    ├─ emit log_named_string(key: "unexpected revert reason for", val: "setSelfServiceAllowed")
+    ├─ [0] VM::store(VM: [0x7109709ECfa91a80626fF3989D68f67F5b1DD12D], 0x6661696c65640000000000000000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000000000000000000000000001)
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+Backtrace:
+  at 0xeeDB88400b1B14380192B217aa226004705863d0.setSelfServiceAllowed
+  at 0x7A3dDEac7A0AE6dfA9391C764499A3564F3c2AAd.setSelfServiceAllowed
+  at RyskEthereumGatesTest.test_04_attacker_cannot_call_rysk_operator_paths
+
+[PASS] test_05_attacker_cannot_call_gamma_controller() (gas: 287068)
+Logs:
+  ETHEREUM fork block: 26163109
+  chainid: 1
+  revert[Controller.operate]: C6
+  revert[updateVault]: C42
+  revert[setAuthorizedCaller]: Ownable: caller is not the owner
+  revert[donate]: Ownable: caller is not the owner
+
+[PASS] test_06_attacker_cannot_call_controller_logic() (gas: 184969)
+Logs:
+  ETHEREUM fork block: 26163109
+  chainid: 1
+  revert[handleRedeem]: ControllerLogic: Sender is not Controller
+  revert[handleSettle]: ControllerLogic: Sender is not Controller
+
+[PASS] test_07_attacker_cannot_set_oracle_prices() (gas: 248189)
+Logs:
+  ETHEREUM fork block: 26163109
+  chainid: 1
+  revert[setExpiryPrice]: Oracle: caller is not authorized to set expiry price
+  revert[disputeExpiryPrice]: Oracle: caller is not the disputer
+  revert[pricer.setExpiryPriceInOracle]: ManualPricer: unauthorized sender
+
+[PASS] test_08_attacker_cannot_config_whitelist_factory_otoken() (gas: 333774)
+Logs:
+  ETHEREUM fork block: 26163109
+  chainid: 1
+  revert[whitelistCollateral]: Ownable: caller is not the owner
+  revert[whitelistOtoken]: Whitelist: Sender is not OtokenFactory
+  revert[factory.createOtoken(random product)]: OtokenFactory: Unsupported Product
+  revert[otoken.mintOtoken]: Otoken: Only Controller can mint Otokens
+
+[PASS] test_09_upgrade_paths_are_owner_only() (gas: 208081)
+Logs:
+  ETHEREUM fork block: 26163109
+  chainid: 1
+  revert[Rysk upgradeTo]: <no reason string>
+  revert[MMarket upgradeTo]: <no reason string>
+  revert[AddressBook.updateImpl(MARGIN_POOL)]: Ownable: caller is not the owner
+  revert[AddressBook.setOracle]: Ownable: caller is not the owner
+
+[PASS] test_10_operator_branch_is_privileged_only() (gas: 178821)
+Logs:
+  ETHEREUM fork block: 26163109
+  chainid: 1
+  operator ingresso_settle outcome: C35
+  revert[attacker ingresso_settle]: bad operator
+
+Suite result: FAILED. 8 passed; 2 failed; 0 skipped; finished in 2.85s (5.23s CPU time)
+
+Ran 11 tests for test/RyskV12Gates.t.sol:RyskHyperEVMGatesTest
+[PASS] test_01_live_state_roles_gates() (gas: 254960)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  safe modules count: 0
+  MarginPool USDC: 10799125.000030
+  MarginPool WHYPE: 73200.000000000000000001
+  MarginPool kHYPE: 37800.000000000000672152
+
+[PASS] test_02_attacker_cannot_move_marginpool_funds() (gas: 640689)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  revert[transferToUser]: MarginPool: Sender is not Controller
+  revert[transferToPool]: MarginPool: Sender is not Controller
+  revert[batchTransferToUser]: MarginPool: Sender is not Controller
+  revert[batchTransferToPool]: MarginPool: Sender is not Controller
+  revert[farm]: MarginPool: Sender is not farmer
+  revert[setFarmer]: Ownable: caller is not the owner
+  revert[proxy.upgradeTo]: <no reason string>
+  revert[transferProxyOwnership]: <no reason string>
+  revert[re-initialize]: Contract instance has already been initialized
+
+[FAIL] test_03_attacker_cannot_operate_mmarket() (block: 48181471) (gas: 169860)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  revert[MMarket.operate]: bad operator
+  revert[MMarket.setOperator]: <no reason string>
+  unexpected revert reason for: MMarket.setOperator
+  revert[MMarket.initialize]: <no reason string>
+
+Traces:
+  [169860] RyskHyperEVMGatesTest::test_03_attacker_cannot_operate_mmarket()
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [34500] 0x691a5fc3a81a144e36c6C4fBCa1fC82843c80d0d::operate([])
+    │   ├─ [8092] 0x3D9CB5D2Fa4600bF8d75fB59Fe01Db765dCced15::operate([]) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[MMarket.operate]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [29046] 0x691a5fc3a81a144e36c6C4fBCa1fC82843c80d0d::setOperator(0x000000000000000000000000000000000000dEaD)
+    │   ├─ [2766] 0x3D9CB5D2Fa4600bF8d75fB59Fe01Db765dCced15::setOperator(0x000000000000000000000000000000000000dEaD) [delegatecall]
+    │   │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    ├─ emit log_named_string(key: "revert[MMarket.setOperator]", val: "<no reason string>")
+    ├─ emit log_named_string(key: "unexpected revert reason for", val: "MMarket.setOperator")
+    ├─ [0] VM::store(VM: [0x7109709ECfa91a80626fF3989D68f67F5b1DD12D], 0x6661696c65640000000000000000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000000000000000000000000001)
+    │   └─ ← [Return]
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [28776] 0x691a5fc3a81a144e36c6C4fBCa1fC82843c80d0d::initialize()
+    │   ├─ [2654] 0x3D9CB5D2Fa4600bF8d75fB59Fe01Db765dCced15::initialize() [delegatecall]
+    │   │   └─ ← [Revert] InvalidInitialization()
+    │   └─ ← [Revert] InvalidInitialization()
+    ├─ emit log_named_string(key: "revert[MMarket.initialize]", val: "<no reason string>")
+    └─ ← [Stop]
+
+Backtrace:
+  at 0x3D9CB5D2Fa4600bF8d75fB59Fe01Db765dCced15.initialize
+  at 0x691a5fc3a81a144e36c6C4fBCa1fC82843c80d0d.initialize
+  at RyskHyperEVMGatesTest.test_03_attacker_cannot_operate_mmarket
+
+[FAIL] test_04_attacker_cannot_call_rysk_operator_paths() (block: 48181471) (gas: 780388)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  revert[ingresso_newUserPosition]: bad operator
+  revert[ingresso_transferAsset]: bad operator
+  revert[ingresso_OTCTrade]: bad operator
+  revert[ingresso_OTCTradeBatch]: bad operator
+  revert[ingresso_redeem]: bad operator
+  revert[ingresso_settle]: bad operator
+  revert[flashLoanRedeem]: bad operator
+  revert[executeOperation(fake flash loan caller)]: Caller is not flashLoanPool
+  revert[setOperator]: <no reason string>
+  unexpected revert reason for: setOperator
+  revert[setMarginPool]: <no reason string>
+  unexpected revert reason for: setMarginPool
+  revert[setRyskSigner]: <no reason string>
+  unexpected revert reason for: setRyskSigner
+  revert[setSelfServiceAllowed]: <no reason string>
+  unexpected revert reason for: setSelfServiceAllowed
+  revert[re-initialize Rysk]: <no reason string>
+
+Traces:
+  [780388] RyskHyperEVMGatesTest::test_04_attacker_cannot_call_rysk_operator_paths()
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [34383] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::ingresso_newUserPosition(0x)
+    │   ├─ [7975] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::ingresso_newUserPosition(0x) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_newUserPosition]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [34274] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::ingresso_transferAsset(0x)
+    │   ├─ [7866] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::ingresso_transferAsset(0x) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_transferAsset]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [34305] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::ingresso_OTCTrade(0x)
+    │   ├─ [7909] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::ingresso_OTCTrade(0x) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_OTCTrade]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [34360] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::ingresso_OTCTradeBatch(0x)
+    │   ├─ [7952] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::ingresso_OTCTradeBatch(0x) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_OTCTradeBatch]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [37469] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::ingresso_redeem([], [])
+    │   ├─ [10784] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::ingresso_redeem([], []) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_redeem]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [36694] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::ingresso_settle([])
+    │   ├─ [10286] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::ingresso_settle([]) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[ingresso_settle]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [29846] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::flashLoanRedeem(0xb88339CB7199b77E23DB6E890353E22632Ba630f, 1, 0x)
+    │   ├─ [2921] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::flashLoanRedeem(0xb88339CB7199b77E23DB6E890353E22632Ba630f, 1, 0x) [delegatecall]
+    │   │   └─ ← [Revert] bad operator
+    │   └─ ← [Revert] bad operator
+    ├─ emit log_named_string(key: "revert[flashLoanRedeem]", val: "bad operator")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [35327] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::executeOperation(0xb88339CB7199b77E23DB6E890353E22632Ba630f, 1, 0, 0x000000000000000000000000000000000000dEaD, 0x)
+    │   ├─ [8110] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::executeOperation(0xb88339CB7199b77E23DB6E890353E22632Ba630f, 1, 0, 0x000000000000000000000000000000000000dEaD, 0x) [delegatecall]
+    │   │   └─ ← [Revert] Caller is not flashLoanPool
+    │   └─ ← [Revert] Caller is not flashLoanPool
+    ├─ emit log_named_string(key: "revert[executeOperation(fake flash loan caller)]", val: "Caller is not flashLoanPool")
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [28952] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::setOperator(0x000000000000000000000000000000000000dEaD)
+    │   ├─ [2672] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::setOperator(0x000000000000000000000000000000000000dEaD) [delegatecall]
+    │   │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    ├─ emit log_named_string(key: "revert[setOperator]", val: "<no reason string>")
+    ├─ emit log_named_string(key: "unexpected revert reason for", val: "setOperator")
+    ├─ [0] VM::store(VM: [0x7109709ECfa91a80626fF3989D68f67F5b1DD12D], 0x6661696c65640000000000000000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000000000000000000000000001)
+    │   └─ ← [Return]
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [29128] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::setMarginPool(0x000000000000000000000000000000000000dEaD)
+    │   ├─ [2848] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::setMarginPool(0x000000000000000000000000000000000000dEaD) [delegatecall]
+    │   │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    ├─ emit log_named_string(key: "revert[setMarginPool]", val: "<no reason string>")
+    ├─ emit log_named_string(key: "unexpected revert reason for", val: "setMarginPool")
+    ├─ [0] VM::store(VM: [0x7109709ECfa91a80626fF3989D68f67F5b1DD12D], 0x6661696c65640000000000000000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000000000000000000000000001)
+    │   └─ ← [Return]
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [28997] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::setRyskSigner(0x000000000000000000000000000000000000dEaD)
+    │   ├─ [2717] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::setRyskSigner(0x000000000000000000000000000000000000dEaD) [delegatecall]
+    │   │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    ├─ emit log_named_string(key: "revert[setRyskSigner]", val: "<no reason string>")
+    ├─ emit log_named_string(key: "unexpected revert reason for", val: "setRyskSigner")
+    ├─ [0] VM::store(VM: [0x7109709ECfa91a80626fF3989D68f67F5b1DD12D], 0x6661696c65640000000000000000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000000000000000000000000001)
+    │   └─ ← [Return]
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [29040] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::setSelfServiceAllowed(true)
+    │   ├─ [2772] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::setSelfServiceAllowed(true) [delegatecall]
+    │   │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Revert] OwnableUnauthorizedAccount(0x000000000000000000000000000000000000dEaD)
+    ├─ emit log_named_string(key: "revert[setSelfServiceAllowed]", val: "<no reason string>")
+    ├─ emit log_named_string(key: "unexpected revert reason for", val: "setSelfServiceAllowed")
+    ├─ [0] VM::store(VM: [0x7109709ECfa91a80626fF3989D68f67F5b1DD12D], 0x6661696c65640000000000000000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000000000000000000000000001)
+    │   └─ ← [Return]
+    ├─ [0] VM::prank(0x000000000000000000000000000000000000dEaD)
+    │   └─ ← [Return]
+    ├─ [28964] 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35::initialize()
+    │   ├─ [2842] 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76::initialize() [delegatecall]
+    │   │   └─ ← [Revert] InvalidInitialization()
+    │   └─ ← [Revert] InvalidInitialization()
+    ├─ emit log_named_string(key: "revert[re-initialize Rysk]", val: "<no reason string>")
+    └─ ← [Stop]
+
+Backtrace:
+  at 0x19F1E31395d6Bea34bB8ace81B5d7861aA8B1C76.initialize
+  at 0x8C8bcb6D2c0E31c5789253EcC8431cA6209B4E35.initialize
+  at RyskHyperEVMGatesTest.test_04_attacker_cannot_call_rysk_operator_paths
+
+[PASS] test_05_attacker_cannot_call_gamma_controller() (gas: 416395)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  revert[Controller.operate]: C6
+  revert[updateVault]: C42
+  revert[setAuthorizedCaller]: Ownable: caller is not the owner
+  revert[setSystemFullyPaused]: C1
+  revert[donate]: Ownable: caller is not the owner
+  revert[re-init controller]: Contract instance has already been initialized
+
+[PASS] test_06_attacker_cannot_call_controller_logic() (gas: 439760)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  revert[handleRedeem]: ControllerLogic: Sender is not Controller
+  revert[handleSettle]: ControllerLogic: Sender is not Controller
+  revert[handleDepositCollateral]: ControllerLogic: Sender is not Controller
+  revert[handleMintOtoken]: ControllerLogic: Sender is not Controller
+  revert[setRedeemTimePeriod]: Ownable: caller is not the owner
+
+[PASS] test_07_attacker_cannot_set_oracle_prices() (gas: 383866)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  revert[setExpiryPrice]: Oracle: caller is not authorized to set expiry price
+  revert[disputeExpiryPrice]: Oracle: caller is not the disputer
+  revert[setStablePrice]: Ownable: caller is not the owner
+  revert[pricer.setExpiryPriceInOracle]: ManualPricer: unauthorized sender
+  revert[pricer.setPriceTimeValidity]: Ownable: caller is not the owner
+
+[PASS] test_08_attacker_cannot_config_whitelist_factory_otoken() (gas: 412473)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  revert[whitelistCollateral]: Ownable: caller is not the owner
+  revert[whitelistOtoken]: Whitelist: Sender is not OtokenFactory
+  revert[factory.createOtoken(random product)]: OtokenFactory: Unsupported Product
+  revert[otoken.mintOtoken]: Otoken: Only Controller can mint Otokens
+  revert[otoken.burnOtoken]: Otoken: Only Controller can burn Otokens
+
+[PASS] test_09_stored_balances_and_sthype_excess() (gas: 75244)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  stHYPE stored (pool ledger): 0.000000000000000000
+  stHYPE actual (pool balance): 647.077545214131187997
+
+[PASS] test_10_upgrade_paths_are_owner_only() (gas: 308416)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  revert[Rysk upgradeTo]: <no reason string>
+  revert[Rysk upgradeToAndCall]: <no reason string>
+  revert[MMarket upgradeTo]: <no reason string>
+  revert[AddressBook.updateImpl(MARGIN_POOL)]: Ownable: caller is not the owner
+  revert[AddressBook.updateImpl(CONTROLLER)]: Ownable: caller is not the owner
+  revert[AddressBook.setOracle]: Ownable: caller is not the owner
+
+[PASS] test_11_operator_branch_is_privileged_only() (gas: 179062)
+Logs:
+  HYPEREVM fork block: 48181471
+  chainid: 999
+  operator ingresso_settle outcome: C35
+  revert[attacker ingresso_settle]: bad operator
+
+Suite result: FAILED. 9 passed; 2 failed; 0 skipped; finished in 7.28s (18.53s CPU time)
+
+Ran 2 test suites in 7.44s (10.14s CPU time): 17 tests passed, 4 failed, 0 skipped (21 total tests)
+
+Failing tests:
+Encountered 2 failing tests in test/RyskV12Gates.t.sol:RyskEthereumGatesTest
+[FAIL] test_03_attacker_cannot_operate_mmarket() (block: 26163109) (gas: 136390)
+[FAIL] test_04_attacker_cannot_call_rysk_operator_paths() (block: 26163109) (gas: 595214)
+
+Encountered 2 failing tests in test/RyskV12Gates.t.sol:RyskHyperEVMGatesTest
+[FAIL] test_03_attacker_cannot_operate_mmarket() (block: 48181471) (gas: 169860)
+[FAIL] test_04_attacker_cannot_call_rysk_operator_paths() (block: 48181471) (gas: 780388)
+
+Encountered a total of 4 failing tests, 17 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 4 failed tests
+Tip: Run `forge test --debug --match-test <TEST_NAME>` to inspect one failing test in the debugger
+== poc-rysk exit=1 ==
