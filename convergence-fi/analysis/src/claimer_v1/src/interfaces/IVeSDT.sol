@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+pragma solidity 0.8.19;
+
+interface IVeSDT {
+    struct LockedBalance {
+        int128 amount;
+        uint256 end;
+    }
+
+    function create_lock(uint256 _value, uint256 _unlock_time) external;
+
+    function increase_amount(uint256 _value) external;
+
+    function increase_unlock_time(uint256 _unlock_time) external;
+
+    function withdraw() external;
+
+    function deposit_for(address, uint256) external;
+
+    function locked(address) external returns (LockedBalance memory);
+
+    function balanceOf(address) external returns (uint256);
+}

@@ -1,0 +1,415 @@
+{
+ "address": "0xa3a8cda21f50b6737385e46fc9495a9998b05ff0",
+ "name": "SdtStakingViewer",
+ "proxy": "0",
+ "impl": "",
+ "compiler": "v0.8.17+commit.8df45f5f",
+ "abi": [
+  {
+   "inputs": [
+    {
+     "internalType": "contract ICvgControlTower",
+     "name": "_cvgControlTower",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "nonpayable",
+   "type": "constructor"
+  },
+  {
+   "inputs": [],
+   "name": "cvgControlTower",
+   "outputs": [
+    {
+     "internalType": "contract ICvgControlTower",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "cvgCycle",
+     "type": "uint256"
+    },
+    {
+     "internalType": "contract ISdtStakingPositionService[]",
+     "name": "stakingContracts",
+     "type": "address[]"
+    }
+   ],
+   "name": "getAprDataCvg",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "uint256",
+       "name": "cvgCycle",
+       "type": "uint256"
+      },
+      {
+       "components": [
+        {
+         "internalType": "uint256",
+         "name": "cvgRewardsAmount",
+         "type": "uint256"
+        },
+        {
+         "internalType": "uint256",
+         "name": "totalStaked",
+         "type": "uint256"
+        },
+        {
+         "internalType": "bool",
+         "name": "isSdtProcessed",
+         "type": "bool"
+        }
+       ],
+       "internalType": "struct ISdtStakingPositionService.CycleInfo[]",
+       "name": "amounts",
+       "type": "tuple[]"
+      }
+     ],
+     "internalType": "struct SdtStakingViewer.AprDataCvg",
+     "name": "",
+     "type": "tuple"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "cvgCycle",
+     "type": "uint256"
+    },
+    {
+     "internalType": "contract ISdtStakingPositionService[]",
+     "name": "stakingContracts",
+     "type": "address[]"
+    }
+   ],
+   "name": "getAprDataSdt",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "uint256",
+       "name": "cvgCycle",
+       "type": "uint256"
+      },
+      {
+       "components": [
+        {
+         "internalType": "uint256",
+         "name": "totalStaked",
+         "type": "uint256"
+        },
+        {
+         "components": [
+          {
+           "internalType": "contract IERC20",
+           "name": "token",
+           "type": "address"
+          },
+          {
+           "internalType": "uint256",
+           "name": "amount",
+           "type": "uint256"
+          }
+         ],
+         "internalType": "struct ICommonStruct.TokenAmount[]",
+         "name": "sdtClaimable",
+         "type": "tuple[]"
+        }
+       ],
+       "internalType": "struct ISdtStakingPositionService.CycleInfoMultiple[]",
+       "name": "amounts",
+       "type": "tuple[]"
+      }
+     ],
+     "internalType": "struct SdtStakingViewer.AprDataSdt",
+     "name": "",
+     "type": "tuple"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ISdtStakingPositionService",
+     "name": "_stakingContract",
+     "type": "address"
+    }
+   ],
+   "name": "getGlobalViewCvgSdtStaking",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "address",
+       "name": "cvgSdt",
+       "type": "address"
+      },
+      {
+       "internalType": "address",
+       "name": "stakingAddress",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "cvgCycle",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "previousTotal",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "actualTotal",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "nextTotal",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct ISdtStruct.CvgSdtGlobalView",
+     "name": "",
+     "type": "tuple"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ISdtStakingPositionService[]",
+     "name": "_stakingContracts",
+     "type": "address[]"
+    }
+   ],
+   "name": "getGlobalViewLpAssetStaking",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "address",
+       "name": "gaugeAsset",
+       "type": "address"
+      },
+      {
+       "internalType": "address",
+       "name": "lpAsset",
+       "type": "address"
+      },
+      {
+       "internalType": "address",
+       "name": "stakingAddress",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "cvgCycle",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "previousTotal",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "actualTotal",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "nextTotal",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct ISdtStruct.LpAssetGlobalView[]",
+     "name": "",
+     "type": "tuple[]"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ISdtStakingPositionService[]",
+     "name": "_stakingContracts",
+     "type": "address[]"
+    }
+   ],
+   "name": "getGlobalViewSdAssetStaking",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "address",
+       "name": "gaugeAsset",
+       "type": "address"
+      },
+      {
+       "internalType": "address",
+       "name": "sdAsset",
+       "type": "address"
+      },
+      {
+       "internalType": "address",
+       "name": "asset",
+       "type": "address"
+      },
+      {
+       "internalType": "address",
+       "name": "stakingAddress",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "cvgCycle",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "previousTotal",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "actualTotal",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "nextTotal",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct ISdtStruct.SdAssetGlobalView[]",
+     "name": "",
+     "type": "tuple[]"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ISdtStakingPositionService[]",
+     "name": "sdtStaking",
+     "type": "address[]"
+    }
+   ],
+   "name": "getProcessableRewardsOnSdtStakingContracts",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "contract ISdAssetGauge",
+       "name": "sdAssetGauge",
+       "type": "address"
+      },
+      {
+       "components": [
+        {
+         "internalType": "contract IERC20",
+         "name": "rewardToken",
+         "type": "address"
+        },
+        {
+         "internalType": "uint256",
+         "name": "processableAmount",
+         "type": "uint256"
+        }
+       ],
+       "internalType": "struct SdtStakingViewer.ProcessableData[]",
+       "name": "processableData",
+       "type": "tuple[]"
+      }
+     ],
+     "internalType": "struct SdtStakingViewer.ProcessableRewards[]",
+     "name": "",
+     "type": "tuple[]"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "components": [
+      {
+       "internalType": "contract ISdtStakingPositionService",
+       "name": "stakingContract",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "tokenId",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct ISdtStruct.TokenViewInput[]",
+     "name": "_tokenViewInputs",
+     "type": "tuple[]"
+    }
+   ],
+   "name": "getTokenViewSdtStaking",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "contract ISdtStakingPositionService",
+       "name": "stakingContract",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "tokenId",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "previousToken",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "actualToken",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "nextToken",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct ISdtStruct.TokenViewOutput[]",
+     "name": "",
+     "type": "tuple[]"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  }
+ ]
+}

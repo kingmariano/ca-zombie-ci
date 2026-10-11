@@ -1,0 +1,1022 @@
+{
+ "address": "0xe789b78f66886d3ec9e393fb495ea726c5b371af",
+ "name": "StkCvg",
+ "proxy": "0",
+ "impl": "",
+ "compiler": "v0.8.24+commit.e11b9ed9",
+ "abi": [
+  {
+   "inputs": [],
+   "stateMutability": "nonpayable",
+   "type": "constructor"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "owner",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "spender",
+     "type": "address"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "value",
+     "type": "uint256"
+    }
+   ],
+   "name": "Approval",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": false,
+     "internalType": "uint8",
+     "name": "version",
+     "type": "uint8"
+    }
+   ],
+   "name": "Initialized",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "previousOwner",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "newOwner",
+     "type": "address"
+    }
+   ],
+   "name": "OwnershipTransferStarted",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "previousOwner",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "newOwner",
+     "type": "address"
+    }
+   ],
+   "name": "OwnershipTransferred",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": false,
+     "internalType": "contract IERC20",
+     "name": "_token",
+     "type": "address"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "_amount",
+     "type": "uint256"
+    }
+   ],
+   "name": "Recovered",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "contract IERC20",
+     "name": "_rewardToken",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "_distributor",
+     "type": "address"
+    }
+   ],
+   "name": "RewardAdded",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "contract IERC20",
+     "name": "_reward",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "_distributor",
+     "type": "address"
+    },
+    {
+     "indexed": false,
+     "internalType": "bool",
+     "name": "_state",
+     "type": "bool"
+    }
+   ],
+   "name": "RewardDistributorApproved",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "contract IERC20",
+     "name": "_token",
+     "type": "address"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "_reward",
+     "type": "uint256"
+    }
+   ],
+   "name": "RewardNotified",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "_user",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "contract IERC20",
+     "name": "_rewardToken",
+     "type": "address"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "_reward",
+     "type": "uint256"
+    }
+   ],
+   "name": "RewardPaid",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "_account",
+     "type": "address"
+    },
+    {
+     "indexed": false,
+     "internalType": "address",
+     "name": "_forward",
+     "type": "address"
+    }
+   ],
+   "name": "RewardRedirected",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "_user",
+     "type": "address"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "_amount",
+     "type": "uint256"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "ethSold",
+     "type": "uint256"
+    }
+   ],
+   "name": "Staked",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "from",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "to",
+     "type": "address"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "value",
+     "type": "uint256"
+    }
+   ],
+   "name": "Transfer",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "_user",
+     "type": "address"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "_amount",
+     "type": "uint256"
+    }
+   ],
+   "name": "Withdrawn",
+   "type": "event"
+  },
+  {
+   "inputs": [],
+   "name": "CVG",
+   "outputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "REWARDS_DURATION",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "WETH",
+   "outputs": [
+    {
+     "internalType": "contract IWETH",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "acceptOwnership",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "_rewardToken",
+     "type": "address"
+    },
+    {
+     "internalType": "address",
+     "name": "_distributor",
+     "type": "address"
+    }
+   ],
+   "name": "addReward",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "owner",
+     "type": "address"
+    },
+    {
+     "internalType": "address",
+     "name": "spender",
+     "type": "address"
+    }
+   ],
+   "name": "allowance",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "spender",
+     "type": "address"
+    },
+    {
+     "internalType": "uint256",
+     "name": "amount",
+     "type": "uint256"
+    }
+   ],
+   "name": "approve",
+   "outputs": [
+    {
+     "internalType": "bool",
+     "name": "",
+     "type": "bool"
+    }
+   ],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "_rewardToken",
+     "type": "address"
+    },
+    {
+     "internalType": "address",
+     "name": "_distributor",
+     "type": "address"
+    },
+    {
+     "internalType": "bool",
+     "name": "_approved",
+     "type": "bool"
+    }
+   ],
+   "name": "approveRewardDistributor",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "account",
+     "type": "address"
+    }
+   ],
+   "name": "balanceOf",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_account",
+     "type": "address"
+    }
+   ],
+   "name": "claimableRewards",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "contract IERC20",
+       "name": "token",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "amount",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct IStkCvg.EarnedData[]",
+     "name": "userRewards",
+     "type": "tuple[]"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvgControlTower",
+   "outputs": [
+    {
+     "internalType": "contract ICvgControlTowerV2",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvgEthLp",
+   "outputs": [
+    {
+     "internalType": "contract ICrvPoolNg",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "decimals",
+   "outputs": [
+    {
+     "internalType": "uint8",
+     "name": "",
+     "type": "uint8"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "spender",
+     "type": "address"
+    },
+    {
+     "internalType": "uint256",
+     "name": "subtractedValue",
+     "type": "uint256"
+    }
+   ],
+   "name": "decreaseAllowance",
+   "outputs": [
+    {
+     "internalType": "bool",
+     "name": "",
+     "type": "bool"
+    }
+   ],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_address",
+     "type": "address"
+    }
+   ],
+   "name": "getReward",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "_rewardToken",
+     "type": "address"
+    }
+   ],
+   "name": "getRewardForDuration",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "spender",
+     "type": "address"
+    },
+    {
+     "internalType": "uint256",
+     "name": "addedValue",
+     "type": "uint256"
+    }
+   ],
+   "name": "increaseAllowance",
+   "outputs": [
+    {
+     "internalType": "bool",
+     "name": "",
+     "type": "bool"
+    }
+   ],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "string",
+     "name": "_name",
+     "type": "string"
+    },
+    {
+     "internalType": "string",
+     "name": "_symbol",
+     "type": "string"
+    },
+    {
+     "internalType": "contract ICrvPoolNg",
+     "name": "_cvgEthLp",
+     "type": "address"
+    }
+   ],
+   "name": "initialize",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "_rewardToken",
+     "type": "address"
+    }
+   ],
+   "name": "lastTimeRewardApplicable",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "name",
+   "outputs": [
+    {
+     "internalType": "string",
+     "name": "",
+     "type": "string"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "_rewardToken",
+     "type": "address"
+    },
+    {
+     "internalType": "uint256",
+     "name": "_reward",
+     "type": "uint256"
+    }
+   ],
+   "name": "notifyRewardAmount",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "owner",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "pendingOwner",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "_tokenAddress",
+     "type": "address"
+    },
+    {
+     "internalType": "uint256",
+     "name": "_tokenAmount",
+     "type": "uint256"
+    }
+   ],
+   "name": "recoverToken",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "renounceOwnership",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "name": "rewardData",
+   "outputs": [
+    {
+     "internalType": "uint128",
+     "name": "lastUpdateTime",
+     "type": "uint128"
+    },
+    {
+     "internalType": "uint128",
+     "name": "periodFinish",
+     "type": "uint128"
+    },
+    {
+     "internalType": "uint256",
+     "name": "rewardRate",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "rewardPerTokenStored",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "",
+     "type": "address"
+    },
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "name": "rewardDistributors",
+   "outputs": [
+    {
+     "internalType": "bool",
+     "name": "",
+     "type": "bool"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "_rewardToken",
+     "type": "address"
+    }
+   ],
+   "name": "rewardPerToken",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "name": "rewardRedirect",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "name": "rewardTokens",
+   "outputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    },
+    {
+     "internalType": "contract IERC20",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "name": "rewards",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_to",
+     "type": "address"
+    }
+   ],
+   "name": "setRewardRedirect",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "_cvgAmount",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "_wethAmount",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "_minOutCvgAmount",
+     "type": "uint256"
+    },
+    {
+     "internalType": "address",
+     "name": "_receiver",
+     "type": "address"
+    }
+   ],
+   "name": "stake",
+   "outputs": [],
+   "stateMutability": "payable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "symbol",
+   "outputs": [
+    {
+     "internalType": "string",
+     "name": "",
+     "type": "string"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "totalSupply",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "to",
+     "type": "address"
+    },
+    {
+     "internalType": "uint256",
+     "name": "amount",
+     "type": "uint256"
+    }
+   ],
+   "name": "transfer",
+   "outputs": [
+    {
+     "internalType": "bool",
+     "name": "",
+     "type": "bool"
+    }
+   ],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "from",
+     "type": "address"
+    },
+    {
+     "internalType": "address",
+     "name": "to",
+     "type": "address"
+    },
+    {
+     "internalType": "uint256",
+     "name": "amount",
+     "type": "uint256"
+    }
+   ],
+   "name": "transferFrom",
+   "outputs": [
+    {
+     "internalType": "bool",
+     "name": "",
+     "type": "bool"
+    }
+   ],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "newOwner",
+     "type": "address"
+    }
+   ],
+   "name": "transferOwnership",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    },
+    {
+     "internalType": "contract IERC20",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "name": "userRewardPerTokenPaid",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "_amount",
+     "type": "uint256"
+    }
+   ],
+   "name": "withdraw",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  }
+ ]
+}

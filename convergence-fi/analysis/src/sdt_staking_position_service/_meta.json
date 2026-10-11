@@ -1,0 +1,1047 @@
+{
+ "address": "0xdba75359b323cc61e02975760d89178f79dcf799",
+ "name": "SdtStakingPositionService",
+ "proxy": "0",
+ "impl": "",
+ "compiler": "v0.8.17+commit.8df45f5f",
+ "abi": [
+  {
+   "inputs": [],
+   "stateMutability": "nonpayable",
+   "type": "constructor"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    },
+    {
+     "indexed": false,
+     "internalType": "address",
+     "name": "account",
+     "type": "address"
+    }
+   ],
+   "name": "ClaimCvgMultiple",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    },
+    {
+     "indexed": false,
+     "internalType": "address",
+     "name": "account",
+     "type": "address"
+    }
+   ],
+   "name": "ClaimCvgSdtMultiple",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "uint256",
+     "name": "cycleId",
+     "type": "uint256"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "rewardAmount",
+     "type": "uint256"
+    }
+   ],
+   "name": "CvgCycleProcess",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    },
+    {
+     "indexed": false,
+     "internalType": "address",
+     "name": "account",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "uint256",
+     "name": "cycleId",
+     "type": "uint256"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "amount",
+     "type": "uint256"
+    }
+   ],
+   "name": "Deposit",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": false,
+     "internalType": "uint8",
+     "name": "version",
+     "type": "uint8"
+    }
+   ],
+   "name": "Initialized",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "previousOwner",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "newOwner",
+     "type": "address"
+    }
+   ],
+   "name": "OwnershipTransferStarted",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "previousOwner",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "newOwner",
+     "type": "address"
+    }
+   ],
+   "name": "OwnershipTransferred",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "uint256",
+     "name": "cycleId",
+     "type": "uint256"
+    },
+    {
+     "indexed": false,
+     "internalType": "address",
+     "name": "operator",
+     "type": "address"
+    },
+    {
+     "components": [
+      {
+       "internalType": "contract IERC20",
+       "name": "token",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "amount",
+       "type": "uint256"
+      }
+     ],
+     "indexed": false,
+     "internalType": "struct ICommonStruct.TokenAmount[]",
+     "name": "tokenAmounts",
+     "type": "tuple[]"
+    }
+   ],
+   "name": "ProcessSdtRewards",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    },
+    {
+     "indexed": false,
+     "internalType": "address",
+     "name": "account",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "uint256",
+     "name": "cycleId",
+     "type": "uint256"
+    },
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "amount",
+     "type": "uint256"
+    }
+   ],
+   "name": "Withdraw",
+   "type": "event"
+  },
+  {
+   "inputs": [],
+   "name": "acceptOwnership",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "buffer",
+   "outputs": [
+    {
+     "internalType": "contract ISdtBuffer",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    }
+   ],
+   "name": "claimCvgRewards",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    },
+    {
+     "internalType": "address",
+     "name": "operator",
+     "type": "address"
+    }
+   ],
+   "name": "claimCvgSdtMultiple",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    },
+    {
+     "components": [
+      {
+       "internalType": "contract IERC20",
+       "name": "token",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "amount",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct ICommonStruct.TokenAmount[]",
+     "name": "",
+     "type": "tuple[]"
+    }
+   ],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "_tokenId",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "_minCvgSdtAmountOut",
+     "type": "uint256"
+    },
+    {
+     "internalType": "bool",
+     "name": "_isConvert",
+     "type": "bool"
+    }
+   ],
+   "name": "claimCvgSdtRewards",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvg",
+   "outputs": [
+    {
+     "internalType": "contract ICvg",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvgControlTower",
+   "outputs": [
+    {
+     "internalType": "contract ICvgControlTower",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "cycleId",
+     "type": "uint256"
+    }
+   ],
+   "name": "cycleInfo",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "uint256",
+       "name": "cvgRewardsAmount",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "totalStaked",
+       "type": "uint256"
+      },
+      {
+       "internalType": "bool",
+       "name": "isSdtProcessed",
+       "type": "bool"
+      }
+     ],
+     "internalType": "struct SdtStakingPositionService.CycleInfo",
+     "name": "",
+     "type": "tuple"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "amount",
+     "type": "uint256"
+    },
+    {
+     "internalType": "address",
+     "name": "operator",
+     "type": "address"
+    }
+   ],
+   "name": "deposit",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "depositPaused",
+   "outputs": [
+    {
+     "internalType": "bool",
+     "name": "",
+     "type": "bool"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    }
+   ],
+   "name": "getAllClaimableAmounts",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    },
+    {
+     "components": [
+      {
+       "internalType": "contract IERC20",
+       "name": "token",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "amount",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct ICommonStruct.TokenAmount[]",
+     "name": "",
+     "type": "tuple[]"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    }
+   ],
+   "name": "getAllClaimableCvgAmount",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    }
+   ],
+   "name": "getClaimableCyclesAndAmounts",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "uint256",
+       "name": "cycleClaimable",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "cvgRewards",
+       "type": "uint256"
+      },
+      {
+       "components": [
+        {
+         "internalType": "contract IERC20",
+         "name": "token",
+         "type": "address"
+        },
+        {
+         "internalType": "uint256",
+         "name": "amount",
+         "type": "uint256"
+        }
+       ],
+       "internalType": "struct ICommonStruct.TokenAmount[]",
+       "name": "sdtRewards",
+       "type": "tuple[]"
+      }
+     ],
+     "internalType": "struct SdtStakingPositionService.ClaimableCyclesAndAmounts[]",
+     "name": "",
+     "type": "tuple[]"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "cycleId",
+     "type": "uint256"
+    }
+   ],
+   "name": "getProcessedSdtRewards",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "contract IERC20",
+       "name": "token",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "amount",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct ICommonStruct.TokenAmount[]",
+     "name": "",
+     "type": "tuple[]"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ICvgControlTower",
+     "name": "_cvgControlTower",
+     "type": "address"
+    },
+    {
+     "internalType": "contract ISdAssetGauge",
+     "name": "_stakingAsset",
+     "type": "address"
+    },
+    {
+     "internalType": "string",
+     "name": "_symbol",
+     "type": "string"
+    },
+    {
+     "internalType": "bool",
+     "name": "_isGaugeAsset",
+     "type": "bool"
+    },
+    {
+     "components": [
+      {
+       "internalType": "address",
+       "name": "addr",
+       "type": "address"
+      },
+      {
+       "internalType": "bytes",
+       "name": "signature",
+       "type": "bytes"
+      }
+     ],
+     "internalType": "struct SdtStakingPositionService.WithdrawCallInfo",
+     "name": "_withdrawCallInfo",
+     "type": "tuple"
+    }
+   ],
+   "name": "initialize",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    }
+   ],
+   "name": "nextClaims",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "uint128",
+       "name": "nextClaimableCvg",
+       "type": "uint128"
+      },
+      {
+       "internalType": "uint128",
+       "name": "nextClaimableSdt",
+       "type": "uint128"
+      }
+     ],
+     "internalType": "struct SdtStakingPositionService.NextClaimableCycles",
+     "name": "",
+     "type": "tuple"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "numberOfSdtRewards",
+   "outputs": [
+    {
+     "internalType": "uint128",
+     "name": "",
+     "type": "uint128"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "owner",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "pendingOwner",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "processSdtRewards",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "amount",
+     "type": "uint256"
+    }
+   ],
+   "name": "processStakersRewards",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "renounceOwnership",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "sdtRewardDistributor",
+   "outputs": [
+    {
+     "internalType": "contract ISdtRewardDistributor",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "cycleId",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "sdtRewardsIndex",
+     "type": "uint256"
+    }
+   ],
+   "name": "sdtRewardsByCycle",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "contract IERC20",
+       "name": "token",
+       "type": "address"
+      },
+      {
+       "internalType": "uint256",
+       "name": "amount",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct ICommonStruct.TokenAmount",
+     "name": "",
+     "type": "tuple"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "sdtStakingPositionManager",
+   "outputs": [
+    {
+     "internalType": "contract ISdtStakingPositionManager",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_buffer",
+     "type": "address"
+    }
+   ],
+   "name": "setBuffer",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "_cycleId",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "_tokenId",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "_actualCycle",
+     "type": "uint256"
+    }
+   ],
+   "name": "stakedAmountEligibleAtCycle",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "stakingAsset",
+   "outputs": [
+    {
+     "internalType": "contract ISdAssetGauge",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "stakingCycle",
+   "outputs": [
+    {
+     "internalType": "uint128",
+     "name": "",
+     "type": "uint128"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "index",
+     "type": "uint256"
+    }
+   ],
+   "name": "stakingHistoryByToken",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    }
+   ],
+   "name": "stakingInfo",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "uint256",
+       "name": "tokenId",
+       "type": "uint256"
+      },
+      {
+       "internalType": "string",
+       "name": "symbol",
+       "type": "string"
+      },
+      {
+       "internalType": "uint256",
+       "name": "pending",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "totalStaked",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "cvgClaimable",
+       "type": "uint256"
+      },
+      {
+       "components": [
+        {
+         "internalType": "contract IERC20",
+         "name": "token",
+         "type": "address"
+        },
+        {
+         "internalType": "uint256",
+         "name": "amount",
+         "type": "uint256"
+        }
+       ],
+       "internalType": "struct ICommonStruct.TokenAmount[]",
+       "name": "sdtClaimable",
+       "type": "tuple[]"
+      }
+     ],
+     "internalType": "struct ISdtStakingPositionService.StakingInfo",
+     "name": "",
+     "type": "tuple"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "symbol",
+   "outputs": [
+    {
+     "internalType": "string",
+     "name": "",
+     "type": "string"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "toggleDepositPaused",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "cycleId",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    }
+   ],
+   "name": "tokenInfoByCycle",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "uint256",
+       "name": "amountStaked",
+       "type": "uint256"
+      },
+      {
+       "internalType": "uint256",
+       "name": "pendingStaked",
+       "type": "uint256"
+      }
+     ],
+     "internalType": "struct SdtStakingPositionService.TokenInfo",
+     "name": "",
+     "type": "tuple"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "erc20Address",
+     "type": "address"
+    }
+   ],
+   "name": "tokenToId",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "_tokenId",
+     "type": "uint256"
+    }
+   ],
+   "name": "tokenTotalStaked",
+   "outputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "newOwner",
+     "type": "address"
+    }
+   ],
+   "name": "transferOwnership",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "vault",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "tokenId",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "amount",
+     "type": "uint256"
+    }
+   ],
+   "name": "withdraw",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  }
+ ]
+}

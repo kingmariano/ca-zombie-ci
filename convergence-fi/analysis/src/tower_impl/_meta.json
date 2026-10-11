@@ -1,0 +1,1181 @@
+{
+ "address": "0xbdbddc4bf67e9bc02706e4ce53bc14d6ce3038f1",
+ "name": "CvgControlTowerV2",
+ "proxy": "0",
+ "impl": "",
+ "compiler": "v0.8.24+commit.e11b9ed9",
+ "abi": [
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": false,
+     "internalType": "uint8",
+     "name": "version",
+     "type": "uint8"
+    }
+   ],
+   "name": "Initialized",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": false,
+     "internalType": "uint256",
+     "name": "cvgCycleId",
+     "type": "uint256"
+    }
+   ],
+   "name": "NewCycle",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "previousOwner",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "newOwner",
+     "type": "address"
+    }
+   ],
+   "name": "OwnershipTransferStarted",
+   "type": "event"
+  },
+  {
+   "anonymous": false,
+   "inputs": [
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "previousOwner",
+     "type": "address"
+    },
+    {
+     "indexed": true,
+     "internalType": "address",
+     "name": "newOwner",
+     "type": "address"
+    }
+   ],
+   "name": "OwnershipTransferred",
+   "type": "event"
+  },
+  {
+   "inputs": [],
+   "name": "acceptOwnership",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "bondCalculator",
+   "outputs": [
+    {
+     "internalType": "contract IBondCalculator",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "bondDepository",
+   "outputs": [
+    {
+     "internalType": "contract IBondDepository",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "bondPositionManager",
+   "outputs": [
+    {
+     "internalType": "contract IBondPositionManager",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cloneFactory",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "convexTreasury",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvgCycle",
+   "outputs": [
+    {
+     "internalType": "uint128",
+     "name": "",
+     "type": "uint128"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvgOracle",
+   "outputs": [
+    {
+     "internalType": "contract ICvgOracle",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvgRewards",
+   "outputs": [
+    {
+     "internalType": "contract ICvgRewards",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvgSDT",
+   "outputs": [
+    {
+     "internalType": "contract IERC20Mintable",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvgSdtBuffer",
+   "outputs": [
+    {
+     "internalType": "contract ISdtBuffer",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvgSdtStaking",
+   "outputs": [
+    {
+     "internalType": "contract ISdtStakingPositionService",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "cvgToken",
+   "outputs": [
+    {
+     "internalType": "contract ICvg",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "gaugeController",
+   "outputs": [
+    {
+     "internalType": "contract IGaugeController",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "_cursorStart",
+     "type": "uint256"
+    },
+    {
+     "internalType": "uint256",
+     "name": "_lengthDesired",
+     "type": "uint256"
+    }
+   ],
+   "name": "getSdtStakings",
+   "outputs": [
+    {
+     "components": [
+      {
+       "internalType": "address",
+       "name": "stakingContract",
+       "type": "address"
+      },
+      {
+       "internalType": "string",
+       "name": "stakingName",
+       "type": "string"
+      }
+     ],
+     "internalType": "struct CvgControlTowerV2.Staking[]",
+     "name": "",
+     "type": "tuple[]"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "ibo",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ISdtStakingPositionService",
+     "name": "_sdtStakingClone",
+     "type": "address"
+    }
+   ],
+   "name": "insertNewSdtStaking",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "name": "isBond",
+   "outputs": [
+    {
+     "internalType": "bool",
+     "name": "",
+     "type": "bool"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "name": "isSdtStaking",
+   "outputs": [
+    {
+     "internalType": "bool",
+     "name": "",
+     "type": "bool"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "name": "isStakingContract",
+   "outputs": [
+    {
+     "internalType": "bool",
+     "name": "",
+     "type": "bool"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "lockingPositionDelegate",
+   "outputs": [
+    {
+     "internalType": "contract ILockingPositionDelegate",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "lockingPositionManager",
+   "outputs": [
+    {
+     "internalType": "contract ILockingPositionManager",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "lockingPositionService",
+   "outputs": [
+    {
+     "internalType": "contract ILockingPositionService",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "owner",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "pendingOwner",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "poolCvgSdt",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "renounceOwnership",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "uint256",
+     "name": "",
+     "type": "uint256"
+    }
+   ],
+   "name": "sdAndLpAssetStaking",
+   "outputs": [
+    {
+     "internalType": "contract ISdtStakingPositionService",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "sdt",
+   "outputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "sdtBlackHole",
+   "outputs": [
+    {
+     "internalType": "contract ISdtBlackHole",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "sdtFeeCollector",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "sdtRewardDistributor",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "sdtStakingPositionManager",
+   "outputs": [
+    {
+     "internalType": "contract ISdtStakingPositionManager",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "sdtStakingViewer",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "sdtUtilities",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IBondCalculator",
+     "name": "newBondCalculator",
+     "type": "address"
+    }
+   ],
+   "name": "setBondCalculator",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IBondDepository",
+     "name": "newBondDepository",
+     "type": "address"
+    }
+   ],
+   "name": "setBondDepository",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IBondPositionManager",
+     "name": "_bondPositionManager",
+     "type": "address"
+    }
+   ],
+   "name": "setBondPositionManager",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "newCloneFactory",
+     "type": "address"
+    }
+   ],
+   "name": "setCloneFactory",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_convexTreasury",
+     "type": "address"
+    }
+   ],
+   "name": "setConvexTreasury",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ICvg",
+     "name": "_cvgToken",
+     "type": "address"
+    }
+   ],
+   "name": "setCvg",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ICvgRewards",
+     "name": "newCvgRewards",
+     "type": "address"
+    }
+   ],
+   "name": "setCvgRewards",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20Mintable",
+     "name": "_cvgSDT",
+     "type": "address"
+    }
+   ],
+   "name": "setCvgSdt",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ISdtBuffer",
+     "name": "_cvgSdtBuffer",
+     "type": "address"
+    }
+   ],
+   "name": "setCvgSdtBuffer",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ISdtStakingPositionService",
+     "name": "_cvgSdtStaking",
+     "type": "address"
+    }
+   ],
+   "name": "setCvgSdtStaking",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IGaugeController",
+     "name": "newGaugeController",
+     "type": "address"
+    }
+   ],
+   "name": "setGaugeController",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_ibo",
+     "type": "address"
+    }
+   ],
+   "name": "setIbo",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ILockingPositionDelegate",
+     "name": "newLockingPositionDelegate",
+     "type": "address"
+    }
+   ],
+   "name": "setLockingPositionDelegate",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ILockingPositionManager",
+     "name": "newLockingPositionManager",
+     "type": "address"
+    }
+   ],
+   "name": "setLockingPositionManager",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ILockingPositionService",
+     "name": "newLockingPositionService",
+     "type": "address"
+    }
+   ],
+   "name": "setLockingPositionService",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ICvgOracle",
+     "name": "newCvgOracle",
+     "type": "address"
+    }
+   ],
+   "name": "setOracle",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_poolCvgSDT",
+     "type": "address"
+    }
+   ],
+   "name": "setPoolCvgSdt",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IERC20",
+     "name": "_sdt",
+     "type": "address"
+    }
+   ],
+   "name": "setSdt",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ISdtBlackHole",
+     "name": "_sdtBlackHole",
+     "type": "address"
+    }
+   ],
+   "name": "setSdtBlackHole",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_sdtFeeCollector",
+     "type": "address"
+    }
+   ],
+   "name": "setSdtFeeCollector",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_sdtRewardDistributor",
+     "type": "address"
+    }
+   ],
+   "name": "setSdtRewardDistributor",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract ISdtStakingPositionManager",
+     "name": "_sdtStakingPositionManager",
+     "type": "address"
+    }
+   ],
+   "name": "setSdtStakingPositionManager",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_sdtStakingViewer",
+     "type": "address"
+    }
+   ],
+   "name": "setSdtStakingViewer",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_sdtUtilities",
+     "type": "address"
+    }
+   ],
+   "name": "setSdtUtilities",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "newTreasuryAirdrop",
+     "type": "address"
+    }
+   ],
+   "name": "setTreasuryAirdrop",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "newTreasuryDao",
+     "type": "address"
+    }
+   ],
+   "name": "setTreasuryDao",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "newtreasuryPartners",
+     "type": "address"
+    }
+   ],
+   "name": "setTreasuryPartners",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "newTreasuryPddMultisig",
+     "type": "address"
+    }
+   ],
+   "name": "setTreasuryPdd",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "newTreasuryPodMultisig",
+     "type": "address"
+    }
+   ],
+   "name": "setTreasuryPod",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "newTreasuryTeam",
+     "type": "address"
+    }
+   ],
+   "name": "setTreasuryTeam",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IVotingPowerEscrow",
+     "name": "newVotingPowerEscrow",
+     "type": "address"
+    }
+   ],
+   "name": "setVeCVG",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_veSdtMultisig",
+     "type": "address"
+    }
+   ],
+   "name": "setVeSdtMultisig",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IVestingCvg",
+     "name": "_vestingCvg",
+     "type": "address"
+    }
+   ],
+   "name": "setVestingCvg",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "contract IYsDistributor",
+     "name": "_ysDistributor",
+     "type": "address"
+    }
+   ],
+   "name": "setYsDistributor",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "_bondDepository",
+     "type": "address"
+    }
+   ],
+   "name": "toggleBond",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address[]",
+     "name": "contractAddresses",
+     "type": "address[]"
+    }
+   ],
+   "name": "toggleStakingContracts",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [
+    {
+     "internalType": "address",
+     "name": "newOwner",
+     "type": "address"
+    }
+   ],
+   "name": "transferOwnership",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "treasuryAirdrop",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "treasuryDao",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "treasuryPartners",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "treasuryPdd",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "treasuryPod",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "treasuryTeam",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "updateCvgCycle",
+   "outputs": [],
+   "stateMutability": "nonpayable",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "veSdtMultisig",
+   "outputs": [
+    {
+     "internalType": "address",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "vestingCvg",
+   "outputs": [
+    {
+     "internalType": "contract IVestingCvg",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "votingPowerEscrow",
+   "outputs": [
+    {
+     "internalType": "contract IVotingPowerEscrow",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  },
+  {
+   "inputs": [],
+   "name": "ysDistributor",
+   "outputs": [
+    {
+     "internalType": "contract IYsDistributor",
+     "name": "",
+     "type": "address"
+    }
+   ],
+   "stateMutability": "view",
+   "type": "function"
+  }
+ ]
+}

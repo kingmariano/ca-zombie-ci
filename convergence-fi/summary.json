@@ -1,0 +1,55 @@
+{
+  "finding": "L2-Phase2-ConvergenceFi",
+  "title": "Convergence Fi \u2014 StakeDAO staking positions: live extraction-surface deep dive",
+  "chains": [
+    "ethereum"
+  ],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 1322228,
+    "P": 0,
+    "S": 0
+  },
+  "latest_block": 26169646,
+  "block_numbers": {
+    "ethereum": 26169646,
+    "value_snapshot_block": 26169583
+  },
+  "targets_checked": 53,
+  "live_targets": 43,
+  "closed_reasons": [
+    "SdtBlackHole.withdraw requires isSdtStaking[msg.sender] (only registered Convergence services); direct EOA calls revert ONLY_SD_ASSET_STAKING",
+    "All service withdraw/claim functions gated by SdtStakingPositionManager.checkTokenFullCompliance: msg.sender must equal ownerOf(tokenId) (TOKEN_NOT_OWNED otherwise)",
+    "RewardDistributor.claimMultipleStaking checks ownership per tokenId; claimCvgSdtSimple requires isStakingContract[msg.sender]",
+    "Manager.mint requires isStakingContract; burn/setLock are onlyNftOwner; CloneFactory.createSdtStakingAndBuffer and tower setters are onlyOwner (3-of-6 Safe)",
+    "Gauge claim_rewards redirect asserts _addr==msg.sender; claim_rewards_for asserts msg.sender==claimer (only StakeDAO claim helpers, which claim for the caller only)",
+    "All initializers consumed on live services/gauges; no init exposure"
+  ],
+  "poc": {
+    "tests_passed": 0,
+    "tests_total": 0,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "37/37 registered SdtStakingPositionService positions backed by SdtBlackHole gauge-token balances (balance >= cycleInfo.totalStaked for every service)",
+    "Live value at block 26169583: 1094610.99 USD directly priced (DefiLlama) + ~1338 USD unpriced legs (sdFXS/sdBal/sdANGLE) = ~1095949 USD; triage 1095178 agrees (+0.07% price drift, no material flows)",
+    "687 position NFTs, 400 distinct owners; owners can still self-withdraw (positive-control fork test: tokenId 177 owner withdrew 1000 sdCRV-gauge)",
+    "cvgSDT staking pool 0xF941BC holds 1447884.82 cvgSDT (= its cycleInfo(141).totalStaked) ~ 141116 USD at SDT parity 0.09746; vault=self; owner=3-of-6 Safe",
+    "SdtRewardDistributor holds 85163 USD of processed-unclaimed rewards (295297 sdCRV, 11928 crvUSD, 10302 CRV, 2727 USDT, 1394 sdPENDLE, 0.765 wstETH...)",
+    "processSdtRewards() is permissionless but pays the caller only the designed 1% processor fee (buffer.processorRewardsPercentage=1000/100000); sdCRV gauge claimable_reward(blackhole,SDT)=0",
+    "Ownership: tower+services+beacon+factory+manager+distributor+blackhole owned by 3-of-6 Safe 0x0af815364BD9e9E60f3d2D3bAc1320B77d3E35F7; ProxyAdmin 0xf16d93ac owned by same Safe",
+    "Gauge admin = 1-of-1 Safe 0xe5d6D047DF95c6627326465cB27B64A8b77A8b91 (latent: set_claimer could redirect pending gauge rewards, not principal)",
+    "Blackhole vlBoost/veBoost (1.83M each) non-transferable (transfer/transferFrom pure) - zero realizable value",
+    "cvgSDT mint is permissionless but 1:1 SDT in (SDT sent to 3-of-N veSdtMultisig 0x6ceE94bF); no free mint",
+    "Small extra Convergence pots sampled: stkCVGETH 0.3859 wstETH (~1202 USD) + CVG legs (~100 USD at 0.0000558); not part of the triage headline"
+  ],
+  "caveats": [
+    "cvgSDT has no direct oracle; valued at SDT parity (pool-implied ~0.0959) - realizability depends on the SDT/cvgSDT Curve pool and the 3-of-N veSdtMultisig",
+    "Unpriced legs (sdANGLE 182360, sdFXS 3218, sdBal 1644) estimated from underlying prices; sdANGLE's ANGLE underlying is nearly worthless (0.000163 USD)",
+    "Distributor claimable-vs-held reconciliation not done event-by-event; no mismatch found in sampled state",
+    "H-O figure assumes the 400 NFT owners are live entities able to transact; some may be lost keys (then their share is effectively stuck, not attacker-extractable)"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Convergence Fi: the $1.095M of StakeDAO gauge positions (37 services, 687 NFTs/400 owners) plus $141k cvgSDT pool and $85k unclaimed rewards are all gated by position-NFT ownership and registered-contract checks, and position owners can still self-withdraw."
+}
