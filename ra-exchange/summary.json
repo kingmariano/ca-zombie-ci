@@ -1,0 +1,76 @@
+{
+  "finding": "L2-P2 ra-exchange (Ra Exchange, Fraxtal) — zombie-hunt II phase-2 deep dive",
+  "slug": "ra-exchange",
+  "title": "Ra Exchange (authorized Ramses V2 fork) on Fraxtal — CL pools + Solidly-style pairs; reward layer never bootstrapped",
+  "chains": ["fraxtal"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 838505.18,
+    "P": 1386.35,
+    "S": 0
+  },
+  "latest_block": 42463103,
+  "block_numbers": {"fraxtal": 42463103, "fraxtal_value_dump": 42460357, "fraxtal_triage": 42451737},
+  "targets_checked": 334,
+  "live_targets": 74,
+  "triage_value_usd": 837928.58,
+  "live_value_usd": 839891.54,
+  "value_breakdown": {
+    "cl_pools_total_usd": 833982.09,
+    "cl_protocol_fees_usd": 1386.35,
+    "cl_lp_owned_usd": 832595.73,
+    "cramm_pairs_reserves_usd": 5909.45,
+    "staking_layer_usd": 0,
+    "other_protocol_contracts_usd": 0,
+    "big3_pools_usd": {
+      "0x45a51ed99e94c2b3584386009c0cccc5a7957a84_frxUSD_frxETH": 330718.15,
+      "0x52992f0ca147f25cba0b727f281848220f6d4c24_axlUSDC_frxUSD": 309408.42,
+      "0x7767861f3638dd69ad131f15eff75e7c886f89b1_frxETH_frxETH": 192901.27
+    },
+    "team_safe_nft_value_approx_usd": 820000
+  },
+  "closed_reasons": [
+    "Value-bearing implementations are byte-identical to verified audited sources: 8/8 recompiled runtime codes match on-chain code exactly (ClPool, NonfungiblePositionManager, Pair, ClPoolFactory, PairFactory, FeeCollector, FeeDistributor, Voter).",
+    "CL positions are ERC-721-gated: collect/decreaseLiquidity/burn/getReward on the 3 value NFTs (1086/36/38, owner = team GnosisSafe 0xC4EB45…) revert !APPROVED for any non-owner.",
+    "ClPool.collect keys positions by msg.sender and ClPool.burn(owner=msg.sender) makes direct pool-level theft impossible; pool.collect for an attacker returns (0,0).",
+    "Protocol fees are only collectable via ClPool.collectProtocol (onlyFeeCollector). The permissionless FeeCollector.collectProtocolFees(pool) forwards 100% to the team treasury because isTokenLive=false (fork-verified: attacker gains 0).",
+    "crAMM pairs hold no excess: balanceOf(pair) == getReserves() on all 63 pairs -> skim() pays 0; k-invariant swap/mint/burn and reentrancy locks intact.",
+    "Staking/ve(3,3) layer never started and holds $0: RA totalSupply 0, ve totalSupply 0/epoch 0, xToken 0, Minter firstPeriod 0, Voter totalWeight 0, all 51 gauges and 51 fee distributors have zero token balances, no CL NFT staked in any gauge.",
+    "Ramses Oct-2024 FeeDistributor exploit class (tokenTotalSupplyByPeriod inflation) is absent (different older Velodrome-style FeeDistributor design) and unreachable (no veNFT can exist: createLock/vote/getReward all revert).",
+    "Flash loans enforce repayment + fee (F0/F1 checks); a compliant flash is net-negative for the attacker. Round-trip swaps lose money (0.35% current fee on pool A + curve).",
+    "49-contract balance sweep (all deployer-deployed contracts incl. routers/gauges/factories): zero balances of the 9 main Fraxtal tokens and no native >0.001 FRAX — no hidden value elsewhere.",
+    "Stale-price arbitrage bound against the big pools is ~$3-20 gross and ~$0 net after fees (pool A deviation +0.83%, pool B -0.70%, pool C +0.12%)."
+  ],
+  "poc": {
+    "tests_passed": 13,
+    "tests_total": 13,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38156510705",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38156505928",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38155707928",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38155261813"
+    ],
+    "bytecode_equivalence": "8/8 match_full=True (ClPool 18/18 library links patched, NFP manager 3/3)",
+    "fork": "Fraxtal via keyless public RPC (rpc.frax.com / fraxtal-rpc.publicnode.com)"
+  },
+  "key_facts": [
+    "Live value $839,891.54 at block 42,460,357 (triage $837,928.58 at 42,451,737 -> +0.23%); re-verified at blocks 42,462,749 and 42,463,103.",
+    "99.3% of value is in 3 CL pools: frxUSD/frxETH $330.7k, axlUSDC/frxUSD $309.4k, frxETH/frxETH $192.9k.",
+    "The 3 dominant position NFTs (tokenId 1086 = 98.8% of pool A, 36 = 99.5% of pool B, 38 = 97% of pool C) are all owned by GnosisSafe 0xC4EB45d80DC1F079045E75D5d55de8eD1c1090E6 (3-of-5, nonce 472) — holder-withdrawable (H-O, proven on fork).",
+    "Protocol fee split is feeProtocol=85 (0x55): 75% of swap fees to the protocol, 25% to LPs; $1,386.35 of protocol fees sit in pools, collectable only by FeeCollector -> team treasury Safe 0xAAA298… (P).",
+    "Current pool fees were raised from initial values via CommandCenter: pool A 250->3500 (0.35%), pool B 100->250, pool C 150->500; pair fees per-pair (e.g. frxUSD/frxETH pair 25 bps), feeSplit 16-80 routes 5-25% of pair fees to treasury.",
+    "Reward layer inert: RA token totalSupply 0, Minter firstPeriod 0/activePeriod=type(int256).max (initiateEpochZero never called), no veNFTs, Voter totalWeight 0, 11 legacy gauges hold only staked crAMM LP (~$5k, H-O).",
+    "All factories/pools/pairs/gauges/voter/ve/minter/feeCollector are upgradeable (ProxyAdmin 0x8e01fc… owner EOA 0x1e2A…); factory owner/treasury is Safe 0xAAA298… — privileged upgrade power (P).",
+    "Deployed code == verified source: all 8 value-bearing implementations recompiled byte-identically (solc 0.7.6/0.8.23, runs 800, viaIR, bytecodeHash none, library links patched)."
+  ],
+  "caveats": [
+    "USD via DefiLlama; frxUSD $0.9925, frxETH $2503.5, axlUSDC $0.9996, WBTC $82958 (2026-10-11). WFRAX is priced by DefiLlama's likely-stale FXS mapping ($0.337) — worth only ~$1.5k of the total.",
+    "The ~$820k team-Safe NFT value is an approximate pro-rata of pool balances by liquidity share (98.8%/99.5%/97%).",
+    "ClGauge implementation (0xa7d39aff…) and legacy Gauge (923-byte runtime) are unverified on Etherscan V2; both hold $0 today and were only tested behaviourally.",
+    "Value drifts with live (small) trading: pool A protocol fees grew 676.8 -> 689.4 frxUSD between blocks 42,460,357 and 42,463,103.",
+    "No mainnet transactions; all exploit attempts executed on local forks only."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Ra Exchange (Fraxtal): all $839.9k is holder-owned CL LP (99% in a 3-of-5 team Safe's 3 NFTs) and crAMM LP behind intact, bytecode-verified Ramses/UniV3+Solidly code; the Ramses-exploited reward layer was never bootstrapped (no RA, no veNFTs, all gauges/fee distributors empty)."
+}
