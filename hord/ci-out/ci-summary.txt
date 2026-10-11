@@ -1,0 +1,30 @@
+finding=hord
+date=2026-10-11T20:30:58Z
+fork_block=26170355
+rpc_source=ci-env (redacted)
+--- chain head on the fork RPC ---
+26171613
+
+--- live reads (read-only) ---
+hETH.totalSupply: SM.paused:        SM.balance:       WM.paused:        WM.balance:       WM.assuredClaims: pod.balance:      
+--- pinned forge test ---
+Compiling 20 files with Solc 0.8.24
+Solc 0.8.24 finished in 633.18ms
+Compiler run successful!
+
+Ran 4 tests for test/Hord.t.sol:HordZombieTest
+[PASS] test_attacker_paths_paused() (gas: 286590)
+[PASS] test_live_state() (gas: 406528)
+Logs:
+  getAmountOfHETHforETH(1e18) (hETH per ETH): 8982439439812230100415
+
+[PASS] test_privileged_gates() (gas: 377151)
+[PASS] test_unpaused_simulation_no_extraction() (gas: 780084)
+Logs:
+  minted hETH for 0.01 ETH: 89824394398122301004
+  ETH value of minted hETH: 9999999999999999
+
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 396.50ms (7.50ms CPU time)
+
+Ran 1 test suite in 399.14ms (396.50ms CPU time): 4 tests passed, 0 failed, 0 skipped (4 total tests)
+forge_exit=0

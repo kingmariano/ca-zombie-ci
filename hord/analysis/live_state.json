@@ -1,0 +1,124 @@
+{
+  "finding": "hord",
+  "protocol": "Hord (hETH liquid staking) — Ethereum",
+  "date": "2026-10-11",
+  "latest_block_checked": 26170355,
+  "beacon_head_slot": 15409415,
+  "status": "read-only; no transactions; fork-PoC verified only",
+  "headline": {
+    "triage_live_usd": 703265,
+    "triage_basis": "281.3235 hETH x $2,499.87 assumed backed by beacon validators",
+    "verified_live_usd": 0,
+    "verified_basis": "all 101 Hord validators are withdrawal_done with 0 balance; hETH + withdrawal manager are paused; every ETH-moving path is privileged",
+    "confidence": "high"
+  },
+  "contracts": {
+    "hETH_staking_manager_proxy": {
+      "address": "0x5bBe36152d3CD3eB7183A82470b39b29EedF068B",
+      "name": "Hord ETH Staking (hETH) / HordETHStakingManager",
+      "impl": "0xd98B050d2c5A3562b19a791f88F6Ef9A7aa93F27",
+      "impl_set_block": 24411920,
+      "impl_set_date": "2026-02-07",
+      "proxy_admin": "0x96B90F7065e5FD7251dd1b649DE20918Ae0F3aB7",
+      "proxy_admin_owner": "0x086A6d9FD61758096CF4F394AE7C1F9B6b4EEC14 (HordCongress)",
+      "paused": true,
+      "eth_balance_wei": "53653161919910392",
+      "eth_balance": 0.053653161919910392,
+      "totalBalanceETHInValidators_recorded": 0,
+      "hETH_totalSupply": 281.323492796481011183,
+      "getAmountOfHETHforETH_1e18": "8982439439812230100415",
+      "impl_note": "unverified on Etherscan; Apr-2024 verified impl 0xaa06c1cdefc8ec7e6d205798fcc5b93574f5d1f0 shares 63/65 dispatcher selectors. Feb-2026 impl removed whitelistLSDToken/removeLSDToken and added transferETH(address,uint256)=0xef300f40 (onlyHordCongress) and an SSV-withdraw wrapper 0xf4f4b531 (onlyMaintainer+whenNotPaused)"
+    },
+    "withdrawal_manager_proxy": {
+      "address": "0x4FdC295580287b1e3C8fa8875f0fbDc688d8e8A5",
+      "name": "HordETHStakingWithdrawalManager",
+      "impl": "0x11E45e691feeC37E224ee1764311509f6B691107",
+      "impl_set_block": 25590926,
+      "impl_set_date": "2026-07-23",
+      "paused": true,
+      "eth_balance_wei": "12695109442239980950",
+      "eth_balance": 12.69510944223998095,
+      "assuredClaimsBalance": 12.69510944223998095,
+      "unAllocatedBuffer": 0,
+      "totalPendingDebt": 0,
+      "withdrawalDebtsLength": 0,
+      "totalAmountAddedByOrgForBuffer": 12.0,
+      "totalAmountReturnedToOrg": 11.830937496920102421,
+      "amountTakenFromBuffer": 0.169062503079897579,
+      "note": "balance == assuredClaimsBalance exactly; 16 uncompleted withdrawal requests sum to the same amount (before the 5 Jan-2026 corrections, request-time sum was 12.695324342099001)"
+    },
+    "roles": {
+      "hordCongress": "0x086A6d9FD61758096CF4F394AE7C1F9B6b4EEC14 (custom Congress: propose/castVote/execute)",
+      "congress_members": ["0xDE1C1F83154eF64A8b3AE42b20Ac2DA716d18ABA", "0x7027DB53bC5299e0Ee13ca6F594e4215D248c5A8", "0xc0b42dB9BEc4987684341480c2D3cF90DDFD1F13"],
+      "congress_min_quorum": 2,
+      "proposal_count": 58,
+      "last_congress_activity": "2026-07-22 (proposals executed; WM upgraded 2026-07-23)",
+      "maintainersRegistry": "0x8B7819135Fe97aBFDc0c88596509c00FA727eaDc",
+      "active_maintainers": ["0x37be0a40A0d2493872e4e4b27C5147B76B554665", "0x6aCB6B451aAf8a411E2FD68d0497A02Ec43421f3"],
+      "stakingConfiguration": "0x51B2f83aac13adB9Ed826C4cdb593C88e6B61C92",
+      "financeAddress": "0x918B80ce545ca1b8651686B705E0d42bc9190912"
+    },
+    "other_holdings": {
+      "eigenpod": {
+        "address": "0xb1d6Eb8893e74fd42BFd48A1007aA3F3ec064EE0",
+        "owner": "0x72B8669dC62746e27073C726E55d9062005AB45D (HordRestakingManager)",
+        "eth_balance": 0.202938912,
+        "history": "received 5x32 ETH validator withdrawals; forwarded 160 ETH (2026-01-14) + 3.524 ETH (2026-02-01) to the restaking manager, which forwarded all to the staking manager"
+      },
+      "staking_manager_tokens": {
+        "stETH": 0.051876519937062307,
+        "wstETH": 0.076147546760160767,
+        "SSV": 5.0,
+        "WETH": 1e-10
+      },
+      "uni_v3_hETH_WETH_pool": {
+        "address": "0x4F2cBf76a491240764d3Fe4E96e48C5062075F32",
+        "hETH": 6.319657972804532535,
+        "WETH": 0.000679680384701787
+      },
+      "finance_EOA_out_of_protocol": {
+        "address": "0x918B80ce545ca1b8651686B705E0d42bc9190912",
+        "eth_balance": 11.836024032446690421,
+        "note": "already returned to the organization (withdrawOrganizationFunds 2026-06-25); no longer protocol custody"
+      }
+    }
+  },
+  "beacon_validators": {
+    "launch_events": 103,
+    "unique_pubkeys": 101,
+    "total_launched_eth": 3296,
+    "withdrawal_credentials": {
+      "0x0100000000000000000000005bbe36152d3cd3eb7183a82470b39b29eedf068b": 95,
+      "0x010000000000000000000000b1d6eb8893e74fd42bfd48a1007aa3f3ec064ee0": 5,
+      "0x0100000000000000000000006d099eb0d8700ff500b99a214f0b8b0a20d06328": 1
+    },
+    "status_head_slot_15409415": "withdrawal_done x101, balance 0",
+    "exit_window": "2023-10-31 .. 2026-01-04 (final wave 2025-12-28..2026-01-04)",
+    "source": "launchNewValidator calldata decoded from Etherscan logs; validator status via https://ethereum-beacon-api.publicnode.com/eth/v1/beacon/states/head/validators"
+  },
+  "hETH_flows": {
+    "total_minted": 1159.3087337608754,
+    "total_burned": 877.9852409643944,
+    "current_supply": 281.323492796481011183,
+    "lifetime_user_deposits_recorded": 2008.404818220573766084,
+    "withdrawal_requests": 154,
+    "withdrawal_completed": 138,
+    "total_eth_paid_to_users": 2306.5919296004313,
+    "active_uncompleted_requests": 16,
+    "active_claims_eth": 12.69510944223998095,
+    "largest_pending_claim": {"user": "0x7ff0Ba5F2225450d4C6Bb655f7Ab88AeAc2856eC", "eth": 12.461378180425370983},
+    "whale_holder": {"user": "0x456cb202015E8D64B3Bd8E14fCf2Dd63720ae7AF", "hETH": 207.936815623920120849, "pending_claim_eth": 0.000132914799513178}
+  },
+  "classification": {
+    "E-U": {"usd": 0, "why": "all contracts paused; every ETH-moving function is onlyHordCongress / onlyMaintainer / onlyHordETHStakingWithdrawalManager; no validators remain; no public mint; share math value-neutral"},
+    "H-O": {"usd": 0, "latent_usd": 32236.93, "why": "the WM's 12.695 ETH is owed to 16 users with pending requests, but withdraw() is whenNotPaused - blocked until governance unpauses"},
+    "P": {"usd": 33277.49, "why": "WM 12.695 ETH (maintainer transferETHtoFinance / congress unpause) + SM 0.054 ETH + SM tokens ($389) + pod 0.203 ETH (owner = restaking manager)"},
+    "S": {"usd": 0, "why": "281.32 hETH + 6.32 pool hETH frozen (transfers paused); contract-rate claim ~0.0313 ETH total; no path"}
+  },
+  "poc": {
+    "tests": 4,
+    "passed": 4,
+    "fork_block": 26170355,
+    "ci_run": "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38172233587"
+  }
+}
