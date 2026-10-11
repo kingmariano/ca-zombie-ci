@@ -49,8 +49,11 @@ for pr in res["protocols"]:
     dl_fresh = (dl_date or "") >= "2026-10-01"
     chains = sorted({t["chain"] for t in targets})
     blocks = {t["chain"]: t.get("block") for t in targets if t.get("block")}
+    kinds = {t["kind"] for t in targets}
     if not ok_t:
         status = "UNREACHABLE"
+    elif kinds == {"probe"} and onchain < 1000:
+        status = "UNREACHABLE (addresses unresolved)"
     elif onchain >= 1000:
         status = "LIVE-FUNDED"
     else:
@@ -64,8 +67,6 @@ for pr in res["protocols"]:
     # top contracts
     contracts = []
     for t in ok_t:
-        for a in (t.get("assets") or [])[:60]:
-            pass
         c = {"label": t["label"], "chain": t["chain"], "usd": t.get("usd") or 0}
         if t.get("pair_count") is not None:
             c["pairs"] = t.get("pair_count")
@@ -77,9 +78,25 @@ for pr in res["protocols"]:
             c["pairs"] = len(t["pairs"])
         if t.get("note"):
             c["note"] = t["note"]
+        c["top_assets"] = sorted([a for a in (t.get("assets") or []) if a.get("usd", 0) > 0],
+                                 key=lambda x: -x["usd"])[:4]
         contracts.append(c)
+    # confidence heuristic
+    conf = "high"
+    if status.startswith("UNREACHABLE"):
+        conf = "low"
+    else:
+        notes = " ".join(str(t.get("note", "")) for t in targets)
+        if "partial" in status or "capped" in notes or "partial" in notes:
+            conf = "medium"
+        if dl and onchain:
+            ratio = dl / max(onchain, 1)
+            if ratio > 1.5 or ratio < 0.6:
+                conf = "medium"
+        if onchain < 1000:
+            conf = "medium"
     rows.append({
-        "slug": slug, "name": pr["name"], "status": status,
+        "slug": slug, "name": pr["name"], "status": status, "confidence": conf,
         "chains": chains, "onchain_usd": onchain, "defillama_usd": dl,
         "defillama_fresh": dl_fresh, "defillama_last_date": dl_date,
         "per_chain_live": per_chain, "blocks": blocks,
@@ -100,4 +117,4 @@ tot_live = sum(r["onchain_usd"] for r in rows if r["status"].startswith("LIVE"))
 print(f"\nLIVE total on-chain: ${tot_live:,.0f}")
 print("funded:", sum(1 for r in rows if r["status"].startswith("LIVE")),
       "drained:", sum(1 for r in rows if r["status"].startswith("DRAINED")),
-      "unreachable:", sum(1 for r in rows if r["status"] == "UNREACHABLE"))
+      "unreachable:", sum(1 for r in rows if r["status"].startswith("UNREACHABLE")))

@@ -9,7 +9,7 @@ meta = json.load(open(os.path.join(ROOT, "analysis/llama_meta.json")))
 
 funded = [r for r in rows if r["status"].startswith("LIVE")]
 drained = [r for r in rows if r["status"].startswith("DRAINED")]
-unreach = [r for r in rows if r["status"] == "UNREACHABLE"]
+unreach = [r for r in rows if r["status"].startswith("UNREACHABLE")]
 live_total = round(sum(r["onchain_usd"] for r in funded), 2)
 
 blocks = {}
@@ -28,6 +28,10 @@ summary = {
         "DRAINED_$0": len(drained),
         "UNREACHABLE": len(unreach),
         "ALREADY-COVERED": 0,
+    },
+    "ci_runs": {
+        "full_screen": "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38131461859",
+        "deep_pass_all_pairs": "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38134363405",
     },
     "live_total_usd": live_total,
     "headline_confidence": "medium-high (direct on-chain reads at pinned blocks; DefiLlama prices for token USD)",

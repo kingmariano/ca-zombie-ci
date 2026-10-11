@@ -1,0 +1,503 @@
+run	Set up job	﻿2026-10-11T10:18:13.6396427Z Current runner version: '2.337.0'
+run	Set up job	2026-10-11T10:18:13.6425973Z ##[group]Runner Image Provisioner
+run	Set up job	2026-10-11T10:18:13.6427171Z Hosted Compute Agent
+run	Set up job	2026-10-11T10:18:13.6428268Z Version: 20261002.596
+run	Set up job	2026-10-11T10:18:13.6429298Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+run	Set up job	2026-10-11T10:18:13.6430353Z Build Date: 2026-10-02T22:28:27Z
+run	Set up job	2026-10-11T10:18:13.6431702Z Worker ID: {f0af3997-de1b-48d4-a761-6cbcef0f2a57}
+run	Set up job	2026-10-11T10:18:13.6432765Z Region: eastus
+run	Set up job	2026-10-11T10:18:13.6433601Z Cloud: Azure
+run	Set up job	2026-10-11T10:18:13.6434575Z ##[endgroup]
+run	Set up job	2026-10-11T10:18:13.6436791Z ##[group]Operating System
+run	Set up job	2026-10-11T10:18:13.6437772Z Ubuntu
+run	Set up job	2026-10-11T10:18:13.6438646Z 24.04.5
+run	Set up job	2026-10-11T10:18:13.6439405Z LTS
+run	Set up job	2026-10-11T10:18:13.6440223Z ##[endgroup]
+run	Set up job	2026-10-11T10:18:13.6441570Z ##[group]Runner Image
+run	Set up job	2026-10-11T10:18:13.6442562Z Image: ubuntu-24.04
+run	Set up job	2026-10-11T10:18:13.6443469Z Version: 20261004.327.1
+run	Set up job	2026-10-11T10:18:13.6444911Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+run	Set up job	2026-10-11T10:18:13.6447090Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+run	Set up job	2026-10-11T10:18:13.6448354Z ##[endgroup]
+run	Set up job	2026-10-11T10:18:13.6450022Z ##[group]GITHUB_TOKEN Permissions
+run	Set up job	2026-10-11T10:18:13.6452697Z Contents: read
+run	Set up job	2026-10-11T10:18:13.6453727Z Metadata: read
+run	Set up job	2026-10-11T10:18:13.6454594Z Packages: read
+run	Set up job	2026-10-11T10:18:13.6455498Z ##[endgroup]
+run	Set up job	2026-10-11T10:18:13.6458313Z Secret source: Actions
+run	Set up job	2026-10-11T10:18:13.6459778Z Cache mode: write
+run	Set up job	2026-10-11T10:18:13.6461567Z Prepare workflow directory
+run	Set up job	2026-10-11T10:18:13.6988548Z Prepare all required actions
+run	Set up job	2026-10-11T10:18:13.7038207Z Getting action download info
+run	Set up job	2026-10-11T10:18:13.9078486Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+run	Set up job	2026-10-11T10:18:14.0220527Z Download action repository 'foundry-rs/foundry-toolchain@v1' (SHA:908c540300062bd5a7e473851cdb4282204cee09)
+run	Set up job	2026-10-11T10:18:14.2249030Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+run	Set up job	2026-10-11T10:18:14.4218051Z Complete job name: run
+run	Run actions/checkout@v4	﻿2026-10-11T10:18:14.5086338Z ##[group]Run actions/checkout@v4
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5087467Z with:
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5088156Z   repository: kingmariano/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5093028Z   token: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5093694Z   ssh-strict: true
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5094340Z   ssh-user: git
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5094982Z   persist-credentials: true
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5095675Z   clean: true
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5096333Z   sparse-checkout-cone-mode: true
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5097061Z   fetch-depth: 1
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5097696Z   fetch-tags: false
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5098351Z   show-progress: true
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5098997Z   lfs: false
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5099603Z   submodules: false
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5100242Z   set-safe-directory: true
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5166667Z   allow-unsafe-pr-checkout: false
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5170171Z env:
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5171279Z   RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5172422Z   BLOCKPI_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5173457Z   NODEREAL_ETH_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5174318Z   ETHERSCANV2_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5175176Z   GOLD_RUSH_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5175936Z   ALCHEMY_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5176866Z   ANKR_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5177679Z   DRPC_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5178418Z   INFURA_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5179169Z   DUNE_API_KEY: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5179877Z   ARB_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5180602Z   BSC_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5181515Z   BASE_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5182359Z   OP_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5183150Z   POLYGON_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5184066Z   FANTOM_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5184862Z   CRONOS_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5185669Z   MOONRIVER_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5186455Z   GNOSIS_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5187200Z   SONIC_RPC_URL: ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5187849Z   FOUNDRY_FUZZ_RUNS: 256
+run	Run actions/checkout@v4	2026-10-11T10:18:14.5188903Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6335518Z Syncing repository: kingmariano/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6339167Z ##[group]Getting Git version info
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6341338Z Working directory is '/home/runner/work/ca-zombie-ci/ca-zombie-ci'
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6343917Z [command]/usr/bin/git version
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6440197Z git version 2.55.0
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6468650Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6486112Z Temporarily overriding HOME='/home/runner/work/_temp/85435128-03dc-4e03-84ad-a18b75e72aac' before making global git config changes
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6489445Z Adding repository directory to the temporary git global config as a safe directory
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6495446Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ca-zombie-ci/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6562516Z Deleting the contents of '/home/runner/work/ca-zombie-ci/ca-zombie-ci'
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6567170Z ##[group]Initializing the repository
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6592653Z [command]/usr/bin/git init /home/runner/work/ca-zombie-ci/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6720622Z hint: Using 'master' as the name for the initial branch. This default branch name
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6759303Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6762699Z hint: to use in all of your new repositories, which will suppress this warning,
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6765564Z hint: call:
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6767332Z hint:
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6769350Z hint: 	git config --global init.defaultBranch <name>
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6771944Z hint:
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6773368Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6776122Z hint: 'development'. The just-created branch can be renamed via this command:
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6777496Z hint:
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6778693Z hint: 	git branch -m <name>
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6779809Z hint:
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6781737Z hint: Disable this message with "git config set advice.defaultBranchName false"
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6783962Z Initialized empty Git repository in /home/runner/work/ca-zombie-ci/ca-zombie-ci/.git/
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6788940Z [command]/usr/bin/git remote add origin https://github.com/kingmariano/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6813804Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6815970Z ##[group]Disabling automatic garbage collection
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6825462Z [command]/usr/bin/git config --local gc.auto 0
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6877168Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6882195Z ##[group]Setting up auth
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6884330Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+run	Run actions/checkout@v4	2026-10-11T10:18:14.6922928Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+run	Run actions/checkout@v4	2026-10-11T10:18:14.7347912Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+run	Run actions/checkout@v4	2026-10-11T10:18:14.7393873Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+run	Run actions/checkout@v4	2026-10-11T10:18:14.7654821Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+run	Run actions/checkout@v4	2026-10-11T10:18:14.7696884Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+run	Run actions/checkout@v4	2026-10-11T10:18:14.7934300Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+run	Run actions/checkout@v4	2026-10-11T10:18:14.7977862Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-11T10:18:14.7979095Z ##[group]Fetching the repository
+run	Run actions/checkout@v4	2026-10-11T10:18:14.7989011Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +29445fcc237917d9f54dcff94ef4d492af5fcd56:refs/remotes/origin/l2-triage-b
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9710590Z From https://github.com/kingmariano/ca-zombie-ci
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9712715Z  * [new ref]         29445fcc237917d9f54dcff94ef4d492af5fcd56 -> origin/l2-triage-b
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9716390Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9717739Z ##[group]Determining the checkout info
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9719304Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9725343Z [command]/usr/bin/git sparse-checkout disable
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9780033Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9825555Z ##[group]Checking out the ref
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9826703Z [command]/usr/bin/git checkout --progress --force -B l2-triage-b refs/remotes/origin/l2-triage-b
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9888982Z Switched to a new branch 'l2-triage-b'
+run	Run actions/checkout@v4	2026-10-11T10:18:14.9998522Z branch 'l2-triage-b' set up to track 'origin/l2-triage-b'.
+run	Run actions/checkout@v4	2026-10-11T10:18:15.0002310Z ##[endgroup]
+run	Run actions/checkout@v4	2026-10-11T10:18:15.0004563Z [command]/usr/bin/git log -1 --format=%H
+run	Run actions/checkout@v4	2026-10-11T10:18:15.0005574Z 29445fcc237917d9f54dcff94ef4d492af5fcd56
+run	Run foundry-rs/foundry-toolchain@v1	﻿2026-10-11T10:18:15.0287703Z ##[group]Run foundry-rs/foundry-toolchain@v1
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0288710Z with:
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0289383Z   version: stable
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0290095Z   network: ethereum
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0291148Z   cache: true
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0291997Z   cache-key: run-29445fcc237917d9f54dcff94ef4d492af5fcd56
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0292949Z   cache-restore-keys: run-
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0293690Z env:
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0294516Z   RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0295704Z   BLOCKPI_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0296842Z   NODEREAL_ETH_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0297819Z   ETHERSCANV2_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0298718Z   GOLD_RUSH_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0299559Z   ALCHEMY_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0300608Z   ANKR_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0301865Z   DRPC_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0302732Z   INFURA_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0303592Z   DUNE_API_KEY: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0304409Z   ARB_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0305235Z   BSC_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0306108Z   BASE_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0306959Z   OP_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0307832Z   POLYGON_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0308699Z   FANTOM_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0309588Z   CRONOS_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0310482Z   MOONRIVER_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0311688Z   GNOSIS_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0312554Z   SONIC_RPC_URL: ***
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0313294Z   FOUNDRY_FUZZ_RUNS: 256
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.0314032Z ##[endgroup]
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.1583779Z Installing Foundry (version: stable)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.1586963Z Downloading foundryup installer from foundry-rs/foundryup@a27902ef04dcb43061fabf343365cb5afc95fc48...
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.2126403Z Running foundryup installer...
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:15.5025523Z Running: foundryup 
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7268766Z Added /home/runner/.foundry/bin to PATH
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7270243Z Primary key: linux-foundry-chain-fork-run-29445fcc237917d9f54dcff94ef4d492af5fcd56
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7282056Z Restore keys: linux-foundry-chain-fork-run-
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7762524Z Cache not found
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7763409Z Running: forge --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7820498Z forge Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7821759Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7822889Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7823937Z Build Profile: dist
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7831919Z Running: cast --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7918268Z cast Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7919073Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7919993Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7927109Z Build Profile: dist
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7927575Z Running: anvil --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7974023Z anvil Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7975073Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7976201Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7977194Z Build Profile: dist
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.7996499Z Running: chisel --version
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.8025233Z chisel Version: 1.8.5
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.8025927Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.8026547Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:18:17.8027072Z Build Profile: dist
+run	env info	﻿2026-10-11T10:18:17.8163107Z ##[group]Run df -h /
+run	env info	2026-10-11T10:18:17.8163610Z [36;1mdf -h /[0m
+run	env info	2026-10-11T10:18:17.8163950Z [36;1mnproc[0m
+run	env info	2026-10-11T10:18:17.8164277Z [36;1mforge --version[0m
+run	env info	2026-10-11T10:18:17.8164640Z [36;1mpython3 --version[0m
+run	env info	2026-10-11T10:18:17.8165016Z [36;1mnode --version || true[0m
+run	env info	2026-10-11T10:18:17.8416696Z shell: /usr/bin/bash -e {0}
+run	env info	2026-10-11T10:18:17.8417116Z env:
+run	env info	2026-10-11T10:18:17.8417787Z   RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8418452Z   BLOCKPI_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8419061Z   NODEREAL_ETH_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8419549Z   ETHERSCANV2_API_KEY: ***
+run	env info	2026-10-11T10:18:17.8419995Z   GOLD_RUSH_API_KEY: ***
+run	env info	2026-10-11T10:18:17.8420402Z   ALCHEMY_API_KEY: ***
+run	env info	2026-10-11T10:18:17.8421198Z   ANKR_API_KEY: ***
+run	env info	2026-10-11T10:18:17.8421650Z   DRPC_API_KEY: ***
+run	env info	2026-10-11T10:18:17.8422062Z   INFURA_API_KEY: ***
+run	env info	2026-10-11T10:18:17.8422520Z   DUNE_API_KEY: ***
+run	env info	2026-10-11T10:18:17.8422925Z   ARB_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8423320Z   BSC_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8423723Z   BASE_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8424184Z   OP_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8482723Z   POLYGON_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8483483Z   FANTOM_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8484217Z   CRONOS_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8484993Z   MOONRIVER_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8485790Z   GNOSIS_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8486512Z   SONIC_RPC_URL: ***
+run	env info	2026-10-11T10:18:17.8487071Z   FOUNDRY_FUZZ_RUNS: 256
+run	env info	2026-10-11T10:18:17.8487629Z ##[endgroup]
+run	env info	2026-10-11T10:18:17.8624035Z Filesystem      Size  Used Avail Use% Mounted on
+run	env info	2026-10-11T10:18:17.8624753Z /dev/root       145G   59G   86G  41% /
+run	env info	2026-10-11T10:18:17.8641189Z 4
+run	env info	2026-10-11T10:18:17.8687446Z forge Version: 1.8.5
+run	env info	2026-10-11T10:18:17.8687994Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+run	env info	2026-10-11T10:18:17.8688522Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+run	env info	2026-10-11T10:18:17.8688977Z Build Profile: dist
+run	env info	2026-10-11T10:18:17.8703640Z Python 3.12.3
+run	env info	2026-10-11T10:18:17.9292584Z v22.23.3
+run	select ETH fork RPC	﻿2026-10-11T10:18:17.9357747Z ##[group]Run pick() {
+run	select ETH fork RPC	2026-10-11T10:18:17.9358270Z [36;1mpick() {[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9358617Z [36;1m  for u in "$@"; do[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9359025Z [36;1m    [ -z "$u" ] && continue[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9359551Z [36;1m    r=$(curl -s -m 12 -X POST -H 'Content-Type: application/json' \[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9360283Z [36;1m          --data '{"jsonrpc":"2.0","id":1,"method":"eth_blockNumber","params":[]}' "$u" 2>/dev/null)[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9361244Z [36;1m    case "$r" in *result*) echo "$u"; return 0;; esac[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9361690Z [36;1m  done[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9362024Z [36;1m  echo ""; return 1[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9362374Z [36;1m}[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9363054Z [36;1mPICK=$(pick "https://ethereum-rpc.publicnode.com" "https://eth.drpc.org" "https://1rpc.io/eth" "$RPC_URL" || true)[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9363757Z [36;1mif [ -z "$PICK" ]; then[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9364249Z [36;1m  echo "WARNING: no working ETH RPC found; FORK_RPC_URL left unset"[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9364769Z [36;1melse[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9365127Z [36;1m  echo "ETH fork RPC selected"[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9365572Z [36;1m  echo "FORK_RPC_URL=$PICK" >> "$GITHUB_ENV"[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9365980Z [36;1mfi[0m
+run	select ETH fork RPC	2026-10-11T10:18:17.9431189Z shell: /usr/bin/bash -e {0}
+run	select ETH fork RPC	2026-10-11T10:18:17.9431585Z env:
+run	select ETH fork RPC	2026-10-11T10:18:17.9432062Z   RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9432689Z   BLOCKPI_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9433269Z   NODEREAL_ETH_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9433745Z   ETHERSCANV2_API_KEY: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9434202Z   GOLD_RUSH_API_KEY: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9434608Z   ALCHEMY_API_KEY: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9435119Z   ANKR_API_KEY: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9435775Z   DRPC_API_KEY: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9436201Z   INFURA_API_KEY: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9436628Z   DUNE_API_KEY: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9437022Z   ARB_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9437425Z   BSC_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9437815Z   BASE_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9438220Z   OP_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9438650Z   POLYGON_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9439070Z   FANTOM_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9439486Z   CRONOS_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9439906Z   MOONRIVER_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9440326Z   GNOSIS_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9440724Z   SONIC_RPC_URL: ***
+run	select ETH fork RPC	2026-10-11T10:18:17.9441336Z   FOUNDRY_FUZZ_RUNS: 256
+run	select ETH fork RPC	2026-10-11T10:18:17.9441687Z ##[endgroup]
+run	select ETH fork RPC	2026-10-11T10:18:18.0336842Z ETH fork RPC selected
+run	custom CI script	﻿2026-10-11T10:18:18.0981364Z ##[group]Run bash ci/run.sh
+run	custom CI script	2026-10-11T10:18:18.0981837Z [36;1mbash ci/run.sh[0m
+run	custom CI script	2026-10-11T10:18:18.1049893Z shell: /usr/bin/bash -e {0}
+run	custom CI script	2026-10-11T10:18:18.1050276Z env:
+run	custom CI script	2026-10-11T10:18:18.1050731Z   RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1051707Z   BLOCKPI_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1052266Z   NODEREAL_ETH_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1052754Z   ETHERSCANV2_API_KEY: ***
+run	custom CI script	2026-10-11T10:18:18.1053175Z   GOLD_RUSH_API_KEY: ***
+run	custom CI script	2026-10-11T10:18:18.1053569Z   ALCHEMY_API_KEY: ***
+run	custom CI script	2026-10-11T10:18:18.1054719Z   ANKR_API_KEY: ***
+run	custom CI script	2026-10-11T10:18:18.1055265Z   DRPC_API_KEY: ***
+run	custom CI script	2026-10-11T10:18:18.1055838Z   INFURA_API_KEY: ***
+run	custom CI script	2026-10-11T10:18:18.1056236Z   DUNE_API_KEY: ***
+run	custom CI script	2026-10-11T10:18:18.1056716Z   ARB_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1057166Z   BSC_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1057557Z   BASE_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1058168Z   OP_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1058579Z   POLYGON_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1059035Z   FANTOM_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1059545Z   CRONOS_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1060010Z   MOONRIVER_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1060555Z   GNOSIS_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1061097Z   SONIC_RPC_URL: ***
+run	custom CI script	2026-10-11T10:18:18.1061557Z   FOUNDRY_FUZZ_RUNS: 256
+run	custom CI script	2026-10-11T10:18:18.1062031Z   FORK_RPC_URL: https://ethereum-rpc.publicnode.com
+run	custom CI script	2026-10-11T10:18:18.1062453Z ##[endgroup]
+run	custom CI script	2026-10-11T10:18:18.1191321Z [l2b] ***
+run	custom CI script	2026-10-11T10:18:18.1201148Z Python 3.12.3
+run	custom CI script	2026-10-11T10:18:18.1835744Z === l2-triage-b custody enumeration start 2026-10-11T10:18:18Z protos=29
+run	custom CI script	2026-10-11T10:18:18.1836897Z --- leetswap
+run	custom CI script	2026-10-11T10:18:20.5476591Z     LeetSwap factory (Polygon zkEVM): ok=True
+run	custom CI script	2026-10-11T10:18:27.5913459Z     !! leetswap / LeetSwap factory (Canto): canto blockNumber failed: canto rpc failed: eth_blockNumber: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1000)>
+run	custom CI script	2026-10-11T10:18:27.5914830Z     LeetSwap factory (Canto): ok=False
+run	custom CI script	2026-10-11T10:18:42.5608255Z     LeetSwap factory (Linea): ok=True
+run	custom CI script	2026-10-11T10:19:00.7257825Z     LeetSwap factory (Shibarium): ok=True
+run	custom CI script	2026-10-11T10:19:03.8441923Z     LeetSwap factory (opBNB, BONE_4): ok=True
+run	custom CI script	2026-10-11T10:19:08.9543581Z     LeetSwap factory (Manta): ok=True
+run	custom CI script	2026-10-11T10:19:12.1790634Z     LeetSwap factory (Scroll): ok=True
+run	custom CI script	2026-10-11T10:21:11.1425108Z       ..500/997 pairs scanned (78s)
+run	custom CI script	2026-10-11T10:23:05.7672878Z     LeetSwap factory (Base, sLS2 stable): ok=True
+run	custom CI script	2026-10-11T10:23:05.7673832Z --- ra-exchange
+run	custom CI script	2026-10-11T10:23:12.4090719Z     Ra CL factory (UniV3): ok=True
+run	custom CI script	2026-10-11T10:23:19.5033804Z     Ra stable AMM factory (crAMM): ok=True
+run	custom CI script	2026-10-11T10:23:19.5037094Z --- powercity-flex-protocol
+run	custom CI script	2026-10-11T10:23:22.2945261Z     Flex TroveManager (HEX collateral): ok=True
+run	custom CI script	2026-10-11T10:23:23.0460025Z     Flex staking (FLEX): ok=True
+run	custom CI script	2026-10-11T10:23:26.6782763Z     Flex staking LPs: ok=True
+run	custom CI script	2026-10-11T10:23:31.4248452Z     Flex farms LPs: ok=True
+run	custom CI script	2026-10-11T10:23:31.4249513Z --- orbit-protocol
+run	custom CI script	2026-10-11T10:23:57.5025571Z     Orbit comptroller 1: ok=True
+run	custom CI script	2026-10-11T10:24:06.2695555Z     Orbit comptroller 2: ok=True
+run	custom CI script	2026-10-11T10:24:15.6205489Z     Orbit comptroller 3: ok=True
+run	custom CI script	2026-10-11T10:24:24.3470437Z     Orbit comptroller 4: ok=True
+run	custom CI script	2026-10-11T10:24:40.4938223Z --- splice-finance
+run	custom CI script	2026-10-11T10:24:40.4938705Z     Splice factory (Mode): ok=True
+run	custom CI script	2026-10-11T10:25:06.3927742Z     Splice factory 1 (Blast): ok=True
+run	custom CI script	2026-10-11T10:25:31.8507792Z     Splice factory 2 (Blast): ok=True
+run	custom CI script	2026-10-11T10:25:31.8508610Z --- swapr-v3
+run	custom CI script	2026-10-11T10:25:54.0459338Z       ..500/2865 pools scanned (20s)
+run	custom CI script	2026-10-11T10:26:16.1003860Z       ..1000/2865 pools scanned (42s)
+run	custom CI script	2026-10-11T10:26:41.9296911Z       ..1500/2865 pools scanned (68s)
+run	custom CI script	2026-10-11T10:27:02.0024887Z       ..2000/2865 pools scanned (88s)
+run	custom CI script	2026-10-11T10:27:28.8509113Z       ..2500/2865 pools scanned (115s)
+run	custom CI script	2026-10-11T10:34:47.8736851Z     Swapr V3 Algebra factory (Gnosis): ok=True
+run	custom CI script	2026-10-11T10:34:47.8737607Z --- abstradex
+run	custom CI script	2026-10-11T10:36:35.6989296Z       ..500/517 pairs scanned (95s)
+run	custom CI script	2026-10-11T10:38:07.3665368Z     AbstraDEX factory (X Layer): ok=True
+run	custom CI script	2026-10-11T10:38:13.5271856Z     AbstraDEX factory (ZKFair): ok=True
+run	custom CI script	2026-10-11T10:38:22.5655796Z     AbstraDEX factory (ZetaChain): ok=True
+run	custom CI script	2026-10-11T10:38:22.6213382Z     AbstraDEX factory (Blast): ok=True
+run	custom CI script	2026-10-11T10:38:25.1299996Z     AbstraDEX factory (Cronos zkEVM): ok=True
+run	custom CI script	2026-10-11T10:38:30.2662706Z     AbstraDEX factory (Morph): ok=True
+run	custom CI script	2026-10-11T10:38:30.2663453Z --- nile-legacy
+run	custom CI script	2026-10-11T10:38:48.5903772Z     Nile V2 factory (cAMM): ok=True
+run	custom CI script	2026-10-11T10:38:48.6448884Z     Nile staking (NILE): ok=True
+run	custom CI script	2026-10-11T10:38:48.6450763Z --- savmswap
+run	custom CI script	2026-10-11T10:39:33.6326936Z     savmSwap factory (Prom): ok=True
+run	custom CI script	2026-10-11T10:39:40.1023577Z     !! savmswap / savmSwap factory (SatoshiVM): svm blockNumber failed: svm rpc failed: eth_blockNumber: <urlopen error [Errno -2] Name or service not known>
+run	custom CI script	2026-10-11T10:39:40.1027902Z     savmSwap factory (SatoshiVM): ok=False
+run	custom CI script	2026-10-11T10:39:40.1028334Z --- mobius-money
+run	custom CI script	2026-10-11T10:39:44.1382469Z     Mobius stableswap pools (registry tokensAndOwners): ok=True
+run	custom CI script	2026-10-11T10:39:44.1383167Z --- pala
+run	custom CI script	2026-10-11T10:40:01.2815331Z     Pala viewer (poolInfos): ok=True
+run	custom CI script	2026-10-11T10:40:01.2815930Z --- luigiswap
+run	custom CI script	2026-10-11T10:40:07.3380852Z     LuigiSwap factory (opBNB): ok=True
+run	custom CI script	2026-10-11T10:40:11.8917720Z     LuigiSwap factory (Scroll): ok=True
+run	custom CI script	2026-10-11T10:40:11.8918461Z --- eklipse-finance
+run	custom CI script	2026-10-11T10:40:13.6000206Z     Eklipse vaults: ok=True
+run	custom CI script	2026-10-11T10:40:14.0104078Z     Eklipse staking (EKL): ok=True
+run	custom CI script	2026-10-11T10:40:34.7407329Z     Eklipse pool2 LPs: ok=True
+run	custom CI script	2026-10-11T10:40:34.7408135Z --- reactorfusion
+run	custom CI script	2026-10-11T10:40:44.0514843Z     ReactorFusion comptroller (Telos): ok=True
+run	custom CI script	2026-10-11T10:40:55.1526385Z     ReactorFusion comptroller (zkSync Era): ok=True
+run	custom CI script	2026-10-11T10:40:55.1529064Z --- lfgswap-ethereumpow
+run	custom CI script	2026-10-11T10:46:40.6257064Z       ..500/879 pairs scanned (223s)
+run	custom CI script	2026-10-11T10:50:34.2510579Z     LFGSwap factory (EthereumPoW): ok=True
+run	custom CI script	2026-10-11T10:50:34.2511729Z --- flarebank
+run	custom CI script	2026-10-11T10:50:34.5953874Z     FlareBank owners (WFLR): ok=True
+run	custom CI script	2026-10-11T10:50:34.5954517Z --- cog
+run	custom CI script	2026-10-11T10:50:53.9928851Z     Cog factory 1: ok=True
+run	custom CI script	2026-10-11T10:50:57.3706976Z     Cog factory 2: ok=True
+run	custom CI script	2026-10-11T10:50:57.3707834Z --- vessel-finance
+run	custom CI script	2026-10-11T10:50:57.6251460Z     Vessel VaultProxy (ETH/USDT/USDC/WBTC): ok=True
+run	custom CI script	2026-10-11T10:50:57.6252157Z --- auroraswap
+run	custom CI script	2026-10-11T10:51:20.9789438Z     AuroraSwap factory: ok=True
+run	custom CI script	2026-10-11T10:51:21.1034396Z     AuroraSwap staking (AURORA): ok=True
+run	custom CI script	2026-10-11T10:51:21.1035334Z --- nile-cl
+run	custom CI script	2026-10-11T10:52:52.9027511Z     Nile CL factory (UniV3): ok=True
+run	custom CI script	2026-10-11T10:52:52.9028187Z --- nuri-cl
+run	custom CI script	2026-10-11T10:53:00.8508697Z     Nuri CL factory (UniV3): ok=True
+run	custom CI script	2026-10-11T10:53:00.8509582Z --- rose
+run	custom CI script	2026-10-11T10:53:01.5732462Z     Rose pools + VASE garden: ok=True
+run	custom CI script	2026-10-11T10:53:01.9073075Z     Rose staking (stROSE): ok=True
+run	custom CI script	2026-10-11T10:53:01.9073872Z --- prism-dex
+run	custom CI script	2026-10-11T10:53:02.5450366Z     Prism factory (MegaETH): ok=True
+run	custom CI script	2026-10-11T10:53:02.5451637Z --- monoswap-v3
+run	custom CI script	2026-10-11T10:53:37.7425683Z     MonoSwap V3 factory (Blast): ok=True
+run	custom CI script	2026-10-11T10:53:37.7426277Z --- capybara-dexs
+run	custom CI script	2026-10-11T10:53:43.1684513Z     Capybara MasterWombat: ok=True
+run	custom CI script	2026-10-11T10:53:43.1685496Z --- minmax-finance
+run	custom CI script	2026-10-11T10:53:45.4212666Z     MinMax pools (registry): ok=True
+run	custom CI script	2026-10-11T10:53:45.4213195Z --- eddyfinance-amm
+run	custom CI script	2026-10-11T10:54:09.7572786Z     EddyFinance AMM factory (ZetaChain): ok=True
+run	custom CI script	2026-10-11T10:54:09.7573403Z --- kleva-farm
+run	custom CI script	2026-10-11T10:54:10.2208263Z     Kleva klayPool vault (probe): ok=True
+run	custom CI script	2026-10-11T10:54:10.2208921Z --- satoshicoreswap
+run	custom CI script	2026-10-11T10:54:12.7554408Z     SatoshiCoreSwap factory (CORE): ok=True
+run	custom CI script	2026-10-11T10:54:12.7555051Z === pricing ===
+run	custom CI script	2026-10-11T10:54:56.5768837Z prices fetched: 240
+run	custom CI script	2026-10-11T10:54:56.5818075Z   leetswap: $49,256
+run	custom CI script	2026-10-11T10:54:56.5824745Z   ra-exchange: $837,929
+run	custom CI script	2026-10-11T10:54:56.5825247Z   powercity-flex-protocol: $730,044
+run	custom CI script	2026-10-11T10:54:56.5825649Z   orbit-protocol: $93,706
+run	custom CI script	2026-10-11T10:54:56.5826476Z   splice-finance: $507,527
+run	custom CI script	2026-10-11T10:54:56.5978853Z   swapr-v3: $375,439
+run	custom CI script	2026-10-11T10:54:56.5991942Z   abstradex: $214,201
+run	custom CI script	2026-10-11T10:54:56.5996438Z   nile-legacy: $355,124
+run	custom CI script	2026-10-11T10:54:56.6000186Z   savmswap: $233,736
+run	custom CI script	2026-10-11T10:54:56.6001583Z   mobius-money: $234,206
+run	custom CI script	2026-10-11T10:54:56.6005588Z   pala: $41,651
+run	custom CI script	2026-10-11T10:54:56.6008876Z   luigiswap: $571
+run	custom CI script	2026-10-11T10:54:56.6009456Z   eklipse-finance: $80,359
+run	custom CI script	2026-10-11T10:54:56.6010021Z   reactorfusion: $78,785
+run	custom CI script	2026-10-11T10:54:56.6025899Z   lfgswap-ethereumpow: $5,249
+run	custom CI script	2026-10-11T10:54:56.6026283Z   flarebank: $222,024
+run	custom CI script	2026-10-11T10:54:56.6028122Z   cog: $193,324
+run	custom CI script	2026-10-11T10:54:56.6028455Z   vessel-finance: $193,046
+run	custom CI script	2026-10-11T10:54:56.6033059Z   auroraswap: $160,077
+run	custom CI script	2026-10-11T10:54:56.6044147Z   nile-cl: $144,257
+run	custom CI script	2026-10-11T10:54:56.6047529Z   nuri-cl: $116,431
+run	custom CI script	2026-10-11T10:54:56.6051839Z   rose: $118,808
+run	custom CI script	2026-10-11T10:54:56.6052332Z   prism-dex: $0
+run	custom CI script	2026-10-11T10:54:56.6052828Z   monoswap-v3: $112,556
+run	custom CI script	2026-10-11T10:54:56.6053372Z   capybara-dexs: $167,342
+run	custom CI script	2026-10-11T10:54:56.6053926Z   minmax-finance: $111,352
+run	custom CI script	2026-10-11T10:54:56.6054465Z   eddyfinance-amm: $85,707
+run	custom CI script	2026-10-11T10:54:56.6054907Z   kleva-farm: $0
+run	custom CI script	2026-10-11T10:54:56.6055233Z   satoshicoreswap: $0
+run	custom CI script	2026-10-11T10:54:56.7225239Z === done in 2198s; results written
+run	custom CI script	2026-10-11T10:54:56.7416754Z [l2b] exit=0
+run	custom CI script	2026-10-11T10:54:56.7432902Z total 4020
+run	custom CI script	2026-10-11T10:54:56.7433323Z drwxr-xr-x 2 runner runner    4096 Oct 11 10:54 .
+run	custom CI script	2026-10-11T10:54:56.7433927Z drwxr-xr-x 5 runner runner    4096 Oct 11 10:18 ..
+run	custom CI script	2026-10-11T10:54:56.7434727Z -rw-r--r-- 1 runner runner 4085189 Oct 11 10:54 results.json
+run	custom CI script	2026-10-11T10:54:56.7435616Z -rw-r--r-- 1 runner runner    8512 Oct 11 10:54 run.log
+run	custom CI script	2026-10-11T10:54:56.7436486Z -rw-r--r-- 1 runner runner    5529 Oct 11 10:54 summary.csv
+run	upload results	﻿2026-10-11T10:54:56.8031559Z ##[group]Run actions/upload-artifact@v4
+run	upload results	2026-10-11T10:54:56.8031996Z with:
+run	upload results	2026-10-11T10:54:56.8032294Z   name: result-l2-triage-b
+run	upload results	2026-10-11T10:54:56.8032697Z   path: l2-triage-b/ci-out/**
+run	upload results	l2-triage-b/**/*.log
+run	upload results	
+run	upload results	2026-10-11T10:54:56.8033109Z   if-no-files-found: ignore
+run	upload results	2026-10-11T10:54:56.8033433Z   retention-days: 7
+run	upload results	2026-10-11T10:54:56.8033735Z   compression-level: 6
+run	upload results	2026-10-11T10:54:56.8034046Z   overwrite: false
+run	upload results	2026-10-11T10:54:56.8034367Z   include-hidden-files: false
+run	upload results	2026-10-11T10:54:56.8034686Z env:
+run	upload results	2026-10-11T10:54:56.8035231Z   RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8035821Z   BLOCKPI_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8036366Z   NODEREAL_ETH_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8036794Z   ETHERSCANV2_API_KEY: ***
+run	upload results	2026-10-11T10:54:56.8037192Z   GOLD_RUSH_API_KEY: ***
+run	upload results	2026-10-11T10:54:56.8037560Z   ALCHEMY_API_KEY: ***
+run	upload results	2026-10-11T10:54:56.8038024Z   ANKR_API_KEY: ***
+run	upload results	2026-10-11T10:54:56.8038421Z   DRPC_API_KEY: ***
+run	upload results	2026-10-11T10:54:56.8038778Z   INFURA_API_KEY: ***
+run	upload results	2026-10-11T10:54:56.8039148Z   DUNE_API_KEY: ***
+run	upload results	2026-10-11T10:54:56.8039541Z   ARB_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8039893Z   BSC_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8040237Z   BASE_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8040662Z   OP_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8041333Z   POLYGON_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8041716Z   FANTOM_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8042095Z   CRONOS_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8042477Z   MOONRIVER_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8043054Z   GNOSIS_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8043421Z   SONIC_RPC_URL: ***
+run	upload results	2026-10-11T10:54:56.8043724Z   FOUNDRY_FUZZ_RUNS: 256
+run	upload results	2026-10-11T10:54:56.8044087Z   FORK_RPC_URL: https://ethereum-rpc.publicnode.com
+run	upload results	2026-10-11T10:54:56.8044492Z ##[endgroup]
+run	upload results	2026-10-11T10:54:56.9810552Z (node:3268) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+run	upload results	2026-10-11T10:54:56.9812710Z (Use `node --trace-deprecation ...` to show where the warning was created)
+run	upload results	2026-10-11T10:54:56.9920189Z With the provided path, there will be 3 files uploaded
+run	upload results	2026-10-11T10:54:56.9925968Z Artifact name is valid!
+run	upload results	2026-10-11T10:54:56.9926835Z Root directory input is valid!
+run	upload results	2026-10-11T10:54:57.1865391Z Beginning upload of artifact content to blob storage
+run	upload results	2026-10-11T10:54:57.2821468Z (node:3268) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+run	upload results	2026-10-11T10:54:57.3817918Z Uploaded bytes 793909
+run	upload results	2026-10-11T10:54:57.4009125Z Finished uploading artifact content to blob storage!
+run	upload results	2026-10-11T10:54:57.4010713Z SHA256 digest of uploaded artifact zip is 8570f9c364ba4709cf8e220ea5e1ba60ffca6339b5406fb5dd44061d3560b638
+run	upload results	2026-10-11T10:54:57.4013195Z Finalizing artifact upload
+run	upload results	2026-10-11T10:54:57.6354476Z Artifact result-l2-triage-b.zip successfully finalized. Artifact ID 11699704152
+run	upload results	2026-10-11T10:54:57.6356050Z Artifact result-l2-triage-b has been successfully uploaded! Final size is 793909 bytes. Artifact ID is 11699704152
+run	upload results	2026-10-11T10:54:57.6362957Z Artifact download URL: https://github.com/kingmariano/ca-zombie-ci/actions/runs/38131461859/artifacts/11699704152
+run	Post Run foundry-rs/foundry-toolchain@v1	﻿2026-10-11T10:54:57.6540432Z Post job cleanup.
+run	Post Run foundry-rs/foundry-toolchain@v1	2026-10-11T10:54:57.7878789Z Cache path does not exist, not saving cache: /home/runner/.foundry/cache
+run	Post Run actions/checkout@v4	﻿2026-10-11T10:54:57.8022077Z Post job cleanup.
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9031984Z [command]/usr/bin/git version
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9082338Z git version 2.55.0
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9129521Z Temporarily overriding HOME='/home/runner/work/_temp/3a244731-c66a-4635-8ffa-d12e9865c515' before making global git config changes
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9131737Z Adding repository directory to the temporary git global config as a safe directory
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9137754Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ca-zombie-ci/ca-zombie-ci
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9189086Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9232729Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9507902Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9537024Z http.https://github.com/.extraheader
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9549879Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9587334Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9849455Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+run	Post Run actions/checkout@v4	2026-10-11T10:54:57.9890584Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+run	Complete job	﻿2026-10-11T10:54:58.0289943Z Cleaning up orphan processes
+run	Complete job	2026-10-11T10:54:58.0688873Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
