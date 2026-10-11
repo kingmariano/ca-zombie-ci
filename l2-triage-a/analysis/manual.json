@@ -1,0 +1,149 @@
+{
+  "_meta": {
+    "description": "Manually verified findings (independent of CI enumeration). All reads are read-only eth_call / GoldRush balances at latest block; block numbers in ci-out/blocks.json or noted inline.",
+    "date": "2026-10-11",
+    "eth_price_usd": 2499.87,
+    "sei_price_usd": 0.06722749104009852,
+    "filst_price_usd": 0.5107685911688516
+  },
+  "defil": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 2420000,
+    "confidence": "high",
+    "evidence": "ETH holder 0x9e08bd9a1e3880902688b32d563046cab74d2f2f holds 99.99% of UNI-V2 FILST/USDT LP 0xa2f6a219a51b4682e34a13a94c160d6c79cdca35 (reserves 1,396,416 FILST + 714,488 USDT; owner share $1,426,987); ETH holder 0x01aabbad98a7638b7f8d65e7ec42560f1afbbf0c holds 374,551 FILST ($191,321); BSC holders hold 138,986 USDT + ~1.31M FILST (~$0.8M, DefiLlama omits the BSC FILST leg); DFL held but unpriced.",
+    "notes": "DefiLlama live value $1.62M (ETH $1.618M + BSC $0.139M) undercounts BSC FILST; value concentrated in low-liquidity FILST/EFIL/DFL tokens -> exit-liquidity check needed in Phase 2."
+  },
+  "convergence-fi": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 1095178,
+    "confidence": "high",
+    "evidence": "37 StakeDAO staking positions read via tower 0xB0Afc8363b8F36E0ccE5D54251e20720FfaeaeE7 getSdtStakings -> viewer getGlobalViewCvgSdtStaking actualTotal x llama token price = $1,095,178 (DefiLlama $1,098,763). Largest: sdCRV 3.48M = $684k.",
+    "notes": "Custody is Convergence's accounting position inside shared StakeDAO staking contracts (cvgSdt contracts hold all depositors' tokens; only actualTotal belongs to CVG)."
+  },
+  "blueberry": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 1243000,
+    "confidence": "high",
+    "evidence": "Monad ERC-4626 vaults (RPC totalAssets): 0xC2ddc1004CA0d6cC4bFd1dCD03Dcf855bED8E670 totalAssets=1,145,148.26 AUSD ($1.145M); 0x215394B5677Cb7a18B6fA8cc2cD155C024ee6b2E totalAssets=60,092.60 USDC. Ethereum compound-fork ~$28k (DefiLlama), Hyperliquid router ~$10k.",
+    "notes": "Monad leg is 97% of value; verified via monad RPC (rpc.monad.xyz)."
+  },
+  "nerve": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 899000,
+    "confidence": "high",
+    "evidence": "BSC owner contracts: 0x1b3771a66ee31180906972580ade9b81afc5fcdc $841,929 (376,886 USDT + 261,463 BUSD + 206,175 USDC); 0x6C341938bB75dDe823FAAfe7f446925c66E6270c $32,394 (0.391 BTCB); 0x146CD24dCc9f4EB224DFd010c5Bf2b0D25aFA9C0 $24,610 (9.875 ETH). Total ~$899k == DefiLlama $901.7k.",
+    "notes": "Stablecoins + BTCB + ETH; strongest-quality collateral among top rows."
+  },
+  "stakehouse": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 160401,
+    "confidence": "high",
+    "evidence": "Ethereum AccountManager 0xDd6E67942a9566A70446f7400a21240C5f71377C holds 64.3057 ETH = $160,401 (GoldRush eth-mainnet). Other Stakehouse contracts (Universe/Routers/Registries/dETH/savETH) are empty.",
+    "notes": "Addresses from stakehouse-dev/contract-deployments (mainnet). DefiLlama last-known $101.5k frozen 2025-02-28."
+  },
+  "hord": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 703000,
+    "confidence": "medium",
+    "evidence": "hETH 0x5bBe36152d3CD3eB7183A82470b39b29EedF068B totalSupply = 281.3235 hETH (read at latest ETH block); 1 hETH ~ 1+ ETH of beacon-chain stake; 281.32 x $2,499.87 = $703,265. hETH contract itself holds only dust; custody is Hord's beacon validators. Hord API (api.hord.app) returns HTTP 403 to this client.",
+    "notes": "DefiLlama last-known $360,731 (2026-07-26, 192.3 ETH). Medium confidence: exit/redemption path unverified (Phase 2)."
+  },
+  "hyphen": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 125800,
+    "confidence": "high",
+    "evidence": "Biconomy Hyphen bridge contracts still hold funds: Polygon 0x2a5c2568b10A0E826BfA892Cf21BA7218310180b $49,876 + Arbitrum 0x856cb5c3cbbe9e2e21293a644aa1f9363cee11e8 $34,404 + Ethereum 0xebab24F13de55789eC1F3fFe99A285754e15F7b9 $19,955 + Ethereum 0x2a5c2568… $11,525 + BSC 0x94d3e62151b12a12a4976f60edc18459538faf08 $6,134 + Optimism 0x856cb5c3… $3,836 (CI smoke run, GoldRush).",
+    "notes": "Socket gateway layer of Hyphen-adjacent routes was covered by C-34; Hyphen's own bridge custody pools were NOT (partial overlap only)."
+  },
+  "pstake-lsd": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 118683,
+    "confidence": "high",
+    "evidence": "BSC 0xc228cefdf841defdbd5b3a18dfd414cc0dbfa0d8 holds 159.211 BNB = $118,683 (GoldRush bsc-mainnet). DefiLlama frozen value $119,178 (BSC).",
+    "notes": "DefiLlama data frozen since 2025-10-30; funds still present."
+  },
+  "knit-finance": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 122000,
+    "confidence": "medium",
+    "evidence": "Ethereum wrapped-token contract 0x131fb74c6fede6d6710ff224e07ce0ed8123f144 holds 122,292 USDC = $121,994 (GoldRush eth-mainnet). Polygon contracts pending CI. DefiLlama frozen 2024-09-22 at $210k (ETH) + $172.6k (Polygon).",
+    "notes": "Knit adapter is API-based (knit-admin.herokuapp.com, dead); on-chain reads are authoritative. Polygon leg to be confirmed from CI."
+  },
+  "horizon-protocol": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 23041,
+    "confidence": "high",
+    "evidence": "BSC contracts total ~$23,041: 0xdc9a574b… $18,760 (25.16 WBNB), 0xc3bf4e0e… $2,902 (2,910.8 BUSD), 0xc0eff774… $616, 0x0409633a… $596, 0xa1771dcf… $167.",
+    "notes": "DefiLlama frozen $233k -> only ~10% remains; protocol token HZN/PHB legs are illiquid."
+  },
+  "bass-exchange": {
+    "status": "DRAINED",
+    "live_usd": 3228,
+    "confidence": "high",
+    "evidence": "Base contracts total only ~$3,228 (AERO 2,674 + USDbC 667); DefiLlama frozen 2023-11-12 value was $245,251 (134,620 USDbC + 110,363 DAI). Contracts 0xa5895b5f…/0xb6d7406f…/0xb11f5e64…/0x1f23b787….",
+    "notes": "Residual is LP/staking dust; original stablecoin TVL is gone."
+  },
+  "kinto-bridge": {
+    "status": "DRAINED",
+    "live_usd": 1000,
+    "confidence": "high",
+    "evidence": "Ethereum bridge contracts hold ~$1,000 total: 0x0f1b7bd7… $965 (0.377 ETH), 0x7870d539… $34 (31 USDC), 0x859a53fe… $0. DefiLlama frozen $672,217 (2025-09-08).",
+    "notes": "Bridge was shut down after the Sept-2025 incident; custody is empty."
+  },
+  "snowflake-exchange": {
+    "status": "DRAINED",
+    "live_usd": 0,
+    "confidence": "high",
+    "evidence": "Polygon staking contracts 0x2c326abb…/0xeaec4e68… hold $0 (GoldRush matic-mainnet). DefiLlama frozen 2022-12-31 value $106,478.",
+    "notes": "DefiLlama data frozen 1095d; contracts empty."
+  },
+  "printr": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 40000,
+    "confidence": "medium",
+    "evidence": "Treasury 0x8c843012b347664caf84b907053754208a933fee (same on all EVM chains) holds: Ethereum 4.2646 WETH $10,630; Mantle 20,833.68 WMNT $11,595; Arbitrum 0.2066 WETH $515; BSC/Base/Avalanche/Monad legs not fully read (RPC/API hiccups). DefiLlama last data 2026-09-21: $57,104 total across chains.",
+    "notes": "Small but live; treasury address read via treasury() on 0xb77726291b125515d0a7affeea2b04f2ff243172."
+  },
+  "silostake": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 140764,
+    "confidence": "high",
+    "evidence": "Sei CosmWasm hub sei1e3gttzq5e5k49f9f5gzvrl0rltlav65xu6p9xc0aj7e84lantdjqp7cncc: total_utoken=2,262,427.267269 SEI (state query alive 2026-10-11); total_ustake=2,094,398.807228; 2,094,398.8 x $0.0672275 = $140,764.",
+    "notes": "Non-EVM (Cosmos); chain: Sei. DefiLlama live value $153,075 (price differences)."
+  },
+  "kinetix-amm-v3": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 175793,
+    "confidence": "medium",
+    "evidence": "DefiLlama live (2026-10-11): Kava $175,767 (1,401,140.9 WKAVA + 850 USDT + 68.3 ATOM) + Base $26. Base subgraph (kinetixfi-base-v3) alive, top-15 pools total ~$221; Kava subgraph endpoint (kava-graph-node.metavault.trade) is DNS-dead; Kava leg verified only via DefiLlama's live adapter, not independently.",
+    "notes": "Value dominated by WKAVA (protocol-chain token); medium confidence."
+  },
+  "amun": {
+    "status": "DRAINED",
+    "live_usd": 0,
+    "confidence": "high",
+    "evidence": "Amun adapter: Ethereum and Polygon tvl = () => ({}) — no EVM custody by design; Solana leg ($379,345, mSOL) is out of scope for this EVM triage (Triage-C territory).",
+    "notes": "EVM-scope $0."
+  },
+  "defiedge": {
+    "status": "UNREACHABLE",
+    "live_usd": 0,
+    "confidence": "medium",
+    "evidence": "Adapter is API-based (api.defiedge.io); DNS resolution fails today (NODATA). DefiLlama data frozen since 2024-12-11 at $304,004 across 14 chains; no contract addresses recoverable from the adapter; protocol sunset 2024-10-31 per hallmarks.",
+    "notes": "Cannot locate/verify custody contracts in Phase 1; needs manual contract archaeology in Phase 2 if prioritized."
+  },
+  "picnic": {
+    "status": "UNREACHABLE",
+    "live_usd": 0,
+    "confidence": "low",
+    "evidence": "Adapter is API-based (www.usepicnic.com/api/get-portfolios -> HTTP 429 both attempts); DefiLlama data frozen since 2025-06-10 at $200,470; custody per methodology is in 'wallets deployed by the DeFiBasket contract' (Polygon) — contract address not in adapter.",
+    "notes": "API exists but rate-limited; no on-chain address source in Phase 1."
+  },
+  "stakehouse": {
+    "status": "LIVE-FUNDED",
+    "live_usd": 160401,
+    "confidence": "high",
+    "evidence": "see above",
+    "notes": "also covered in stakehouse-extra targets"
+  }
+}
