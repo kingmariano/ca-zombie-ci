@@ -1,0 +1,60 @@
+{
+  "finding": "10kswap",
+  "title": "10KSwap (Starknet) — Uniswap-V2 Cairo AMM, 15 live pairs; deployed code = audited source; no unprivileged extraction path",
+  "chains": ["starknet"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 760446.44,
+    "P": 225408.5,
+    "S": 40.98
+  },
+  "latest_block": 16232746,
+  "block_numbers": {
+    "starknet": 16232746,
+    "starknet_class_fetch": 16231151,
+    "starknet_sim": 16232335
+  },
+  "targets_checked": 19,
+  "live_targets": 18,
+  "closed_reasons": [
+    "pair.initialize re-init: caller-gated (assert caller == factory, error '10kSwap: FB'); proven by starknet_call (all 4 pairs revert) and simulateTransactions (revert at pc 0:2893 with factory != caller)",
+    "skim(): actual token balances == stored reserves exactly on all 15 pairs (excess = 0 wei); simulateTransactions skim transfers value 0",
+    "swap without paying: reverts '10kSwap: IIA' (amountIn == 0), k-check ('10kSwap: K') also enforced; 0.3% fee identical for attacker",
+    "stranded LP: LP balanceOf(pair) == 0 on all 15 pairs (nothing a third party can burn)",
+    "deployed pair/factory/router class hashes reproduced from the audited public source in CI (cairo-lang 0.9.1 + OZ 0.3.2); normalized program equality + entrypoints + ABI all match",
+    "no admin functions on pairs; factory admin (feeToSetter) can only redirect future protocol fees, cannot touch reserves/LP",
+    "leaked .env.example private keys (audit .EN-1) are devnet/testnet accounts not deployed on Starknet mainnet (getClassHashAt -> Contract not found)"
+  ],
+  "poc": {
+    "tests_passed": 7,
+    "tests_total": 7,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38155695315",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38155037826",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38154300833",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38153319482"
+    ]
+  },
+  "key_facts": [
+    "AMM reserves at block 16232746: $767,425.94 across 15 pairs (137.25 ETH, 287.0K USDC, 29.9K DAI, 75.5K USDT, 0.2207 WBTC, 70.1K STRK)",
+    "Split of the $767,425.94: LP holders $760,443.14 (H-O), feeTo protocol-fee LP $6,982.64 (P), locked MINIMUM_LIQUIDITY $0.159 (S)",
+    "feeTo/feeToSetter = 0x98707809b39a3b14d9f5004bc1fe77721baa2d8b67fd54ed5794f60671de0 (Argent Cairo-1 account); it also holds $218,425.86 of tokens directly (38.71 ETH + 82.7K USDC + 10.7K DAI + 22.6K USDT + 0.0462 WBTC + 2419 STRK) -> P",
+    "Router 0x07a6f98c03379b9513ca84cca1373ff452a7462a3b61598f0af5bb27ad7f76d1 holds 0.016080 ETH ($40.82) with no function able to move it -> S",
+    "Factory 0x1c0a36e26a8f822e0d81f20a5a562b16a8f8a3dfd99801367dd2aea8f1a87a2 (class 0x55373ed0e387ba6117b7bf65fa4a67af582f8de4e2a20cc75669d26ddb2df3); pair class 0x231adde42526bad434ca2eb983efdd64472638702f87f97e6e3c084f264e06f; router class 0x514718bb56ed2a8607554c7d393c2ffd73cbab971c120b00a2ce27cc58dd1c1",
+    "CI class-hash reproduction: pair/factory/router compiled from source c47f2e158687a757d0834893d5b01ba4131a55ec (cairo-lang 0.9.1, OZ 0.3.2, sympy 1.11) == deployed class hashes; program_equal_normalized=true, entrypoints/ABI equal",
+    "Pools actively traded and LPs active: last 110k blocks (~2.6 days) emitted 2029 Swap + 2061 Sync + 85 LP Transfer events; swaps via the router minutes before snapshot (tx 0x3687285c7c77072dca46e5596d9e3e8be5feb152499d1d0082fb4da5bc0fd9d at block 16230885, sender 0x1b45c8595a6a908e136763258a57517bc9c66c0d659c567ee055b5d9ab7ff6c)",
+    "ScaleBit audit (Sep 2023) found 3 Major issues, 0 Critical: private keys in .env.example (testnet/devnet accounts, not deployed on mainnet), single-step feeToSetter transfer, unrestricted mint() in standalone l0k_erc20 template (not used by AMM)",
+    "10kswap.com domain now serves a domain-squatter page ('Not affiliated with prior owners'); API/CDN dead; team inactive",
+    "DefiSpring distributor 0x00dc347ea9e7dc2a307e853b97e7189dfb08679a98e8d5ba549a1872febf2e5d holds 0.001 ETH + 7.21 STRK unclaimed (~$3.30, H-O/S)"
+  ],
+  "caveats": [
+    "Reserves/prices are a snapshot at block 16232746 and move with trading and market prices",
+    "LP-holder distribution measured in aggregate (no explorer holder API without a key); non-feeTo LP supply treated as H-O - any dead-holder share would be S instead. Full-history LP Transfer replay attempted (key-filtered streaming) but launch-era density is huge (approx. 2000 LP transfers per 1300 blocks in blocks 5k-8k; 250k+ events for the ETH/USDC pair alone); recent-actor sample instead: 85 LP transfers among 41 distinct addresses in the last 2.6 days (no dead-holder LP identified)",
+    "The $225,408.50 P bucket includes the feeTo account's own token balances ($218,425.86) which are outside AMM contract custody; AMM-only custody is $767,425.94",
+    "simulateTransactions used SKIP_VALIDATE/SKIP_FEE_CHARGE; traces prove contract logic only (nothing was signed or broadcast)",
+    "Public RPCs (cartridge/publicnode/onfinality) used; all reads read-only"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from 10KSwap: the 15 V2 pairs ($767.4K reserves) are a faithful Cairo port whose deployed class hashes reproduce the audited source, re-initialization is caller-gated, skim excess is zero, no LP is stranded, and the k-check/IIA gate block unpaid swaps; $760.4K belongs to LP holders (H-O), $7.0K accrued fees + $218.4K treasury to the feeTo/admin Argent account (P), $41 stuck dust (S)."
+}
