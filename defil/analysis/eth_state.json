@@ -1,0 +1,168 @@
+{
+  "finding": "DeFIL (L2 Phase-2 deep-dive)",
+  "chains": ["ethereum", "bsc"],
+  "generated": "2026-10-11",
+  "method": "read-only eth_call / eth_getLogs / Etherscan V2 / GoldRush; no transactions",
+  "ethereum": {
+    "pinned_block": 26169800,
+    "latest_block_at_recon": 26169907,
+    "tokens": {
+      "FILST": {
+        "address": "0x7346aD4c8cD1886Ff6D16072bCeA5DFC0bc24Ca2",
+        "name": "Filecoin Standard Token",
+        "total_supply": "1959936000000000000000000",
+        "owner": "0x557EdaaFD875569F0bd6AbaE1185c17fD5A30Ba0",
+        "owner_is_eoa": true,
+        "poster_minter": "0xcd429F23088b3FA4AAbFF61dD5F9E534793f9944",
+        "mint_burn": "onlyPoster (FILSTManage); owner can repoint poster",
+        "source_verified": true
+      },
+      "DFL": {
+        "address": "0x09ce2B746C32528B7d864A1e3979Bd97d2f095AB",
+        "name": "DeFIL-V2",
+        "total_supply": "125814138561198883160508752",
+        "owner": "0x6B4F20B2259Eebb97945b6EF549a1c44FcA6Cd81",
+        "owner_is": "Unitroller (Compound Comptroller proxy)",
+        "mint": "onlyOwner (Unitroller) - DFL rewards distribution"
+      },
+      "EFIL": {
+        "address": "0x2a2cB9bA73289D4D068BD57D3c26165DaD5Cb628",
+        "name": "Ethereum FIL",
+        "total_supply": "87105548310261427578102",
+        "owner": "0x557EdaaFD875569F0bd6AbaE1185c17fD5A30Ba0",
+        "mint": "MINTER_ROLE (AccessControl), owner-managed"
+      },
+      "mFIL": {
+        "address": "0x3C392C3FBE6ADA6049373478A4f8dD668Ab27b0C",
+        "name": "Miner FIL",
+        "total_supply": "1242378622075560754819120",
+        "owner": "0x557EdaaFD875569F0bd6AbaE1185c17fD5A30Ba0",
+        "mint": "MINTER_ROLE; no market/pairs -> ~$0 realizable"
+      }
+    },
+    "pools": {
+      "FILST_USDT_LP": {
+        "address": "0xa2f6a219a51b4682e34a13a94c160d6c79cdca35",
+        "token0": "FILST",
+        "token1": "USDT",
+        "reserves": {"FILST": "1396416006144015505577894", "USDT": "714487847125"},
+        "total_supply": "979559559549437324",
+        "staking_balance": "979475547106670098",
+        "staking_share_pct": "99.9914",
+        "implied_price_usdt_per_filst": "0.51166"
+      },
+      "FILST_EFIL_LP": {
+        "address": "0x7393aa9DE6585ae2EC5e18aBfFe1eD07123d0E87",
+        "reserves": {"EFIL": "982273679856921343203", "FILST": "991555252385438865"},
+        "note": "dust; ~$1 total"
+      },
+      "DFL_USDT_LP": {
+        "address": "0xd372a3221021Df72eDa38f77117d3A95f057e163",
+        "reserves": {"DFL": "8448191008217532912930189", "USDT": "945939161"},
+        "implied_price_usdt_per_dfl": "0.00011197"
+      },
+      "DFL_WETH_LP": {
+        "address": "0x4086E0dBdF6264CAAb655B6E5FaE943DDb09D203",
+        "reserves": {"DFL": "6860830617254049325620", "WETH": "315046148439517"},
+        "note": "dust"
+      },
+      "EFIL2_FILST_LP": {
+        "address": "0x2290a4cc1E5Aca21b5b4BfFA3c19016008772913",
+        "token0": "eFIL(old, 0x22B475f3, 50.15B supply)",
+        "token1": "FILST",
+        "reserves": {"EFIL2": "36719152102065649864355567", "FILST": "182747784723747109078"},
+        "note": "LP fully staked in 0xefeeb899"
+      }
+    },
+    "staking_contracts": {
+      "code_hash_all_six": "0xd3b8281179950f98149eefdb158d0e1acb56f56e8e343aa9fefafa7e36959561",
+      "note": "all six ETH staking instances share identical runtime code (verified source 'Staking', solc 0.5.17)",
+      "instances": {
+        "0x9e08bd9a1e3880902688b32d563046cab74d2f2f": {
+          "property": "FILST/USDT LP", "superior": "0xe67Ae15CBb7F6B009F12c4c8999ca3Ff4c39463d (PrivilegedRedistributor, asset DFL)",
+          "total_deposits": "979475547106670098",
+          "top_depositor": {"address": "0xf2ba8f66c4eb4db715f29e6f90a8744f04a7dfa9", "share": "978272219496394154", "share_pct": "99.88", "is_eoa": true},
+          "outsider_withdraw": "reverts 'withdraw: insufficient value'",
+          "depositor_withdraw": "succeeds (simulated)"
+        },
+        "0x01aabbad98a7638b7f8d65e7ec42560f1afbbf0c": {
+          "property": "FILST", "superior": "0x5E6468b3048d1b5a48cA6EAe3953b17fE1165Ed9 (RewardPoolDelegator, asset EFIL)",
+          "total_deposits": "374550818501781995220797",
+          "current_top_shareholders": {
+            "0xc1b296679262088Bc4195DA56fcf9694E96F0Ec6": "194791076442475742645333",
+            "0x6E1DA46a0859980b8Db484279caE267946b55b27": "153232200000000000000000",
+            "0xf2ba8f66c4eb4db715f29e6f90a8744f04a7dfa9": "5340000000000000000000",
+            "cFILST market 0x71dd9CD476c73F7C94a82E3F00a8eD29268602e1": "3102080794000000000703"
+          },
+          "depositor_withdraw_sim": "0x6e1da46a withdraw(153232.2e18) -> SUCCESS; 0xc1b29667 withdraw(194791.08e18) -> SUCCESS",
+          "note": "includes cFILST market deposit 3102.08 FILST"
+        },
+        "0xb685bfdad9da7093168ab75204bbcadf0c69c823": {
+          "property": "DFL", "superior": "0x3CCd01602d5fA18349Ddb25F21079bd018284C8F (PrivilegedRedistributor, asset EFIL)",
+          "total_deposits": "52202774704109883343300571"
+        },
+        "0x312c6ffe7743b964be6da9131e662af5bac55199": {
+          "property": "FILST/EFIL LP", "superior": "0xe67Ae15C...", "total_deposits": "30121323550379400000",
+          "note": "unverified on Etherscan but bytecode-identical to verified Staking"
+        },
+        "0x6b0c7d013cc0b461490287cc20aa9f34f950a6a6": {
+          "property": "DFL/USDT LP", "superior": "0xe67Ae15C...", "total_deposits": "52595363908021260"
+        },
+        "0xefeeb899c1a7ea13140c1c161dd3a054eda7d6f6": {
+          "property": "eFIL2/FILST LP 0x2290a4cc", "superior": "0xe67Ae15C...", "total_deposits": "80821844574098867658798"
+        }
+      }
+    },
+    "filst_mint_path": {
+      "minter": "FILSTManage 0xcd429F23088b3FA4AAbFF61dD5F9E534793f9944 (poster)",
+      "mint_gate": "caller must hold MiningNFT (ERC-1155) units for the miner tokenId; pays 5% fee in DFL",
+      "mining_nft": "0xad1ED31e70b569D78D1930537179A940DdA4A9CF",
+      "mining_nft_units_total": 1914,
+      "mining_nft_units_held_by_filstmanage": 1914,
+      "mining_nft_balances_by_id": {"100001": 13, "100002": 38, "100003": 19, "100004": 403, "100005": 286, "100006": 465, "100007": 382, "100008": 128, "100009": 46, "100010": 69, "100011": 65},
+      "nft_withdrawal_function": "NONE — FILSTManage has no function transferring ERC-1155s out",
+      "new_nft_minting": "MiningNFTManage 0x9cFcB73C... mint() requires MinerManage.whiteList(msg.sender) (owner-managed); outsider reverts 'sender not in whitelist'",
+      "mint_fee_ratio": "50/1000 = 5%",
+      "fee_for_1024_filst_dfl": "236008014414414414414414",
+      "outsider_mint_result": "reverts 'exceed mining NFT balance'",
+      "total_minted": "1959936000000000000000000 (entire supply)"
+    },
+    "lending_markets": {
+      "unitroller": "0x6B4F20B2259Eebb97945b6EF549a1c44FcA6Cd81",
+      "markets": {
+        "ceFIL": {"address": "0x036cF3821eA246E935feEF1c29ED8DdFFaC1dBB0", "cash_efil": "38527812069616649282557", "collateral_factor": 0, "note": "borrows 14.37M EFIL, reserves 14.21M EFIL (legacy bad debt); cash backed"},
+        "cmFIL": {"address": "0xbE8fB7dB7425f9B1f67DC58ac31dDAFc532DEC9c", "cash_mfil": "182288456519916687661765", "collateral_factor": "0.8", "note": "mFIL has no market -> ~$0 realizable"},
+        "cFILST": {"address": "0x71dd9CD476c73F7C94a82E3F00a8eD29268602e1", "cash_filst": "3102080794000000000703", "collateral_factor": "0.8", "note": "auto-stakes into FilstPool 0x01aabbad; market holds pool shares == cash; sole cToken holder 0x9a26f4d0 can redeem (verified)"}
+      },
+      "oracle": "0x8A1e3e5815CFfAF87c220a738b06c23F03543039 (SimplePriceOracle, owner=deployer EOA; stale 2021 prices: FILST $0.006124, EFIL $1, mFIL $1.25)"
+    },
+    "reward_chain": {
+      "privileged_redistributor": "0xe67Ae15CBb7F6B009F12c4c8999ca3Ff4c39463d (asset DFL; member list = [0xB02F1180], LP staking has 930674.76 DFL accrued)",
+      "unitroller_dfl_balance": "43751675010838300438078143",
+      "outsider_claims": "all revert: PR 'claim: insufficient value'; Unitroller 'insufficent value'; RewardPool 'Insufficient value'"
+    },
+    "filst_distribution_top": {
+      "LP_pair": "1396416006144015505577894",
+      "staking_0x01aabbad": "374550818501781995220797",
+      "0xf2ba8f66 (top staker EOA)": "172872731180435700505756",
+      "rest_97_holders_total": "~16095500000000000000000",
+      "holders_count": "100 (top-100 sums to 99.9998% of supply)"
+    },
+    "exit_liquidity": {
+      "usdt_out_100k_filst": 47614076,
+      "usdt_out_full_filst_side_1396416": 356738348,
+      "usdt_out_100m_filst": 704600000,
+      "asymptote_usdt": 712344343,
+      "note": "USDT is the only hard asset; extractable only by selling FILST acquired below pool price"
+    }
+  },
+  "gates_verified": [
+    "outsider withdraw from all 4 ETH staking contracts -> revert",
+    "outsider claim from staking/PR/Unitroller/RewardPool -> revert",
+    "outsider FILST mint -> revert (no mining NFT)",
+    "outsider MiningNFT mint -> revert (whitelist)",
+    "outsider mFIL mint -> revert (MINTER_ROLE)",
+    "all 1914 mining NFT units escrowed in FILSTManage; no withdrawal function exists",
+    "no ETH bridge contract for FILST found; research: team-operated bridge only, no public path"
+  ]
+}
