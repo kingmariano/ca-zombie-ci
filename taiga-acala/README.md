@@ -13,7 +13,7 @@
 | StableAsset pallet account `23M5ttkp2zdM8qa6LFak4BySWZDsAVByjepAfr7kt929S1U9` (pool 0 = DOT/LDOT, LP = tDOT) | **$0** | `collect_yield()` gate: D(updated) = 298,289.71 < total_supply = 303,965.21 (deficit 5,675.50 DOT-eq). All 5 user extrinsics (mint/swap/redeem_proportion/redeem_single/redeem_multi) call `collect_yield` → revert `InvalidPoolValue`. | If the Homa rate recovers ≥ 0.197178032 (+2.87 %), the pool re-opens: tDOT holders can redeem (H-O, not E-U). A ~$100 one-time `redeem_multi` imbalance discount exists only after re-opening. No tDOT market exists. |
 | Admin/upgrade authority | **$0** | `create_pool`/`modify_a`/`modify_fees`/`modify_recipients` require root or half General Council and **cannot move assets**. `Sudo.Key` is the pallet account `modl aca/trsy` → sudo is unusable. No rescue/force-withdraw call exists in the deployed pallet. | Governance runtime upgrade could in principle add a rescue path (P — not counted). |
 
-**Total live extractable now: $0 (E-U) — confidence: high.** Stuck value: **$369,259.36** at protocol-fundamental pricing (range ≈ **$269,837.69 – $369,259.36** using the only market quote; see §5.6).
+**Total live extractable now: $0 (E-U) — confidence: high.** Stuck value: **$369,259.36** at protocol-fundamental pricing (range ≈ **$269,837.69 – $369,259.36** using the only market quote; see §5.2).
 
 ---
 
@@ -146,13 +146,13 @@ No Foundry project (Substrate chain, no EVM path). Heavy job: **`ci/run.sh` → 
 * **H-O = $0 today** (would become ≈ the same amount for the 364 tDOT holders if/when the gate clears). **P = $0** (governance can only act via a runtime upgrade; no direct rescue call).
 * **Triage correction:** $1,405,834.90 → **$369,259.36** fundamental (LDOT priced at 0.191685 DOT via Homa, not DOT-parity). Token amounts unchanged since triage; only the pricing was wrong (LDOT ≈ $0.2370 fundamental / $0.1414 last market quote, not $1.2346).
 * **Residual/latent risk (medium):** if the gate clears (Homa rate recovery or governance), the pool re-opens; then (i) tDOT holders redeem pro-rata, (ii) a ≤$106 one-time `redeem_multi` concavity discount is available, (iii) a thin-market arb exists but is depth-bounded. Nothing here is extractable now.
-* **Blockers to re-opening:** Homa rate +2.87 % (currently ~+0.026 %/day from burns+rewards, uncertain), or governance action; further Homa `LedgerBondedReset` reductions would delay it further.
+* **Blockers to re-opening:** Homa rate +2.87 % (currently ~+0.035 %/day observed, uncertain), or governance action; further Homa `LedgerBondedReset` reductions would delay it further.
 
 ## 8. Methodology & sources; caveats
 
 * **Method:** public Substrate JSON-RPC (`https://acala-rpc-0..3.aca-api.network`) reads at explicit blocks; archive `state_getStorage` at historical block hashes for the timeline; `state_getKeysPaged` full `Tokens.Accounts` scan; exact re-implementation of `nutsfinance-stable-asset@aa101e87` + Acala `2.37.0` rebase math; Acala repo clone + submodule pin verification; DefiLlama/CoinGecko price APIs; GitHub Actions for the heavy scan.
 * **Corpus corrections applied:** the triage's "tapio LSD module account" label and the DOT-parity LDOT proxy are both wrong; DefiLlama's TVL excludes the LDOT leg.
-* **Caveats:** (1) LDOT pricing is genuinely uncertain: fundamental = Homa redemption rate 0.191685 DOT ($0.2372); the CoinGecko id `liquid-staking-dot` returns $0.1414 on `/simple/price` but **does not resolve** on `/coins` (not a canonical listing), and the only on-chain market is thin — treat $269.9 k as a low-end estimate. (2) The revert conclusion relies on the deployed revision = tag 2.37.0 (spec 2370 + submodule pin + three exact behavioral fingerprints); a hypothetical silent runtime patch inside spec 2370 cannot be fully excluded without a fresh signed dry-run. (3) `PINK` (3,837.13) is excluded from totals (no market). (4) Rate recovery pace is extrapolated from 19 days of samples.
+* **Caveats:** (1) LDOT pricing is genuinely uncertain: fundamental = Homa redemption rate 0.191685 DOT ($0.2370); the CoinGecko id `liquid-staking-dot` returns $0.1414 on `/simple/price` but **does not resolve** on `/coins` (not a canonical listing), and the only on-chain market is thin — treat $269.8 k as a low-end estimate. (2) The revert conclusion relies on the deployed revision = tag 2.37.0 (spec 2370 + submodule pin + three exact behavioral fingerprints); a hypothetical silent runtime patch inside spec 2370 cannot be fully excluded without a fresh signed dry-run. (3) `PINK` (3,837.13) is excluded from totals (no market). (4) Rate recovery pace is extrapolated from 19 days of samples.
 
 ## 9. Files index
 
