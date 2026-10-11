@@ -1,0 +1,60 @@
+{
+  "finding": "powercity-flex-protocol",
+  "phase": "L2 watchlist Phase 2 (zombie-hunt II)",
+  "title": "Powercity Flex Protocol (PulseChain) \u2014 Liquity v1 fork; $0 live E-U, latent 420s oracle-manipulation path",
+  "chains": [
+    "pulsechain"
+  ],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 707178.0,
+    "P": 0.0,
+    "S": 0.0
+  },
+  "category_notes": {
+    "E-U": "No net-positive unprivileged path at the live state: no trove below 110% (min ICR 138.2%), redemption negative (HEXDC $1.0381 vs $1.0308 oracle payout), setAddresses onlyOwner+renounced, HEXDC minters immutable. Oracle-manipulation path is fork-proven mechanically but economically implausible (needs $1.2-1.6M dumped and held 421s against arbitrage).",
+    "H-O": "Holder-recoverable balances: borrowers' collateral equity ~$608,028 (265.92M HEX market value $659,890 minus 49,959 HEXDC debt $51,863) + StabilityPool deposits $8,013 + staked FLEX $62,017 + staking fee balances $3,398 + farm LP deposits $23,639 + CollSurplusPool $2,084.",
+    "P": "PriceFeed admin EOA 0x751029C76DC1841fd8E9EF658eDD6d2dCDb1e07B (updateAdmin, admin-only fn) and TimelockController 0x16986F263b9AcC844Ae3bB903155352F415CD9DC (updatePriceFeed on TroveManager). No direct fund custody.",
+    "S": "None identified."
+  },
+  "latest_block": 27771670,
+  "block_numbers": {
+    "pulsechain": 27771670
+  },
+  "targets_checked": 18,
+  "live_targets": 13,
+  "closed_reasons": [
+    "No trove below MCR 110% at live oracle price (min ICR 138.15%, system TCR 1282.4%) \u2014 no liquidations possible",
+    "Redemption arbitrage negative: 1 HEXDC redeems for $1.0308 of HEX at market while HEXDC trades at $1.0381",
+    "TroveManager/BorrowerOperations setAddresses is onlyOwner and calls _renounceOwnership() (owner = 0x0) \u2014 no re-init attack",
+    "HEXDC (LUSDToken) mint/burn addresses are constructor-immutable (TM/SP/BO) \u2014 no mint path",
+    "PriceFeed fetchPrice() is permissionless but its 420s-minimum TWAP window defeats flash-loan manipulation; a sustained 421s deep crash is required and is economically implausible (arbitrage gate)",
+    "StabilityPool/LQTYStaking/farm entry points are self-only; fee functions are caller-gated",
+    "No weakened ICR/TCR guards found in the fork's modified Liquity v1 code paths"
+  ],
+  "poc": {
+    "tests_passed": 3,
+    "tests_total": 3,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Live custody re-verified at block 27,771,631: ActivePool 265,923,978.026 HEX (8 dec) \u2248 $659,900 at $0.0024815; 21 troves; 49,959.028 HEXDC debt; SP 7,719.327 HEXDC; staked FLEX 80,176,596.28 \u2248 $62,017; farms \u2248 $23,639; CollSurplusPool 839,729.937 HEX \u2248 $2,084.",
+    "PriceFeed 0x5f2529BC80bB9C0Bd7C417EA78CE2Cd6114B112C is UNVERIFIED; mechanics recovered via selectors/disassembly/debug_traceCall: 4 PulseX-V2 TWAPs blended (0.65 HEX/WPLS V1 + 0.35 V2) x (0.60 WPLS/DAI + 0.40 WPLS/USDC); observations roll only when now-lastUpdate >= 420s; fetchPrice() is permissionless and stores to slot 4.",
+    "Fork PoC (real contracts, no mocks): a 421s-sustained crash to 8.25% of live price makes trove #9 liquidatable at ICR 105.9% in recovery mode -> StabilityPool receives 90,391,079 HEX ($224k) for burning 17,055.92 HEXDC; attacker (72% of SP) claimable 65,218,813 HEX ($162k).",
+    "Fork PoC: crash to 13.0% (TCR 166%, normal mode) -> redeemCollateral(20,000 HEXDC) returns 50,777,608 HEX ($126k) = 6.11x the live-price payout.",
+    "Crash cost: dumping the 2 HEX/WPLS pools to 8.2% requires ~625M HEX ($1.55M) for a recoverable ~$441k of WPLS; the trove-#9 capture band is narrow (f in 0.0780-0.0858); outside it the fork's recovery-mode branches return pure redistribution (ICR<=100%) or 'nothing to liquidate' (trove #9 marginally above system TCR).",
+    "Only ~15,551 of 49,959 HEXDC is on-market in a thin pool (buying 10,000 costs ~$29k, avg $2.90); acquiring large HEXDC amounts at ~$1.04 is not possible on-chain.",
+    "Redemptions skip troves below MCR and require system TCR > MCR; the fee for a large redemption is ~0.5% + redeemedFraction/2 (e.g. ~20.5% for 20,000/49,959).",
+    "Oracle last direct poke 2026-08-06; trove operations (2026-10-10/11) keep observations fresh; oracle lags market by ~2.9% but no profitable edge exists.",
+    "FLEX/USD $0.0007735, HEXDC/USD $1.0381, WPLS/USD $9.5436e-6 (DefiLlama 2026-10-11)."
+  ],
+  "caveats": [
+    "The fork PoC proves mechanics, not real-world economics: it warps 421s to simulate a sustained crash. The decisive arbitrage-response gate cannot be fork-verified.",
+    "PriceFeed is unverified; a hidden admin path cannot be fully excluded (owner/admin are EOAs).",
+    "Farm contracts are unverified; classified H-O from standard Synthetix selectors.",
+    "USD values at 2026-10-11 DefiLlama prices; triage's $730,044 used slightly different prices."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Powercity Flex: the system is solvent (1282% TCR, no trove below 110%), redemptions are negative, and all admin/init paths are closed/renounced; the only latent path is a fork-proven 420s TWAP oracle takeover that requires a $1.2-1.6M sustained crash and is not net-profitable against arbitrage."
+}
