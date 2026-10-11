@@ -1,0 +1,16 @@
+JediSwap V1 — class-hash verification (local run, 2026-10-11)
+================================================================
+Source: github.com/jediswaplabs/JediSwap @ 11b4414 ("upgrade to proxy pattern", 2022-11-23)
+Libs:   OpenZeppelin cairo-contracts @ b764660 (v0.4.0b)
+Tool:   cairo-lang 0.10.0 starknet-compile --dont_filter_identifiers
+Method: compute_class_hash() vs starknet_getClassHashAt(live) — see /tmp/opencode/classhash.py
+
+Pair           computed=0x2b39bc3f4c1fd5bef8b7d21504c44e0da59cf27b350551b13d913da52e40d3b  MATCH
+Factory        computed=0x2580632f25bbee45da5a1a1ef49d03a984f78dde4019069aa9f25aac06f941a  MATCH
+PairProxy      computed=0x7b5cd6a6949cc1730f89d795f2442f6ab431ea6c9a5be00685d50f97433c5eb  MATCH
+FactoryProxy   computed=0x26fe8ea36ec7703569cfe4693b05102940bf122647c4dbf0abc0bb919ce27bd  MATCH
+Router         computed=0x64e7d628b1b2aa04a35fe6610b005689e8b591058f7f92bf4eb234e67cf403b  MATCH
+RouterProxy    computed=0x7197021c108b0cc57ae354f5ad02222c4b3d7344664e6dd602a0e2298595434  MATCH
+
+Program data + hints byte-identical to on-chain classes (debug_info stripped by sequencer).
+RESULT: 6/6 class hashes match the live on-chain classes.
