@@ -1,0 +1,47 @@
+{
+  "finding": "cover-protocol",
+  "title": "Cover Protocol (legacy coverage, post-2020 exploit) — no unprivileged extraction; $506.1k bearer-recoverable by covToken holders, $2.7k stuck",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 506126.50, "P": 509481.67, "S": 2724.70},
+  "latest_block": 26171719,
+  "block_numbers": {"ethereum": 26171719},
+  "targets_checked": 55,
+  "live_targets": 54,
+  "closed_reasons": [
+    "cover collateral == outstanding covToken entitlement exactly (per cover, <=1e6 wei diff): no excess to steal",
+    "Cover.mint is onlyOwner(Protocol)+onlyNotExpired+no-claim; all 55 covers expired in 2021",
+    "redeemClaim/redeemNoclaim pay only balanceOf(msg.sender); redeemCollateral is not-expired-gated",
+    "claim acceptance is auditor/governance-gated and defaults to Denied after the 7-day window; no auto-accept",
+    "even a colluding claimManager cannot pay CLAIM on expired covers (incident today > 2021 expiry -> redeemClaim reverts; NOCLAIM still 1:1)",
+    "all 55 cover proxies initialized; proxy admin = dev Gnosis Safe (3/5), upgrade requires its keys",
+    "92 Balancer pools are finalized+public but priced on a 49:1 curve above par: buy+redeem is a loss (fork-proven)",
+    "CoverRouter holds zero residuals; removeLiquidity requires caller BPT; rollover dead (no future active expiry)",
+    "Blacksmith/BonusRewards are per-user; collectDust blocked for pool tokens; old Blacksmith minting rights moved (withdraw bricked, emergencyWithdraw works)",
+    "SAFE2->COVER migrateSafe2 live but SAFE2's only venue holds 0.033 SAFE2 + $0.02 WETH",
+    "CoverFeeReceiver collect/buyBack owner-gated"
+  ],
+  "poc": {"tests_passed": 25, "tests_total": 25, "ci_run_urls": []},
+  "key_facts": [
+    "Block 26,171,719: 39 protocols / 55 covers; 54 with live state; DAI 332,464.224005 + yDAI 154,253.000410 = $508,851.21 gross (DAI $1.000072; yDAI at on-chain PPS 1.143253938)",
+    "Net of the 0.1% redemption fee: $508,342.36; H-O net $505,620.38",
+    "H-O breakdown: $110,018.73 direct EOA/7702 covToken holders; $386,411.10 behind live staker records (BonusRewards/Blacksmith); $9,696.68 other BPT holders (public exitPool)",
+    "S breakdown: $2,723.97 orphaned BPT (staking contracts hold BPT with all depositor records 0; collectDust blocked) + $0.74 dust in small third-party contracts",
+    "P: dev Gnosis Safe 0x15957f0C... (threshold 3/5) is admin of all 55 cover proxies and factory owner — can upgrade payout logic (full $508,851.21); CoverFeeReceiver holds $630.46 (601.04 DAI + 25.69 yDAI)",
+    "Claim rounds: YEARN 36/100, PICKLE 100/100, BTFINANCE 60/100; entitlements match balances exactly",
+    "78.2% of the value sits in 92 Balancer BPools (public swap, 49:1 curve > par); BPT is mostly staked in BonusRewards (e.g. 970,000/971,100 BPT of the RAI pool) and Blacksmith",
+    "Old Blacksmith 0xE0B94a7B... no longer holds COVER minting rights (moved to 0x1D5f...): withdraw/claimRewards revert; emergencyWithdraw works (fork-proven)",
+    "COVER (0x5D8d9F5b...) DEX depth ~$4.0k (Uniswap pair 1,950 COVER+0.128 WETH; Sushi pair 22,220 COVER+1.456 WETH); 654 COVER/week farm has 31.5% weight in zero-stake pools but emissions are unclaimable",
+    "yDAI vault 0x16de5909: PPS 1.143253938, supply 341,568.16, assets 390,499.15 DAI in dYdX Solo (C-31 proved withdrawals); covers hold 45% of the vault",
+    "2 zero-controller Balancer pools exist but BPT holders can still exitPool (exit is not publicSwap-gated); no extra exposure"
+  ],
+  "caveats": [
+    "H-O assumes covToken holders/stakers still control their keys (not verifiable on-chain)",
+    "S classification for orphaned BPT relies on complete depositor enumeration via BPT Transfer logs (Etherscan) plus record reads; a missed depositor would move value from S to H-O",
+    "USD is point-in-time; DefiLlama cross-check $508,827 (their yDAI price $1.143322)",
+    "P overlaps H-O (the privileged upgrade path is an alternate control of the same $508.9k, not additive value)",
+    "Fork pins one block; market prices for COVER/yDAI move"
+  ],
+  "one_liner": "external unprivileged attacker can extract ~$0 live from Cover Protocol; the $508.9k of cover collateral is an exact bearer entitlement of CLAIM/NOCLAIM holders ($505.6k net recoverable, $2.7k orphaned/stuck) and every non-holder path (mint, claim, upgrade, router sweep, pool buy) is gated or unprofitable."
+}
