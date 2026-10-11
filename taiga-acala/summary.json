@@ -4,9 +4,9 @@
   "chains": ["acala"],
   "headline_extractable_usd": 0,
   "headline_confidence": "high",
-  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 369458.19},
-  "latest_block": 12188628,
-  "block_numbers": {"acala": 12188628},
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 369259.36},
+  "latest_block": 12188690,
+  "block_numbers": {"acala": 12188690},
   "targets_checked": 1,
   "live_targets": 1,
   "closed_reasons": [
@@ -21,11 +21,11 @@
   "poc": {
     "tests_passed": 5,
     "tests_total": 5,
-    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/38148650658"],
-    "note": "No Foundry project (Substrate chain). 5/5 = ci/run.sh verification checks: state+PoolInfo decode, gate math, archive timeline, full tDOT holder scan, valuation."
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/38148650658", "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38149486584"],
+    "note": "No Foundry project (Substrate chain). 5/5 = ci/run.sh verification checks run twice (blocks 12,188,628 and 12,188,690, identical verdict): state+PoolInfo decode, gate math, archive timeline, full tDOT holder scan, valuation."
   },
   "key_facts": [
-    "Custody = StableAsset pallet account 23M5ttkp2zdM8qa6LFak4BySWZDsAVByjepAfr7kt929S1U9 (modl nuts/sta) holding pool 0 reserves: 99,381.0871531292 DOT + 1,039,284.4659613585 LDOT (+3,837.13 PINK unpriced, +5.9 ACA dust) at block 12,188,628",
+    "Custody = StableAsset pallet account 23M5ttkp2zdM8qa6LFak4BySWZDsAVByjepAfr7kt929S1U9 (modl nuts/sta) holding pool 0 reserves: 99,381.0871531292 DOT + 1,039,284.4659613585 LDOT (+3,837.13 PINK unpriced, +5.9 ACA dust) at block 12,188,690",
     "Pool 0 = DOT/LDOT stable pool; LP token = tDOT (StableAssetPoolToken(0), 'Taiga DOT'); supply 303,965.2087142047; swap fee 0.25%, redeem fee 0.3%; A=30",
     "Deployed revision verified: Acala runtime spec 2370 = release tag 2.37.0 pinning stable-asset submodule aa101e87234bd3d388c8de062f231d635d79cf7b; model reproduces D(stored)==supply exactly and the last swap's event amounts exactly",
     "Gate: D(stored)=3,039,652,087,142,047 == total_supply (fingerprint); D(updated)=2,982,897,093,946,633; deficit=56,754,993,195,414 raw=5,675.4993195414 DOT-eq (~$7,022.7 at $1.2373/DOT); min rate for interactivity 0.19717803167524825 vs current 0.1916854550864132 (+2.8654% gap)",
@@ -33,16 +33,16 @@
     "Homa rate = TotalStakingBonded 1,930,696.4240444358 DOT / LDOT issuance 10,072,211.3901338099 (TotalVoidLiquid 0); rate rising ~+0.026%/day since 09-27 (LDOT burns + staking rewards)",
     "tDOT holders: 364 accounts, 100.0% of issuance enumerated; top holder EVM 0xe1bd4306a178f86a9214c39abcd53d021bedb0f9 (23AdbsgD7HB7...) = 255,276.5361 tDOT = 84.0%; top-5 93.7%; module accounts: Loans (modl aca/loan) 4,184.81, legacy aca/reco 479.11, fee/yield recipient 24.97",
     "fee_recipient = yield_recipient = EVM-mapped 23AdbsfTWCWtRFweQF4f3iZLcLBPwSHci9CXuMhqFirZmUZj (evm:081efb42231fca2cfa81cdedb6b68433ce61c486)",
-    "Valuation (corrected vs triage): DOT 99,381.0872 @ $1.2373 = $122,965.67; LDOT 1,039,284.466 @ Homa rate 0.191685455 = 0.237175 USD = $246,492.52; total fundamental $369,458.19 (triage: $1,405,834.90 at DOT-parity proxy — overstated ~3.8x); market-quote low end $269,903.87 (LDOT @ $0.141384 CoinGecko, id does not resolve on /coins)",
+    "Valuation (corrected vs triage): DOT 99,381.0872 @ $1.23665 = $122,899.50; LDOT 1,039,284.466 @ Homa rate 0.191685455 = 0.237048 USD = $246,359.87; total fundamental $369,259.36 (triage: $1,405,834.90 at DOT-parity proxy — overstated ~3.8x); market-quote low end $269,837.69 (LDOT @ $0.141384 CoinGecko, id does not resolve on /coins)",
     "Latent (only if gate clears): tDOT holders redeem pro-rata (H-O, ~$0.89-1.22/tDOT); redeem_multi imbalance discount <= ~86 DOT-eq (~$106) one-time; thin-market arb bounded by ~19.5k LDOT DEX depth; no E-U path today",
     "Sudo key = modl aca/trsy (HomaTreasury pallet account); General Council = 3 members; public RPC exposes no eth_ namespace"
   ],
   "caveats": [
-    "LDOT has no canonical market price: Homa fundamental 0.191685 DOT ($0.2372); CoinGecko /simple/price returns $0.141384 for 'liquid-staking-dot' but /coins says 'coin not found' (unverifiable listing); only on-chain venue is the thin AUSD/LDOT DEX pool (4.9096 AUSD/LDOT, ~19.5k LDOT). Value range $269,904-$369,458.",
+    "LDOT has no canonical market price: Homa fundamental 0.191685 DOT ($0.2370); CoinGecko /simple/price returns $0.141384 for 'liquid-staking-dot' but /coins says 'coin not found' (unverifiable listing); only on-chain venue is the thin AUSD/LDOT DEX pool (4.9096 AUSD/LDOT, ~19.5k LDOT). Value range $269,837.69-$369,259.36.",
     "Revert conclusion relies on deployed revision == Acala 2.37.0 (spec 2370 match + submodule pin + exact behavioral fingerprints D==supply and event-amount reproduction); no fresh signed dry-run was performed (campaign forbids signing on mainnet) and Acala public RPC keyless dry-run APIs do not execute calls.",
     "Rate recovery timing is uncertain (observed ~+0.035%/day since 2026-09-27 = staking rewards ~0.026%/day plus LDOT burns; pending Homa redemption flows of 236,862 DOT unclaimed + 54,020 DOT unbonding could accelerate; further LedgerBondedReset drops would delay).",
     "PINK (ForeignAsset 13, 3,837.13) excluded from totals (no market).",
-    "Point-in-time reads at public-RPC block 12,188,628 (2026-10-11 14:48 UTC); token amounts unchanged vs triage (2026-10-11 12:53 UTC)."
+    "Point-in-time reads at public-RPC blocks 12,188,628 and 12,188,690 (2026-10-11 14:48/15:02 UTC); token amounts unchanged vs triage (2026-10-11 12:53 UTC)."
   ],
-  "one_liner": "External unprivileged attacker can extract $0 live from Taiga Acala: the StableAsset pool 0 (DOT/LDOT, LP=tDOT, custody $369,458 fundamental) is bricked because the Homa LDOT rate fell 2.87% below the pool's stored rate, so every mint/swap/redeem extrinsic reverts at the collect_yield gate; the triage's $1.41M figure was a DOT-parity mispricing of LDOT (corrected to ~$0.27-0.37M, currently stuck)."
+  "one_liner": "External unprivileged attacker can extract $0 live from Taiga Acala: the StableAsset pool 0 (DOT/LDOT, LP=tDOT, custody $369,259 fundamental) is bricked because the Homa LDOT rate fell 2.87% below the pool's stored rate, so every mint/swap/redeem extrinsic reverts at the collect_yield gate; the triage's $1.41M figure was a DOT-parity mispricing of LDOT (corrected to ~$0.27-0.37M, currently stuck)."
 }
