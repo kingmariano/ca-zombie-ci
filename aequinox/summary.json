@@ -1,0 +1,42 @@
+{
+  "finding": "L2-Aequinox",
+  "title": "Aequinox (BSC) Balancer-V2 fork: $633k live, $0 attacker-extractable, $622k frozen in dead Curve-style gauges",
+  "chains": ["bsc"],
+  "headline_extractable_usd": 0.00,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0.00, "H-O": 10766.15, "P": 0.00, "S": 622103.49},
+  "latest_block": 127091750,
+  "block_numbers": {"bsc": 127091750, "bsc_pinned_state": 127079392},
+  "targets_checked": 55,
+  "live_targets": 55,
+  "closed_reasons": [
+    "Vault is canonical Balancer V2 (no owner/sweep/upgrade); per-pool cash accounting isolation means an attacker-registered pool can never touch other pools' balances (managePoolBalance requires asset-manager role; exits bounded by own cash; BAL#402/502/401 gates verified)",
+    "Swaps and joins are fair-valued (StableMath/WeightedMath); free-capital and flash-loan round trips all unprofitable",
+    "Admin functions authorizer-gated; pools not paused, not in recovery mode",
+    "Gauge withdrawals are broken for everyone (not attacker-extractable), so they cannot be abused"
+  ],
+  "poc": {
+    "tests_passed": 11,
+    "tests_total": 11,
+    "ci_run_urls": ["PENDING"],
+    "notes": "All tests are read-only BSC fork tests (impersonation/deal only). Local run: 11/11 PASS at block 127,091,750."
+  },
+  "key_facts": [
+    "Vault 0xEE1c8DbfBf958484c6a4571F5FB7b99B74A54AA7 holds $632,869.64 (USDT 306,097.108 + USDC 218,875.490 + BUSD 90,089.693 + WBNB/WETH/BTCB/DAI; DefiLlama 2026-10-11)",
+    "96% of value is in one Balancer StablePool 0xb3A07a9c (USDT/USDC/BUSD, A=2000, BPT rate 1.016716)",
+    "10 Curve-style gauge clones (impl 0xdabb6553, v5.0.0, all is_killed) hold $622,103.49 of the pools' BPT; stable gauge holds 596,884.60/596,890.04 BPT = $606,460.95",
+    "Gauge withdraw()/deposit()/claim() all revert: GaugeController 0x585ECE79.checkpoint_gauge reverts for every gauge (controller time_total frozen 2023-08-24; stable gauge period timestamp 2022-10-26; no deposit/withdraw events since block 22,516,874 / Oct 2022)",
+    "Gauge freeze is monotonic and unfixable by public/admin functions (no rewrite of the stale weekly weight state; add_gauge cannot re-add; voting escrow totalSupply = 0)",
+    "registerPool is permissionless but isolated: attacker pool fabricates managed balance (UPDATE ok) yet WITHDRAW/exit/swap revert on cash underflow; reentrancy blocked (nonReentrant)",
+    "Non-gauge BPT holders can exit: stable pool proportional (kind 1) works via Vault; weighted pools' proportional (kind 2) reverts but one-token (kind 0) works",
+    "Protocol swap fee = 50%, flash-loan fee = 1% (ProtocolFeesCollector 0x2b1698d2); flash round trips revert on repayment",
+    "No asset-manager withdrawals: all 148 pool-token pairs have managed=0 (cash-only accounting)"
+  ],
+  "caveats": [
+    "Deployed pool/vault sources are unverified on BscScan; behaviour proven on-fork against canonical Balancer V2 references, exact fork-internal revert lines not source-verified",
+    "USD uses DefiLlama spot prices 2026-10-11; stablecoins valued at ~0.999",
+    "Fork state is latest; vault/pool balances drift with swaps (stable pool lastChangeBlock 121,837,879)",
+    "5 LinearPools (never used, 2^112-1 pre-mint) and 11 zero-supply pools hold dust only; 12 small un-gauged weighted pools (~$804) are H-O"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 from Aequinox live (Balancer V2 Vault, $632,870 present): swaps/joins fair, registration isolated, admin gated; the real story is $622,103 of BPT permanently stuck in Curve-style gauges whose GaugeController checkpoint has been reverting since 2022/2023, with $10,766 recoverable by non-gauge BPT holders."
+}
