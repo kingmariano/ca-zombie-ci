@@ -1,0 +1,71 @@
+{
+ "finding": "L2-Triage-A/timeswap-v2",
+ "title": "Timeswap V2 fixed-maturity AMM \u2014 fully matured zombie; $0 external-unprivileged extractable, $328.6k holder-only claims",
+ "chains": [
+  "arbitrum",
+  "ethereum",
+  "base",
+  "hyperliquid",
+  "optimism",
+  "polygon",
+  "mantle",
+  "polygon-zkevm",
+  "xlayer"
+ ],
+ "headline_extractable_usd": 0,
+ "headline_confidence": "high",
+ "categories": {
+  "E-U": 0,
+  "H-O": 358061.14,
+  "P": 2624.03,
+  "S": 9.53
+ },
+ "latest_block": 513981428,
+ "block_numbers": {
+  "arbitrum": 513981428,
+  "ethereum": 26173179,
+  "base": 52490083,
+  "hyperliquid": 48304759,
+  "optimism": 158085375,
+  "mantle": 101819610,
+  "polygon-zkevm": 33391890,
+  "xlayer": 73000532,
+  "polygon": 95379468
+ },
+ "targets_checked": 626,
+ "live_targets": 136,
+ "closed_reasons": [
+  "All 564 (strike,maturity) pools across 8 enumerated chains are matured (no pre-maturity surface remains): mint/burn/swap/lend/borrow/deleverage/leverage/rebalance all revert alreadyMatured",
+  "Post-maturity the only redemption is TimeswapV2Option.collect, strictly msg.sender-keyed on the caller's short position; an outsider with no shorts reverts (checked underflow) and no tokens leave the option",
+  "TimeswapV2Pool.collectTransactionFeesAndShortReturned pays only the caller's own liquidity-position claims to caller-chosen recipients (outsider gets 0); TimeswapV2LiquidityToken.collect requires from==msg.sender or approval",
+  "TimeswapV2Pool.collectProtocolFees is gated by ITimeswapV2PoolFactory(poolFactory).owner().checkIfOwner() \u2014 reverts NotTheOwner for anyone else (verified on fork; owner can collect)",
+  "Pool re-initialization after drain is impossible post-maturity (initialize reverts alreadyMatured; alreadyHaveLiquidity for funded pools)",
+  "Deployed code (v2.0/v2.4/v2.5 pools, options, factories, tokens, NoDex + UniswapV3 peripheries) is byte-identical to the audited public repo (Sourcify exact-match + source diff); no backdoors, no proxies/upgradeability",
+  "Periphery native/WETH sweeps (refundNatives/unwrapWrappedNatives) are permissionless but all checked peripheries hold $0; UniswapV3 swap callback is verified against the canonical Uniswap pool and pays from the outer caller"
+ ],
+ "poc": {
+  "tests_passed": 19,
+  "tests_total": 19,
+  "ci_run_urls": [
+   "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38197913354",
+   "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38198133864"
+  ]
+ },
+ "key_facts": [
+  "Live value measured on-chain 2026-10-12: $360,694.70 across 9 chains (Arbitrum $72,377.83 @block 513981428; Hyperliquid $112,996.07 @48304759; Base $62,563.62 @52490083; Ethereum $51,665.59 @26173179; Polygon $32,092.19 @95379468; Optimism $25,439.90 @158085375; Mantle $3,527.64 @101819610; zkEVM $31.83 @33391890; X Layer $0.03 @73000532); DefiLlama live $333,666 (difference is Hyperliquid token coverage/prices); inEVM dead RPC, DL $0",
+  "203 option pairs / 626 (strike,maturity) pools enumerated via factory getByIndex walks (option factories v2.0-v2.5: 0xcf0aca5c, 0x406d3Dfc, 0xf8F5e4B7, 0xcAB2E5Ba, 0x17385e95; pool factories 0x8E3fcda0, 0x97660755, 0x9660c75A, 0x47ffFCc1, 0x1EE933d5, 0x97509c65, 0x979eC553, 0xD5c23BFd)",
+  "626/626 pools matured \u2014 the protocol is fully dormant; only collect/collectTransactionFees/collectProtocolFees/ERC1155 transfer remain callable",
+  "Value is held as short positions: e.g. Ethereum apxETH/WETH $51.3k \u2014 99.99% of shorts wrapped as user ERC1155 in TimeswapV2Token 0x4aA2Bc42; Arbitrum FIN/USDC $14.6k \u2014 LP aggregate shorts 49.4e9 in TimeswapV2LiquidityToken 0xF2A0624D",
+  "P: factory-owner protocol fees are real only in short units \u2248 $2,624 (Hyperliquid $2,215; Arbitrum $336; OP $28; Polygon $26.6; Base $15.6; ETH $1.8); long-denominated fee counters (~$50k+ nominal) are unwithdrawable post-maturity (fork-proven: option.burn reverts alreadyMatured)",
+  "S \u2248 $9.53: pairs whose shorts were all collected (Hyperliquid) + rounding dust",
+  "Deployed-reality: 15 contracts Sourcify-verified (exact_match/match); Timeswap source diff vs repo @ main: v2.5 files identical, v2.0 option identical (v2.0 token URI-only delta, older pool/LP-token design reviewed); v2.0 Option includes the PeckShield PVE-001 fix (swap balance check)",
+  "PoC: 19/19 fork tests PASS on CI (Arbitrum + Ethereum forks); key negative results: outsider collect reverts, protocol-fee collect reverts NotTheOwner, all pre-maturity paths revert, initialize reverts, LP claim is caller-keyed, peripheries hold $0; key positive control: real LP-aggregate short holder collects successfully (value live, H-O)"
+ ],
+ "caveats": [
+  "inEVM not enumerable (dead RPC; DefiLlama $0); all other 9 chains measured directly",
+  "USD figures use DefiLlama address prices at query time; Hyperliquid measured higher than DL ($113k vs $82.9k) and Mantle lower ($3.5k vs $6.9k) due to token coverage/price timing",
+  "P/S split attributes pair value pro-rata by short-fee share; order of magnitude robust, exact split carries pricing variance",
+  "No mainnet transactions were sent; all PoC state changes are on local/CI forks"
+ ],
+ "one_liner": "External unprivileged attacker can extract $0 live from Timeswap V2: all 626 pools on all 9 chains are matured, the only post-maturity redemption (Option.collect) is msg.sender-keyed on short positions, admin paths are owner-gated, and deployed code matches the audited public repo \u2014 the $360.7k on-chain is holder-only claims (H-O ~$358.1k), owner-only protocol fees (P ~$2.6k) and stuck dust (S ~$9.5)."
+}
