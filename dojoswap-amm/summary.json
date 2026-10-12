@@ -1,0 +1,47 @@
+{
+  "finding": "L2-P2-dojoswap-amm",
+  "title": "Dojoswap AMM (Injective) — L2 Phase-2 deep dive",
+  "chains": ["injective"],
+  "headline_extractable_usd": 9.26,
+  "headline_confidence": "medium",
+  "categories": {"E-U": 9.26, "H-O": 248297.92, "P": 321276.59, "S": 78276.41},
+  "latest_block": 186892462,
+  "block_numbers": {"injective": 186892462},
+  "targets_checked": 986,
+  "live_targets": 986,
+  "closed_reasons": [
+    "pair code 290 = terraswap-style dojoswap-pair 0.2.0; exact-funds native checks, CW20 sender allow-list, no admin execute path; deployed interface matches published source",
+    "pair admin = factory contract; factory MigratePair/update_config/add_native_token_decimals are owner-only (owner = EOA inj12qy3algm6e0zdpv8zxvauzquumuvd39ccdcdjt) => drain is privileged (P), not E-U",
+    "no zero-supply/zero-side pool holds value (94 zero-side pools hold 2 wei INJ dust; 94 zero-supply pools have <=2 wei reserves)",
+    "large pools are continuously arbed by live bots via aggregators; pool prices sit inside the orderbook spread (NONJA/DOJO/SHROOM/COKE verified)",
+    "locker (code 1178) 'anyone can unstake expired locks' is a published-source artifact only; executing the DEPLOYED wasm shows non-owner unstake reverts 'Invalid Owner' and the lock owner unstake succeeds",
+    "LP in pools with >=95% burned LP is unredeemable (immutable burn-address contract) - stuck, not extractable",
+    "PampIt market KOGA round-trip: 1 INJ -> 9187.5 KOGA -> 0.9788 INJ (~2% loss); merkle airdrops owner-gated withdraw; Dojoswap staking sender-gated",
+    "USDT/USDC pool (old pair code 307) is 9% imbalanced => ~$9.26 net residual arb (optimal 217.75 USDT in; simulation-verified) is the only live unprivileged extraction found"
+  ],
+  "poc": {
+    "tests_passed": 3,
+    "tests_total": 3,
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/38184454300"]
+  },
+  "key_facts": [
+    "triage value $491,454.09 is inflated: WBTC on Injective has 8 decimals; on-chain total is 0.0212 WBTC (~$1.76K), not 2.12 WBTC. Corrected priced custody = $321,276.59 (INJ $246,004; USDT $53,699; WETH $11,862; USDC $5,619; WBTC $1,763; other $2,330)",
+    "982 factory pairs enumerated + 2 old-code-307 pairs + 2 orphan code-290 pairs; all pool states read (0 errors) at heights 186,884,341-186,884,655",
+    "factory inj1pc2vxcmnyzawnwkf03n2ggvt997avtuwagqngk (code 1063) deployed code has 3 execute variants not in the published source: set_whitelist, admin_withdraw_denom, admin_withdraw_token (official InjectiveLabs registry confirms); factory holds only dust (~$0)",
+    "old pair code 307 (2 pairs) has extra admin_configure gated by hardcoded FEE_COLLECTOR EOA inj18xg2xfhv36v4z7dr3ldqnm43fzukqgsafyyg63; it can rewrite asset_infos (privileged)",
+    "Kira locker inj1kmu3lhsxz0h49kq342frpnpq6qmpz7pv65zwlq (code 1178, admin empty) holds 99.0% of POOR/INJ pair LP (174,717,569,558,057,606 of 176,482,597,834,073,977) via 11 expired locks; deployed wasm sha256 489efa1fc9cb0bdffb1a7a387beab7a3112cd7a01a12a894b99f636cc4f7df6",
+    "deployed locker wasm executed in cosmwasm-vm: non-owner unstake on expired lock -> 'Invalid Owner'; lock owner unstake -> success with CW20 Transfer to owner. Published Marinovs source has no such check (historical only)",
+    "deployed factory wasm (code 1063) executed in cosmwasm-vm: migrate_pair/admin_withdraw_denom/set_whitelist from a non-owner all revert 'unauthorized'; owner migrate_pair emits WasmMsg::Migrate => factory-owner drain is P, not E-U",
+    "live arb bots route Dojoswap pools (INJ/USDT pool 1321 txs, last 2026-10-11 21:34 via Choice Exchange aggregator inj18hllkv88dp3jnpjamgslp5ez6u8az3q4s0lkxf)",
+    "fee collector EOA inj18xg2xfhv36v4z7dr3ldqnm43fzukqgsafyyg63 holds $1,837.20 (147.32 INJ + 586.78 USDT + ...)",
+    "LP custody split: $243,000.18 live LP (holders can withdraw), $78,276.41 with >=95% LP in immutable burn-address contract inj1wu0cs0zl38pfss54df6t7hq82k3lgmcdex2uwn (unredeemable)"
+  ],
+  "caveats": [
+    "The headline E-U ($9.26) is a residual stablecoin arbitrage, not a contract exploit; it is bounded by the small pool size and may be taken by any bot at any time",
+    "The published dojoswap factory source does not cover the deployed factory's extra execute variants (dust-only impact); factory was not source-verified via reproducible build",
+    "Injective LCD denom metadata is unreliable for peggy tokens (reported 6 decimals for WBTC/inj); all decimals used were cross-checked via pool balance symmetry and DefiLlama",
+    "The H-O/P/S numbers overlap by construction (same custody viewed through different paths); P counts all pair reserves because the factory owner can migrate every pair",
+    "No transactions were signed or sent; the locker behavioral test ran the deployed wasm locally in cosmwasm-vm; the cw-multitest PoC exercises the published source only"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$9.26 live from Dojoswap (one stale 9% USDT/USDC pool imbalance); everything else is closed by clean terraswap-style pair math + owner-gated factory (P: $321K via factory-owner migration), holder-only recovery (H-O: $248K), or unredeemable burned LP (S: $78K); the $491K triage figure is inflated by a WBTC decimals error (corrected to $321,276.59)."
+}
