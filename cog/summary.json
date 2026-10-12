@@ -1,0 +1,53 @@
+{
+  "finding": "L2-Cog (Triage-B row 10, watchlist Phase-2)",
+  "title": "Cog (Scroll) isolated lending — stale-oracle borrow-and-default on two unpaused factory-1 pairs; $142k WETH gated behind pause",
+  "chains": ["scroll"],
+  "headline_extractable_usd": 21.56,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 21.56,
+    "H-O": 195283.67,
+    "P": 0,
+    "S": 36071.02
+  },
+  "latest_block": 35350732,
+  "block_numbers": {"scroll": 35350732},
+  "targets_checked": 109,
+  "live_targets": 109,
+  "closed_reasons": [
+    "0xA5832adC (56.12 WETH / $142,080) and 12 other value pairs are paused: deposit/mint/borrow revert \"Pair Paused\"; unpause is factory-owner/priv_users only",
+    "0xAA230793, 0x8B606e4a, 0x43187a60, 0xBAF9cc20, 0x8999a01f oracle.get() reverts \"Stale Price Feed\" -> borrow/liquidate revert on rate refresh",
+    "0x63FdAFA5 (factory-2) uses deployed COLLATERIZATION_RATE=85% (Sourcify-verified) so its dust positions are solvent (negative fork-proven)",
+    "broken-scale pairs (rate 1e21-1e23) have ~zero borrow capacity",
+    "no share-inflation/donation vector: direct token transfers do not enter total_asset.elastic; 1000-share floor rejects tiny first deposits without taking funds",
+    "roll_over_pol() mints accrued fees only to factory fee_to"
+  ],
+  "poc": {
+    "tests_passed": 8,
+    "tests_total": 8,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38295962803",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38292594537"
+    ]
+  },
+  "key_facts": [
+    "E-U $17.10: pair 0x0C502351461904cd9430EeFdc7b9df1c30E74032 (f1, WETH/CRV, unpaused): oracle rate 1.500348e21 = CRV @ $1.687 vs market $0.3604 (g=0.2136) -> deposit 18.9027 CRV ($6.81) and borrow the pair's entire 0.009444444444444444 WETH ($23.91). Fork-proven.",
+    "E-U $4.46: pair 0xDeFeBD03E8E339737f24B67737E9d002CB03f00b (f1, rETH/USDC, unpaused): oracle rate 3.2629e8 = rETH @ $326.29 vs market $2,964.61 (g=0.110) -> deposit 0.768135 USDC and borrow 0.001764705882352950 rETH ($5.23). Fork-proven.",
+    "Dust liquidations on paused 0xA5832adC: 12 positions, gross $0.132 total (max $0.0286) - below gas, excluded from headline.",
+    "Deployed code differs from public repo CogFinance/Cog-Isolated-Lending@4402cd5: factory-2 pairs use 85% LTV (Sourcify-verified); factory-1 pairs probed empirically on fork = 75% LTV (0.99x need80/85 revert, 1.02x need75 succeeds).",
+    "Census: 109 pairs (13 paused holding $189,241.61 of asset tokens, 96 unpaused holding $168.91); collateral $5,969.36; debt(elastic) $38,167.32; LP claims $225,385.97 nominal.",
+    "H-O: $189,410.52 LP-redeemable across pairs (first-come-first-served; 8,865 LP addresses in the big WETH pair alone, top holder 0xeeDa897D... with 87.05% of the 56.2839e18 shares) + $5,873.15 collateral removable by solvent/no-debt owners.",
+    "S: $35,974.82 LP claims unbacked by on-chain assets (bad debt: 0x20b3a538 -$23,770; 0xd3b2affe -$9,387; 0x63FdAFA5 -$1,146) + $96.20 collateral locked behind insolvency + all borrow/liquidate paths on the 5 oracle-dead pairs.",
+    "P: both factories owned by 0x54a4c29196aad6fa77f9b4e35288e5234ac4f31a (also fee_to); priv_users can pause/unpause; owner can update borrow fee (<=50%) and protocol fee (<=100%).",
+    "No upgrades: pairs are EIP-5202 blueprints with immutable asset/collateral/oracle; factory has no fund-moving powers over pairs.",
+    "Read-only verification: state_scan.py (109 pairs), positions_scan3.py (Multicall3, 3,642 live positions across 14,511 addresses), oracle_decode.py (98 oracles), econ_analysis2.py (deployed semantics + oracle-liveness gate)."
+  ],
+  "caveats": [
+    "USD uses DefiLlama prices 2026-10-12; CRV priced at Ethereum parity ($0.3604) because Scroll CRV has no listed DEX market - if acquired dearer, path-1 profit shrinks 1:1 (breakeven ~$1.264).",
+    "Stale oracles are the root cause: any feed update/resume closes the two E-U paths (and could change g on other alive pairs) - re-run analysis/recompute script to refresh.",
+    "The two E-U pairs' stored debt after the attack becomes bad debt; attacker's own deposited collateral stays locked (already netted out).",
+    "Fork tests pin live Scroll state via public RPC; values move between blocks (blocks cited).",
+    "factory-1 LTV was probed empirically (no verified source); result consistent across both attack pairs."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$21.56 live from Cog on Scroll (deposit stale-priced CRV/USDC collateral into two unpaused factory-1 pairs and borrow their entire WETH/rETH balances, never repaying); the $142k WETH pair and the rest of the $189k asset base are gated behind the deployment-wide pause (privileged), oracle-dead pairs, or holder-only LP withdrawals."
+}
