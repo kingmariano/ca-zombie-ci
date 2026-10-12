@@ -1,0 +1,1747 @@
+{
+ "block": 127201628,
+ "block_note": "All balances read at ~block 127201628 (2026-10-12). Scans: factory PairCreated 800k-20M (94 pairs, complete); LP Transfer logs 1.30M-20M (complete, 41,990 events); NAR filtered team-address flows 1.27M-0x98e49f (partial at reporting time, 55812 events; continued checkpoints in nar_from_ckpt.json). Post-8.9M range covers only late claims (no new contract families expected).",
+ "team": {
+  "feeToSetter_teamEOA": {
+   "address": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "bnb": "0.7774474727630566",
+   "NAR": "563.445698367",
+   "WBNB": "0.001380023",
+   "CATO": "39.9985224337",
+   "role": "deployer (BscScan label 'Narwhalswap: Deployer'), feeToSetter, governance of all Narwhal contracts, one of 3 NAR minters"
+  },
+  "teamWallet_507b": {
+   "address": "0x507bdd06aca5facd19aa4b77037d3b9d48be2fb9",
+   "bnb": "0.0867037424",
+   "NAR": "87117.031250697",
+   "role": "teamWallet in farms"
+  },
+  "nar_rewardPool": {
+   "address": "0xa02f5f32426f76b4f7a9ee87cd6b212e4ec08960",
+   "bnb": "1.4657232575783",
+   "NAR": "2530.351564646",
+   "role": "NAR._rewardPool + V3 farm teamWallet"
+  },
+  "nar_teamWallet_var": {
+   "address": "0x00470220dd82d5429379c8d9f679774b0e6e651d",
+   "balances": "0 (checked tokens)",
+   "role": "NAR._teamWallet"
+  },
+  "factory_deployer_c76827": {
+   "address": "0xc76827cce55338cbd6b399f45a75df0cd5da2749",
+   "bnb": "0",
+   "dust": "1571 wei NAR + 0.0053 LP_WBNBBUSD"
+  },
+  "dev1_grandbanks_18527a": {
+   "address": "0x18527a351db2435fa21db88cbb87d4155188b62b0",
+   "bnb": "0",
+   "role": "deployed Grand/GrandBank V1/Timelock; timelock proposer/executor"
+  },
+  "dev2_grandbanks_ab3921": {
+   "address": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+   "bnb": "0.2770573757",
+   "BUSD": "77.363905251",
+   "CATO": "1965.705098659",
+   "role": "owner of TheGrandBanks V2 + CatoToken"
+  },
+  "dev3_narwhalswap_512d86": {
+   "address": "0x512d86161ade81a3e01b6b2de8a994778f75f8cb",
+   "bnb": "0",
+   "role": "deployer/owner of NarwhalSwap aggregator; strategy gov"
+  },
+  "dev4_6abfae83": {
+   "address": "0x6abfae833ca1a4e9a9d482dfeebcc5ecec635e90",
+   "bnb": "0.000077597359872",
+   "role": "strategy gov"
+  }
+ },
+ "thugs_project_wallets": {
+  "deployer": "0x54af6dd5b2fe9d9e50ef56ebb7697b1ff05fd70c (0.302967928 BNB)",
+  "initialDistribution": "0x3009c9c09a467aaea1c8d8cd6ebd18bfb4339b9b",
+  "burnReserves": "0xfd98d6dedc7ed8556ba61dc7902799c9815a5722",
+  "team": "0x6e65f24a9c7230c3bfbe90f39924ac8384f6152f (0.00818813442 BNB, 17.923796276 THUGS)",
+  "dev": "0x4e43397417c6938f60b108650d832390dbd4c4fd",
+  "marketing": "0x481f0079bb59d8feb2426b6e08a2af01d7b49500 (0.000798 BNB)",
+  "tokenTimelock": "0x586acb4be6cc93aa5c399888b255c7e864ea508e (0.0023138045717401 THUGS left)"
+ },
+ "factory_stats": {
+  "pairs": 96,
+  "first_pair_block": 847884,
+  "last_pair_block": ">20M (2 pairs created after block 20M; all pairs to 14.68M are 2020-2022 era)"
+ },
+ "pairs_scanned": "paircreated.json (94 pairs <= 20M)",
+ "contracts": [
+  {
+   "name": "NarwhalswapFactory",
+   "address": "0xb9fa84912ff2383a617d8b433e926adf0dd3fea1",
+   "type": "factory core",
+   "code_size": null,
+   "verified_source": "NarwhalswapFactory.sol",
+   "deployer": "0xc76827CcE55338Cbd6B399f45a75dF0CD5Da2749",
+   "deploy_block": 847345,
+   "holds_value": {
+    "pairs": 96
+   },
+   "risky_functions": [
+    "setFeeTo(address) onlyGovernance(feeToSetter=0xb104 EOA)",
+    "setFeeToSetter(address)"
+   ],
+   "verdict": "Live factory, 96 pairs. feeTo=Collecter. feeToSetter is the team EOA (single-key). Owner-controlled fee switch; no user funds custodied."
+  },
+  {
+   "name": "NarwhalswapRouter",
+   "address": "0xe85c6ab56a3422e7bafd71e81eb7d0f290646078",
+   "type": "router core",
+   "code_size": 17780,
+   "verified_source": "NarwhalswapRouter.sol",
+   "deployer": "0xc76827CcE55338Cbd6B399f45a75dF0CD5Da2749",
+   "deploy_block": 847446,
+   "holds_value": {},
+   "risky_functions": [
+    "stateless UniswapV2-router fork (no owner funds)"
+   ],
+   "verdict": "Stateless router (factory()=Narwhal factory). Holds no funds; swap path is permissionless by design."
+  },
+  {
+   "name": "NarToken (NAR)",
+   "address": "0xa1303e6199b319a891b79685f0537d289af1fc83",
+   "type": "token",
+   "code_size": 12406,
+   "verified_source": "NarToken.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1270934,
+   "holds_value": {
+    "totalSupply": "13862957.889563149 NAR (~66% of 21M cap)",
+    "burned": "6852210.066 NAR",
+    "teamEoaBal": "563.445698367 NAR",
+    "teamWallet507bBal": "87117.031250697 NAR"
+   },
+   "risky_functions": [
+    "mint(address,uint256) by minters (2 V2 farms + team EOA)",
+    "addMinter(address)/removeMinter(address) onlyGovernance",
+    "setGovernance(address)/setRewardPool(address)/setTeamWallet(address)/setRate(uint256,uint256) onlyGovernance",
+    "transfer() takes 2.5% burn + 2.5% rewardPool"
+   ],
+   "verdict": "Team EOA is governance AND a minter: can mint remaining ~7.1M NAR (up to 21M cap) and change burn/reward rate. Minter set currently = farm1, farm2, team EOA."
+  },
+  {
+   "name": "NarwhalCollecter (feeTo)",
+   "address": "0x7f8a46ec48442d9ebf28fbc1144a83f8bc53f7e9",
+   "type": "fee collector (factory feeTo)",
+   "code_size": 9116,
+   "verified_source": "NarwhalCollecter.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 2807852,
+   "holds_value": {
+    "WBNB": "0.055228638",
+    "LP_NAR_WBNB": "0.0014013048",
+    "LP_WBNB_THUGS": "0.0001144504",
+    "LP_WBNB_BUSD": "0.0000088806"
+   },
+   "risky_functions": [
+    "convert(address,address) PUBLIC/permissionless - burns collector-held fee-LP, converts to WBNB, builds NAR/WBNB LP that is locked in the collector forever (no payout to caller)",
+    "setThreshold(uint256) onlyOwner",
+    "transferOwnership(address) onlyOwner (owner=0xb104 EOA)"
+   ],
+   "verdict": "Permissionless convert() only moves the collector's own fee dust; cannot be abused to pay out to caller. New LP stays in collector (locked). Low value today."
+  },
+  {
+   "name": "NarwhalPower (V2-era)",
+   "address": "0x1d791eaa684a21de92618dedea7bf373e2486956",
+   "type": "game/power accounting",
+   "code_size": 9064,
+   "verified_source": "NarwhalPower.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1479573,
+   "holds_value": {},
+   "risky_functions": [
+    "lpIn(address,uint256)/lpOut(address,uint256) callable only by set caller (farm1)",
+    "setCaller(address)/setGovernance(address) onlyGovernance (0xb104)"
+   ],
+   "verdict": "Accounting-only (segments/power). Holds no tokens. Caller = farm 0x1D22."
+  },
+  {
+   "name": "NarwhalPower (V1-era, farm2 caller)",
+   "address": "0xa1992a9777c3c11c466f44a4b9c7530719a22ea2",
+   "type": "game/power accounting",
+   "code_size": 9064,
+   "verified_source": "NarwhalPower.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1479632,
+   "holds_value": {},
+   "risky_functions": [
+    "same as above (caller = farm 0x6dA9)"
+   ],
+   "verdict": "Second Power instance; no value."
+  },
+  {
+   "name": "NarwhalReward (V1) - NAR/WBNB LP",
+   "address": "0x186be2a9f0e9c92b880bbd3ec1f35f422f0d8835",
+   "type": "farm v1",
+   "code_size": 17616,
+   "verified_source": "NarwhalReward.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1394048,
+   "holds_value": {
+    "LP_NAR_WBNB": "297.156674 (of 25004.55 supply)",
+    "receiptTotalSupply": "296.155674"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout"
+   ],
+   "verdict": "LIVE VALUE ~297 NAR/WBNB LP. Oldest farm; users can withdraw; team can seize non-LP tokens only."
+  },
+  {
+   "name": "NarwhalReward (V1) - WBNB/BUSD LP",
+   "address": "0xbb38f7551025a433f36590be85271110212655de",
+   "type": "farm v1",
+   "code_size": 17616,
+   "verified_source": "NarwhalReward.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1394263,
+   "holds_value": {
+    "LP_WBNB_BUSD": "231.532210 (of 285.47 supply = 81%)",
+    "receiptTotalSupply": "231.532210"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout"
+   ],
+   "verdict": "LIVE VALUE ~231.5 WBNB/BUSD LP (~81% of that pool). V1 farm still custodies users' LP."
+  },
+  {
+   "name": "NarwhalRewardV2 - NAR/WBNB LP + reward minter",
+   "address": "0x1d227f7e283d653a60f94d2350cab7a49bb85c6f",
+   "type": "farm v2",
+   "code_size": 24401,
+   "verified_source": "NarwhalRewardV2.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1477899,
+   "holds_value": {
+    "LP_NAR_WBNB": "2243.792235",
+    "NAR": "204706.947405969 NAR",
+    "receipt(rNLP 0x6451...).totalSupply": "439651.9397908202"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout",
+    "NAR minter - mints NAR rewards"
+   ],
+   "verdict": "LIVE VALUE. Stakes NAR/WBNB LP + holds 204.7k NAR. Team governance can seize non-LP tokens and rewrite rate params."
+  },
+  {
+   "name": "NarwhalRewardV2 - WBNB/BUSD LP + reward minter",
+   "address": "0x6da9ee0c0571b63e38950d1e12e835d5343f601b",
+   "type": "farm v2",
+   "code_size": 24401,
+   "verified_source": "NarwhalRewardV2.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1478142,
+   "holds_value": {
+    "LP_WBNB_BUSD": "11.943791",
+    "NAR": "46039.7613084826 NAR",
+    "receipt(rNLP 0x1f7d...).totalSupply": "2807043.5318985"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout",
+    "NAR minter"
+   ],
+   "verdict": "LIVE VALUE (smaller)."
+  },
+  {
+   "name": "rNLP token (farm1 receipt)",
+   "address": "0x6451571cb5bee9fd575ad98506e96f3d09c66f91",
+   "type": "receipt token",
+   "code_size": 7197,
+   "verified_source": "Rnlp.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1477893,
+   "holds_value": {},
+   "risky_functions": [
+    "mint(address,uint256) onlyMinter (farm1)",
+    "setMinter(address) onlyOwner (team EOA)"
+   ],
+   "verdict": "ERC20 receipt token; mint rights with team. No value outside farm."
+  },
+  {
+   "name": "rNLP token (farm2 receipt)",
+   "address": "0x1f7d08d96d2520bd9196cb857e40d2a99e31de1a",
+   "type": "receipt token",
+   "code_size": 7197,
+   "verified_source": "Rnlp.sol",
+   "deployer": null,
+   "deploy_block": null,
+   "holds_value": {},
+   "risky_functions": [
+    "same pattern"
+   ],
+   "verdict": "ERC20 receipt token; team-controlled minter."
+  },
+  {
+   "name": "NarwhalRewardV3 - NAR/WBNB LP",
+   "address": "0xbe85812237741d75f81aebf1d9af52d544542168",
+   "type": "farm v3",
+   "code_size": 24298,
+   "verified_source": "NarwhalRewardV3.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 3484860,
+   "holds_value": {
+    "LP_NAR_WBNB": "1291.976394",
+    "receiptTotalSupply": "1291.976394"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout",
+    "setNft(address,address)/setRune(uint256)/removeRune(uint256) - NarCard integration (currently 0x0/unset, inert)",
+    "NAR minter? no (V3 farms are not in NAR.minter list)"
+   ],
+   "verdict": "LIVE VALUE ~1292 LP. Successor farm for NAR/WBNB after V2; both still custody LP."
+  },
+  {
+   "name": "NarwhalRewardV3 - BTCB/NAR LP",
+   "address": "0x268a2c1acbeee3b74616b9fe3f07c1bf80841e5d",
+   "type": "farm v3",
+   "code_size": 24298,
+   "verified_source": "NarwhalRewardV3.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 3117399,
+   "holds_value": {
+    "LP_BTCB_NAR": "36.834545 (of 44.36 supply)",
+    "NAR": "5176.734966",
+    "receipt(rNLP 0x46d6...).totalSupply": "1827.889"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout",
+    "router()=0xe85c6ab5 (Narwhal router)"
+   ],
+   "verdict": "LIVE VALUE ~83% of the BTCB/NAR pool LP + 5.2k NAR. emergencyStop=false, periodFinish 2023-08-08 (emissions over)."
+  },
+  {
+   "name": "rNLP token (V3 BTCB/NAR receipt)",
+   "address": "0x46d603e2b9c709454316ebd244b99a8abe3bd243",
+   "type": "receipt token",
+   "code_size": 7197,
+   "verified_source": null,
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": null,
+   "holds_value": {},
+   "risky_functions": [
+    "minter()=farm 0x268a",
+    "owner=team EOA"
+   ],
+   "verdict": "Receipt token for V3 BTCB/NAR farm."
+  },
+  {
+   "name": "NarwhalRewardSmallV2 (BTCB/NAR LP, tier 'Small')",
+   "address": "0xc3a471421bb1364d74b8f384cd73fe34d2ce1773",
+   "type": "farm size-tier",
+   "code_size": 21820,
+   "verified_source": "NarwhalRewardSmallV2.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1653158,
+   "holds_value": {
+    "NAR": "1 wei",
+    "LP": "0"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout"
+   ],
+   "verdict": "Empty size-tier farm (rnlp 0x6702ea92). No value."
+  },
+  {
+   "name": "NarwhalRewardSmallV2 #2",
+   "address": "0x3dfb186e8ce513f321232098dd551e22886c1051",
+   "type": "farm size-tier",
+   "code_size": 21285,
+   "verified_source": "NarwhalRewardSmallV2.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1678605,
+   "holds_value": {
+    "NAR": "8113.726204506 NAR",
+    "LP_BTCB_NAR": "0.024067 (of 44.36)",
+    "receipt": "rnlp 0x205d52f8"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout"
+   ],
+   "verdict": "Holds ~8.1k NAR + small BTCB/NAR LP stub."
+  },
+  {
+   "name": "PancakeSwap V1 pair: NAR/WBNB (second market)",
+   "address": "0x4ed7fd4f2ca11a5af9cd4519187d468d2577798b",
+   "type": "pair/LP (PCS)",
+   "code_size": null,
+   "verified_source": null,
+   "deployer": "(PancakeSwap factory)",
+   "deploy_block": null,
+   "holds_value": {
+    "reserves": "1289.6345 NAR + 0.042633 WBNB",
+    "factory": "0xbcfccbde45ce874adcb698cc183debcf17952812 (PancakeSwap V1)"
+   },
+   "risky_functions": [
+    "standard PCS pair"
+   ],
+   "verdict": "NAR also trades on PancakeSwap V2; pair holds part of NAR float. Not a Narwhal contract."
+  },
+  {
+   "name": "NarwhalRewardMediumV2",
+   "address": "0x7f0414886ebf34cce32148ba0cf64dd8ec88a274",
+   "type": "farm size-tier",
+   "code_size": 23463,
+   "verified_source": "NarwhalRewardMediumV2.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1653467,
+   "holds_value": {
+    "LP": "0",
+    "NAR": "0"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout"
+   ],
+   "verdict": "Empty (rnlp 0xd7c7ee65)."
+  },
+  {
+   "name": "NarwhalRewardMediumV2 #2",
+   "address": "0xe6e0646bd4fcd37ec7258d21295dd4cdc347f57a",
+   "type": "farm size-tier",
+   "code_size": 22757,
+   "verified_source": "NarwhalRewardMediumV2.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1678466,
+   "holds_value": {
+    "NAR": "3769.505802 NAR"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout"
+   ],
+   "verdict": "Small NAR balance only (rnlp 0x3321adb0)."
+  },
+  {
+   "name": "NarwhalRewardHugeV2",
+   "address": "0x657ba421cc8b1be5891aa9ac7aa2b936e5d08b65",
+   "type": "farm size-tier",
+   "code_size": 23252,
+   "verified_source": "NarwhalRewardHugeV2.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1653576,
+   "holds_value": {
+    "LP": "0",
+    "NAR": "0"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout"
+   ],
+   "verdict": "Empty (rnlp 0x7825d4c6)."
+  },
+  {
+   "name": "NarwhalRewardHugeV2 #2",
+   "address": "0xaaa6ddb2022541c44e488ea2b3f32c8c8726c107",
+   "type": "farm size-tier",
+   "code_size": 22517,
+   "verified_source": "NarwhalRewardHugeV2.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1678199,
+   "holds_value": {
+    "NAR": "73665.161429398"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout"
+   ],
+   "verdict": "Holds ~73.7k NAR (~$1.8k). (rnlp 0x162ece88)."
+  },
+  {
+   "name": "NarwhalRewardDividendV2 (NAR staking/dividends)",
+   "address": "0xb85a8c269cfc6ec4bd44e7dbd312b233a38eea0d",
+   "type": "dividend/staking",
+   "code_size": 23885,
+   "verified_source": "NarwhalRewardDividendV2.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1795601,
+   "holds_value": {
+    "shareSupply": "2105700.210319169",
+    "NAR": "0"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout"
+   ],
+   "verdict": "xNAR-style NAR staking/dividend contract. Share supply ~2.1M; currently holds no NAR."
+  },
+  {
+   "name": "NarwhalRewardDividendV3",
+   "address": "0xc8e70639ad7d91d4d4bcf5d5ab8e2264abb7b25e",
+   "type": "dividend/staking",
+   "code_size": 23346,
+   "verified_source": "NarwhalRewardDividendV3.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 1822358,
+   "holds_value": {
+    "shareSupply": "2865188.899075",
+    "NAR": "0"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout"
+   ],
+   "verdict": "xNAR-style staking contract."
+  },
+  {
+   "name": "NarwhalRewardDividendV3 #2",
+   "address": "0xf7a36c87c3a8909949638120f23cd721bf572032",
+   "type": "dividend/staking",
+   "code_size": 23244,
+   "verified_source": "NarwhalRewardDividendV3.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 2081662,
+   "holds_value": {
+    "shareSupply": "987740.708364",
+    "NAR": "1333817.135951 NAR"
+   },
+   "risky_functions": [
+    "withdraw(uint256)/exit(uint256)/getReward()/emergencyWithdraw() - caller only receives own stake/rewards (per-msg.sender accounting)",
+    "stake(uint256) - user deposit",
+    "seize(address,uint256) onlyGovernance - governance (team EOA 0xb104) can sweep ANY token except lpToken",
+    "setGovernance(address)/setEmergencyStop(bool[,uint256])/setTeamRewardRate/setGrowthBuffRate/setInitBuffrate/setPowerStragegy onlyGovernance",
+    "buffRateReporter(address) PUBLIC - changes target's buff-rate accounting, no token payout",
+    "setUser(address,uint256,uint256,uint256,uint256,uint256,uint256) onlyGovernance - can rewrite any user's accounting",
+    "setDividendPool(address)/setFee(uint256,uint256)/setCaller(address)/setInitValue onlyGovernance",
+    "setStake(uint256,address)"
+   ],
+   "verdict": "LIVE VALUE: holds ~1.33M NAR (largest NAR pile found in a contract). Governance (team EOA) can rewrite user records; user withdrawals are per-account."
+  },
+  {
+   "name": "SmartChef (external NAR farm)",
+   "address": "0x2368bab38a79827f49fc768bf1b6d04226704d35",
+   "type": "third-party staking",
+   "code_size": 5953,
+   "verified_source": "SmartChef.sol",
+   "deployer": "0x0F9399FC81DaC77908A2Dde54Bb87Ee2D17a3373 (EOA, external)",
+   "deploy_block": 1871744,
+   "holds_value": {
+    "NAR": "634.063906568"
+   },
+   "risky_functions": [
+    "migrate(uint256) - currently migrator=0x0; owner can setMigrator(address) and then that migrator can pull staked LP",
+    "setMigrator(address)/transferOwnership(address) onlyOwner (external EOA 0x0F9399FC...)"
+   ],
+   "verdict": "Pancake-style SmartChef, NOT deployed by Narwhal team; owner is external EOA. If it still has stakers, owner+migrator can pull stake via migrate()."
+  },
+  {
+   "name": "NarCardToken (ERC721)",
+   "address": "0x828b5adbe8e0a06aaf5d5a5fd16e6b15a393d86e",
+   "type": "NFT",
+   "code_size": 16838,
+   "verified_source": "NarCardToken.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 2078922,
+   "holds_value": {
+    "totalSupply": 9218,
+    "team is minter": true
+   },
+   "risky_functions": [
+    "mint(address,uint256)/safeMint - minters only; team EOA is a minter",
+    "addMinter/removeMinter/setGovernance onlyGovernance(team EOA)",
+    "burn(uint256) - burns caller's own token"
+   ],
+   "verdict": "NarCard game NFT (9,218 minted). Team holds minter+governance keys. Farm integration (_narcardToken) is NOT set on any farm -> game boost path dead."
+  },
+  {
+   "name": "NarNft (ERC721)",
+   "address": "0xce7a099a7c5c062a4f66a6bbdec191a222baa3f2",
+   "type": "NFT",
+   "code_size": 9532,
+   "verified_source": "NarNft.sol",
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": 12591942,
+   "holds_value": {
+    "totalSupply": 49,
+    "teamEOABal": 12
+   },
+   "risky_functions": [
+    "mint(uint256,address,string) - minters only",
+    "addMinter/removeMinter onlyOwner (team EOA)"
+   ],
+   "verdict": "Narwhalswap NFT collection (49 units, team holds 12). No value accrual path; team controls minting."
+  },
+  {
+   "name": "NarCard dispenser/factory (unverified)",
+   "address": "0xe207ea201a1ac5907e333c68e2ecd96fdb9389e1",
+   "type": "game/NFT dispenser",
+   "code_size": 4422,
+   "verified_source": null,
+   "deployer": "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+   "deploy_block": null,
+   "holds_value": {
+    "BNB": "0",
+    "funded_lifetime": "14.5 BNB"
+   },
+   "risky_functions": [
+    "randomCards(uint256) - card dispensing entry (mint path)",
+    "seizeBnb() - owner rescue of BNB",
+    "mint(uint256,address,string)",
+    "setPrice(uint256)/setURI-ish admin setters",
+    "pause()/unpause() owner"
+   ],
+   "verdict": "Card dispenser linked to NarNft (nftToken()=0xce7a099a). Funded with 14.5 BNB lifetime; now holds 0. Owner=team EOA. No current value."
+  },
+  {
+   "name": "NarwhalSwap (meta-aggregator/swapper)",
+   "address": "0x849b7b4541cde9cbe41cfd064d9d7ff459b9cea4",
+   "type": "aggregator",
+   "code_size": 14393,
+   "verified_source": "NarwhalSwap.sol",
+   "deployer": "0x512D86161AdE81A3e01B6b2dE8a994778F75f8cB (dev3)",
+   "deploy_block": 8226086,
+   "holds_value": {
+    "BNB": "23 wei",
+    "NAR": "95 wei",
+    "USDT": "0.081 USDT",
+    "WBNB": "3 wei",
+    "BUSD": "77 wei"
+   },
+   "risky_functions": [
+    "collectRemainingEther(uint256)/collectRemainingToken(address,uint256) onlyOwner - sweep dust to owner",
+    "trade(uint256,address,uint256,address,uint256,uint256)/splitTrades(...) payable public - swap entry, funds flow to msg.sender",
+    "updateNarToken(address)/updatePartner(...)/addTradingRoute(...) onlyOwner"
+   ],
+   "verdict": "Team-built swap aggregator used by the deployer EOA (110 interactions). Currently holds only dust; owner (dev3 EOA 0x512d8616) can sweep."
+  },
+  {
+   "name": "THUGS token (ThugsToken)",
+   "address": "0xe10e9822a5de22f8761919310dda35cd997d63c0",
+   "type": "partner token",
+   "code_size": 15071,
+   "verified_source": "ThugsToken.sol",
+   "deployer": "0x54af6dd5b2fe9D9E50Ef56EBB7697B1ff05fd70c (external)",
+   "deploy_block": 965215,
+   "holds_value": {
+    "totalSupply context": "WBNB/THUGS narwhal pair holds 84.53 WBNB + 4302.49 THUGS",
+    "tokenContract": "0.77 BUSD + 98.79 THUGS"
+   },
+   "risky_functions": [
+    "setMinDeltaTwap(uint256)/setWhitelistedSender(address,bool)/_initializePair()/setPairAddr(address)/setWBNB(address) onlyOwner (deployer EOA 0x54af6dd5)",
+    "unpause()/initializeTwap() onlyInitialDistributionAddress (0x3009c9c0...)",
+    "TokenTimelock.release(IERC20) at 0x586acb4b - PUBLIC trigger, pays fixed beneficiary (burnReserves 0xfd98d6de); vault now holds only 0.0023 THUGS"
+   ],
+   "verdict": "Partner project token (Oct 2020), paired with WBNB on the Narwhal factory. Its 273.57-LP WBNB/THUGS pool is 93% held by an EOA (see holders), not by any contract."
+  },
+  {
+   "name": "GrandBank (The Grand Banks V1 farm)",
+   "address": "0x08f886b14af4fc75e49d6475f46d041f5f257ce1",
+   "type": "TGB farm v1",
+   "code_size": 12776,
+   "verified_source": "GrandBank.sol",
+   "deployer": "0x18527a351dB2435Fa21Db88cB87d4155188b62b0",
+   "deploy_block": 6644396,
+   "holds_value": {
+    "BNB": "0",
+    "pools": 12
+   },
+   "risky_functions": [
+    "inCaseTokensGetStuck(address,uint256) onlyOwner (owner=Timelock 0xd68415...)",
+    "migrateToGrandV2(uint256) PUBLIC 1:1 V1->V2 mint but require(block.number < 7076050) -> DEAD (past deadline)",
+    "deposit/withdraw variants user-scoped"
+   ],
+   "verdict": "V1 farm of the team's second protocol; owner is TimelockController (24h delay). All 12 pools have allocPoint 0; strategies may hold\u7528\u6237 LP (see strategy scan)."
+  },
+  {
+   "name": "TheGrandBanks (TGB V2 farm)",
+   "address": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+   "type": "TGB farm v2",
+   "code_size": 14591,
+   "verified_source": "TheGrandBanks.sol",
+   "deployer": "0xab3921C5De7e3459CE07f7015B3FDF0EBEC927EF (dev2)",
+   "deploy_block": 6872911,
+   "holds_value": {
+    "CatoToken(GRANDV2)": "1448.012458 CATO",
+    "USDT": "31.122768 USDT",
+    "pools": 80
+   },
+   "risky_functions": [
+    "inCaseTokensGetStuck(address,uint256) onlyOwner - drain any token except GrandV2 from farm (owner=dev2 EOA 0xab3921)",
+    "inCaseBNBGetStuck(uint256) onlyOwner",
+    "migrateToGrandV2(uint256) - deadline check (dead)",
+    "add/set/pool management onlyOwner"
+   ],
+   "verdict": "V2 farm with 80 pools and per-pool strategies; owner is a single dev EOA (not timelock). Can sweep non-GRAND tokens from the farm shell; user principal sits in strategies."
+  },
+  {
+   "name": "Grand (GRAND v1 token)",
+   "address": "0xd37ebaeb28c0a6c9a62d5c5c0119d464e28b367e",
+   "type": "TGB token",
+   "code_size": null,
+   "verified_source": "Grand.sol",
+   "deployer": "0x18527a351dB2435Fa21Db88cB87d4155188b62b0",
+   "deploy_block": 6644323,
+   "holds_value": {
+    "totalSupply": "776.0226764568765 GRAND"
+   },
+   "risky_functions": [
+    "mint(address,uint256) onlyOwner (owner=GrandBank V1 0x08f886, which is timelock-owned)"
+   ],
+   "verdict": "Dead v1 token superseded by V2 (migrate path closed)."
+  },
+  {
+   "name": "CatoToken (GRAND V2 / 'CatoToken')",
+   "address": "0xee814f5b2bf700d2e843dc56835d28d095161dd9",
+   "type": "TGB token",
+   "code_size": null,
+   "verified_source": "CatoToken.sol (minted to farm as GrandV2)",
+   "deployer": "0xab3921C5De7e3459CE07f7015B3FDF0EBEC927EF",
+   "deploy_block": 6872790,
+   "holds_value": {
+    "totalSupply": "30075.410746743"
+   },
+   "risky_functions": [
+    "mint(address,uint256) - GrandToken interface used by the farm (owner controls)"
+   ],
+   "verdict": "GRAND v2 emission token; emissions capped/over. Farm holds 1448 CATO pending."
+  },
+  {
+   "name": "TimelockController (TGB V1)",
+   "address": "0xd68415507d4beb355aeec2f0d52938800c7b62e0",
+   "type": "timelock",
+   "code_size": null,
+   "verified_source": "TimelockController.sol",
+   "deployer": "0x18527a351dB2435Fa21Db88cB87d4155188b62b0",
+   "deploy_block": 6677102,
+   "holds_value": {},
+   "risky_functions": [
+    "minDelay=86400s",
+    "PROPOSER/EXECUTOR = devWallet 0x18527a",
+    "devWalletAddress hardcoded 0x18527a..."
+   ],
+   "verdict": "Owns GrandBank V1 (and many strategies are gov=timelock/EOAs). Team can queue+execute drains after delay; users have no veto (admin role with team EOA)."
+  },
+  {
+   "name": "StrategyCake instances (x~92)",
+   "address": "see strategy_scan.json (strat addresses per pool)",
+   "type": "leveraged strategies",
+   "code_size": null,
+   "verified_source": "StrategyCake.sol (spot-verified)",
+   "deployer": "(team dev wallets)",
+   "deploy_block": null,
+   "holds_value": {
+    "aggregate": "user LP inside strategies; live (nonzero wantLockedTotal) strategies hold modest balances; biggest single \u22481.7 LP-equivalent"
+   },
+   "risky_functions": [
+    "deposit(address,uint256)/withdraw(address,uint256) onlyOwner(=farm)",
+    "earn() public whenNotPaused (if onlyGov=false anyone can compound; fees to gov)",
+    "pause()/unpause()/setGov/setControllerFee/setbuyBackRate/setEntranceFeeFactor govAddress only",
+    "inCaseTokensGetStuck(address,uint256,address) govAddress only - cannot take want/earned",
+    "rebalance/deleverageOnce/wrapBNB - timelock-gated in later deployments (interface IStrategy)"
+   ],
+   "verdict": "User funds sit in ~92 strategy contracts (leveraged Pancake/Venus positions). Strategy owner = farm; gov = team/timelock. No permissionless drain found; rescue functions exclude want/earned."
+  },
+  {
+   "name": "FryingDutchMan Landing/Sailing servicers (x~20)",
+   "address": "see strategy_value.json fry[]",
+   "type": "liquidity servicers",
+   "code_size": null,
+   "verified_source": "FryingDutchManLanding.sol / Sailing.sol",
+   "deployer": "(team dev wallets)",
+   "deploy_block": null,
+   "holds_value": {
+    "BNB": "0 (all instances)"
+   },
+   "risky_functions": [
+    "execute(address,address,address,uint256,bool) external payable NON-PROTECTED - sends proceeds of any residual balances it holds to msg.sender (drains only stray funds, not user principal)",
+    "recover(address,address,uint256) onlyOwner"
+   ],
+   "verdict": "Stateless helpers by design ('should not hold ERC20'). Currently empty. execute() is a permissionless msg.sender payout path for any leftovers."
+  },
+  {
+   "name": "Narwhalswap pair: NAR/WBNB LP",
+   "address": "0xb6b0ba4e208ab93602be7a81f1400a7c7daad1f2",
+   "type": "pair/LP",
+   "code_size": 8701,
+   "verified_source": null,
+   "deployer": "(factory)",
+   "deploy_block": 1281282,
+   "holds_value": {
+    "reserves": "5,444,067.4186 NAR + 181.4527 WBNB",
+    "totalSupply": "25004.5519 LP",
+    "topHolders": "farm1 2243.79; be8581(V3 farm) 1291.98; 186be2(V1 farm) 297.16; 236 EOAs (largest ~81.9 LP)"
+   },
+   "risky_functions": [
+    "public swap/mint/burn (permissionless by design)"
+   ],
+   "verdict": "Live pair; LP largely held by farms + 236 EOA wallets."
+  },
+  {
+   "name": "Narwhalswap pair: WBNB/THUGS LP",
+   "address": "0x40ff83ac2890dd5469f5eca2c17dcaf10ee09957",
+   "type": "pair/LP",
+   "code_size": 8701,
+   "verified_source": null,
+   "deployer": "(factory)",
+   "deploy_block": 1552822,
+   "holds_value": {
+    "reserves": "84.5312 WBNB + 4302.495 THUGS",
+    "totalSupply": "273.56821 LP",
+    "topHolders": "EOA 0x4d710603... = 254.40 LP (93%); EOA 0xe99140fc... = 18.10 LP; contract 0xb752f0cb (OriginalGangster, THUGS-deployer project) = 1.0587 LP; collecter dust"
+   },
+   "risky_functions": [
+    "pair is itself token0 of a wrapped dust pair 0x8b1bbfaf (created post-20M block window)"
+   ],
+   "verdict": "HIGHEST-VALUE pool touched by the ecosystem (~84.5 WBNB \u2248 $63k). 93% of LP held by a single EOA (inactive); no contract payout path. Any LP holder can burn for their share."
+  },
+  {
+   "name": "Narwhalswap pair: WBNB/BUSD LP",
+   "address": "0x5ec32c21c9a6215d239f2bd0df22d7632b4717c3",
+   "type": "pair/LP",
+   "code_size": 8701,
+   "verified_source": null,
+   "deployer": "(factory)",
+   "deploy_block": 900224,
+   "holds_value": {
+    "reserves": "13.4437 WBNB + 10090.778 BUSD",
+    "totalSupply": "285.4709 LP",
+    "topHolders": "V1 farm bb38f755 = 231.53 LP (81%); EOA a9d5f138 = 33.68 LP; farm2 = 11.94 LP; 105 addresses"
+   },
+   "risky_functions": [
+    "public pair functions"
+   ],
+   "verdict": "81% of LP custodied by the V1 farm; rest by EOAs/claims."
+  },
+  {
+   "name": "Wrapped dust pairs (LP-in-LP)",
+   "address": "0x00eda48b..., 0x8b1bbfaf..., 0x6166911e...",
+   "type": "dust pairs",
+   "code_size": null,
+   "verified_source": null,
+   "deployer": "(random users, after block 20M)",
+   "deploy_block": null,
+   "holds_value": {
+    "reserves": "~2.7e12 LP-wei / ~1.26e9 WBNB-wei etc. (dust)"
+   },
+   "risky_functions": [],
+   "verdict": "Fan-created 'LP-in-LP' pairs wrapping already-issued LPs with WBNB; economically empty (created post-2022). DEAD END."
+  },
+  {
+   "name": "NarwhalSwap v3 routing suite (NarwhalRouterV3 \u00d75, NarwhalSwap \u00d73, NarwhalMultiRouter2, NarwhalRouterBNB, NarRouterTokenToTokens \u00d72)",
+   "address": "0x50cbc94e\u2026, 0x8e8228bc\u2026, 0x001b8d99\u2026, 0xfc571de6\u2026, 0x0841563d\u2026, 0xc7efa241\u2026, 0x1b849161\u2026, 0x849b7b45\u2026, 0x52801490\u2026, 0x78172b46\u2026, 0x2b7c207f\u2026, 0xaba423fd\u2026",
+   "type": "swap routing/aggregation infrastructure (June\u2013July 2021)",
+   "code_size": "8446\u201314981",
+   "verified_source": "NarwhalRouterV3.sol / NarwhalSwap.sol / NarwhalMultiRouter2.sol / NarwhalRouterBNB.sol / NarRouterTokenToTokens.sol",
+   "deployer": "0x512D86161AdE81A3e01B6b2dE8a994778F75f8cB (dev3)",
+   "deploy_block": "8,177,427 \u2013 8,668,370",
+   "holds_value": {
+    "BNB": "0 (all)",
+    "tokens": "none"
+   },
+   "risky_functions": [
+    "owner-only collectRemainingToken/collectRemainingEther style sweeps (owner = dev3 EOA 0x512d8616\u2026)",
+    "trade()/splitTrades()/multi-route swap entrypoints (permissionless, pay msg.sender)"
+   ],
+   "verdict": "Second-generation routing suite routing through Narwhal/Pancake/other pools. All instances hold no BNB; only dust tokens (addresses in swap_suite.json). Owner (dev3 EOA) can sweep dust. No user funds custodied."
+  }
+ ],
+ "lp_holders": {
+  "LP_WBNB_THUGS": [
+   {
+    "addr": "0x4d710603238427ae805b980bab8261624f5260c7",
+    "balance_wei": "254403208796097377049"
+   },
+   {
+    "addr": "0xe99140fc04e458ac58d47c29c0649bcc3914dc0a",
+    "balance_wei": "18101030200000000000"
+   },
+   {
+    "addr": "0xb752f0cb591ecfb1c5058a93e1332f066bf38473",
+    "balance_wei": "1058698667516703617"
+   },
+   {
+    "addr": "0x7f9d39de53a3036463146e91e921cc9fbfcb2de4",
+    "balance_wei": "4996976525365739"
+   },
+   {
+    "addr": "0x7f8a46ec48442d9ebf28fbc1144a83f8bc53f7e9",
+    "balance_wei": "114450412171123"
+   },
+   {
+    "addr": "0x7b8056527faf16ff0bf2742a79fe3b1c9a27fd7e",
+    "balance_wei": "3551758063395"
+   },
+   {
+    "addr": "0x8b1bbfaf50551d8427bc24beecd3406cdcef48b8",
+    "balance_wei": "843228168529"
+   },
+   {
+    "addr": "0xd777329cff7012a4d6f07aff72057cd44d405d73",
+    "balance_wei": "19003644275"
+   }
+  ],
+  "LP_NAR_WBNB_top20": [
+   {
+    "addr": "0x1d227f7e283d653a60f94d2350cab7a49bb85c6f",
+    "balance_wei": "2243792235344158653264"
+   },
+   {
+    "addr": "0xbe85812237741d75f81aebf1d9af52d544542168",
+    "balance_wei": "1291976393893770173514"
+   },
+   {
+    "addr": "0x186be2a9f0e9c92b880bbd3ec1f35f422f0d8835",
+    "balance_wei": "297156673763670129617"
+   },
+   {
+    "addr": "0x72b863f45e85f305fc7bbd7519fba6df42b54a5f",
+    "balance_wei": "81920270803243978941"
+   },
+   {
+    "addr": "0x7e86f91d7e853201ccbd0c107935a32266d95306",
+    "balance_wei": "73035102401599510216"
+   },
+   {
+    "addr": "0xec15fdb80f7edf1fc969b3d8193ed2f64a73b339",
+    "balance_wei": "66473656537165246373"
+   },
+   {
+    "addr": "0xcc2753c56f83427f9a4a7ea671b561e8553e9a53",
+    "balance_wei": "60798000000000000000"
+   },
+   {
+    "addr": "0x64fef41e09e1daaf78b4ab36aa98cc543f1c0532",
+    "balance_wei": "36169336562291954892"
+   },
+   {
+    "addr": "0xc13151cfb55eda985382e9310915d2cd86a7047d",
+    "balance_wei": "30790886986765117316"
+   },
+   {
+    "addr": "0x8850f19fd6482538c00c45f7d2489a1f788475c8",
+    "balance_wei": "21452698259289569830"
+   },
+   {
+    "addr": "0x00c2cdfd0ccf699632d87bac5802e9136f9989e2",
+    "balance_wei": "21097237846713487655"
+   },
+   {
+    "addr": "0xc3971604bbe742371f29beec25867ed667f1cc60",
+    "balance_wei": "14888874995643068901"
+   },
+   {
+    "addr": "0x42063b302c3c3f9be87dd132ef4d0bac6ddacd8c",
+    "balance_wei": "12818603504964410533"
+   },
+   {
+    "addr": "0x40f94ed436de8b5df7dd660b7821500a0d16591f",
+    "balance_wei": "12220245495254163832"
+   },
+   {
+    "addr": "0x9ea8ac048af331c9eae42e64a7bfe660e0e5df03",
+    "balance_wei": "10249967720226658737"
+   },
+   {
+    "addr": "0x4b13718fa2d0bb25a994db5818fc234ddcc8d3ef",
+    "balance_wei": "9209262539142772362"
+   },
+   {
+    "addr": "0x124f2f2515040f4a5fcee7d815b79af372708adc",
+    "balance_wei": "8469610911879777541"
+   },
+   {
+    "addr": "0x52bbcf3efc10c5ed1ff3e1e373b3ebe9f3a861e1",
+    "balance_wei": "3588147536924355969"
+   },
+   {
+    "addr": "0x7327a9f41d734a62be857c30b10907e8aff518c5",
+    "balance_wei": "3462746645522884699"
+   },
+   {
+    "addr": "0x2dd21220ecbdf350d77833f33c64200d0a4aace8",
+    "balance_wei": "2646714963933722066"
+   }
+  ],
+  "LP_WBNB_BUSD_top20": [
+   {
+    "addr": "0xbb38f7551025a433f36590be85271110212655de",
+    "balance_wei": "231532209843911818028"
+   },
+   {
+    "addr": "0xa9d5f138ba6b6ce6ed0ed2e335e76b7d2a237621",
+    "balance_wei": "33684637870112571116"
+   },
+   {
+    "addr": "0x6da9ee0c0571b63e38950d1e12e835d5343f601b",
+    "balance_wei": "11943790749266458027"
+   },
+   {
+    "addr": "0x77c10a04b7d3adebe4f235d69b5c1f20cbfd2e57",
+    "balance_wei": "1493411476207214535"
+   },
+   {
+    "addr": "0xc60f8257749d0b2fb8213ef0a9ff241d2f538a5c",
+    "balance_wei": "769902000000000000"
+   },
+   {
+    "addr": "0x251f28593872578a5ead1574eef61154c344b0a2",
+    "balance_wei": "607152000000000000"
+   },
+   {
+    "addr": "0xbf99b97042a147227525309e4ec0aaf46aa16e73",
+    "balance_wei": "527630000000000000"
+   },
+   {
+    "addr": "0x0865bdf122c39f179db282c7e215cac94393edd2",
+    "balance_wei": "511789000000000000"
+   },
+   {
+    "addr": "0x112c3aa574261bd19562cf6f77d3674f139f516a",
+    "balance_wei": "381181000000000000"
+   },
+   {
+    "addr": "0x03df7ef2a58335004b8acf929f02d63b201d3761",
+    "balance_wei": "289790000000000000"
+   },
+   {
+    "addr": "0x05ecf1a4d4d09613423e148237a869e68111943a",
+    "balance_wei": "278338000000000000"
+   },
+   {
+    "addr": "0x97017b3f627716b1b2a62afe853b696f582b6013",
+    "balance_wei": "274504000000000000"
+   },
+   {
+    "addr": "0x1e183d80b2f89cc8d5bc402c1c898e2abe8e9417",
+    "balance_wei": "231673000000000000"
+   },
+   {
+    "addr": "0x020be4338b750b85c73e598bf468e505a8eb76ea",
+    "balance_wei": "194411000000000000"
+   },
+   {
+    "addr": "0x2eeacc1875243afd432c3e081d5f7fb46b3b9179",
+    "balance_wei": "184255000000000000"
+   },
+   {
+    "addr": "0xa3321753b3978828ed5b62a93fa415062251e56a",
+    "balance_wei": "178113000000000000"
+   },
+   {
+    "addr": "0x187cd087369b76d9e095895fce43861cacc4ff7e",
+    "balance_wei": "168282000000000000"
+   },
+   {
+    "addr": "0x186184d90ff19e5271bc570e920541ec685c9b25",
+    "balance_wei": "131347000000000000"
+   },
+   {
+    "addr": "0x3bcc6667afa9e0fa7b2111ee689c605f0d8320ec",
+    "balance_wei": "125759000000000000"
+   },
+   {
+    "addr": "0x055169b2570b9f3e1f98449630c70c7dc61f8069",
+    "balance_wei": "104930000000000000"
+   }
+  ],
+  "notes": "Full holder lists in lp_holders.json. Sum of current balances matches LP supply (verified for WBNB/THUGS: 273.56805 vs 273.56821 incl. 1e-15 locked minimum)."
+ },
+ "grand_banks_value": {
+  "farm_v1_pools": 12,
+  "farm_v2_pools": 80,
+  "strategies_with_nonzero_state": 65,
+  "live_strategies_sample": [
+   {
+    "strat": "0x08da66f8fb93d447cf6e0e64647549f597a7e4c0",
+    "want": "0xbca627fed3b6e8f414c745e12b2b89371497779d",
+    "symbol": "",
+    "wlt_wei": "147020899899688752448789",
+    "shares": "41963255853443607856476",
+    "pair_factory": null,
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x096ac075ee8af8a7db77cac7485c618a7a086278",
+    "want": "0x8828b94d62d43d8415968666d221bf3c0fcaf58f",
+    "symbol": "",
+    "wlt_wei": "10806574288828962709507",
+    "shares": "950848010699251525634",
+    "pair_factory": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0",
+    "token0": "0xbca627fed3b6e8f414c745e12b2b89371497779d",
+    "token1": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    "res0": "19889063145128165228571761",
+    "res1": "282642133083645503017",
+    "lp_supply": "70470152305081151605559",
+    "usd_value_of_held": 86.68615317016321
+   },
+   {
+    "strat": "0xe8e4aa74c4a5cf0db524969686b53fb1392a4825",
+    "want": "0x28060854ac19391df6c69df430caba4506181d56",
+    "symbol": "",
+    "wlt_wei": "1546827466730560720707",
+    "shares": "1540796031444666469994",
+    "pair_factory": null,
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x6ec962355e470a2933035cf76284f39b9cb3e60f",
+    "want": "0xb4814f1ca673dbe9a2637c5dd4e94a4a0ed834c6",
+    "symbol": "",
+    "wlt_wei": "288234375019591483911",
+    "shares": "99396835025822667626",
+    "pair_factory": "0xb42e3fe71b7e0673335b3331b3e1053bd9822570",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0xfcf5ada002bd96de9e489068fbdddc2288499dd0",
+    "want": "0xb4814f1ca673dbe9a2637c5dd4e94a4a0ed834c6",
+    "symbol": "",
+    "wlt_wei": "236515635266988830940",
+    "shares": "220879423688431165244",
+    "pair_factory": "0xb42e3fe71b7e0673335b3331b3e1053bd9822570",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x4e6b847232680ecaf8a560cf2d76b34d883e32e9",
+    "want": "0x66fdb2eccfb58cf098eaa419e5efde841368e489",
+    "symbol": "",
+    "wlt_wei": "168391139099920616979",
+    "shares": "153102646095469450038",
+    "pair_factory": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0",
+    "token0": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+    "token1": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    "res0": "110390859073668936282565",
+    "res1": "110514355773195940788575",
+    "lp_supply": "97448747759025657775531",
+    "usd_value_of_held": 381.9369398478235
+   },
+   {
+    "strat": "0xc904a3b84ce08959e8d3087a0b47fd00c195b84a",
+    "want": "0x804678fa97d91b974ec2af3c843270886528a9e6",
+    "symbol": "",
+    "wlt_wei": "131612813090364247976",
+    "shares": "111081571887183642740",
+    "pair_factory": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0",
+    "token0": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+    "token1": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    "res0": "204994039766790975679472",
+    "res1": "486040243010336462602689",
+    "lp_supply": "160296799563199267471495",
+    "usd_value_of_held": 798.1335102388479
+   },
+   {
+    "strat": "0xa6b577f5bb09ae596bee6b097ad747487eb25744",
+    "want": "0xf5afce30babdfc5f246de2013267c7764c91d13e",
+    "symbol": "",
+    "wlt_wei": "100000000000000000000",
+    "shares": "100000000000000000000",
+    "pair_factory": null,
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x68a29a083455eed3ac47b847a2c26a11f3b4694f",
+    "want": "0xc15fa3e22c912a276550f3e5fe3b0deb87b55acd",
+    "symbol": "",
+    "wlt_wei": "96613455101633486647",
+    "shares": "95969075868071964361",
+    "pair_factory": "0xbcfccbde45ce874adcb698cc183debcf17952812",
+    "gov": "0x18527a351db2435fa21db88cb87d4155188b62b0",
+    "owner": "0x08f886b14af4fc75e49d6475f46d041f5f257ce1",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x7b9672d6a03b015363efb765bdd88085c106ebc0",
+    "want": "0x603c7f932ed1fc6575303d8fb018fdcbb0f39a95",
+    "symbol": "",
+    "wlt_wei": "94231034346455573109",
+    "shares": "58503179182143373171",
+    "pair_factory": null,
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x5d1af3164996c930265a3e587d0075370b8fac00",
+    "want": "0x7edcdc8cd062948ce9a9bc38c477e6aa244dd545",
+    "symbol": "",
+    "wlt_wei": "81738068280321420573",
+    "shares": "77683249842745804306",
+    "pair_factory": null,
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x6acf63b87e2c7c688a8c374bce72329e6348fe22",
+    "want": "0x603c7f932ed1fc6575303d8fb018fdcbb0f39a95",
+    "symbol": "",
+    "wlt_wei": "72924524547165933159",
+    "shares": "52163779129743484629",
+    "pair_factory": null,
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 1,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x54335093a50b97a622f4439a278f6f9e8ca526d2",
+    "want": "0x133ee93fe93320e1182923e1a640912ede17c90c",
+    "symbol": "",
+    "wlt_wei": "62899416626046310767",
+    "shares": "60258941729107837285",
+    "pair_factory": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0",
+    "token0": "0x4bd17003473389a42daf6a0a729f6fdb328bbbd7",
+    "token1": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    "res0": "80552053335850209404488",
+    "res1": "80283543407986366368554",
+    "lp_supply": "72936447065543538758687",
+    "usd_value_of_held": 138.4709085293467
+   },
+   {
+    "strat": "0xa15f597bf65db3c4e7706c6313a685719527fcac",
+    "want": "0x7ba02afcb8112648d27772f0d73c759c6963a666",
+    "symbol": "",
+    "wlt_wei": "57446433449232870596",
+    "shares": "57316931124043785481",
+    "pair_factory": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0",
+    "token0": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+    "token1": "0xee814f5b2bf700d2e843dc56835d28d095161dd9",
+    "res0": "803463177205528869",
+    "res1": "8161020887465079624964",
+    "lp_supply": "75040280993009034827",
+    "bnb_value_of_held": 0.6150842364589045
+   },
+   {
+    "strat": "0xbe035d7f7ebfc7bfa3bd9ead6a6a2b582bb93812",
+    "want": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+    "symbol": "",
+    "wlt_wei": "55366604806832350099",
+    "shares": "1407898344705330784",
+    "pair_factory": null,
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 1,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x0c39f746639ef9e4d2eefd5be7dc26008649c9bd",
+    "want": "0x56d8bcd36462de903a19c6b28efc9d2d11fd9ff4",
+    "symbol": "",
+    "wlt_wei": "53629089813206414951",
+    "shares": "48862238217625729175",
+    "pair_factory": "0x858e3312ed3a876947ea49d572a7c42de08af7ee",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x1501f968a126b9c790d7c43f168dbd893e878f45",
+    "want": "0x7efaef62fddcca950418312c6c91aef321375a00",
+    "symbol": "",
+    "wlt_wei": "52325946129125729901",
+    "shares": "47752829234661190220",
+    "pair_factory": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0",
+    "token0": "0x55d398326f99059ff775485246999027b3197955",
+    "token1": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    "res0": "1475250838587789346685131",
+    "res1": "1471020987152574655101014",
+    "lp_supply": "1162431058407235288256668",
+    "usd_value_of_held": 132.8145791504632
+   },
+   {
+    "strat": "0x603135dfc4a82f8de3dcaeccab0607028ecec87e",
+    "want": "0x28060854ac19391df6c69df430caba4506181d56",
+    "symbol": "",
+    "wlt_wei": "39071809485432279072",
+    "shares": "38644809118216400844",
+    "pair_factory": null,
+    "gov": "0x6abfae833ca1a4e9a9d482dfeebcc5ecec635e90",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0xaac6116e8e1a86e8e0d3bf4671a3985e8b7923e1",
+    "want": "0x0c52721790387f97fa77acaf151667c9e9730c76",
+    "symbol": "",
+    "wlt_wei": "29115861083879933454",
+    "shares": "24694868622191992014",
+    "pair_factory": "0x0841bd0b734e4f5853f0dd8d7ea041c241fb0da6",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x5f6cd066914c4fe291d4ed055975f80fe68e804d",
+    "want": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+    "symbol": "",
+    "wlt_wei": "21133080132963741840",
+    "shares": "15240955266562731194",
+    "pair_factory": null,
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x25581509bec7fe3d22dd2a696826c6ece518a3d9",
+    "want": "0xb35e242f41d5998f6c14b0ba55fd2cfc514006f8",
+    "symbol": "",
+    "wlt_wei": "16050439067893117666",
+    "shares": "15625916217885736200",
+    "pair_factory": null,
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0xae3624d986529c6bed33a9aa949b3608fd9b9bae",
+    "want": "0x9116f04092828390799514bac9986529d70c3791",
+    "symbol": "",
+    "wlt_wei": "12300597878422248170",
+    "shares": "11644277146368687004",
+    "pair_factory": null,
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0x8d9fb06fae34651b3568d9dea55001ac7f21bc04",
+    "want": "0x1cd0fe829d83fb49c8831ae860d19c6062ada6e9",
+    "symbol": "",
+    "wlt_wei": "10203374658639200214",
+    "shares": "2060221843133759264",
+    "pair_factory": "0x0eb58e5c8aa63314ff5547289185cc4583dfcbd5",
+    "gov": "0x512d86161ade81a3e01b6b2de8a994778f75f8cb",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   },
+   {
+    "strat": "0xebe7d4f384edc5da4a1969e52b1754bc461e1993",
+    "want": "0x2354ef4df11afacb85a5c7f98b624072eccddbb1",
+    "symbol": "",
+    "wlt_wei": "9609088328007333454",
+    "shares": "7619",
+    "pair_factory": "0xca143ce32fe78f1f7019d7d551a6402fc5350c73",
+    "gov": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "owner": "0x3d8fd880976a3ea0f53cad02463867013d331107",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0",
+    "token0": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    "token1": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    "res0": "415235373179918596389651",
+    "res1": "415013608291241958341376",
+    "lp_supply": "375064825283249797518516",
+    "usd_value_of_held": 21.265136854056674
+   },
+   {
+    "strat": "0x42aaa79ad3079f7bfc904069944ecf13b4e3b179",
+    "want": "0x20bcc3b8a0091ddac2d0bc30f68e6cbb97de59cd",
+    "symbol": "",
+    "wlt_wei": "9232171002786461669",
+    "shares": "9124389115022620583",
+    "pair_factory": "0xbcfccbde45ce874adcb698cc183debcf17952812",
+    "gov": "0xd68415507d4beb355aeec2f0d52938800c7b62e0",
+    "owner": "0x08f886b14af4fc75e49d6475f46d041f5f257ce1",
+    "onlyGov": 0,
+    "paused": 0,
+    "bnb": "0"
+   }
+  ],
+  "fry_servicers": [
+   {
+    "addr": "0x03af21422cc5f6e4a12c40b48b114ef1ad21949c",
+    "bnb": "0",
+    "owner": "0x18527a351db2435fa21db88cb87d4155188b62b0",
+    "code_size": 5205
+   },
+   {
+    "addr": "0x08b5470dd76aa4789bf7272fb8da5ccdb5b61d0a",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5363
+   },
+   {
+    "addr": "0x118fd87c0559eda2c682bf5df3b371d8a770ef46",
+    "bnb": "0",
+    "owner": "0x6abfae833ca1a4e9a9d482dfeebcc5ecec635e90",
+    "code_size": 3766
+   },
+   {
+    "addr": "0x2263f11e534ba94504f43ed509177974159064d6",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5658
+   },
+   {
+    "addr": "0x22d31be66966f68f5e7717a89662163e81f226bd",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5363
+   },
+   {
+    "addr": "0x271daf9ba164fd6a595a20bd9df8487e5f03d819",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 6434
+   },
+   {
+    "addr": "0x2938dbb19227ffb118f5a8a4de6bae9f3d299cd4",
+    "bnb": "1",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 6396
+   },
+   {
+    "addr": "0x29b6d9c282902a9af1ee8b1fb9eac0bab1bbc680",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5496
+   },
+   {
+    "addr": "0x2aeafe03d8b04c59313d5028b3dcada8e4f90d3a",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5363
+   },
+   {
+    "addr": "0x2d4a0fa0857ec758d971be11a3377fb46629337b",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 6126
+   },
+   {
+    "addr": "0x3fbf2e11c634b9cbd14772f8b31ef9d8509cd26d",
+    "bnb": "0",
+    "owner": "0x6abfae833ca1a4e9a9d482dfeebcc5ecec635e90",
+    "code_size": 6694
+   },
+   {
+    "addr": "0x40e365a1a69f66b455fdcc9bda87760bc28f32bd",
+    "bnb": "1",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 8005
+   },
+   {
+    "addr": "0x56162dbd4a6f9281a574000671be91a9a2d01fe6",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 6155
+   },
+   {
+    "addr": "0x591a3c633bfe59664a77c5245af353736ac90bd9",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5658
+   },
+   {
+    "addr": "0x5d011c4932bd051fd3cd6fcaf142000d51f3ad53",
+    "bnb": "0",
+    "owner": "0x18527a351db2435fa21db88cb87d4155188b62b0",
+    "code_size": 6536
+   },
+   {
+    "addr": "0x5def1607d5de0e0dd2ebd4cbbe6be89819f22e1e",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5822
+   },
+   {
+    "addr": "0x65f31d9d3ce390359d2477bc9e2b5d0376ec2fa3",
+    "bnb": "0",
+    "owner": "0x18527a351db2435fa21db88cb87d4155188b62b0",
+    "code_size": 6307
+   },
+   {
+    "addr": "0x6a1abd25505544b2fd67bba729bb3d4a23a81d5a",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 4516
+   },
+   {
+    "addr": "0x710cb264f0183662a8f2c11e9177d98d9fa26386",
+    "bnb": "0",
+    "owner": "0x18527a351db2435fa21db88cb87d4155188b62b0",
+    "code_size": 4516
+   },
+   {
+    "addr": "0x757ba891ffb8cf2e50cbbd1c465e5379250f840c",
+    "bnb": "0",
+    "owner": "0x512d86161ade81a3e01b6b2de8a994778f75f8cb",
+    "code_size": 5658
+   },
+   {
+    "addr": "0x7c0a382e260f4f3445fcc393523fb774f81afefd",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 8237
+   },
+   {
+    "addr": "0x7c244ea7a47fc2d2250c5ca560805eb057e97c58",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 8237
+   },
+   {
+    "addr": "0x85f2d470d856ebe62a00d2da421bf14d161b2238",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5658
+   },
+   {
+    "addr": "0x89d23905190c248c9a5e33f9c4dbfb41b3f1d861",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5696
+   },
+   {
+    "addr": "0x8edb465aaaf8b2c7ca727e72b2ccbc7f8c56f879",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 6155
+   },
+   {
+    "addr": "0x8f0402fc55e5a286f69824577ba6da0b7046c09f",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 6434
+   },
+   {
+    "addr": "0x9253c2a34482ac41c000d3e7c7cc63d92dff87a1",
+    "bnb": "1",
+    "owner": "0x512d86161ade81a3e01b6b2de8a994778f75f8cb",
+    "code_size": 8005
+   },
+   {
+    "addr": "0x950bf703109410421c877ad3bc9b0decf27e62ae",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5658
+   },
+   {
+    "addr": "0x9720bfe7abe874a6dc75a69ab6a48dbc80d9b59c",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 6434
+   },
+   {
+    "addr": "0x9f39554d721e56720d57c5bd32fd4ae6abe73b09",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 6434
+   },
+   {
+    "addr": "0xa1727e59ed55b63c52db7c2619fc997894b76143",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 4719
+   },
+   {
+    "addr": "0xaaddb00396a463ffc6357baa695cfe48ca0233e3",
+    "bnb": "1",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 8005
+   },
+   {
+    "addr": "0xb18783bc6f0e9e419ea6bcadd876d75cde084568",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 6155
+   },
+   {
+    "addr": "0xb4b8d2fbbe1d2b3bec3adc9190aa2567a4c329f1",
+    "bnb": "0",
+    "owner": "0x6abfae833ca1a4e9a9d482dfeebcc5ecec635e90",
+    "code_size": 4023
+   },
+   {
+    "addr": "0xb8c82c0ed3ff9d12a81d6f92b79b082d877be176",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 8237
+   },
+   {
+    "addr": "0xc76ea2aaecd6995d6d393c5b0f629403d5e6770a",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 6183
+   },
+   {
+    "addr": "0xcd5c2d44b904f14d5631525beff25c368ab5714e",
+    "bnb": "147073702575459",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 8005
+   },
+   {
+    "addr": "0xd295108dc87b8a625be18ddc7756591698953f50",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 8237
+   },
+   {
+    "addr": "0xd824a4e6826f56c1a897742320c32784a6611190",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5363
+   },
+   {
+    "addr": "0xe94484556c9730668dde7c9f3da505d16cf0b11d",
+    "bnb": "0",
+    "owner": "0x6abfae833ca1a4e9a9d482dfeebcc5ecec635e90",
+    "code_size": 5205
+   },
+   {
+    "addr": "0xeab2ee1f10345111bd495e38fd3e7eb5f5ce1e70",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5211
+   },
+   {
+    "addr": "0xeffd000a6d026a2036347ebeee6ac29a278f0e6e",
+    "bnb": "2",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 8005
+   },
+   {
+    "addr": "0xf03f1b72f7be4e44f8eb1b83fa75117741b0f9cd",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5249
+   },
+   {
+    "addr": "0xf74ed829f63224c55b8b1423c98db22256bf1606",
+    "bnb": "0",
+    "owner": "0xab3921c5de7e3459ce07f7015b3fdf0ebec927ef",
+    "code_size": 5363
+   }
+  ]
+ },
+ "nar_minters": [
+  "0x1d227f7e283d653a60f94d2350cab7a49bb85c6f",
+  "0xb104ae8b7da105ca79cba208b9a41c1d63fff2c5",
+  "0x6da9ee0c0571b63e38950d1e12e835d5343f601b"
+ ],
+ "dead_ends": [
+  "NarCard integration on farms is NOT configured: _narcardFactory()/_narcardToken() = 0x0 on V2 and V3 farms -> setRune/removeRune revert (checkSetNFT). NarCardToken (9218) and NarNft (49) exist but no farm accepts them.",
+  "No 'NarwhalRewardV1-size' Small/Medium/Huge tier found beyond the V2-named instances; any V1 predecessor tiers were not located via NAR flows (scans partial).",
+  "migrateToGrandV2(uint256) - the only Narwhal-team 'migration' found - is dead: require(block.number < 7076050), current block ~127.2M.",
+  "SmartChef.migrate(uint256) exists but migrator=0x0, owner=external EOA 0x0F9399FC...; not a Narwhal-held contract.",
+  "TokenTimelock.release(IERC20) for THUGS (vault 0x586acb4be6cc93aa5c399888b255c7e864ea508e) is permissionless but already drained (holds only 0.0023 THUGS).",
+  "BscScan live scraping via firecrawl/webfetch was blocked (Cloudflare; keyless firecrawl quota); used Wayback Machine snapshot (2024-09-12) instead.",
+  "Blockscout has no BSC instance; public BSC RPCs cap eth_getLogs at 25-50 blocks (bsc-rpc.publicnode.com, 1rpc, dataseeds); scans used a public NodeReal demo endpoint (50k-block range) transiently, not persisted.",
+  "EIP-1167 23-byte proxy clones dominate NAR reward recipients (286 of 5,206 recipient addresses) - user smart wallets, not ecosystem contracts."
+ ]
+}

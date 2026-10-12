@@ -1,0 +1,62 @@
+{
+ "finding": "Narwhalswap (L2 Phase-2 zombie-hunt II)",
+ "title": "Narwhalswap (BSC) \u2014 live extraction assessment of a dead PancakeSwap-V2 fork",
+ "chains": [
+  "bsc"
+ ],
+ "headline_extractable_usd": 0.0,
+ "headline_confidence": "high",
+ "categories": {
+  "E-U": 0.0,
+  "H-O": 118335.0,
+  "P": 108438.0,
+  "S": 56.0
+ },
+ "latest_block": 127233623,
+ "block_numbers": {
+  "bsc": 127222666,
+  "bsc_ci_verified": 127233623
+ },
+ "targets_checked": 130,
+ "live_targets": 25,
+ "closed_reasons": [
+  "Pairs (all 96): V2 accounting intact, reserves == balances on the 3 funded pairs; only 7 positions with raw excess, all reflection/fee-token dust (<$0.001 realizable); skim on funded pairs pays 0 wei.",
+  "NAR/WBNB pair: LP-holder claims only; 80.383% of LP is in NLPLock whose withdraw() is onlyOwner (team) and reverts for outsiders; NAR charges 2.5%+2.5% tax per transfer (1 WBNB round trip loses 10.24%).",
+  "WBNB/THUGS pair: Narwhal pair is not whitelisted in ThugsToken; dynamic 5-50% burn (live 33.49%) applies on both buys and sells; 0.5 WBNB round trip loses 55.9%.",
+  "Farms (V1/V2/V3/tier/Dividend): withdraw requires own staked _balances + rNLP (or nard) + allowance; seize() is onlyGovernance; buffRateReporter victim-condition unreachable on all live stakers; updateBuffRate reverts (uint8 loop) for fresh/old accounts; reward pots ~99.2% allocated to existing stakers.",
+  "NarwhalCollecter.convert() is permissionless but pays the caller nothing (burns its own fee-LP into permanently-locked NAR/BNB LP); total Collecter value ~$55, not payable to anyone.",
+  "NAR mint gated by 3 minters/team (calls revert '!minter'); only 284,832 NAR mintable left under cap; farm mints are dust to the farm itself.",
+  "rNLP mint gated by the farms ('!minter'); factory setFeeTo only feeToSetter (team).",
+  "THUGS TWAP-manip to 0.5% burn floor yields at most +0.3%/round trip vs the BSCSwap pool (1.3% price gap) - no material extraction."
+ ],
+ "poc": {
+  "tests_passed": 13,
+  "tests_total": 13,
+  "ci_run_urls": [
+   "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38269314749"
+  ]
+ },
+ "key_facts": [
+  "CI-verified (run 38269314749, block 127,233,623): 95/96 pairs read, same 7 dust-excess pairs, factory/locker/farm values identical, keccak(pair creationCode)==factory.pairCodeHash, forge 13/13 PASS.",
+  "Live custody (block 127,222,666): hard-asset pair reserves $226,772 (triage $227,687 comparable); $364,953 notional if the NAR side is scored at the pool-implied price $0.024779.",
+  "Top pair NAR/WBNB 0xb6b0ba4e: 5,444,067.42 NAR + 181.4527 WBNB, LP 25,004.55; NLPLock 0x07f1B50D holds 20,099.44 LP = 80.383% (145.86 WBNB = $108,438 + 4.376M NAR), owner = team EOA 0xb104AE8b, unlockTime 2020-11-11 passed, withdraw() onlyOwner (fork-proven revert).",
+  "WBNB/THUGS 0x40ff83ac: 84.5312 WBNB + 4,302.49 THUGS; 93% of LP held by dormant EOA 0x4d710603.",
+  "WBNB/BUSD 0x5ec32c21: 13.472 WBNB + 10,069.6 BUSD; 81.1% of LP staked in V1 farm 0xbb38f755.",
+  "BTCB/NAR 0x6658cd85: 0.0396849 BTCB + 128,606 NAR; 83% of LP in V3 farm 0x268a2c1a.",
+  "Farm V2_narwbnb 0x1D227F7e holds 2,243.79 LP staked + 204,706.95 NAR reward pot; earned() over all 20+ stakers sums to 203,081.26 NAR (99.2% allocated).",
+  "Total farm-held NAR pots: 1,695,618 NAR ($42,016 at pool price) incl. DividendV3#2 0xf7a36c87 (1,333,817 NAR held, 987,741 staked).",
+  "All farm/dividend LP withdrawals are gated by the caller's own accounting; most historical stakers additionally need a one-time rNLP approve (allowances are 0 for 17/20 top stakers).",
+  "Excess scan (all 96 pairs): 7 dust positions, largest 10,548,636 PBANK in 0xc2b0fec1 (that pair's whole WBNB side = 0.00163 WBNB); total realizable < $0.001; skim on the 3 funded pairs = 0 wei.",
+  "NAR token: mint remaining 284,832.04 under 21M cap; burn pool 0x7777 holds 11,098,868.48 NAR (never sent out); team can seize all farm non-LP tokens.",
+  "PoC 13/13 fork tests green (local block 127,227,511): incl. NAR round trip -10.24%, THUGS round trip -55.9%, locker/collecter/farm/mint gates."
+ ],
+ "caveats": [
+  "NAR-denominated USD uses the Narwhal pool-implied price ($0.024779) which is circular; H-O includes $42,016 of NAR pots at that price but NAR exit liquidity is only the pool's 181.45 WBNB for the whole 14M supply. H-O hard-side alone is $118,335 (H-O + NAR pots = $160,351).",
+  "P is the NLPLock WBNB-side ($108,438); the locker's NAR side (4.376M) is excluded from the category totals to avoid circular double counting. A full team exit (burn LP + dump NAR) nets ~$129k.",
+  "Key possession for team EOA 0xb104AE8b, dormant LP EOA 0x4d710603 and 0x7777 cannot be verified on-chain; P/S classification there is assumption-based and disclosed.",
+  "11.1M NAR parked at 0x7777777777777777777777777777777777777777 is P if the team holds that key, S if destroyed; not counted in categories.",
+  "Excess dust (PBANK/HYPR/COM) is reflection/fee accrual to stale pairs and drifts block-to-block but stays near-zero value.",
+  "GoldRush was used only for holder discovery; every material balance was re-read directly via RPC and reconciled to supply (deltas <0.32% from indexer gaps for dust holders)."
+ ],
+ "one_liner": "External unprivileged attacker can extract ~$0.00 live (high confidence): all 96 V2 pairs are reserve-fair with only <$0.001 reflection dust, LP claims are LP-gated (80.4% of the top pair's LP is a team-only locker), farm/dividend withdrawals require the caller's own staked balances, the feeTo collector pays nobody, and NAR's 5% transfer tax plus THUGS' 33.5% dynamic burn make every round trip a loss (fork-verified 13/13)."
+}
