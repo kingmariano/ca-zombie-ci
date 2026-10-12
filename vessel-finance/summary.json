@@ -1,0 +1,50 @@
+{
+ "finding": "L-2 Phase-2 (Triage-B rank 11)",
+ "title": "Vessel Finance (Scroll) — zk-DEX VaultProxy; all value-moving paths role-gated (no permissionless payout)",
+ "chains": ["scroll"],
+ "headline_extractable_usd": 0,
+ "headline_confidence": "high",
+ "categories": {
+  "E-U": 0,
+  "H-O": "CLAIMABLE_NOW_USD_PENDING_CI",
+  "P": "REMAINDER_PENDING_CI",
+  "S": 0
+ },
+ "latest_block": 35349825,
+ "block_numbers": {"scroll": 35349825},
+ "targets_checked": 17,
+ "live_targets": 1,
+ "closed_reasons": [
+  "withdraw() pays only against pendingWithdraw credits; credits are written solely inside commitSnarkProof() which is onlyOperator",
+  "commitSnarkProof reverts for any non-operator ('Gov: caller is not an operator')",
+  "fastWithdraw() is onlyExitManager and pays from the LP's own allowance to a recipient-address-bound EIP-712 signature; no redirection possible",
+  "fastWithdraw/withdraw/commitSnarkProof/admin entry points all revert for an unprivileged attacker (fork-tested)",
+  "all roles (admin/operator/exitManager) are grantable only by the admin; admin = AccessControl executor 0x3c417EC0 whose DEFAULT_ADMIN_ROLE is held by the 2-of-3 Gnosis Safe 0x9549F1d6; executor.execute() reverts for attackers",
+  "ProxyAdmin 0x6251b429 (owner = executor) rejects attacker upgrades",
+  "initialize() re-init reverts; initializer locked",
+  "deployed implementation bytecode == compiled explorer-verified source (exact match, solc 0.8.19 via-IR, optimizer 10000, metadata stripped, 24,195 bytes)"
+ ],
+ "poc": {
+  "tests_passed": 14,
+  "tests_total": 14,
+  "ci_run_urls": ["CI_RUN_URL_PENDING"]
+ },
+ "key_facts": [
+  "Vault live value at block 35349825: $194,876.45 = 44.0368312 ETH ($111,487.90) + 39,047.673998 USDT ($39,016.18) + 37,364.910793 USDC ($37,354.57) + 0.08045803 WBTC ($6,639.02) + 15,125.236229 SCR ($378.79); triage said $193,046 (4 assets; SCR not counted by the DefiLlama adapter)",
+  "Architecture: zk rollup vault on Scroll; L2 state committed via Groth16 SNARK proofs; funds move only via operator-committed L2->L1 messages (pendingWithdraw credits, LP backfills) or exit-LP fast withdraws",
+  "Governance: vault admin = 0x3c417EC0 (AccessControl executor) -> Safe 0x9549F1d6 (2-of-3) -> only ever 6 execTransactions; last admin action 2026-03-03 (updateAll verifier 0xF33De4cA, circuit 'vessel-0.1.20')",
+  "Operators (all still isOperator=true, never removed): 0xB7bBcD40...01Fc3 (sole commit sender since Aug 2024), 0xE5Ad0Cd3...0E981, 0x570b2C71...A257",
+  "Single exit manager 0x5bef2A1fCf34911e0Eb7b02376d1aB1c85cecfAc (EOA), registered 2024-11-28",
+  "Last SNARK commit: block 34,561,380 (2026-08-04 06:57 UTC); last vault event: block 34,566,367 (2026-08-04 19:24 UTC); protocol dormant ~10 weeks; L1->L2 queue has 18 uncommitted messages",
+  "2026-08-04 wind-down: 17 fastWithdraw calls (~$118k: 3.0816 ETH, 25,742.59 USDC, 10,245.32 USDT, 0.551157 WBTC, 7,140.52 SCR) paid from 6 LP wallets; LPs' reimbursement needs operator-committed backfills (none since)",
+  "withdrawAll() is permanently broken (nested nonReentrant: 'ReentrancyGuard: reentrant call'); withdraw() works fine (H-O path demonstrated on fork)",
+  "Web: project abandoned (site dead since ~Mar-2026, X silent since 2025-01-22, RootData dead list); source repo github.com/Meshee-Team/vessel-contracts; no exploit/audit/post-mortem found"
+ ],
+ "caveats": [
+  "H-O = pendingWithdraw-credited amounts only; other vault value becomes user-withdrawable only if an operator resumes proving (latent; currently dormant)",
+  "The 2-of-3 Safe can upgrade the vault and drain (trust assumption of an upgradeable contract; privileged, not E-U)",
+  "E-U $0 conditional on deployed code == audited source: verified exactly byte-for-byte in ci/verify_bytecode.py",
+  "USD values use DefiLlama prices at 2026-10-12; ETH price drift vs triage explains most of the delta"
+ ],
+ "one_liner": "external unprivileged attacker can extract $0.00 live from Vessel Finance (high confidence): every value-moving path is operator/admin/exitManager-gated and the attacker-called paths verified on-fork all revert while balances stay unchanged; the $194.9k vault is owned by users/LPs and is withdrawable by them only via the dormant operator's SNARK commits (currently claimable-now: $PENDING only)"
+}
