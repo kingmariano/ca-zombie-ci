@@ -1,0 +1,182 @@
+STRING 'Not in the past'
+   guard JUMPI @ pc 2574 0x00a0e -> dest 
+     2561 0x00a01: PUSH1          0x35
+     2563 0x00a03: SSTORE         
+     2564 0x00a04: NUMBER         
+     2565 0x00a05: DUP4           
+     2566 0x00a06: PUSH1          0xa0
+     2568 0x00a08: ADD            
+     2569 0x00a09: CALLDATALOAD   
+     2570 0x00a0a: LT             
+     2571 0x00a0b: PUSH2          0xa56
+     2574 0x00a0e: JUMPI          
+     2575 0x00a0f: PUSH1          0x40
+
+STRING 'Withdrawal epoch not set'
+   guard JUMPI @ pc 2687 0x00a7f -> dest 
+     2666 0x00a6a: DUP6           
+     2667 0x00a6b: ADD            
+     2668 0x00a6c: PUSH2          0x2cba
+     2671 0x00a6f: JUMP           
+     2672 0x00a70: JUMPDEST       
+     2673 0x00a71: PUSH8          0xffffffffffffffff
+     2682 0x00a7a: AND            
+     2683 0x00a7b: SUB            
+     2684 0x00a7c: PUSH2          0xac7
+     2687 0x00a7f: JUMPI          
+     2688 0x00a80: PUSH1          0x40
+
+STRING 'Active balance'
+   guard JUMPI @ pc 2790 0x00ae6 -> dest 
+     2769 0x00ad1: DUP5           
+     2770 0x00ad2: ADD            
+     2771 0x00ad3: PUSH2          0x2cba
+     2774 0x00ad6: JUMP           
+     2775 0x00ad7: JUMPDEST       
+     2776 0x00ad8: PUSH8          0xffffffffffffffff
+     2785 0x00ae1: AND            
+     2786 0x00ae2: ISZERO         
+     2787 0x00ae3: PUSH2          0xb2e
+     2790 0x00ae6: JUMPI          
+     2791 0x00ae7: PUSH1          0x40
+
+STRING 'Effective balance'
+   guard JUMPI @ pc 2893 0x00b4d -> dest 
+     2872 0x00b38: DUP5           
+     2873 0x00b39: ADD            
+     2874 0x00b3a: PUSH2          0x2cba
+     2877 0x00b3d: JUMP           
+     2878 0x00b3e: JUMPDEST       
+     2879 0x00b3f: PUSH8          0xffffffffffffffff
+     2888 0x00b48: AND            
+     2889 0x00b49: ISZERO         
+     2890 0x00b4a: PUSH2          0xb95
+     2893 0x00b4d: JUMPI          
+     2894 0x00b4e: PUSH1          0x40
+
+STRING 'Already reported'
+   guard JUMPI @ pc 2990 0x00bae -> dest 
+     2977 0x00ba1: MSTORE         
+     2978 0x00ba2: PUSH1          0x40
+     2980 0x00ba4: SWAP1          
+     2981 0x00ba5: SHA3           
+     2982 0x00ba6: SLOAD          
+     2983 0x00ba7: PUSH1          0xff
+     2985 0x00ba9: AND            
+     2986 0x00baa: ISZERO         
+     2987 0x00bab: PUSH2          0xbf6
+     2990 0x00bae: JUMPI          
+     2991 0x00baf: PUSH1          0x40
+
+STRING 'Signature expired'
+   guard JUMPI @ pc 3070 0x00bfe -> dest 
+     3057 0x00bf1: ADD            
+     3058 0x00bf2: PUSH2          0x529
+     3061 0x00bf5: JUMP           
+     3062 0x00bf6: JUMPDEST       
+     3063 0x00bf7: NUMBER         
+     3064 0x00bf8: DUP2           
+     3065 0x00bf9: CALLDATALOAD   
+     3066 0x00bfa: GT             
+     3067 0x00bfb: PUSH2          0xc46
+     3070 0x00bfe: JUMPI          
+     3071 0x00bff: PUSH1          0x40
+
+STRING 'Invalid final sweep'
+   guard JUMPI @ pc 3160 0x00c58 -> dest 
+     3147 0x00c4b: DUP5           
+     3148 0x00c4c: DUP8           
+     3149 0x00c4d: DUP8           
+     3150 0x00c4e: DUP7           
+     3151 0x00c4f: DUP7           
+     3152 0x00c50: PUSH2          0x360
+     3155 0x00c53: JUMP           
+     3156 0x00c54: JUMPDEST       
+     3157 0x00c55: PUSH2          0xca0
+     3160 0x00c58: JUMPI          
+     3161 0x00c59: PUSH1          0x40
+
+STRING 'Key mismatch'
+   guard JUMPI @ pc 3294 0x00cde -> dest 
+     3282 0x00cd2: PUSH1          0x40
+     3284 0x00cd4: MLOAD          
+     3285 0x00cd5: DUP1           
+     3286 0x00cd6: SWAP2          
+     3287 0x00cd7: SUB            
+     3288 0x00cd8: SWAP1          
+     3289 0x00cd9: SHA3           
+     3290 0x00cda: EQ             
+     3291 0x00cdb: PUSH2          0xd26
+     3294 0x00cde: JUMPI          
+     3295 0x00cdf: PUSH1          0x40
+
+STRING 'Invalid recipient'
+   guard JUMPI @ pc 3543 0x00dd7 -> dest 
+     3529 0x00dc9: DUP2           
+     3530 0x00dca: PUSH1          0x1
+     3532 0x00dcc: PUSH1          0x1
+     3534 0x00dce: PUSH1          0xa0
+     3536 0x00dd0: SHL            
+     3537 0x00dd1: SUB            
+     3538 0x00dd2: AND            
+     3539 0x00dd3: EQ             
+     3540 0x00dd4: PUSH2          0xe1f
+     3543 0x00dd7: JUMPI          
+     3544 0x00dd8: PUSH1          0x40
+
+STRING 'Not rage quit'
+   guard JUMPI @ pc 3781 0x00ec5 -> dest 
+     3764 0x00eb4: ISZERO         
+     3765 0x00eb5: PUSH2          0xec0
+     3768 0x00eb8: JUMPI          
+     3769 0x00eb9: PUSH2          0xec0
+     3772 0x00ebc: PUSH2          0x2d5f
+     3775 0x00ebf: JUMP           
+     3776 0x00ec0: JUMPDEST       
+     3777 0x00ec1: EQ             
+     3778 0x00ec2: PUSH2          0xf0d
+     3781 0x00ec5: JUMPI          
+     3782 0x00ec6: PUSH1          0x40
+
+STRING 'Not final sweep'
+   guard JUMPI @ pc 3907 0x00f43 -> dest 
+     3886 0x00f2e: PUSH2          0x2cba
+     3889 0x00f31: JUMP           
+     3890 0x00f32: JUMPDEST       
+     3891 0x00f33: PUSH8          0xffffffffffffffff
+     3900 0x00f3c: AND            
+     3901 0x00f3d: DUP2           
+     3902 0x00f3e: LT             
+     3903 0x00f3f: ISZERO         
+     3904 0x00f40: PUSH2          0xf8b
+     3907 0x00f43: JUMPI          
+     3908 0x00f44: PUSH1          0x40
+
+STRING 'Final sweep <= 15'
+   guard JUMPI @ pc 4016 0x00fb0 -> dest 
+     3995 0x00f9b: PUSH2          0x2dad
+     3998 0x00f9e: JUMP           
+     3999 0x00f9f: JUMPDEST       
+     4000 0x00fa0: SWAP1          
+     4001 0x00fa1: POP            
+     4002 0x00fa2: PUSH8          0xd02ab486cedc0000
+     4011 0x00fab: DUP2           
+     4012 0x00fac: GT             
+     4013 0x00fad: PUSH2          0xff8
+     4016 0x00fb0: JUMPI          
+     4017 0x00fb1: PUSH1          0x40
+
+STRING 'Only manager'
+   guard JUMPI @ pc 5632 0x01600 -> dest 
+     5617 0x015f1: ADD            
+     5618 0x015f2: SWAP1          
+     5619 0x015f3: PUSH2          0x15fc
+     5622 0x015f6: SWAP2          
+     5623 0x015f7: SWAP1          
+     5624 0x015f8: PUSH2          0x2eb4
+     5627 0x015fb: JUMP           
+     5628 0x015fc: JUMPDEST       
+     5629 0x015fd: PUSH2          0x1648
+     5632 0x01600: JUMPI          
+     5633 0x01601: PUSH1          0x40
+

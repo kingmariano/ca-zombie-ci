@@ -16,8 +16,9 @@
 | 2 | **FullWithdrawals** `0x8F6839b0…` (full-sweep claim) | pays from #1 | **$0** | needs `isUserEnabledForKnotWithdrawal[msg.sender]` (rage quit), `!userWithdrawn`, a valid final-sweep report **and a designated-verifier ECDSA signature** ("Signature expired"/"ECDSA: invalid signature"/"Not rage quit" in bytecode) | knot 78's 32.0053 ETH + knot 44's 31.0862 ETH claimable by their owners if the verifier signs |
 | 3 | **ShanghaiSweepReporting** `0x64f4fCFb…` (partial withdrawals) | pays from #1 | **$0** | report validation ("Invalid Report", "Active balance", "Invalid total ETH sent for BLS key") + verifier ECDSA + per-user rage-quit gates + `Sweep already reported` replay guard; fork-proven reverts | 21.37 ETH "reportedNotWithdrawn" counters are **stale** (not a separate pot; see §5) |
 | 4 | **TransactionRouter** `0x03F4310b…` (rage quit / exit entry) | — | **$0** | caller must be the knot's user/smart-wallet owner or an authorized representative; rage quit burns the caller's own derivatives | — |
-| 5 | **RageQuitAssistant** instances (dust) | ≈ 0.5 ETH total | **$0** | permissionless claims pay **recorded beneficiaries only** (dETH/sETH/collateralised-slot owners) | residual dust claims for the recorded parties |
-| 6 | dETH / savETH tokens | 16.89 / 4.91 supply | **$0** | redemptions route through the same core-gated + verifier-gated paths; no free mint | — |
+| 5 | **RageQuitAssistant** instances (dust) | 0.665519 ETH across 46 assistants | **$0** | permissionless claims pay **recorded beneficiaries only** (dETH/sETH/collateralised-slot owners) | residual dust claims for the recorded parties |
+| 6 | dETH / savETH tokens | 16.89 / 4.91 supply | **$0** | redemptions burn caller-owned dETH 1:1 for the same wei (traced); reporting/minting needs the verifier signature | — |
+| 7 | 23 LSD networks (LSM + vaults + sETH) | dust only (≈0.1 ETH) | **$0** | all network contracts hold ~0 ETH (parallel scan, block 26,178,916) | — |
 
 **Total live extractable by an external unprivileged attacker today: $0.00 (confidence HIGH).**
 Latent (verifier-dependent) holder recovery: **$161,798.49** (64.3057 ETH @ $2,516.08; DefiLlama ETH price 2026-10-12). Currently **S/P** (stuck unless the privileged off-chain verifier key signs again).
@@ -108,7 +109,7 @@ Costs: none of the above is a viable attack — every path reverts before any va
   - `test_04` attacker sweep report/withdraw reverts (gas 96,487)
   - `test_05` live state: 64.305717944108928421 ETH, knot-78 enabled/not-withdrawn, knot-44 not-enabled, verifier EOA + nonce 0 (gas 167,170)
   - `test_06` stale `reportedNotWithdrawn` counter for claimed knot 81 (gas 29,295)
-- CI: see `ci-log.txt` / `ci-artifacts/` (run URLs recorded in `summary.json`); custom `ci/run.sh` dumps live state to `ci-out/state.json`.
+- CI run: **https://github.com/kingmariano/ca-zombie-ci/actions/runs/38310577743** — `success`, all 6/6 tests PASS; custom `ci/run.sh` state dump (block 26,179,073) confirms the balance is unchanged (64.305717944108928421 ETH) and both knots still unclaimed. Log: `ci-log.txt`; artifacts: `ci-artifacts/result-stakehouse/ci-out/{state.json,state_dump.txt}`.
 
 ## 8. Verdict, residual and latent risk
 
@@ -121,6 +122,7 @@ Costs: none of the above is a viable attack — every path reverts before any va
 
 - Live reads at block 26,178,656 (eth_call/eth_getBalance/eth_getStorageAt via archive RPC), Etherscan V2 logs/ABI, beacon-chain API for validator identities.
 - Bytecode disassembly (pyevmasm/heimdall) of AccountManager impl `0x9227cb6d…`, TransactionRouter impl `0x6930f6c4…`, ShanghaiSweepReporting impl `0xdf39face…`, FullWithdrawals impl `0xb4d61d73…`; audit text (Runtime Verification, "Blockswap Stakehouse Withdrawals", 2023-06-29); npm `@blockswaplab/stakehouse-protocol-abis` 2.2.6; verified sources: StakeHouseUniverse package, SlotSettlementRegistry, dETH.
+- Parallel deep dives (children): `analysis/childA/sweep_reporting_gating.md` (deployed-selector map, per-function gates, signature-coverage oracle: **all report fields signed except `report.stakeHouse`** — latent front-run window inside the report deadline; payout paths burn caller-owned dETH 1:1 and pay `msg.sender`; reporter bot dead since 2024-08-07), `analysis/childB/` (FullWithdrawals/SweepReporting heimdall decompiles + router gate strings), `analysis/childC/` (46 assistants 0.665519 ETH dust; 23 LSD networks ~0 ETH; verifier EOA never transacted; QueueFlushETHClaim no events).
 - Files: `README.md` · `summary.json` · `analysis/LIVE-STATE.md` (consolidated evidence) · `analysis/*.json` (state dumps) · `analysis/*.py` (read-only scripts) · `analysis/childA|childB|childC/` (parallel deep dives) · `poc/` (Foundry project, 6 tests) · `ci/run.sh` (state dump) · `ci-out/` · `ci-log.txt` · `ci-artifacts/`.
 
 ## 10. Caveats, files index
