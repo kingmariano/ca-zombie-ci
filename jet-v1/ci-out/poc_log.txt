@@ -1,0 +1,174 @@
+===================================================================
+ Jet v1 (Solana) frozen-oracle PoC — LiteSVM, cloned mainnet state
+ accounts.json dump slot = 456071544
+ clock set to slot=456071544 unix_timestamp=1791813122
+ no network, no real-chain transactions
+===================================================================
+ loaded 21 accounts from accounts.json + jet program ELF
+ attacker = 2ibkSmTRkWWyooCHvj4nwkXRwKqcRZjnPUeEoPR6u3eD (airdrop 10 SOL)
+ fabricated attacker solETH account HJoQJbeJaroBsHNXEH7xCiYsnQtHZxBeCM9xwJ26JSHJ amount_raw=100000000
+ fabricated attacker USDC account Aq32vigPUdEmR3oaiQaEWhC2bV1LnnLsSFXaiqddCqVL amount_raw=0
+ fabricated attacker WSOL account 4UmeG1ZC1hy7WNbEHrTxjJn9yBiYiTxyRDCR3i8ve2R6 amount_raw=0
+ obligation=8wXAqFPRScsgYznaeVV8BnNqoGTNdh5p4LmLz4DL3o6r bump=255
+ solETH deposit=5g5kfYvfjAw9PBgrQ7pWR3sMdEqw4H8xjSneRRPf7fdW bump=255
+ solETH collateral=J9iEGzqnMo6uLApYeZLQFem7naxaa7CKsKgwjWdR9YPD bump=253
+ USDC loan=4zTpSjDNPgxg9zB7CAyfBVZVYjSGbaxU6rV6XD24Eqri bump=254
+ SOL loan=5FcLRDA7r9pX9YDTaDRWXz5pdhEBPx8uug6bsKMNttuU bump=255
+ pre-state market cache / vaults: {"market":{"SOL":{"deposit_note_exchange_rate":1.027617188866156,"invalidated":0,"last_updated_slot":451021492,"liquidation_bonus_bps":300,"loan_note_exchange_rate":1.07770396665952,"min_collateral_ratio":1.25,"price":119.23378},"USDC":{"deposit_note_exchange_rate":1.147417123593063,"invalidated":0,"last_updated_slot":451021492,"liquidation_bonus_bps":300,"loan_note_exchange_rate":1.233634211314426,"min_collateral_ratio":1.25,"price":1.0},"flags":0,"solBTC":{"deposit_note_exchange_rate":1.000353968656305,"invalidated":0,"last_updated_slot":451021492,"liquidation_bonus_bps":300,"loan_note_exchange_rate":0.519931966050607,"min_collateral_ratio":1.25,"price":52326.9113705},"solETH":{"deposit_note_exchange_rate":1.001789267296966,"invalidated":0,"last_updated_slot":451021492,"liquidation_bonus_bps":300,"loan_note_exchange_rate":1.038069461774314,"min_collateral_ratio":1.25,"price":2304.08750074}},"vault_sol_eth_raw":1357014,"vault_sol_raw":1274172220813,"vault_usdc_raw":16246540570}
+[ OK ] refresh_reserve(solETH,USDC,SOL)  (ixs=3 cu=79854 logs=12)
+ market cache after refresh: {"SOL":{"deposit_note_exchange_rate":1.027617188866156,"invalidated":1,"last_updated_slot":451021492,"liquidation_bonus_bps":300,"loan_note_exchange_rate":1.07770396665952,"min_collateral_ratio":1.25,"price":119.23378},"USDC":{"deposit_note_exchange_rate":1.147417123593063,"invalidated":1,"last_updated_slot":451021492,"liquidation_bonus_bps":300,"loan_note_exchange_rate":1.233634211314426,"min_collateral_ratio":1.25,"price":1.0},"flags":0,"solBTC":{"deposit_note_exchange_rate":1.000353968656305,"invalidated":0,"last_updated_slot":451021492,"liquidation_bonus_bps":300,"loan_note_exchange_rate":0.519931966050607,"min_collateral_ratio":1.25,"price":52326.9113705},"solETH":{"deposit_note_exchange_rate":1.001789267296966,"invalidated":1,"last_updated_slot":451021492,"liquidation_bonus_bps":300,"loan_note_exchange_rate":1.038069461774314,"min_collateral_ratio":1.25,"price":2304.08750074}}
+[ OK ] refresh_reserve(solETH) iter 1  (ixs=1 cu=25971 logs=4)
+[ OK ] refresh_reserve(solETH) iter 2  (ixs=1 cu=30369 logs=4)
+ reserve solETH cache is fully refreshed (slot 456071544)
+[ OK ] refresh_reserve(USDC) iter 1  (ixs=1 cu=27248 logs=4)
+[ OK ] refresh_reserve(USDC) iter 2  (ixs=1 cu=31552 logs=4)
+ reserve USDC cache is fully refreshed (slot 456071544)
+[ OK ] refresh_reserve(SOL) iter 1  (ixs=1 cu=26627 logs=4)
+[ OK ] refresh_reserve(SOL) iter 2  (ixs=1 cu=31576 logs=4)
+ reserve SOL cache is fully refreshed (slot 456071544)
+[ OK ] init_obligation  (ixs=1 cu=8303 logs=6)
+[ OK ] init_deposit_account(solETH)  (ixs=2 cu=33025 logs=13)
+[ OK ] deposit(91.24 solETH)  (ixs=2 cu=38562 logs=13)
+ deposit account notes after deposit = 91076163 raw (solETH notes, 6dp)
+[ OK ] init_collateral_account(solETH)  (ixs=2 cu=39821 logs=13)
+[ OK ] deposit_collateral(all notes)  (ixs=2 cu=33702 logs=11)
+ collateral account notes = 91076163 raw
+[ OK ] init_loan_account(USDC)  (ixs=2 cu=39561 logs=13)
+[ OK ] init_loan_account(SOL)  (ixs=2 cu=38070 logs=13)
+ vault balances before borrow attempts: USDC=16246540570 SOL=1274172220813
+ expected: every borrow reverts at src/instructions/borrow.rs:110:5 (borrow disabled)
+[FAIL] probe borrow(USDC,1,no_refresh)  err=InstructionError(0, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7365 of 200000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] probe borrow(USDC,0)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] probe borrow(USDC,1)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] probe borrow(SOL,1)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] probe borrow(USDC,1,writable_market)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] borrow(USDC, 16246540570)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] borrow(USDC, 16246540569)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] borrow(USDC, 16238417300)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] borrow(USDC, 16230294030)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] borrow(USDC, 16222170760)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] borrow(SOL, 1274172220813)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] borrow(SOL, 1274172220812)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] borrow(SOL, 1273535134703)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] borrow(SOL, 1272898048593)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+[FAIL] borrow(SOL, 1272260962483)  err=InstructionError(1, ProgramFailedToComplete)
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: reserve refreshed
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]
+        | Program log: panicked at src/instructions/borrow.rs:110:5
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units
+        | Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked
+ borrow-like steps: 15, all failed with borrow.rs:110:5 panic: true; no funds moved: true
+ vault balances after borrow attempts: USDC=16246540570 SOL=1274172220813 (unchanged=true)
+
+=== RESULT: blocked_borrow_disabled ===

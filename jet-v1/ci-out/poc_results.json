@@ -1,0 +1,673 @@
+{
+  "accounts_json_slot": 456071544,
+  "attack": "jet-v1 frozen solETH Pyth oracle -> deposit collateral, borrow the full USDC+SOL vaults",
+  "attacker_sol_raw": 0,
+  "attacker_usdc_raw": 0,
+  "block_evidence": {
+    "disable_commit": "66991f4c8f14 (jet-v1 repo mirror: judithjr/jet-v1 branch no-borrows)",
+    "disable_commit_message": "disable borrows",
+    "disable_commit_time_utc": "2022-11-10T05:19:06Z",
+    "elf_check": "handler body string 'Requested a debt that would exceed the maximum potential supply for a token.' is absent from the deployed ELF (dead code eliminated after the panic); the panic Location struct (borrow.rs, line 110 col 5) is present in rodata",
+    "interpretation": "no external attacker can borrow from this market; the USDC/SOL/solETH vaults remain but cannot be extracted through the borrow path",
+    "kind": "borrow instruction hard-disabled in the deployed program",
+    "onchain_last_upgrade_slot": 160301534,
+    "onchain_last_upgrade_time_utc": "2022-11-10T12:43:29Z",
+    "panic_location": "src/instructions/borrow.rs:110:5",
+    "panic_observed_on": "every borrow attempt: amount 0 / 1 / full vault, USDC and SOL reserves, with and without refresh_reserve in the same tx, market read-only or writable"
+  },
+  "borrowed_sol_raw": 0,
+  "borrowed_usdc_raw": 0,
+  "clock_slot": 456071544,
+  "clock_unix_timestamp": 1791813122,
+  "cost_estimate": {
+    "gas_and_rent_sol_note": "attacker started with 10 native SOL; only fees/rent consumed",
+    "note": "hypothetical cost of the buy-solETH leg under the pre-disable program; nothing was extracted in this run",
+    "sol_eth_spent_raw": 91240000,
+    "sol_eth_usd_at_real_298": 27189.519999999997
+  },
+  "final_market_cache": {
+    "SOL": {
+      "deposit_note_exchange_rate": 1.027639721168445,
+      "invalidated": 0,
+      "last_updated_slot": 456071544,
+      "liquidation_bonus_bps": 300,
+      "loan_note_exchange_rate": 1.078097228242565,
+      "min_collateral_ratio": 1.25,
+      "price": 119.23378
+    },
+    "USDC": {
+      "deposit_note_exchange_rate": 1.149185613331274,
+      "invalidated": 0,
+      "last_updated_slot": 456071544,
+      "liquidation_bonus_bps": 300,
+      "loan_note_exchange_rate": 1.236261640119765,
+      "min_collateral_ratio": 1.25,
+      "price": 1.0
+    },
+    "flags": 0,
+    "solBTC": {
+      "deposit_note_exchange_rate": 1.000353968656305,
+      "invalidated": 0,
+      "last_updated_slot": 451021492,
+      "liquidation_bonus_bps": 300,
+      "loan_note_exchange_rate": 0.519931966050607,
+      "min_collateral_ratio": 1.25,
+      "price": 52326.9113705
+    },
+    "solETH": {
+      "deposit_note_exchange_rate": 1.001798900967768,
+      "invalidated": 0,
+      "last_updated_slot": 456071544,
+      "liquidation_bonus_bps": 300,
+      "loan_note_exchange_rate": 1.038373166628822,
+      "min_collateral_ratio": 1.25,
+      "price": 2304.08750074
+    }
+  },
+  "notes": [
+    "all accounts cloned from mainnet into analysis/accounts.json; no RPC used while running this PoC",
+    "refresh_reserve is iterative (one week of interest per call); the PoC loops it until the market cache is valid before each dependent instruction",
+    "PDA seeds verified against live on-chain data (1,200 obligations, 2,132 positions)",
+    "account metas come from the deployed IDL v0.2.0 / jet-proto-v1-cpi 0.23.0",
+    "the pre-disable attack path is fully reproduced up to the borrow: refresh, obligation, deposit, collateral all succeed on cloned state"
+  ],
+  "oracle_prices": {
+    "SOL": 119.23378,
+    "USDC": 1.0,
+    "solETH": 2304.08750074
+  },
+  "outcome_summary": "ATTACK BLOCKED: the deployed program panics unconditionally at the start of the borrow handler (src/instructions/borrow.rs:110:5); no debt can be created and no vault funds can be withdrawn via borrow",
+  "post": {
+    "attacker_native_lamports": 9969801720,
+    "attacker_sol_eth_left_raw": 8760000,
+    "attacker_sol_raw": 0,
+    "attacker_usdc_raw": 0,
+    "collateral_notes_raw": 91076163,
+    "deposit_notes_raw": 0,
+    "loan_notes_sol_raw": 0,
+    "loan_notes_usdc_raw": 0,
+    "market": {
+      "SOL": {
+        "deposit_note_exchange_rate": 1.027639721168445,
+        "invalidated": 0,
+        "last_updated_slot": 456071544,
+        "liquidation_bonus_bps": 300,
+        "loan_note_exchange_rate": 1.078097228242565,
+        "min_collateral_ratio": 1.25,
+        "price": 119.23378
+      },
+      "USDC": {
+        "deposit_note_exchange_rate": 1.149185613331274,
+        "invalidated": 0,
+        "last_updated_slot": 456071544,
+        "liquidation_bonus_bps": 300,
+        "loan_note_exchange_rate": 1.236261640119765,
+        "min_collateral_ratio": 1.25,
+        "price": 1.0
+      },
+      "flags": 0,
+      "solBTC": {
+        "deposit_note_exchange_rate": 1.000353968656305,
+        "invalidated": 0,
+        "last_updated_slot": 451021492,
+        "liquidation_bonus_bps": 300,
+        "loan_note_exchange_rate": 0.519931966050607,
+        "min_collateral_ratio": 1.25,
+        "price": 52326.9113705
+      },
+      "solETH": {
+        "deposit_note_exchange_rate": 1.001798900967768,
+        "invalidated": 0,
+        "last_updated_slot": 456071544,
+        "liquidation_bonus_bps": 300,
+        "loan_note_exchange_rate": 1.038373166628822,
+        "min_collateral_ratio": 1.25,
+        "price": 2304.08750074
+      }
+    },
+    "vault_sol_eth_raw": 92597014,
+    "vault_sol_raw": 1274172220813,
+    "vault_usdc_raw": 16246540570
+  },
+  "pre": {
+    "market": {
+      "SOL": {
+        "deposit_note_exchange_rate": 1.027617188866156,
+        "invalidated": 0,
+        "last_updated_slot": 451021492,
+        "liquidation_bonus_bps": 300,
+        "loan_note_exchange_rate": 1.07770396665952,
+        "min_collateral_ratio": 1.25,
+        "price": 119.23378
+      },
+      "USDC": {
+        "deposit_note_exchange_rate": 1.147417123593063,
+        "invalidated": 0,
+        "last_updated_slot": 451021492,
+        "liquidation_bonus_bps": 300,
+        "loan_note_exchange_rate": 1.233634211314426,
+        "min_collateral_ratio": 1.25,
+        "price": 1.0
+      },
+      "flags": 0,
+      "solBTC": {
+        "deposit_note_exchange_rate": 1.000353968656305,
+        "invalidated": 0,
+        "last_updated_slot": 451021492,
+        "liquidation_bonus_bps": 300,
+        "loan_note_exchange_rate": 0.519931966050607,
+        "min_collateral_ratio": 1.25,
+        "price": 52326.9113705
+      },
+      "solETH": {
+        "deposit_note_exchange_rate": 1.001789267296966,
+        "invalidated": 0,
+        "last_updated_slot": 451021492,
+        "liquidation_bonus_bps": 300,
+        "loan_note_exchange_rate": 1.038069461774314,
+        "min_collateral_ratio": 1.25,
+        "price": 2304.08750074
+      }
+    },
+    "vault_sol_eth_raw": 1357014,
+    "vault_sol_raw": 1274172220813,
+    "vault_usdc_raw": 16246540570
+  },
+  "runner_status": "blocked_borrow_disabled",
+  "status": "blocked_borrow_disabled",
+  "steps": [
+    {
+      "cu": 79854,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 25968 of 600000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: performing partial reserve refresh: additional iterations required",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 27241 of 574032 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: performing partial reserve refresh: additional iterations required",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 26645 of 546791 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "refresh_reserve(solETH,USDC,SOL)"
+    },
+    {
+      "cu": 25971,
+      "invalidated_before": 1,
+      "last_updated_before": 451021492,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: performing partial reserve refresh: additional iterations required",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 25971 of 200000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "refresh_reserve(solETH) iter 1"
+    },
+    {
+      "cu": 30369,
+      "invalidated_before": 1,
+      "last_updated_before": 451021492,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 30369 of 200000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "refresh_reserve(solETH) iter 2"
+    },
+    {
+      "cu": 27248,
+      "invalidated_before": 1,
+      "last_updated_before": 451021492,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: performing partial reserve refresh: additional iterations required",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 27248 of 200000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "refresh_reserve(USDC) iter 1"
+    },
+    {
+      "cu": 31552,
+      "invalidated_before": 1,
+      "last_updated_before": 451021492,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 31552 of 200000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "refresh_reserve(USDC) iter 2"
+    },
+    {
+      "cu": 26627,
+      "invalidated_before": 1,
+      "last_updated_before": 451021492,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: performing partial reserve refresh: additional iterations required",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 26627 of 200000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "refresh_reserve(SOL) iter 1"
+    },
+    {
+      "cu": 31576,
+      "invalidated_before": 1,
+      "last_updated_before": 451021492,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 31576 of 200000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "refresh_reserve(SOL) iter 2"
+    },
+    {
+      "cu": 8303,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program 11111111111111111111111111111111 invoke [2]",
+        "Program 11111111111111111111111111111111 success",
+        "Program log: initialized obligation account",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 8303 of 200000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "init_obligation"
+    },
+    {
+      "cu": 33025,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program 11111111111111111111111111111111 invoke [2]",
+        "Program 11111111111111111111111111111111 success",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 150 of 371480 compute units",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+        "Program log: initialized deposit account",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 12688 of 379663 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "init_deposit_account(solETH)"
+    },
+    {
+      "amount_raw": 91240000,
+      "cu": 38562,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 76 of 365384 compute units",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 119 of 362834 compute units",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 18225 of 379663 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "deposit(91.24 solETH)"
+    },
+    {
+      "cu": 39821,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program 11111111111111111111111111111111 invoke [2]",
+        "Program 11111111111111111111111111111111 success",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 150 of 371113 compute units",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+        "Program log: initialized collateral account",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 19495 of 379674 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "init_collateral_account(solETH)"
+    },
+    {
+      "cu": 33702,
+      "logs_tail": [
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 20326 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 76 of 369781 compute units",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+        "Program log: qQ5mlJuJEusZg8p8ebwtn64kqII6F4vfj0bfYqe00knL7KvFtX3iphaNiBnbhXXUH2LWzBXFNFrJS+KN/mDDLNv4fDjjnvDwAUO2bQUAAAAA",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 13376 of 379674 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "notes_raw": 91076163,
+      "ok": true,
+      "step": "deposit_collateral(all notes)"
+    },
+    {
+      "cu": 39561,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program 11111111111111111111111111111111 invoke [2]",
+        "Program 11111111111111111111111111111111 success",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 150 of 369921 compute units",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+        "Program log: initialized loan account",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 18043 of 378482 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "init_loan_account(USDC)"
+    },
+    {
+      "cu": 38070,
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program 11111111111111111111111111111111 invoke [2]",
+        "Program 11111111111111111111111111111111 success",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 150 of 369917 compute units",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+        "Program log: initialized loan account",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 16548 of 378478 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success"
+      ],
+      "ok": true,
+      "step": "init_loan_account(SOL)"
+    },
+    {
+      "amount_raw": 1,
+      "cu": 7365,
+      "err": "InstructionError(0, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7365 of 200000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "market_writable": false,
+      "ok": false,
+      "step": "probe borrow(USDC,1,no_refresh)",
+      "with_refresh": false
+    },
+    {
+      "amount_raw": 0,
+      "cu": 28882,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "market_writable": false,
+      "ok": false,
+      "step": "probe borrow(USDC,0)",
+      "with_refresh": true
+    },
+    {
+      "amount_raw": 1,
+      "cu": 28882,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "market_writable": false,
+      "ok": false,
+      "step": "probe borrow(USDC,1)",
+      "with_refresh": true
+    },
+    {
+      "amount_raw": 1,
+      "cu": 28886,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "market_writable": false,
+      "ok": false,
+      "step": "probe borrow(SOL,1)",
+      "with_refresh": true
+    },
+    {
+      "amount_raw": 1,
+      "cu": 28882,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "market_writable": true,
+      "ok": false,
+      "step": "probe borrow(USDC,1,writable_market)",
+      "with_refresh": true
+    },
+    {
+      "amount_raw": 16246540570,
+      "cu": 28882,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "ok": false,
+      "reserve": "USDC",
+      "step": "borrow(USDC, 16246540570)"
+    },
+    {
+      "amount_raw": 16246540569,
+      "cu": 28882,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "ok": false,
+      "reserve": "USDC",
+      "step": "borrow(USDC, 16246540569)"
+    },
+    {
+      "amount_raw": 16238417300,
+      "cu": 28882,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "ok": false,
+      "reserve": "USDC",
+      "step": "borrow(USDC, 16238417300)"
+    },
+    {
+      "amount_raw": 16230294030,
+      "cu": 28882,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "ok": false,
+      "reserve": "USDC",
+      "step": "borrow(USDC, 16230294030)"
+    },
+    {
+      "amount_raw": 16222170760,
+      "cu": 28882,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21518 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378482 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "ok": false,
+      "reserve": "USDC",
+      "step": "borrow(USDC, 16222170760)"
+    },
+    {
+      "amount_raw": 1274172220813,
+      "cu": 28886,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "ok": false,
+      "reserve": "SOL",
+      "step": "borrow(SOL, 1274172220813)"
+    },
+    {
+      "amount_raw": 1274172220812,
+      "cu": 28886,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "ok": false,
+      "reserve": "SOL",
+      "step": "borrow(SOL, 1274172220812)"
+    },
+    {
+      "amount_raw": 1273535134703,
+      "cu": 28886,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "ok": false,
+      "reserve": "SOL",
+      "step": "borrow(SOL, 1273535134703)"
+    },
+    {
+      "amount_raw": 1272898048593,
+      "cu": 28886,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "ok": false,
+      "reserve": "SOL",
+      "step": "borrow(SOL, 1272898048593)"
+    },
+    {
+      "amount_raw": 1272260962483,
+      "cu": 28886,
+      "err": "InstructionError(1, ProgramFailedToComplete)",
+      "logs_tail": [
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: reserve refreshed",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 21522 of 400000 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU success",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU invoke [1]",
+        "Program log: panicked at src/instructions/borrow.rs:110:5",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU consumed 7364 of 378478 compute units",
+        "Program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU failed: SBF program panicked"
+      ],
+      "ok": false,
+      "reserve": "SOL",
+      "step": "borrow(SOL, 1272260962483)"
+    }
+  ],
+  "vault_sol_after_raw": 1274172220813,
+  "vault_sol_before_raw": 1274172220813,
+  "vault_usdc_after_raw": 16246540570,
+  "vault_usdc_before_raw": 16246540570,
+  "would_have_borrowed": {
+    "note": "amount the pre-2022-11-10 program would have let the attacker borrow; NOT extractable now",
+    "sol_raw": 1274172220813,
+    "usd_at_oracle": 168170.91082852866,
+    "usdc_raw": 16246540570
+  }
+}

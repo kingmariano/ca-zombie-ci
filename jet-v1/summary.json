@@ -1,0 +1,47 @@
+{
+  "finding": "jet-v1",
+  "title": "Jet V1 (Solana) — borrow disabled in deployed program; vaults are note-holders' funds, not attacker-extractable",
+  "chains": ["solana"],
+  "headline_extractable_usd": 0.06,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0.06, "H-O": 155720.15, "P": 155720.15, "S": 0},
+  "latest_block": 456115416,
+  "block_numbers": {"solana": 456115416},
+  "targets_checked": 28493,
+  "live_targets": 5,
+  "closed_reasons": [
+    "borrow handler hard-disabled in the deployed program: unconditional panic at src/instructions/borrow.rs:110:5 (LiteSVM: 15/15 variants blocked; commit 66991f4c8f14 'disable borrows' deployed at slot 160,301,534 = 2022-11-10; vaults unchanged after attempts)",
+    "withdraw/withdrawTokens require the depositor signer and burn that depositor's own notes (observed live 2026-09-27)",
+    "no delegate or close authority on any of the 21,194 market-authority-owned token accounts",
+    "market flags/owner/config/upgrade surfaces are privileged (off-curve owner PDA; upgrade authority 6Mi9fKyq... with unknown custody)"
+  ],
+  "poc": {
+    "tests_passed": 29,
+    "tests_total": 29,
+    "note": "LiteSVM runner: 14/14 setup+state steps succeeded (refresh/init/deposit 91.24 solETH/deposit_collateral/init_loan_accounts); 15/15 borrow variants panicked at borrow.rs:110:5; vault balances unchanged after attempts. Every step reached its expected outcome.",
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38273270502",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38272670757"
+    ]
+  },
+  "key_facts": [
+    "Custody account 7gpj9cpzBBW9Ci1yMwWz7iGbQYpm5fZmadNQyrYsqch8 is the off-curve market-authority PDA of Jet v1 market 9oiXzad28vLhT2TkFoVRRRcwYKrSF7E3XPUJpwcarCAo (program JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU); it owns 21,194 token accounts (4 reserve vaults + ~21k per-user deposit/collateral PDAs).",
+    "Live vaults at finalized slot 456115416 (unchanged since triage): USDC 16,246.540570; SOL 1,274.172220813; solBTC 4.956563; solETH 1.357014 = $155,720 real (Jupiter v3) / $157,285 (DefiLlama) / $430,659 at frozen oracle prices.",
+    "Pyth legacy feeds are frozen at 2024-08-29 (USDC, solBTC, solETH) and 2024-11-02 (SOL); refresh_reserve only checks price>=0 and confidence, so 2024 prices are still copied into the market (last refresh 2026-09-27 by a keeper bot).",
+    "The frozen prices overvalue solBTC by ~958x ($52,326.91 vs $54.62) and solETH by ~7.8x ($2,304.09 vs $296.50) vs real DEX prices.",
+    "Pre-disable drain (PoC): buy ~91.24 solETH (~$30K) or ~4.02 solBTC (~$220), post as collateral, borrow entire USDC+SOL vaults (oracle debt $168,163; collateral needed $210,204) and default; setup steps all SUCCEED on live state, but every borrow panics — blocked.",
+    "Deployed ELF sha256 2ccc9a0e28a50d50ae85ca25ecf7a783847d0fd11891e626e7be5d90c09dc352 matches the live ProgramData ELF; on-chain IDL v0.2.0 (24 instructions) matches the public snapshot.",
+    "ProgramData internal last-deploy slot 160,301,534 (2022-11-10 12:43:29 UTC); upgrade authority 6Mi9fKyqpFhtBJnjy3Ym3MmQZqGZAGFQNCYvp5NPsyt (on-curve, 0 lamports); Jan/Feb 2024 Squads-multisig txs touched the ProgramData but did not change the deploy slot.",
+    "Obligation census: 7,289 obligations; total debt $54,394 oracle / $51,406 real; total collateral $485,042 oracle / $206,452 real; 26 oracle-unhealthy obligations; exact program-formula liquidation bonus universe $22.61 oracle-USD; real-terms leftover PnL ≈ $0.06 (obligation 7c6HkPMpv92MaMTHpHXHa9CxJnHmdXzAmnNqz4bfL2jo).",
+    "Activity census (1,000 sigs, 2026-07-07..2026-09-27): only keeper bots; the Kamino-integrated bot C3MPbLBQbREEJ56ku8SNHrHMh5q3iYKUkAYFQdvmcWP8 sweeps dust liquidations (net +$0.30 USDC in its 2026-09-27 tx); no non-bot borrows/deposits; no Jet activity after 2026-09-27.",
+    "Withdraw path works (proven live): a bot tx at slot 451,021,492 burned the depositor's notes and moved USDC from the vault — so note holders can still redeem vault cash (H-O, first-come-first-served; claims exceed cash)."
+  ],
+  "caveats": [
+    "The deployed 2022-11 binary differs from the public Dec-2021 source in feature set; account layouts, on-chain IDL, and LiteSVM execution were used as ground truth (some instructions only exercised where executed/observed).",
+    "Real prices for solBTC/solETH are thin-market DEX prices (solBTC liquidity ~$0.5k; solETH ~$46k) — indicative; they lower E-U, never raise it.",
+    "H-O recovery assumes note holders still hold their keys and act before the vault is drained; note claims exceed vault cash, so recovery is proportionally less for late withdrawal.",
+    "The 2024 Squads multisig activity touching the ProgramData was not fully decoded (Squads v3 outer program); it did not change the deploy slot.",
+    "Alchemy (local key) was over its monthly cap and not used; all reads used public, keyless endpoints."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0.06 live (cents-level dust liquidations): the triage's $156,438 in Jet v1 vaults is real but the drain path (post dead solBTC/solETH as collateral at frozen-2024 Pyth prices, borrow, default) is hard-blocked because the deployed program has panicked on borrow since 2022-11-10 — the funds are deposit-note holders' (H-O, up to ~$155.7K, first-come-first-served) with an upgrade-authority override (P)."
+}

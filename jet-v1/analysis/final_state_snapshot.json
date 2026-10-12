@@ -1,0 +1,90 @@
+{
+  "finding": "Jet V1 (Solana) — L2 Phase-2 deep dive",
+  "generated_at_utc": "2026-10-12T17:15:00Z",
+  "status": "read-only; no mainnet transactions; PoC executed only in LiteSVM against cloned state",
+  "finalized_slot": 456115416,
+  "program": {
+    "program_id": "JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU",
+    "upgradeable": true,
+    "programdata": "45X4uzRnRvZoiG6X5ho6V8FJUU7HVxDApuyoL8mwgiP9",
+    "internal_last_deploy_slot": 160301534,
+    "internal_last_deploy_time_utc": "2022-11-10T12:43:29Z",
+    "upgrade_authority": "6Mi9fKyqpFhtBJnjy3Ym3MmQZqGZAGFQNCYvp5NPsyt",
+    "upgrade_authority_on_curve": true,
+    "upgrade_authority_account_lamports": 0,
+    "deployed_elf_sha256": "2ccc9a0e28a50d50ae85ca25ecf7a783847d0fd11891e626e7be5d90c09dc352",
+    "onchain_idl_accounts": [
+      "3u4ha5yG57rsDsKPvRvcZ4B9tZxSFxpNZPCmHAWFqb71 (v0.0.0)",
+      "6HgqgVkQfbBcccoXwp23cC8BDHgDizrAf8hD9JwDY2FX (v0.0.0)",
+      "6vMStqkJ7Bebdq3bqYo4JaE45ffBwuRJ7vd1aEZiod54 (v0.2.0)",
+      "CjqQ9kx9STBLtSUdypHTjNJsLE4t6uQossjdSzq9jdmY (v0.2.0)"
+    ],
+    "borrow_disabled": true,
+    "borrow_disabled_evidence": [
+      "LiteSVM (deployed ELF, sha256 2ccc9a0e...): 15/15 borrow variants panic at src/instructions/borrow.rs:110:5; vaults unchanged after attempts",
+      "jet-v1 commit 66991f4c8f14 'disable borrows' (2022-11-10T05:19:06Z, branch no-borrows of mirror judithjr/jet-v1) inserts panic!(\"disabled\"); as first statement of borrow handler",
+      "on-chain commit: ProgramData internal last-deploy slot 160,301,534 = 2022-11-10T12:43:29Z (7h after the disable commit)"
+    ]
+  },
+  "market": {
+    "market_account": "9oiXzad28vLhT2TkFoVRRRcwYKrSF7E3XPUJpwcarCAo",
+    "market_authority": "7gpj9cpzBBW9Ci1yMwWz7iGbQYpm5fZmadNQyrYsqch8",
+    "market_authority_on_curve": false,
+    "market_owner": "CkkWJtdPoq22CVdfWBhV5vo9MXNVaPXJAjrVmsRpYGC1",
+    "market_owner_on_curve": false,
+    "quote_token_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "flags": 0,
+    "num_obligations": 7289,
+    "num_token_accounts_owned_by_authority": 21194,
+    "token_accounts_with_delegate_or_close_authority": 0,
+    "oracles_frozen": true,
+    "oracle_last_publish_slots": {"USDC": 286560277, "SOL": 299058484, "solBTC": 286561788, "solETH": 286561779}
+  },
+  "reserves": [
+    {"idx": 0, "token": "USDC", "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "vault": "63AEVgBicvYeaEwoTr8tkURPnszuB2H1pMBUoNnUPjTN", "deposit_note_mint": "GwbEoYmrmYToCNpEvnhMuVw6hmvRWn6QBFYJCwGfEDAT", "loan_note_mint": "G17Yu6f4emBeRLWS1Y4cNJMTmT5LUGJH95zK6253KoAH", "outstanding_debt_raw": 42566555000, "oracle_price": 1.0, "real_price": 0.9997028918824954},
+    {"idx": 1, "token": "wrapped SOL", "mint": "So11111111111111111111111111111111111111112", "vault": "DvM98WWqFFAeCQi1QJbFREkHetRREqiymHBfaPckdHR3", "deposit_note_mint": "2YuVnXkSmW714ziXkfPfmvAnniBc1tHiAB7gYgRpx43a", "loan_note_mint": "A9S9XVCuNXHnJGFhxBhsTmJNHa6aPccF5NCAGgE4BxGF", "outstanding_debt_raw": 81502684459, "oracle_price": 119.23378, "real_price": 108.93768160294368},
+    {"idx": 2, "token": "Sollet BTC (solBTC, dead bridge token)", "mint": "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", "vault": "5xMkycaRErjMYYJYktpVvXb72EC4bpF2GTNpmsnaGgz", "deposit_note_mint": "AA8Aq7q6VixAqwp2xGFpBYt9Ck3iXmr7ZK3VT1naiTpS", "loan_note_mint": "7SXpzVgqMvDEWkv9jtDUZVjkBPUbn8EUitKwV22WCpxt", "outstanding_debt_raw": 38277, "oracle_price": 52326.9113705, "real_price": 54.616139792104185},
+    {"idx": 3, "token": "Sollet ETH (solETH, dead bridge token)", "mint": "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk", "vault": "FPwT6PEYNJvN2i9Pnz4rD9xS72fgStRdNGXq1kSVGeMH", "deposit_note_mint": "65zGnhqrsqFKABMupVjU9FXVJLFzzH9aXGyVjnAzdB8A", "loan_note_mint": "5v8QVtwqZjSdJxhCF2xWrAopiyhDgJTdgeQZ5aWmStnE", "outstanding_debt_raw": 46112, "oracle_price": 2304.08750074, "real_price": 296.50336498118105}
+  ],
+  "vault_balances_finalized": {
+    "USDC": {"raw": 16246540570, "ui": 16246.54057, "usd_real_jupiter_v3": 16241.71},
+    "SOL": {"raw": 1274172220813, "ui": 1274.172220813, "usd_real_jupiter_v3": 138805.37},
+    "solBTC": {"raw": 4956563, "ui": 4.956563, "usd_real_jupiter_v3": 270.71},
+    "solETH": {"raw": 1357014, "ui": 1.357014, "usd_real_jupiter_v3": 402.36}
+  },
+  "valuations": {
+    "vault_total_usd_real_jupiter_v3": 155720.15,
+    "vault_total_usd_real_defillama": 157285.02,
+    "vault_total_usd_oracle_frozen": 430659.22,
+    "triage_live_usd": 156438.12,
+    "change_since_triage": "none — vault raw balances byte-identical; USD within price noise"
+  },
+  "categories": {
+    "E-U": {"usd": 0.06, "basis": "single oracle-unhealthy dust obligation 7c6HkPMpv92MaMTHpHXHa9CxJnHmdXzAmnNqz4bfL2jo (solBTC debt -> USDC collateral), exact program-formula real-terms PnL $0.0575; oracle-metric bonus universe only $22.61 total and is not real-extractable; an active third-party liquidation bot (C3MPbLBQb...) sweeps this dust", "confidence": "high"},
+    "H-O": {"usd": 155720.15, "basis": "deposit-note holders can redeem vault cash via withdraw/withdrawTokens (first-come-first-served; note claims exceed cash); withdraw path proven working on-chain 2026-09-27 (sig fs5LWcW35JcxnVFcrmrTC37VJeUUKrjNRzQiPkBDcsv9czq4VGXMHE6gjd8aoXkhmArMcdvBkE4K1aNVaHqvMti)", "confidence": "high"},
+    "P": {"usd": 155720.15, "basis": "upgrade authority 6Mi9fKyq... can deploy code to sweep all program accounts (alternate control of the same funds, not additive); market owner (off-curve PDA) can only set flags/owner", "confidence": "high"},
+    "S": {"usd": 0, "basis": "nothing structurally stuck: vault cash reachable by note holders; existing debts repayable by their owners"}
+  },
+  "poc": {
+    "project": "poc-svm (Rust / LiteSVM, deployed ELF + cloned accounts at slot 456071544)",
+    "ci_run_url": "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38273270502",
+    "ci_conclusion": "success",
+    "result": "blocked_borrow_disabled",
+    "setup_steps_ok": 14,
+    "borrow_variants_blocked": 15,
+    "vaults_unchanged_after_attempts": true
+  },
+  "latent_risk": [
+    "If the upgrade authority (or any holder of 6Mi9fKyq...'s key / the 2024-era Squads multisig signers) deploys a version that re-enables borrow or adds a sweep, the frozen-oracle market is immediately drainable: the PoC reproduced the full pre-disable attack path (refresh/obligation/deposit/collateral succeed) up to the blocked borrow; buying solETH/solBTC cheap and posting as collateral would borrow the entire $156-168K (oracle-priced borrow capacity) for ~$200-30K real cost",
+    "Any new deployment initializing reserves against these frozen legacy Pyth feeds inherits the same flaw class",
+    "Note-holder recovery is a first-come-first-served race (cash < note claims)"
+  ],
+  "methodology": [
+    "public RPC only (api.mainnet-beta.solana.com; api.blockscout/firecrawl not needed), read-only",
+    "on-chain IDL extracted from the program's own IDL accounts and cross-checked with the deployed binary",
+    "instruction-level audit of Jet v0.2.0 semantics (data layouts verified against live account sizes and 1,200 obligations / 2,132 positions)",
+    "LiteSVM execution against the sha256-verified deployed ELF with cloned mainnet accounts",
+    "full obligation census (7,289 accounts) for liquidation economics under oracle vs real prices",
+    "program activity census (1,000 signatures, 2026-07-07..2026-09-27)"
+  ]
+}
