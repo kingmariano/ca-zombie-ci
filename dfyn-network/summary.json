@@ -1,0 +1,44 @@
+{
+  "finding": "dfyn-network (L2-Triage-A Phase-2)",
+  "title": "Dfyn Network — vanilla UniV2 + legacy farms/vaults; live value holder-only, E-U ~$0",
+  "chains": ["polygon", "fantom", "okc"],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 340673.88,
+    "P": 2691.05,
+    "S": 101.46
+  },
+  "latest_block": 95381964,
+  "block_numbers": {"polygon": 95381964, "fantom": 123652961, "okc": 47755732},
+  "targets_checked": 2082,
+  "live_targets": 2071,
+  "closed_reasons": [
+    "All 1,827 pairs are stock UniswapV2Pair (identical bytecode per chain); 92/1,788 Polygon pairs have raw donation-excess but every excess token is unpriced spam (priced total $0.00008; exit liquidity <$0.30); zero excess on any core token",
+    "skim() reverts (ds-math-sub-underflow) on the 3 deficit pools; no funded pair contains a fee-on-transfer/rebase token",
+    "Farms (227 curated + 15 factory-deployed) are per-user StakingRewards variants: getReward()=0 and withdraw() reverts for zero-stake caller; rescueFunds onlyRewardsDistribution",
+    "Vaults/chest/prediction market gate claims on caller's own accounting (balanceOf/ledger); no public sweep",
+    "feeTo (protocol fees) is a plain EOA on Polygon/Fantom; OKC feeTo = 0"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": []},
+  "key_facts": [
+    "Polygon factory 0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B: 1788 pairs, feeTo=feeToSetter=EOA 0x74665b21461f8d9b23bab7d599bfd7566a95fd70; Fantom 35 pairs; OKC 4 pairs (feeTo=0)",
+    "Full scan (block 95381964): Polygon 1695 funded pairs = $339,396.92 reserves (llama), 92 junk-excess pairs ($0.00008 priced total), 3 deficit pools; Fantom $136.29 / OKC $22.11, no excess/deficits",
+    "DefiLlama cross-check: Polygon $394,588, Fantom $315, OKC $22",
+    "Ownership split: farm-staked LP $198,905.13 (H-O), feeTo EOA LP $1,639.00 (P), free LP $139,031.78 (H-O)",
+    "BYOF factories enumerated: 0x28cfcda0469d0ff70da48ee774e90970bd86155c (16 farms), 0x34df3b41c2e48d73d912963d12675dc22f8bd352 (4), 0x57791b5257a8b95d6c0c0a6ad947ffecc5e77953 (12); 15 farms not in the curated registry, all staking Dfyn pairs",
+    "Curated farms hold 6,564,712.17 DFYN ($972.18) + 943.83 ROUTE ($36.53); missing farms +3,601.95 DFYN ($0.53)",
+    "Vaults 183,111.88 DFYN ($27.11) + 7,342.83 ROUTE ($284.17); vDFYN chest 4,228,238.80 DFYN ($626.03); prediction market 1,982.57 POL ($203.42, treasury 417.19 POL)",
+    "Polygonal factory holds 100.00 USDC with no sweep (S); WETH9 clone 0x4c28f48448720e9000907bc2611f73022fdce1fa wraps POL 1:1 (POL balance == totalSupply 457,629.36), pools fairly priced at POL parity",
+    "eDAI/eUSDC pairs' apparent excess was a decoder artifact: balanceOf returns 96 bytes; first word == reserve exactly"
+  ],
+  "caveats": [
+    "Farm leftover H-O/P split not enumerable per-staker; whole $1.0k counted as P (upper bound)",
+    "683 of ~1,050 pair tokens have no DefiLlama price; unpriced pools valued $0",
+    "First Phase-2 scan run had a full-return int() decode bug that falsely flagged 2 eDAI/eUSDC pairs; corrected and re-run",
+    "H-O pool value assumes LP/stakers still control keys and farm withdraw paths stay callable",
+    "Category totals include the H-O/P ambiguity on ~$1.0k farm leftovers"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Dfyn Network: stock UniV2 with only worthless spam-token donation excess ($0.00008 priced across 92 pairs) and per-user-only farm/vault/chest/PM claims; the ~$341.8k live value is LP-holder (H-O), protocol-fee EOA (P) and depositor recoverable."
+}
