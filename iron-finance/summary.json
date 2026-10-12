@@ -1,0 +1,67 @@
+{
+  "finding": "L2-P2-Iron-Finance",
+  "title": "Iron Finance (IRON/IronSwap legacy) - Polygon/Fantom/Avalanche zombie deep dive",
+  "chains": [
+    "polygon",
+    "fantom",
+    "avalanche"
+  ],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 309739.54,
+    "P": 8629.13,
+    "S": 0.0
+  },
+  "latest_block": 95383464,
+  "block_numbers": {
+    "polygon": 95383464,
+    "fantom": 123651628,
+    "avalanche": 97334248
+  },
+  "targets_checked": 42,
+  "live_targets": 28,
+  "closed_reasons": [
+    "IS3USD stableswap is fair (0.02% fee); swap/add/remove round-trips lose value on a live fork",
+    "all state-changing entry points nonReentrant; no attacker-controlled token callbacks; LP withdraw-fee hook restricted to lpToken",
+    "all admin/init paths revert for unprivileged caller (setFee/rampA/pause/withdrawAdminFee/setFeeController/setFeeDistributor/transferOwnership/updateUserWithdrawFee/initialize)",
+    "removeLiquidityImbalance is bricked (missing /FEE_DENOMINATOR: burn ~1e10x => reverts for any non-dust amount) - DoS only, no drain",
+    "meta-pool junk-dump extraction unprofitable at market ask: xUSD -$6.05/200, IRON -$12.14/500k, PUSD -$57.52/500 (measured real round trips)",
+    "IronChef is a standard Sushi MiniChef v2 fork; only the staker can withdraw own stake (underflow-guarded)",
+    "Adamant ERCFund2's 7,405 IS3USD LP: notifyFeeDistribution(IS3USD) reverts live; recover() owner-only",
+    "admin fees ($278.21) claimable only by feeController/owner"
+  ],
+  "poc": {
+    "tests_passed": 11,
+    "tests_total": 11,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38207527350",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38207761421"
+    ]
+  },
+  "key_facts": [
+    "Polygon IS3USD pool 0x837503e8A8753ae17fB8C8151B8e6f586defCb57 live, not paused, holds $316,023.73 actual (71,981.44 USDC.e + 170,783.02 USDT + 73,259.27 DAI) at block 95383464; tracked balances $315,751.00 + admin fees $271.73",
+    "IS3USD LP 0xb4d09ff3dA7f9e9A2BA029cb0A81A989fd7B8f17 supply 312,360.122887798606432247, NAV 1.010775; 806 live holders; IronChef holds 85.06%, EOAs ~10.4%, ERCFund2 2.37%, Beefy 1.73%, GnosisSafe 0.26%",
+    "Deployed IronSwap runtime code == Etherscan-verified source byte-for-byte (solc 0.8.4, runs 200, istanbul; library 0x7e812CA56574ed578640dAeDFE2Cb3EF93937Ee9 linked) - source is authoritative",
+    "removeLiquidityImbalance live-trace: $3 withdrawal computes burnFrom(attacker, 2.967e28 LP) for a 2,968 LP holder => 'ERC20: burn amount exceeds balance' revert; dust (~1e-15 USD) only",
+    "Meta-pools hold 518.67 IS3USD LP (~$524.2) as liquidity but pay junk tokens at <= market ask: isxusd 200 xUSD -> 202.13 LP -> $204.23 vs $210.28 cost; isiron 500k IRON -> 24.50 LP -> $24.76 vs $36.90; ispusd 500 PUSD -> 8.23 LP -> $8.32 vs $65.84",
+    "Fantom pool 0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523: $1,029.31 + $6.40 admin; Fantom IronLend cash $859.17 (0.009809 WBTC + 0.011211 WETH + 5.1088 DAI)",
+    "Avalanche pool 0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523: $29.85 + $0.08 admin; farm 0x073667be holds 52.5% of LP",
+    "Polygon IronLend (Compound fork 0xF20fcd005AFDd3AD48C85d0222210fe168DDd10c): only real cash is 12.32M ICE (~$23.74); other markets dust; borrows large but borrower-side",
+    "DefiLlama's '2022-05-11 Re-entrancy Exploit' hallmark is unsubstantiated (no hacks-DB entry/post-mortem; only event that day a $7.7k pro-rata LP exit); all IronSwap mutations are nonReentrant",
+    "Adamant ERCFund2 0x43c085b5aba4e83a7dd1a478b7458d1d472ff6b4 holds the 7,405 IS3USD LP (~$7.5k) plus ~$50k other tokens (18.59 WETH etc.); IS3USD/WETH notify paths revert live; QUICK path pays Adamant stakers (third-party)",
+    "ICE reward token has no meaningful market (~$1.9e-6 on a single $217 pool); IronChef still emits 9.26 ICE/s",
+    "Historical only documented exploit: 2021-03 BSC $170k share-accounting; famous June-2021 event was the TITAN bank run"
+  ],
+  "caveats": [
+    "Prices are point-in-time (2026-10-12): stables $1.00; xUSD $1.0514 mid (DMM pool), IRON $0.0000738, PUSD $0.13167, ICE $1.9255e-6 (thin pools) - junk-token market depth is low",
+    "Latent E-U cap if junk tokens ever obtainable below pool payout: 518.67 IS3USD LP = ~$524 (xUSD<~$0.98, IRON<~$0.000066, PUSD<~$0.085 thresholds)",
+    "Cross-chain leg reads at latest (Fantom pinned 123651628, Avax 97334248); CI dumps at latest",
+    "IronChef external-pair LPs (DFYNLP USDC/ICE ~$2.6k, DFYNLP ICE/IRON ~$202, FLP ~$110) valued at reserves x pro-rata; ICE leg price-soft",
+    "Avalanche has no dedicated CI RPC env; public keyless fallback used",
+    "Lending-market borrower side (e.g. 9.32 WETH borrow) not assessed as E-U (would be liquidator-vs-borrower, stale-oracle risk noted)",
+    "First CI attempt (run 38207168886) failed to fork at the RPC tip ('header for hash not found'); re-runs with a fork-viability probe and try/catch RPC fallbacks pass 11/11"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0.00 live from Iron Finance: the $316k IS3USD pool is LP-holder custody (H-O, fair stableswap, removeLiquidityImbalance bricked), IronChef stakes are holder-only, junk-token dump extraction into the meta-pools is unprofitable at market ask (theoretical <=$524 cap), and $278 of admin fees plus ~$8.35k of third-party/owner-held LP are privileged-only."
+}
