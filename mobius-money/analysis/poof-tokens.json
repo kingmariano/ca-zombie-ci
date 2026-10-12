@@ -1,0 +1,208 @@
+{
+  "meta": {
+    "generated": "2026-10-12T21:30:00Z",
+    "chain_id": 42220,
+    "state_block": 79926039,
+    "method": "Blockscout v2 API (address info, smart-contract source, holders, transfers) + eth_call (totalSupply, debtToken, underlyingBalanceOf, paused) via keyless RPC https://forno.celo.org",
+    "blockscout_pattern": "https://celo.blockscout.com/address/<addr> | source: https://celo.blockscout.com/address/<addr>?tab=contract | API: https://celo.blockscout.com/api/v2/smart-contracts/<addr>"
+  },
+  "protocol_summary": {
+    "name": "Poof (a.k.a. PoofCash / Poof protocol on Celo)",
+    "generations": {
+      "v1_2021-10": "Shielded zk 'debt' tokens (PoofMintableLendable): mint/burn require zk proofs (bytes[3] _proofs + account tree/verifier). Not mintable/redeemable by unprivileged holders without valid shielded-account proofs.",
+      "v2_2021-12": "PToken (plain ERC20 with supplyManagers) plus V1Migration (whitelist-gated) converting v1->v2 1:1.",
+      "poofcash_token": "POOF ERC20 (100M) deployed 2021-07-03 via SingletonFactory; used for release/vesting (ReleasePOOF contract, Timelock). Trades at ~$0.00002."
+    },
+    "status_2026": "Dead as a protocol. v1 shielded debt token contracts report debtToken.totalSupply()==0 and no underlying(); v2 tokens (PToken) can only be minted by privileged supply managers. The v2 supply manager EOA 0x14874877865e659F09D9CE7c943C89aEB20F2bb5 was active as recently as 2026-06-18 minting pUSD(v2) and burning pUSD held by Mobius pool 0xa2F0e57d (privileged, not unprivileged).",
+    "evidence_tx_2026_06": {
+      "mint_10k_pUSDv2": "0xc12a0635734ff5465edaad1382a0ea5acd97fa2cb3bb9df0bed205e622ade691 (0x14874877865e -> PToken mint(address,uint256), block 69915455)",
+      "swap_into_mobius_pool3": "0x521599dc35288400268887cb784ec16b8db0339c247ffb78bfa184321c7b19f7 (0x14874877865e -> Mobius pool swap(0,1), block 69915844)",
+      "burn_pool_pUSDv2": "0xf7c1d8482e4002dd96ebb067aa70d93a8f1cc374669cc97c54ffa0fc53c19009 (caller 0x14874877865e burned 10,000e18 FROM pool 0xa2f0e57d, block 69915923)"
+    }
+  },
+  "tokens": {
+    "0xb4aa2986622249b1f45eb93f28cfca2b2606d809": {
+      "symbol": "pUSD",
+      "name": "Poof USD",
+      "generation": "v1 (zk shielded)",
+      "decimals": 18,
+      "total_supply": "68604271852010657798965",
+      "holders": 97,
+      "implementation": "PoofMintableLendable",
+      "verified_source": "https://celo.blockscout.com/address/0xb4aa2986622249b1f45eb93f28cfca2b2606d809?tab=contract",
+      "creator": "0x25f72EA1eaA1CE8Ad37f2954F3C7E42173DF3745",
+      "creation_tx": "0x4aadaf444807c6490f14571dd70f75091ebb45e823ca1f5dcaa8ac4395a462db",
+      "created_at": "2021-10-19T20:25:23Z",
+      "redeemable": "zk-proof gated only (mint/burn take bytes[3] proofs + verifier). underlyingBalanceOf() reports 1:1 to USDm (614 for pool balance) but the debt token 0x5b46A20284366F5e79D9B3e5e2FA0F5702b8C72F has totalSupply()==0 and no underlying(); redemption reserves unverifiable/dead. V1Migration 0xa7260929f57D356723739fF6EB3dF80c0e0A8A33 (whitelist-gated) converts v1->v2 1:1.",
+      "market": {
+        "ubeswap_v2_pair": "0xec3741fb21352af9251f5232b929a0c3150e577c",
+        "pair_tokens": ["USDm", "pUSD"],
+        "reserves_raw": {"USDm": "78204954674062675", "pUSD": "139078813778565899"},
+        "spot_usdm_per_pusd": 0.5623,
+        "last_trade": "2025-08-12",
+        "note": "Drained. Only external market. Pool 0x02db089f pays 0.976 USDm/pUSD at the margin - the residual arb is +$0.0078 gross at L=0.034 pUSD."
+      },
+      "top_holders": [
+        "0xa7260929f57D356723739fF6EB3dF80c0e0A8A33 V1Migration (64,273.4)",
+        "0xa1D06d45F3B9529BaCCA53D1c9fc4718acbD1643 EOA (1,248.1)",
+        "Mobius pool 0x02db089f (614.0)"
+      ]
+    },
+    "0x56072d4832642db29225da12d6fd1290e4744682": {
+      "symbol": "pEUR",
+      "name": "Poof EUR",
+      "generation": "v1 (zk shielded)",
+      "decimals": 18,
+      "total_supply": "66804464006712574199321",
+      "holders": 36,
+      "implementation": "PoofMintableLendable",
+      "verified_source": "https://celo.blockscout.com/address/0x56072d4832642db29225da12d6fd1290e4744682?tab=contract",
+      "creator": "0x25f72EA1eaA1CE8Ad37f2954F3C7E42173DF3745",
+      "creation_tx": "0x37b25ff17946ecd9284c31cf44943cd557b668848f4907cd44aa74b39ca8aa2e",
+      "created_at": "2021-10-19T20:25:28Z",
+      "redeemable": "zk-proof gated only; same dead v1 mechanics as pUSD.",
+      "market": {
+        "ubeswap_v2_pair": "0x9b4ebb6f5c879faf4599a5ce21d338902b2b55bb",
+        "pair_tokens": ["pEUR", "EURm"],
+        "reserves_raw": {"pEUR": "1000", "EURm": "1003"},
+        "note": "DUST (1000 wei). Effectively no market. Last pool transfer 2023-05-29."
+      },
+      "top_holders": [
+        "0x9DC31b533a95FaDC87632034B2baEf216f7f5e93 V1Migration (45,217.4)",
+        "Mobius pool 0x382ed834 (4,081.7)"
+      ]
+    },
+    "0xe74abf23e1fdf7acbec2f3a30a772ef77f1601e1": {
+      "symbol": "pCELO",
+      "name": "Poof CELO",
+      "generation": "v1 (zk shielded)",
+      "decimals": 18,
+      "total_supply": "16293439781099286230480",
+      "holders": 142,
+      "implementation": "PoofMintableLendable",
+      "verified_source": "https://celo.blockscout.com/address/0xe74abf23e1fdf7acbec2f3a30a772ef77f1601e1?tab=contract",
+      "creator": "0x25f72EA1eaA1CE8Ad37f2954F3C7E42173DF3745",
+      "creation_tx": "0x8034b2a1a6bbe84fdbc03df0b8f88b65317cd2b2126f59d5b9db0c207815287c",
+      "created_at": "2021-10-19T20:25:18Z",
+      "redeemable": "zk-proof gated only; same dead v1 mechanics.",
+      "market": {
+        "pairs": [
+          {"venue": "ubeswap_v2", "pair": "0x993b0d1a2c7eff889f7e4ddc9a03b5085a2d1f27", "tokens": ["POOF", "pCELO(v1)"], "reserves_raw": {"POOF": "116761973953660189388816", "pCELO": "175647340870160003731"}},
+          {"venue": "ubeswap_v2", "pair": "0x3ea1e47f5126f6a6077a92965b9d1b1aa241893e", "tokens": ["CELO", "pCELO(v1)"], "reserves_raw": {"CELO": "11476093804817956", "pCELO": "95004535777936928"}}
+        ],
+        "note": "Acquisition only via POOF (price ~$0.00002); route nets +$0.0043 gross before gas vs Mobius pool 0x413ffcc2 -> net negative after gas."
+      },
+      "top_holders": [
+        "0x3c074aD53F1471D0a54eb3E3D147ff2b4274f144 V1Migration (6,562.5)",
+        "Mobius pool 0x413ffcc2 (3,904.9)"
+      ]
+    },
+    "0xeadf4a7168a82d30ba0619e64d5bcf5b30b45226": {
+      "symbol": "pUSD",
+      "name": "Poof cUSD",
+      "generation": "v2 (PToken)",
+      "decimals": 18,
+      "total_supply": "126594876526336321830611",
+      "holders": 107,
+      "implementation": "PToken",
+      "verified_source": "https://celo.blockscout.com/address/0xeadf4a7168a82d30ba0619e64d5bcf5b30b45226?tab=contract",
+      "creator": "0x84597557aDebe7857FE86056e24929fA13FBC533",
+      "creation_tx": "0x6413580dc86a5cc1caeda57c3526bb63bf0d99570ac0f1a131fbde99bcece884",
+      "created_at": "2021-12-03T17:35:40Z",
+      "redeemable": "No public redeem. mint(address,uint256)/burn(address,uint256) only callable by supplyManagers (owner-managed). Known active supply manager: 0x14874877865e659F09D9CE7c943C89aEB20F2BB5 (mint+burn observed 2026-06; it minted 10k and later burned pUSD FROM Mobius pool 0xa2f0e57d).",
+      "market": {
+        "pairs": [
+          {"venue": "ubeswap_v2", "pair": "0x79769896a42187b07056379d0a476d07ea7926ad", "tokens": ["USDm", "pUSD(v2)"], "reserves_raw": {"USDm": "2", "pUSD": "116318170265"}, "note": "DEAD (2 wei USDm)"},
+          {"venue": "ubeswap_v2", "pair": "0x7aef68d7eb24f7ae09baf4d10e647b9ffebc6040", "tokens": ["MOBI", "pUSD(v2)"], "reserves_raw": {"MOBI": "100527851716432012166", "pUSD": "50425626693866687"}, "note": "pUSD side tiny/scarce; buying pUSD with MOBI very expensive"}
+        ],
+        "note": "No cheap acquisition route. Mobius pool 0xa2f0e57d itself values pUSD at only 0.000158 USDm/unit (paid 0.753 USDm for the entire 14,308 pUSD balance in our quote grid)."
+      },
+      "top_holders": [
+        "0x332F17169e27248ABfA09D0b557Ec12E041ccEad EOA (65,812.8 - moved 2026-07-25)",
+        "0x5472895f8de2424AAE41CfEBA18D39145Fa8E685 EOA (27,508.4)",
+        "Mobius pool 0xa2f0e57d (14,308.4)"
+      ]
+    },
+    "0xd8761dd6c7cb54febd33add699f5e4440b62e01b": {
+      "symbol": "pEUR",
+      "name": "Poof cEUR",
+      "generation": "v2 (PToken)",
+      "decimals": 18,
+      "total_supply": "46706424220038974667559",
+      "holders": 64,
+      "implementation": "PToken",
+      "verified_source": "https://celo.blockscout.com/address/0xd8761dd6c7cb54febd33add699f5e4440b62e01b?tab=contract",
+      "creator": "0x84597557aDebe7857FE86056e24929fA13FBC533",
+      "creation_tx": "0xde2182e24c13be3af4beb0b657a8e3a9f6ce12c1b586f3729856a06c5bcbd49e",
+      "created_at": "2021-12-03T17:36:00Z",
+      "redeemable": "No public redeem (PToken supply-manager gated).",
+      "market": {"pairs": [], "note": "NO market anywhere: 0 of 882 Ubeswap pairs, 0 of 257 Sushi pairs, no Uniswap V3 pool at fee tiers 500/3000/10000 vs USDm/CELO/EURm/USDCet. Last Mobius-pool transfer 2023-06-08."},
+      "top_holders": ["0x5275817b74021E97c980E95EdE6bbAc0D0d6f3a2 EOA (11,196.1)", "Mobius pool 0x23c95678 (11,171.3)"]
+    },
+    "0x301a61d01a63c8d670c2b8a43f37d12ef181f997": {
+      "symbol": "pCELO",
+      "name": "Poof CELO",
+      "generation": "v2 (PToken)",
+      "decimals": 18,
+      "total_supply": "29423280437958214482097",
+      "holders": 215,
+      "implementation": "PToken",
+      "verified_source": "https://celo.blockscout.com/address/0x301a61d01a63c8d670c2b8a43f37d12ef181f997?tab=contract",
+      "creator": "0x84597557aDebe7857FE86056e24929fA13FBC533",
+      "creation_tx": "0x6b3b9fb692ff4736352864f8365a619b064ec0a5775d4c1cfb2148de959043bd",
+      "created_at": "2021-12-03T17:35:20Z",
+      "redeemable": "No public redeem (PToken supply-manager gated).",
+      "market": {
+        "pairs": [
+          {"venue": "ubeswap_v2", "pair": "0xbdfc22680b72f0b127d70988feb4b1a68c0b99eb", "tokens": ["POOF", "pCELO(v2)"], "reserves_raw": {"POOF": "772794174384748159435552", "pCELO": "188784475992090867550"}},
+          {"venue": "ubeswap_v2", "pair": "0xe86b220dbbaee12f4888ed2647e7c0e50830b055", "tokens": ["pCELO(v2)", "MOBI"], "reserves_raw": {"pCELO": "139065445882", "MOBI": "640788508551148730"}, "note": "dead"}
+        ],
+        "note": "POOF pair is the only acquisition route; pool 0xfc9e2c63 pays 0.886 CELO/pCELO vs route cost ~0.99 CELO (via POOF) => no gross profit. Arbitrage bot 0xf9e41C21F27A... actively cycles this route (last 2026-09-29), keeping pool 0xfc9e2c63's rate pinned to the market."
+      },
+      "top_holders": ["0x48BE343c86e5D2233e874B23Dbf123B0C2f80857 EOA (8,646.9)", "Mobius pool 0xfc9e2c63 (8,366.5)"]
+    },
+    "0x00400fcbf0816bebb94654259de7273f4a05c762": {
+      "symbol": "POOF",
+      "name": "PoofCash",
+      "generation": "poofcash token",
+      "decimals": 18,
+      "total_supply": "100000000000000000000000000",
+      "holders": 1215,
+      "implementation": "POOF",
+      "verified_source": "https://celo.blockscout.com/address/0x00400fcbf0816bebb94654259de7273f4a05c762?tab=contract",
+      "creator": "0x60483A552391b4388C1F03af4cEf38e51ab00FA2 (SingletonFactory)",
+      "creation_tx": "0x0caeb7eae7e028b78e4b1d21ee33482a9e724b96df404d1676e7a30ad1577ed8",
+      "created_at": "2021-07-03T21:52:22Z",
+      "redeemable": "No redeem function found (plain token). Large balances held by ReleasePOOF contract 0x695218A22c805Bab9C6941546CF5395F169Ad871 and Timelock 0xce3B62b4FCA7C44d0a3ef7fb80E9E01E53a2b08e.",
+      "market": {
+        "pairs": [
+          {"venue": "ubeswap_v2", "pair": "0x0931738d2c2998173058b635524e437172a6a96c", "tokens": ["POOF", "CELO"], "reserves_raw": {"POOF": "30896018602052542874102", "CELO": "6420935344728922054"}},
+          {"venue": "ubeswap_v2", "pair": "0xcc90d7b497ec7d3a0c086d1b804bba8a4a8e747c", "tokens": ["POOF", "USDm"], "reserves_raw": {"POOF": "726448445531542977864", "USDm": "16673611809366443"}}
+        ],
+        "spot_usd_per_poof": 0.0000208,
+        "note": "Tradable but effectively worthless ($0.00002). Active transfers Oct 2026 between vesting/release contracts."
+      }
+    },
+    "0x73a210637f6f6b7005512677ba6b3c96bb4aa44b": {
+      "symbol": "MOBI",
+      "name": "Mobius DAO Token",
+      "generation": "mobius governance (context, not Poof)",
+      "decimals": 18,
+      "total_supply": "792087086108588120589889408",
+      "holders": 5310,
+      "implementation": "n/a (unverified)",
+      "creator": "0x6c0d6Fba3bcdb224278474E8d524F19c6BB55850 (Mobius owner/deployer)",
+      "creation_tx": "0xafb650709fdaf9668dc5b8d77eb5ba02b47306034389fdb44f24b0ffcaa3c83f",
+      "created_at": "2021-09-18T21:50:32Z",
+      "redeemable": "n/a",
+      "market": {
+        "pairs": [
+          {"venue": "ubeswap_v2", "pair": "0x0b81cf47c8f97275d14c006e537d5101b6c87300", "tokens": ["CELO", "MOBI"], "reserves_raw": {"CELO": "7098899156345292543391", "MOBI": "204919982108157632206370419"}},
+          {"venue": "ubeswap_v2", "pair": "0x1eb738ec1d46c9befe95e830e19d0f537619f2d7", "tokens": ["MOBI", "USDm"], "reserves_raw": {"MOBI": "48587070729315788863326", "USDm": "168948380560929433"}}
+        ],
+        "spot_usd_per_mobi": 0.0000033,
+        "note": "Used as an intermediate hop when valuing pool tokens; MOBI itself is worth ~$0.000003-0.0000036."
+      }
+    }
+  }
+}
