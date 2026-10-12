@@ -1,0 +1,42 @@
+{
+  "finding": "L2-lfgswap-ethereumpow",
+  "title": "LFGSwap EthereumPoW — zombie-hunt II Phase-2 deep dive (UniV2 fork on ETHW)",
+  "chains": ["ethereum-pow (ETHW, chainid 10001)"],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "headline_note": "Risk-free extraction by an external unprivileged attacker is $0. Conditional one-shot face-value play of ~$144 exists only if the chain-local USDT/USDC/BUSD redeem at ~par; at realizable on-chain prices those trades lose $3.9 / $53.6.",
+  "categories": {"E-U": 0.0, "H-O": null, "P": 0.0, "S": null},
+  "latest_block": null,
+  "block_numbers": {"ethpow": null},
+  "targets_checked": 1581,
+  "live_targets": null,
+  "closed_reasons": [
+    "canonical UniV2 pair logic with k-invariant enforced (source + fork test)",
+    "pair initialize() is factory-gated",
+    "factory admin (feeTo/feeToSetter) controlled by a 3/5 Gnosis-Safe-style multisig proxy; setters revert for outsiders",
+    "LFG token mint permanently disabled (0 minters, owner renounced)",
+    "chain-local USDT/USDC/BUSD mint controller-gated (EOA, not accessible)",
+    "no public mint on meme counter-tokens (Pepe/FROG/wFire/SHIBW/DX)",
+    "no profitable closed arbitrage loop in hard assets (all 2-3 hop cycles optimized on fresh reserves)",
+    "the only externally valuable asset is ETHW/WETHW; all value-draining routes require paying more value than they return"
+  ],
+  "poc": {"tests_passed": 8, "tests_total": 8, "ci_run_urls": []},
+  "key_facts": [
+    "factory 0xf66cef53c518659bFA0A9a4Aa07445AF08bf9B3a: 1581 pairs; feeTo=0x787248E6421b3045C2e7B8570A01a3c363173276 (EOA); feeToSetter=0x67deFBFa85289E9a767D29ef9682a9B80Bd11A38 (Safe proxy, 5 owners, threshold 3)",
+    "deployed pair = UniV2Pair + permit + initialize; source repo LfgSwap/lfg-protocol matches (k-check 'LfgSwap: K' present); zero-reserve pairs are bricked (swap reverts)",
+    "fork-verified: k-violating 90% drain reverts; initialize() reverts; setFeeTo/setFeeToSetter revert for arbitrary callers",
+    "Fork PoC: WETHW->Pepe->USDT: 20 WETHW -> 22,314,463,830,623,868 Pepe -> 18.191224 USDT (face)",
+    "Fork PoC: closing the loop WETHW->Pepe->USDT->USDC->WETHW returns only 5.836076960596908643 WETHW for 20 WETHW in (loss 14.16 WETHW = -$3.86)",
+    "Fork PoC USDC soak: 226.4 WETHW ($61.7) -> 15.00253 USDC -> 193.042079 USDT (face) - only profitable if USDT/C redeem at par",
+    "USDT realizable exit on-chain: 18.19 USDT -> 5.836 WETHW ($1.59) = ~$0.0875/USDT => face-value arbitrage is a loss at realizable prices",
+    "chain-local stables have active issuer EOAs (owner nonce 47, controller nonce 11203) - redeemability externally unverifiable",
+    "Triage/USD face values ($120.1k balance-read / $295.7k DefiLlama) are dominated by vvXEN ($113k at $4.898e-9), a XEN-fork whose only venues are these pools"
+  ],
+  "caveats": [
+    "USDT/USDC/BUSD redeemability is the single largest uncertainty; DefiLlama prices them ~$1.00 (conf 0.99) but the only on-chain exit prices USDT at $0.06-0.32",
+    "vvXEN price ($4.898e-9) drives 94% of triage USD; token has no external venue inside the audited system",
+    "meme counter-tokens are owner-controlled launch tokens (fees/limits settable); fork tests measured current settings",
+    "no indexer available for a full holder scan of possible hidden farms; source repo, minter lists and router show no farm on ETHW"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 risk-free from LFGSwap on ETHW: pair/admin/mint surfaces are closed and every value-draining route costs more than it returns; the $120-296k face TVL is locked behind illiquid/XEN-fork tokens - with a conditional ~$144 one-shot upside only if the chain-local stablecoins redeem at par."
+}
