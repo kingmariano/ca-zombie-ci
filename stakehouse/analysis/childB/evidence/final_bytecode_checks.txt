@@ -1,0 +1,36 @@
+=== FullWithdrawals: key selector occurrences ===
+  markKnotAsWithdrawn(address,bytes): [4217]
+  withdrawETH(address,uint256): [5149]
+  SweepReporting final-sweep record (unresolved): [4344]
+  totalReportedETHNotWithdrawn(bytes): [4533]
+  getSumOfUnreportedSweeps(Sweep[]): [4679]
+  transactionManager(): [4815]
+  stakeHouseMemberQueue(bytes): [4912]
+  accountManager(): [3424, 4120]
+  AccountManager unresolved(bytes): [5218]
+  setLifecycleExited(bytes): []
+
+=== TransactionRouter: 0xa1 (userToRepresentativeStatus) and 0x5149 (Unauthorized helper) refs ===
+  PUSH1 0xa1: [435, 1474, 1736, 3881, 6772, 7571, 7810]
+  PUSH2 0x5149 (Unauthorized): [1522, 1784, 3929, 6820, 7619]
+
+=== TransactionRouter: CALLER usages ===
+  [1441, 1486, 1703, 1748, 3427, 3848, 3893, 4924, 5498, 5499, 6739, 6784, 7538, 7583, 7804, 7874, 7932, 10619, 13176, 13561]
+
+=== FullWithdrawals happy-path region (0x10a0-0x1180) ===
+    4283 0x010bb: CALL         
+    4330 0x010ea: SSTORE       
+    4344 0x010f8: PUSH4        0x4a1a8df6
+    4355 0x01103: PUSH4        0x3b9aca00
+    4455 0x01167: CALL         
+
+=== FullWithdrawals payout region (0x13d0-0x1510) ===
+    5122 0x01402: CALLER       
+    5149 0x0141d: PUSH4        0x4782f779
+    5186 0x01442: CALL         
+    5218 0x01462: PUSH4        0x9dcb9921
+    5229 0x0146d: PUSH4        0xffffffff
+    5282 0x014a2: CALL         
+    5308 0x014bc: CALLER       
+    5356 0x014ec: LOG2         
+    5363 0x014f3: SSTORE       

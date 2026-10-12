@@ -13,6 +13,7 @@
 | # | Target (Ethereum) | Live value now | External unprivileged extraction (E-U) | Why closed | Latent risk |
 |---|---|---|---|---|---|
 | 1 | **AccountManager** `0xDd6E6794…` (vault) | **64.3057 ETH** | **$0** | every ETH-moving function is `require(accessControls().isCoreModule(msg.sender), "Only core")` — fork-proven | none (core set is 9 fixed protocol contracts) |
+| 1b | **Giant Fees & MEV Pool** `0x04e5c93f…` (LSDN staking pool) | **7.4109 ETH** | **$0** | LP-holder-gated: `withdrawETH` requires the caller's GiantLP balance (`Invalid balance`), burns LP, pays the caller (source-verified; pool not paused) — holder self-service (H-O) | none |
 | 2 | **FullWithdrawals** `0x8F6839b0…` (full-sweep claim) | pays from #1 | **$0** | needs `isUserEnabledForKnotWithdrawal[msg.sender]` (rage quit), `!userWithdrawn`, a valid final-sweep report **and a designated-verifier ECDSA signature** ("Signature expired"/"ECDSA: invalid signature"/"Not rage quit" in bytecode) | knot 78's 32.0053 ETH + knot 44's 31.0862 ETH claimable by their owners if the verifier signs |
 | 3 | **ShanghaiSweepReporting** `0x64f4fCFb…` (partial withdrawals) | pays from #1 | **$0** | report validation ("Invalid Report", "Active balance", "Invalid total ETH sent for BLS key") + verifier ECDSA + per-user rage-quit gates + `Sweep already reported` replay guard; fork-proven reverts | 21.37 ETH "reportedNotWithdrawn" counters are **stale** (not a separate pot; see §5) |
 | 4 | **TransactionRouter** `0x03F4310b…` (rage quit / exit entry) | — | **$0** | caller must be the knot's user/smart-wallet owner or an authorized representative; rage quit burns the caller's own derivatives | — |
@@ -21,7 +22,7 @@
 | 7 | 23 LSD networks (LSM + vaults + sETH) | dust only (≈0.1 ETH) | **$0** | all network contracts hold ~0 ETH (parallel scan, block 26,178,916) | — |
 
 **Total live extractable by an external unprivileged attacker today: $0.00 (confidence HIGH).**
-Latent (verifier-dependent) holder recovery: **$161,798.49** (64.3057 ETH @ $2,516.08; DefiLlama ETH price 2026-10-12). Currently **S/P** (stuck unless the privileged off-chain verifier key signs again).
+Protocol custody is **72.741703 ETH ≈ $183,024.12** (@ $2,516.08, DefiLlama 2026-10-12): **H-O $21,225.63** (8.436 ETH: Giant Fees & MEV Pool 7.4109 + 46 assistants 0.6655 + 4 StakingFundsVaults 0.2534 + Giant Protected Pool 0.0952 + savETHVault 0.0110 — all holder self-service) and **P $161,798.49** (AccountManager 64.3057 ETH — verifier-signature-gated, latent H-O for two knot holders; stuck unless the privileged off-chain verifier key signs again).
 
 ---
 
@@ -38,6 +39,8 @@ StakeHouseUniverse 0xC6306C52… (registry, core module)
   ├── ShanghaiSweepReporting 0x64f4fCFb…  ← partial sweeps + partial withdrawals (verifier-signed reports)
   └── FullWithdrawals 0x8F6839b0…         ← final/full sweep claims (verifier-signed reports)
 ```
+
+Beyond the core Stakehouse stack, the Blockswap LSDN side (same team/stack, separate contracts) holds live holder value: **Giant Fees & MEV Pool `0x04e5c93f…` = 7.410914 ETH** (not paused; LP-gated withdrawals), the Giant Protected Staking Pool `0xf5d92b01…` = 0.095158 ETH, 4 StakingFundsVaults = 0.253394 ETH, savETHVault `0x1e8e121c…` = 0.011 ETH + 4.839 savETH, and 46 RageQuitAssistant residuals = 0.665519 ETH (see §1b/§8).
 
 Core-module set (from `StakeHouseAccessControls 0xba86e291…` logs; 9 grants, 0 revocations): Universe, AccountManager, TransactionRouter, SLOTRegistry, savETHRegistry, savETHTransactionRouter, savETHBatchRouter, ShanghaiSweepReporting (granted block 18,192,233), FullWithdrawals (block 18,192,233). The implementation of the AccountManager (UUPS proxy, upgraded 2023-09-22 at block 18,191,957) is **unverified on Etherscan**; the gating was recovered from the deployed bytecode and fork-tested.
 
@@ -113,10 +116,13 @@ Costs: none of the above is a viable attack — every path reverts before any va
 
 ## 8. Verdict, residual and latent risk
 
-- **E-U: $0.00 (high confidence).** No permissionless function pays the caller; the vault is core-gated; all payouts are verifier-signature-gated.
+- **E-U: $0.00 (high confidence).** No permissionless function pays the caller; the vault is core-gated; all payouts are verifier-signature-gated or burn caller-owned LP/dETH 1:1.
+- **H-O (self-service today): $21,225.63** — 8.436 ETH in live, unpaused holder pools: Giant Fees & MEV Pool 7.4109 (GiantLP `withdrawETH`), 46 RageQuitAssistant residuals 0.6655 (entitled-party claims), 4 StakingFundsVaults 0.2534, Giant Protected Staking Pool 0.0952, savETHVault 0.0110 (parallel scan at block 26,179,180; pool source verified from the public `lsd-contracts` tree).
 - **Latent (verifier-dependent): $161,798.49** ($80,528.03 knot 78 + $78,215.34 knot 44 + $3,055.11 dust) for the recorded beneficiaries (H-O in nature, but not self-service today → **S/P** until the designated verifier signs again).
 - **P:** the verifier EOA/team can unlock all 64.3 ETH for the recorded beneficiaries at any time (privileged).
 - No pause/blacklist involved; no upgrade risk for an attacker (PROXY_ADMIN_ROLE moved to `0x8869a94d…` at block 19,561,695).
+- **Latent weakness (child-A, not counted in E-U):** in the deployed ShanghaiSweepReporting, `report.stakeHouse` is the **only report field not covered by the verifier signature** (proven with the deployed validator as an oracle). A front-runner inside a valid report's deadline window (~25 min) could swap that field and misdirect where the dETH credit lands. It cannot move ETH by itself, requires a fresh (dormant) verifier signature, and conversion to attacker-claimable ETH is unproven — flagged for a future fork PoC.
+- **Payout mechanics (child-A, traced):** every ETH-out path burns the caller's own dETH 1:1 via savETHRegistry `0xf2556a85` and the AccountManager pays `msg.sender` the same wei amount — so the 21.37 ETH `reportedNotWithdrawn` counters are redeemable only by burning an equal amount of dETH, never free.
 
 ## 9. Methodology & sources
 

@@ -8,7 +8,7 @@
   "headline_confidence": "high",
   "categories": {
     "E-U": 0,
-    "H-O": 0,
+    "H-O": 21225.63,
     "P": 161798.49,
     "S": 0
   },
@@ -45,7 +45,10 @@
     "Triage value re-confirmed and slightly up in USD: 64.3057 ETH = $160,401 at triage, $161,798.49 today (ETH price move); no live value exists in any other Stakehouse contract (all 0 ETH)",
     "CI run 38310577743 (success, 6/6 tests PASS) re-confirmed live state at block 26179073: AccountManager still 64.305717944108928421 ETH; knot 78 (lifecycle 4, enabled 1, withdrawn 0) and knot 44 (lifecycle 3, enabled 0) both unclaimed; verifier still EOA/nonce 0",
     "Ecosystem scan (parallel child): 46 RageQuitAssistant instances hold 0.665519 ETH total dust; 23 LSD networks' LSM/vaults hold ~0 ETH; QueueFlushETHClaim has no events; verifier EOA 0x9785f8e5\u2026 has never sent a transaction (off-chain signer only)",
-    "Child-A deep dive (bytecode-level): deployed ShanghaiSweepReporting uses older selectors (reportSweeps 0x556b7541, reportAndWithdrawETH 0x67fbfe86, unwrapDETH 0x690b4c40\u2026); every ETH-out path burns caller-owned dETH 1:1 via savETHRegistry (0xf2556a85) and the AccountManager pays msg.sender the same wei; verifier-signature oracle shows ALL report fields signed EXCEPT report.stakeHouse (latent unsigned-field gap: front-run inside report deadline could misdirect dETH credit; converting to attacker ETH not proven, and reporting is dead since 2024-08-07)"
+    "Child-A deep dive (bytecode-level): deployed ShanghaiSweepReporting uses older selectors (reportSweeps 0x556b7541, reportAndWithdrawETH 0x67fbfe86, unwrapDETH 0x690b4c40\u2026); every ETH-out path burns caller-owned dETH 1:1 via savETHRegistry (0xf2556a85) and the AccountManager pays msg.sender the same wei; verifier-signature oracle shows ALL report fields signed EXCEPT report.stakeHouse (latent unsigned-field gap: front-run inside report deadline could misdirect dETH credit; converting to attacker ETH not proven, and reporting is dead since 2024-08-07)",
+    "Full ecosystem scan (child-C, block 26179180): protocol custody = 72.741703 ETH total = AccountManager 64.305717 (verifier-gated P) + Giant Fees & MEV Pool 7.410914 (live, unpaused, GiantLP-gated withdrawETH - H-O) + 46 RageQuitAssistant residuals 0.665519 (entitled-party claims - H-O) + 4 StakingFundsVaults 0.253394 + Giant Protected Staking Pool 0.095158 + savETHVault 0.011000 (all H-O)",
+    "Child-C negatives: QueueFlushETHClaim and ExitedUnknownSweeps were never deployed on mainnet (selector scan of all 97 protocol-deployer creates; zero chain-wide events); 23 LSD LiquidStakingManagers hold 0 ETH; 138 aux addresses hold 8.239 ETH but all in node-runner user EOAs (not custody)",
+    "Child-C web research: orderly abandonment (Labs handover 2024-01-31, DAO ops Mar-Apr 2024, hosted services deprecated 2024-07-10, sweep reporting stopped 2024-08-07, forum died 2024-05-14); DefiLlama deadFrom 2025-01-01 (peak $5.44M 2024-03); no hack/exploit found; domains dead/gambling"
   ],
   "caveats": [
     "The AccountManager/TransactionRouter/FullWithdrawals/ShanghaiSweepReporting implementations are unverified on Etherscan; gating was recovered from deployed bytecode (pyevmasm disassembly, dispatch tables, revert strings) and fork/eth_call simulations \u2014 high confidence, not source-level",
@@ -53,7 +56,8 @@
     "The 21.37 ETH 'reportedNotWithdrawn' counters being stale is inferred from knot 81's exact claim amount matching final-sweep + reported amounts; even if some counter value were live it would still require the dormant verifier signature",
     "USD value uses DefiLlama ETH price at 2026-10-12; the ETH/USD move changes the headline",
     "Read-only research; no mainnet transactions; PoC runs only on local forks / CI forks",
-    "Child-A found one unsigned report field (report.stakeHouse) usable by a front-runner inside a valid report's deadline window; it does not move ETH by itself, requires the dormant verifier to sign a fresh report, and conversion to attacker-claimable ETH is unproven (documented as latent/uncertain, not counted in E-U)"
+    "Child-A found one unsigned report field (report.stakeHouse) usable by a front-runner inside a valid report's deadline window; it does not move ETH by itself, requires the dormant verifier to sign a fresh report, and conversion to attacker-claimable ETH is unproven (documented as latent/uncertain, not counted in E-U)",
+    "H-O $21,225.63 requires the entitled holders to act (GiantLP burns, assistant LP claims); none of it is attacker-accessible, but it is also not 'extraction' - it is self-service redemption of the holders' own claims"
   ],
   "one_liner": "External unprivileged attacker can extract $0 live from Stakehouse: the 64.3057 ETH ($161,798) AccountManager vault is 'Only core'-gated, and every user-facing payout path additionally requires a designated-verifier ECDSA signature (verifier is a nonce-0 EOA dormant since 2024-08-06), so even the two rightful holders of the orphaned full sweeps (32.0053 ETH knot 78 + 31.0862 ETH knot 44) cannot self-withdraw today \u2014 privileged/verifier-gated (latent H-O)."
 }
