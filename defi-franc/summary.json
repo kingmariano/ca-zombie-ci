@@ -1,0 +1,56 @@
+{
+  "finding": "defi-franc",
+  "title": "DeFi Franc (DCHF) — Liquity-style CDP, Ethereum: E-U $0, ~$680k live all H-O/P/S",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 586064, "P": 2194, "S": 91575},
+  "latest_block": 26175501,
+  "block_numbers": {"ethereum": 26175501},
+  "targets_checked": 29,
+  "live_targets": 16,
+  "closed_reasons": [
+    "No liquidatable troves: ICRs 174.35% (ETH, 1 trove), 856.3% and 919.0% (WBTC, 2 troves) vs MCR 110%; liquidate()/batchLiquidateTroves() revert (0L) — fork-verified",
+    "Redemption is fair-value-minus-fee: 1000 DCHF -> 0.4597 ETH vs 0.4694 ETH fair; fee = floor 0.5% + baseRate (fork BETA=2, 7-min decay); redeeming is always a loss — fork-verified",
+    "Mint+redeem round trip is circular: 2100 DCHF borrowed (0.5% fee) redeemed back for 0.9507 ETH on 2 ETH collateral — fork-verified",
+    "Stability pools have zero DCHF deposits; withdrawFromSP(0) pays only the recorded depositor's snapshot gain; stranger reverts 'User must have a non-zero deposit' — fork-verified",
+    "CollSurplusPool claims are gated to the recorded trove owner (BO.claimCollateral(msg.sender)); stranger reverts 'No collateral available to claim'; 21 EOAs hold all $254k — fork-verified",
+    "Last trove of a collateral can never be closed (_requireMoreThanOneTroveInSystem in _closeTrove): the ETH trove is permanently unclosable even with full DCHF — fork-verified; WBTC owners can close (owner recovered 0.80396 WBTC)",
+    "MONStaking: fresh stakers' snapshots are set at stake time -> zero historical rewards — fork-verified; rewards H-O for incumbent stakers",
+    "AirdropMON: ~$53.2k of harvested rewards is unattributed to its 28 users (per-user F-scaled claims total only ~$187); sweep() explicitly protects DCHF/MON/ETH/WBTC; owner sweep reverts — fork-verified",
+    "Only DCHF market is a near-dead UniV3 DCHF/USDC pool: sells max 4.744 DCHF ever ($100 USDC -> 4.744 DCHF); buy+redeem gross +$0.126 per $3 cycle, gas 643k = $1.64 at 1 gwei -> net negative — fork-executed",
+    "GasPool's 600 DCHF is only reachable via liquidation/close of troves; none liquidatable — frozen",
+    "Privileged only: Gnosis Safe (2-of-3) is owner of BO/TM/DCHF/params; can add a malicious BorrowerOps to the DCHF token and mint/drain (P); LockedMON and CommunityIssuance are team-scoped"
+  ],
+  "poc": {
+    "tests_passed": 11,
+    "tests_total": 11,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38230188670",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38206943535",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38206382449"
+    ]
+  },
+  "key_facts": [
+    "Full live balance sheet ~$679.8k vs triage $286,773: triage missed CollSurplusPool ($254,040) and both stability pools ($61,493)",
+    "ActivePool 26.317196 ETH + 2.4798069 WBTC = $273,975 (3 trove owners; ~$187k withdrawable by them while keeping system TCR >= 150%)",
+    "CollSurplusPool 23.705418 ETH + 2.3204820 WBTC = $254,040 claimable by 21 EOAs of 168 historical claimants",
+    "SP_ETH 16.483936 ETH: 5.874166 claimable by 503 depositors, 10.609770 stranded; SP_WBTC 0.2346115 WBTC: 0.12952266 claimable by 282, 0.10508884 stranded",
+    "AirdropMON 21,339 DCHF + 5.288 ETH + 0.17017 WBTC (~$53.4k): users can claim only 27.17 DCHF + 0.0271 ETH + 0.00103 WBTC (~$187); the rest is stuck (S)",
+    "MONStaking 1.60479 ETH + 0.060953 WBTC + 6,440.95 DCHF fees + 14.605M MON staked (H-O stakers)",
+    "DCHF supply 51,876.7523; largest holders AirdropMON 21,339, MONStaking 6,441, EOA 0xdcb11e81 3,808, EOA 0x1815cddd 2,351; V3 pool 981; GasPool 600",
+    "Oracle = Chainlink ETH/USD / CHF/USD (CHF-quoted, correct for a CHF peg), chainlinkWorking; latent: index oracle staleness not checked (4h TIMEOUT applies only to the price oracle)",
+    "The only DCHF market (UniV3 DCHF/USDC 0x0b1debf6) spot ~1.094 USDC/DCHF vs redemption ~1.199; usable liquidity 4.744 DCHF + $5.94; 976.5 DCHF of direct donations are uncollectable in the pool contract",
+    "Privileged path: Safe can addBorrowerOps + mint DCHF + redeem against ActivePool; AdminContract can swap oracles/params (P)",
+    "E-U headline $0 high confidence; max theoretical gross arb $0.126/cycle, net -$1.51 at 1 gwei gas"
+  ],
+  "caveats": [
+    "USD values at ETH $2,541.98 / WBTC $83,505.5 / CHF/USD 1.20480842 (2026-10-12); they move with prices",
+    "MON is illiquid (~$0.000217 from the MON/WETH V3 pool); MON-denominated amounts (MONStaking/LockedMON/CommunityIssuance) are indicative",
+    "A ~1,322 DCHF sliver (2.5% of supply) sits in addresses not fully enumerated (transfer-scan gaps in the 2022 deployment window); it is spread across EOAs and cannot alter the E-U verdict",
+    "H-O extraction for trove collateral requires repayment/redemption or staying above the 150% system TCR / 110% trove limits; the ETH trove is unclosable (last-trove lock)",
+    "The $0.126 arb is not reproducible at scale — capped by the pool's single active position; it disappears entirely at normal gas",
+    "Fork tests fork at latest (fork block varies per run); exact numbers cited are from CI run 38230188670 at block 26,175,501"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from DeFi Franc (high confidence): no liquidatable troves (ICRs 174-919%), redemptions are fair-value-minus-fee, SP/CollSurplus/MONStaking claims are strictly owner-gated, ~$53k inside AirdropMON is provably unclaimable, and the only DCHF market sells 4.74 DCHF for a $0.126 gross arb that is gas-negative (net -$1.51 at 1 gwei); ~$586k remains holder-recoverable (H-O) and ~$92k is stuck (S)."
+}
