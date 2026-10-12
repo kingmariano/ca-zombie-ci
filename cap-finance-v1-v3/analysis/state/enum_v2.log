@@ -1,0 +1,12 @@
+ERR 0xCAEc650502F15c1a6bFf1C2288fC8F819776B2eC 0xe6f0e81a24c1b1c11cfcbbce67e7c5ef361e984c1e4f3528125c93f6f906680d Result window is too large, PageNo x Offset size must be less than or equal to 10000 None
+  tradev2a NewOrderV2: 10000
+ERR 0xCAEc650502F15c1a6bFf1C2288fC8F819776B2eC 0x722a60bf2980ad6565c04c8210c55454af895983660b33099a60a0af5e05037b Result window is too large, PageNo x Offset size must be less than or equal to 10000 None
+  tradev2a PositionUpdatedV2: 10000
+  tradev2a ClosePositionV2: 8299
+tradev2a: 1330 unique position keys
+Traceback (most recent call last):
+  File "/home/heisenberg/CA/cap-finance-v1-v3/analysis/enum_v2.py", line 76, in <module>
+    args = w(user[2:]) + prod + w(cur[2:]) + w(1 if isLong else 0)
+  File "/home/heisenberg/CA/cap-finance-v1-v3/analysis/enum_v2.py", line 50, in w
+    def w(x): return x.rjust(64, "0")
+AttributeError: 'int' object has no attribute 'rjust'
