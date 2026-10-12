@@ -17,9 +17,13 @@
     "Reentrancy class from the 2022 legacy contract is absent: buy() takes no token callbacks and sell/buy are nonReentrant."
   ],
   "poc": {
-    "tests_passed": 10,
-    "tests_total": 10,
-    "ci_run_urls": []
+    "tests_passed": 11,
+    "tests_total": 11,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38299094798",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38298600770",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38297853988"
+    ]
   },
   "key_facts": [
     "Live v1 JAY reserve 74.313654328551356199 ETH; JAY supply 26,182.167299878814015023 (NAV $7.1213; seller payout 90% = $6.4092).",
@@ -27,7 +31,8 @@
     "v1 staking: 1.856708285987792344 ETH rewards + 40.66% of the JAY/USDC pool ($51,186 pool) staked; 107 stakers; census sums to 99.51% of shares and ≈1.94 ETH pending vs 1.9413 ETH payable.",
     "v2 staking: 71.553751 USDC rewards + 100.0000% of the jUSDC/WETH LP (pool $1,020); 5 stakers; Σ pending 147.840182 USDC == balance + 2/4 splitter.",
     "Total live custody ≈ $248,026 vs triage $189,996 (v1 native ETH only): v2 suite (+$35.7k) and staked LP principals (+$21.8k) were missed by the DefiLlama adapter.",
-    "Owner is a single EOA 0xD5d1EE6CB2d70264ffC5307CA456a2BEd796782b; can redirect future fee addresses and raise sell fees, but cannot move reserves/principals/rewards."
+    "Owner is a single EOA 0xD5d1EE6CB2d70264ffC5307CA456a2BEd796782b; can redirect future fee addresses and raise sell fees, but cannot move reserves/principals/rewards.",
+    "CI re-verified the live state at block 26,178,543 (400 blocks after the pinned block) — reserves/supplies bit-identical to the pinned block; no drift since triage."
   ],
   "caveats": [
     "USD figures are point-in-time 2026-10-12 (ETH $2,508.98, JAY $6.9976, DefiLlama).",

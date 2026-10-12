@@ -1,7 +1,7 @@
 # Jaypeggers (Ethereum) — L2 Phase-2 deep dive: live-state assessment & extractable-value determination
 
 **Campaign:** zombie-hunt II · L2 watchlist Phase 2 (triage row `jaypeggers`, $189,996 flagged) · **Chain:** Ethereum
-**Date of work:** 2026-10-12 · **State pinned at block 26,178,136** (re-read at 26,178,448 — identical) · ETH $2,508.98, JAY $6.9976 (DefiLlama, same time)
+**Date of work:** 2026-10-12 · **State pinned at block 26,178,136** (independently re-read at blocks 26,178,448 and 26,178,543 — bit-identical reserves/supplies) · ETH $2,508.98, JAY $6.9976 (DefiLlama, same time)
 **Status:** read-only research; PoC/boundary tests verified on local mainnet forks only. No mainnet transactions sent, no keys used.
 
 **Scope (all confirmed live, non-upgradeable, no proxies — Etherscan `Proxy: 0`, implementation == deployed code):**
@@ -106,7 +106,7 @@ Note on realizability: 90% figures assume holders redeem through `sell()`; holde
 
 ## 5. PoC / fork verification
 
-`poc/test/Jaypeggers.t.sol` (Foundry, fork-only; vendored forge-std). Runs pinned to block 26,178,136 when the RPC allows, else latest.
+`poc/test/Jaypeggers.t.sol` (Foundry, fork-only; vendored forge-std) — **11 tests (4 fuzz × 256 runs in CI), 11/11 PASS** on the final CI run below; runs pinned to block 26,178,136 (fallback latest).
 
 | Test | Proves | Result |
 |---|---|---|
@@ -122,8 +122,7 @@ Note on realizability: 90% figures assume holders redeem through `sell()`; holde
 | `test_adminFunctionsRevertForAttacker` | 19 privileged calls across all six owner-bearing contracts (JAY, v1 staking, v1 splitter, jUSDC, v2 staking, v2 splitter) revert Ownable for an attacker | PASS |
 | `test_reentrancyBlocked` | 2022-class reentrancy in `sell` reverts | PASS |
 
-CI: GitHub Actions `poc.yml` on `kingmariano/ca-zombie-ci`, branch/finding `jaypeggers` — see `ci-log.txt` and run URL(s) below; artifacts (`ci-out/live-state.json`, `ci-out/census-v1.json`, `ci-out/census-v2.json`, `**/*.log`) uploaded.
-**CI run(s):** _filled from `ci-log.txt` after the run — see §7._
+CI: GitHub Actions `poc.yml` on `kingmariano/ca-zombie-ci`, branch/finding `jaypeggers` — **final run 11/11 PASS**: https://github.com/kingmariano/ca-zombie-ci/actions/runs/38299094798 (earlier runs: https://github.com/kingmariano/ca-zombie-ci/actions/runs/38297853988 — full pass; https://github.com/kingmariano/ca-zombie-ci/actions/runs/38298600770 — census fixed). The CI job independently reproduced the live state at block 26,178,543 (bit-identical reserves) and the staker census (107 / 5 stakers; Σshares 3,533,415,011,269,452 / 8,186,277,669,829,084,430; Σrewards 1.981636 ETH / 147.840182 USDC). Key CI gas: admin-reverts 509,495; reentrancy 460,865; v1 reserve 356,980; v1 staking-fresh 576,273; v1 inflow-pro-rata 591,948; v2 reserve 478,167; v2 staking-fresh 707,737. Raw evidence: `ci-log.txt`, `ci-artifacts/result-jaypeggers/ci-out/{live-state,census-v1,census-v2}.json`.
 
 ## 6. Verdict, residual risk, blockers
 
@@ -151,4 +150,4 @@ CI: GitHub Actions `poc.yml` on `kingmariano/ca-zombie-ci`, branch/finding `jayp
 - USD values move with ETH/JAY; all figures are point-in-time at 2026-10-12.
 - JayMart (`0x9277…`) audited only to the level of "holds $0 and does not touch the reserves" — it is an ERC-1155 marketplace with a Chainlink feed and no funds.
 
-**Files index.** `README.md` (this) · `summary.json` · `analysis/` (verified sources for all 7 contracts, live-state dumps at 26,178,136/26,178,448, census JSONs + scripts, initalize decodes, activity logs) · `poc/` (foundry project, 10 tests incl. 3 fuzz) · `ci/run.sh` (reproducible read-only state + census job) · `ci-out/`, `ci-log.txt`, `ci-artifacts/` (CI evidence).
+**Files index.** `README.md` (this) · `summary.json` · `analysis/` (verified sources for all 7 contracts, live-state dumps at 26,178,136/26,178,448, census JSONs + scripts, initalize decodes, activity logs) · `poc/` (foundry project, 11 tests incl. 4 fuzz) · `ci/run.sh` (reproducible read-only state + census job) · `ci-out/`, `ci-log.txt`, `ci-artifacts/` (CI evidence).
