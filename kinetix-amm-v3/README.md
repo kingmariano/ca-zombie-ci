@@ -19,7 +19,7 @@
 
 **Total live custody now:** **$184,292** = Kava $184,266 nominal + Base $25.79. All of it is **H-O** (recoverable only by the respective LP/position/vault owners — verified: a position holder can `decreaseLiquidity`+`collect` and receives tokens; nobody else can). Only ≈$97.7k of the Kava figure is in liquid assets (stables, WKAVA, BTC, ETH, ATOM, BIFI); ≈$86.5k sits in dead/illiquid tokens (WAGMI $78.6k, HOV $1.4k, KAI $6.5k) whose only "market" is the Kinetix pools themselves.
 
-> Note vs triage: token **amounts are essentially unchanged** since triage (the pools remain lightly active — ≈1,300 swaps per 1M blocks on the top pool, dust-level bot activity — but net balances are stable). The USD figure differs only by price source: DefiLlama's (frozen graph) feed shows $174,972 for Kava today; on-chain token amounts × market prices (incl. WAGMI/HOV/KAI legs) give $184,266. Triage's $175,793 was DefiLlama-derived; this report's numbers are **on-chain-derived**.
+> Note vs triage: token **amounts are essentially unchanged** since triage (the pools remain lightly active — ≈1,300 swaps per 1M blocks on the top pool, dust-level bot activity — but net balances are stable). The USD figure differs by price source: DefiLlama still shows $174,972 for Kava today (its adapter reads the Kava subgraph, whose public endpoint is currently unreachable — treat its number as carried-forward), while on-chain token amounts × market prices (incl. WAGMI/HOV/KAI legs) give $184,266. Triage's $175,793 was DefiLlama-derived; this report's numbers are **on-chain-derived**.
 
 ---
 

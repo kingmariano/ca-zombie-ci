@@ -138,8 +138,8 @@ ALIAS = {
     "0xaf20f5f19698f1d19351028cd7103b63d30de7d7": 0.0004481,  # WAGMI (geckoterminal, illiquid)
     "0x52369b1539ea8f4e1eadeef18d85462dcf9a3658": 0.000122,   # KAI
 }
-def call(to, data, rpc):
-    return subprocess.run(["cast","call",to,data,"--rpc-url",rpc],capture_output=True,text=True).stdout.split("\n")[0].split()[0]
+def call(to, data, arg, rpc):
+    return subprocess.run(["cast","call",to,data,arg,"--rpc-url",rpc],capture_output=True,text=True).stdout.split("\n")[0].split()[0]
 
 P = json.load(open("analysis/kava-pool-balances.json"))
 meta = P["tokens"]
