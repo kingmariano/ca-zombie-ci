@@ -159,12 +159,24 @@ for r in rows[:12]:
 json.dump({"kava_total_usd": round(total,2), "rows": rows}, open("ci-out/valuation.json","w"), indent=1)
 
 B = json.load(open("analysis/base-pools-raw.json"))
+addrs = sorted({r["t0"]["id"] for r in B} | {r["t1"]["id"] for r in B})
+live = {}
+try:
+    url = "https://coins.llama.fi/prices/current/" + ",".join(f"base:{a}" for a in addrs)
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    data = json.loads(urllib.request.urlopen(req, timeout=30).read())
+    live = {k.split(":", 1)[1]: v["price"] for k, v in data.get("coins", {}).items()}
+    print(f"base prices fetched: {len(live)}/{len(addrs)}")
+except Exception as e:
+    print("base price fetch failed, falling back to alias map:", str(e)[:80])
+def price(t):
+    return live.get(t, ALIAS.get(t, 0.0))
 btot = 0.0
 for r in B:
     a0 = int(str(r["bal0"]).split()[0]) / 10**int(r["t0"]["decimals"]) if r["bal0"] not in (None, "0") else 0
     a1 = int(str(r["bal1"]).split()[0]) / 10**int(r["t1"]["decimals"]) if r["bal1"] not in (None, "0") else 0
-    btot += a0 * ALIAS.get(r["t0"]["id"], 0.0) + a1 * ALIAS.get(r["t1"]["id"], 0.0)
-print(f"BASE funded-pool total: ${btot:,.2f}")
+    btot += a0 * price(r["t0"]["id"]) + a1 * price(r["t1"]["id"])
+print(f"BASE funded-pool total (live llama prices): ${btot:,.2f}")
 PY
 V=$?
 [ $V -ne 0 ] && echo "VALUATION FAILED" && exit 1
