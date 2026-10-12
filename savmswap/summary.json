@@ -1,0 +1,46 @@
+{
+  "finding": "L2-Phase2 savmSwap",
+  "title": "savmSwap UniV2 fork (Prom live / SatoshiVM dead) - no external unprivileged extraction",
+  "chains": ["prom", "svm"],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0.0, "H-O": 182063.85, "P": 181.77, "S": 52661.12},
+  "latest_block": 10073535,
+  "block_numbers": {"prom": 10073535, "svm": null},
+  "targets_checked": 90,
+  "live_targets": 90,
+  "closed_reasons": [
+    "No skim-able excess: balanceOf(pair) == getReserves() for all 90 pairs (checked at blocks 10073191 and 10073447 and in fork PoC; skim() moves 0).",
+    "Canonical UniswapV2Pair 0.5.16 code (source-verified on promscan.io); factory admin setters gated (setFeeTo/setFeeToSetter revert for outsiders).",
+    "No public mint/claim on WPROM, USDT, USDC or any of the memecoins (outsider mint simulations revert; selector scans match); launchpad vault retrieve() is gated to token.owner().",
+    "The only materially live pool (WPROM/USDT, $153.0k) is arbitraged to within ~1% of market and actively traded; optimal unprivileged arb is ~$0.89 gross (dust); same-pool round trip loses ~0.6%.",
+    "All other pools are stale and pair WPROM with market-less memecoins that cannot be acquired (no mint, no other pool); the $52.7k inside LP-burned pools is reachable only by memecoin holders (conditional insider path).",
+    "No farm/chef/staking contract holds LP (full LP-holder scan of all 90 pairs); launchpad registries/factories/router hold 0.",
+    "SatoshiVM deployment unreachable (RPC DNS NXDOMAIN, SAVM ~$0.005 / ~$30k mcap); SVM value unverifiable/stuck."
+  ],
+  "poc": {
+    "tests_passed": 8,
+    "tests_total": 8,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38236858197",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38239808803"
+    ]
+  },
+  "key_facts": [
+    "Live total in the 90 Prom pairs: $234,906.73 at block 10073447 (30,213.12 WPROM @ $5.2549 + 76,138.45 USDT); triage had $233,735.57 at $5.219.",
+    "Main pool 0x1ddbf7113e3711ae9918f2dc14efb6b302b1e0d2: 14,630.81 WPROM + 76,134.73 USDT ($153,018.81); LP 99.851067% held by a single EOA 0x2bA8968C1AE5984f049F28085f50D7Df4aD1a01e (H-O $152,790.92), feeTo 0.117409% ($179.66, P), others 0.031523% ($48.24); LP allowances to router/team/v60 contracts are all zero.",
+    "Category split: E-U $0.00 (dust <= $0.93 gross), H-O $182,063.85, P $181.77 (+ $4,379.77 latent unminted protocol fee), S $52,661.12 (55 pools with >=99.9% LP burned to 0xdEaD, e.g. gyro $45,579.46).",
+    "PoC T7: stale WPROM/USDC pool implies $10.50/WPROM; optimal dump 0.43 WPROM yields $0.933 max profit (dust). PoC T6: 10k USDT buy in main pool has negative edge (-$1,098); round trip 10,000 -> 9,947 USDT.",
+    "PoC T8 (conditional, not E-U): gyro owner can retrieve 500M gyro from vault 0x6Eda4EB3... and dump their full 540.3M stack into the LP-burned gyro pool to extract 4,681.39 WPROM ($24,600) of the 8,673.63 WPROM there - CPMM depth caps it.",
+    "Bridged USDT (0x7e942605...) and USDC (0xd9c95e2a...) are upgradeable proxies (ProxyAdmin 0x8e8028f6..., owner 0x65bf3dee...; impl owner 0xd7c6daB9...) - privileged vector over the pool's USDT leg, not E-U.",
+    "Adjacent: same team's second factory 0x0e2b8eE0 ('v60' on DefiLlama, $400k, double-counts factory 0x3B73...) holds ~7,910 WPROM ($41.6k) in 18 stale meme pools; same structure, no E-U path found."
+  ],
+  "caveats": [
+    "USD values move with PROM price (+-1% = +- $2.3k).",
+    "0x2bA8... is an unlabeled EOA; H-O classification is literal (single-holder recoverable). If it is a team wallet, re-label H-O->P for $152.8k.",
+    "The $52.7k in LP-burned pools is not fully 'stuck': it is swap-only and would become reachable if a market for the paired memecoins ever appears; even full-supply holders can only extract a fraction (CPMM depth).",
+    "Fork block logged as 0 by Foundry 1.8.5 (RPC quirk), but fork state matched live reserves at blocks 10073191-10073535 (live tip at run time).",
+    "SatoshiVM side excluded as unverifiable (dead chain)."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from savmSwap (best-case dust <= $0.93); the $234.9k live on Prom is custody - $182.1k recoverable only by LP holders, $52.7k LP-burned/swap-only, $179.66 team protocol fees."
+}

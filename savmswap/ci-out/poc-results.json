@@ -1,0 +1,37 @@
+{
+  "poc": "savmswap/poc (Foundry, fork of Prom chainid 227 via public keyless RPC https://rpc.prom.io)",
+  "ci_run": "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38236858197",
+  "result": "8 passed; 0 failed; 0 skipped",
+  "fork": "live tip at run time (state matched live reserves read at blocks 10073191-10073535)",
+  "key_numbers": {
+    "factory_pairs": 90,
+    "main_pool_price_usdt_per_wprom": 5.203727,
+    "market_prom_price_usd": 5.254945,
+    "main_pool_deviation_pct": 0.97,
+    "main_pool_lp_user_0x2bA8_pct": 99.851067,
+    "main_pool_lp_feeTo_pct": 0.117409,
+    "skim_excess_pools": 0,
+    "skim_zero_verified_pools": 9,
+    "factory_setFeeTo_revert": true,
+    "factory_setFeeToSetter_revert": true,
+    "public_mint_FKS_BOB_USDT_revert": true,
+    "vault_outsider_retrieve_revert": true,
+    "vault_owner_retrieve_gyro_wei": "500000000000000000000000000",
+    "main_pool_10k_usdt_buy_edge_usd": -1098,
+    "main_pool_optimal_arb_estimate_usd": 0.89,
+    "same_pool_round_trip_loss_pct": 0.53,
+    "stale_usdc_pool_implied_price_usd": 10.497744,
+    "stale_usdc_pool_max_dust_profit_usd": 0.933089,
+    "stale_usdc_pool_optimal_dump_wprom": "0.43",
+    "gyro_pool_lp_at_dead_pct": 99.99794,
+    "gyro_pool_full_supply_holder_extraction_wprom": 4681.392960412939284242,
+    "gyro_pool_full_supply_holder_extraction_usd": 24600,
+    "gyro_pool_wprom_reserve_wprom": 8673.631223725290257935
+  },
+  "notes": [
+    "The test contract itself is the unprivileged attacker; no roles, no insider tokens.",
+    "T5 executes the vault retrieve as the memecoin owner (pranked) to prove the gate key is token.owner(); outsider call reverts.",
+    "T8 shows the conditional insider path: a full-supply memecoin holder can extract 4,681 WPROM of the 8,673 WPROM in the burned-LP gyro pool (CPMM depth limit).",
+    "No transactions were sent to any real chain; fork only."
+  ]
+}
