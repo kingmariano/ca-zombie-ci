@@ -295,15 +295,15 @@ contract AuguryLiveTest is Test {
         require(owed > 0, "expected nonzero V1 entitlement");
         uint256 userBefore = usdc.balanceOf(V1_USER);
 
+        // NOTE: V1's collectDividends() transfers the amount but returns 0 (no explicit
+        // return statement in _collectDividends), so assert on the USDC delta instead.
         vm.prank(V1_USER);
-        uint256 got = v1.collectDividends();
-        require(got == owed, "first claim pays owed");
-        require(usdc.balanceOf(V1_USER) == userBefore + owed, "balance delta");
+        v1.collectDividends();
+        require(usdc.balanceOf(V1_USER) == userBefore + owed, "first claim delta");
 
         vm.prank(V1_USER);
-        uint256 got2 = v1.collectDividends();
-        require(got2 == 0, "replay must pay 0 on V1");
-        require(usdc.balanceOf(V1_USER) == userBefore + owed, "no second payment");
+        v1.collectDividends();
+        require(usdc.balanceOf(V1_USER) == userBefore + owed, "replay must not pay again");
         require(v1.lastFundedEpoch() == 2, "V1 lastFundedEpoch");
     }
 
