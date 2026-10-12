@@ -1,0 +1,15 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc = "0.8.24"
+optimizer = true
+optimizer_runs = 200
+evm_version = "cancun"
+# Fork robustness on flaky/rate-limited public RPCs:
+#   - fetch state by block number (avoids "block not found: hash ..." from LBs)
+#   - disable parent-block BAL prewarming (avoids spurious account fetches)
+#   - generous RPC timeout (slow public endpoints under load)
+eth_rpc_timeout = 120000
+fork_state_by_number = true
+no_fork_bal = true

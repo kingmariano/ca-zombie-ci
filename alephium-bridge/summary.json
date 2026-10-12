@@ -1,0 +1,40 @@
+{
+  "finding": "alephium-bridge",
+  "title": "Alephium Bridge (AlphBridge) — live post-exploit bridge: unprivileged extraction = $0; $1.236M live guardian-gated custody (incl. $989.6k Alephium-side not counted by triage)",
+  "chains": ["ethereum", "bsc", "alephium"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": { "E-U": 0, "H-O": 0, "P": 1236320.26, "S": 6315.01 },
+  "latest_block": 26175504,
+  "block_numbers": { "ethereum": 26175504, "bsc": 127187224 },
+  "targets_checked": 6,
+  "live_targets": 4,
+  "closed_reasons": [
+    "All value-moving paths (completeTransfer/completeTransferAndUnwrapETH) require a 3-of-4 guardian-signed VAA; attacker-forged VAA with real emitter and payload reverts 'VM signature invalid' (fork-verified)",
+    "wALPH mint/burn is owner-gated (owner = TokenBridge); attacker calls revert 'caller is not the owner'",
+    "upgrade/registerChain require single-use governance VAAs from governance chain 0 / contract 0x...0004 (recovery VAA hash already consumed)",
+    "Replay protection live: historical attack VAA and today's VAA both revert 'transfer already completed'",
+    "Alephium custody (14,187,624.84 ALPH) never lost funds in the 2026-05-30 incident: attacker only produced EVM-bound forged VAAs; no unprivileged method on the custody contract",
+    "The $253k triage figure includes $6,315 stuck at the wALPH token contract (no function can move it) and misses the $989,576 Alephium-side custody"
+  ],
+  "poc": { "tests_passed": 9, "tests_total": 9, "ci_run_urls": ["__CI_URL__"] },
+  "key_facts": [
+    "Bridge is LIVE (relaunched after May-30-2026 exploit): ETH completeTransfer txs on 2026-10-12 (block 26,175,002), BSC transfers 2026-10-11/12, Alephium custody ops daily (latest 2026-10-12 05:43 UTC)",
+    "Live custody: ETH 0x579a3bDE...dD43 $221,149.17 (171,129.124138 USDT + 15,290.699043 USDC + 0.26804329 WBTC + 4.87206071 WETH + 0.04268123 ETH); BSC 0x2971F580...4dD8 $25,595.48 (24.49228991 WBNB + 6,969.18607306 USDT + 284.78433217 USDC); Alephium custody 226T1Xsp...MEWBZ 14,187,624.84289993 ALPH $989,575.61 — total $1,236,320.26 (DefiLlama prices 2026-10-12)",
+    "May-30-2026 exploit vector was OFF-CHAIN: Watcher re-observation fallback + eclipse-style node disruption let a fake Alephium contract's LOG7 forged event be signed by the real guardians; 200,967.309973 USDT VAA decoded on-chain had emitter = real bridge and signatures from guardians 0,1,3 (no key compromise)",
+    "Recovery precedent (P): 2026-06-02 tx 0xade2846a... upgraded impl 0x0F84..→0x9CC524Ca.. in one tx, burned 13,257,077.37 unbacked wALPH (13.26M), then downgraded to the standard impl — the exact code active today",
+    "Current implementations: ETH 0x0F843945...eEAb and BSC 0xfba7c899...fB78 are BYTE-IDENTICAL (codehash 0x015189b8...5757); verified standard Wormhole-Portal TokenBridge logic; no pause switch",
+    "Guardian set: 4 keys, index 0 (never rotated since deployment), identical on ETH+BSC; 3-of-4 quorum observed in all VAAs; same set signed the attack, the recovery and today's transfers",
+    "wALPH supply 13,411,372.81 (ETH) + 746,499.35 (BSC) = 14,157,872.16 vs custody 14,187,624.84 ALPH (~99.8% backed after relaunch; teams added native ALPH to cover the 500k escaped unbacked wALPH)",
+    "Stuck (S): 81,026.59289060 wALPH + 663.953878 USDT sent to the wALPH token contract 0x590F82...89A6 itself — no reachable transfer path for anyone",
+    "Triage correction: Phase-1 counted $253,490 (ETH+BSC only, incl. the stuck $6,315); live custody is ~$1.236M and is guardian-gated, not attacker-extractable"
+  ],
+  "caveats": [
+    "E-U verdict is contract-level and high-confidence; the historic (and only) extraction vector is off-chain Watcher forgery — claimed fixed + independently audited (Inference AG v1.2), but not verifiable read-only and not PoC-able without attacking live infrastructure (prohibited)",
+    "The Alephium Ralph custody contract source is not public; its guardian-gated behavior is assessed from architecture + behavior (survived the incident; daily operations) not source review",
+    "Guardian quorum 3-of-4 is observed in VAAs (Portal formula 2/3+1); core implementation is unverified on both EVM chains",
+    "Live balances drift while the bridge operates; figures are point-in-time (2026-10-12, block 26,175,504 ETH / 127,187,224 BSC)",
+    "P category = $1,236,320 is live bridge custody (user-backed operational liquidity with demonstrated guardian recovery power), not attacker profit; H-O = 0 because the bridge is live (no stranded claims found)"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from the Alephium Bridge: it is a LIVE post-exploit bridge (relaunched) whose every exit is gated by a 3-of-4 guardian VAA — forged VAAs revert 'VM signature invalid', replay is blocked, mint is owner-only; the historic May-2026 drain was an off-chain Watcher forgery (now fixed+audited); live custody at stake is ~$1.236M (incl. $989.6k Alephium-side ALPH missed by triage), $6.3k of it permanently stuck."
+}
