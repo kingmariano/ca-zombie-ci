@@ -1,0 +1,31 @@
+{
+  "source": "derived from ci-log.txt (GitHub Actions run 38187176117, block 127113332, anvil fork of BSC)",
+  "suite": {"passed": 12, "failed": 0, "total": 12},
+  "access_gates_from_unprivileged_attacker": {
+    "pool.collectProtocol(address)": "revert (onlyFactoryOperator)",
+    "factory.setFee(address,uint24)": "revert (operator only)",
+    "director.setOperator(address)": "revert (owner only)",
+    "pool.setFeeProtocol(uint8,uint8)": "revert (onlyFactoryOperator)"
+  },
+  "swap_fee_default_check": "swapFee(bot, 2000) == 2000 (no custom fees)",
+  "measured_net_profits_wei": {
+    "eth_triangle_BUSD": {"1e18": -263699682989975750, "1e19": -3332224460854025997, "2e19": -18539625677955803136, "5e19": -49465466809662705775, "1e20": -99812000452482845173, "3e20": -299904043638366418780, "1e21": -999960718373165605441, "3e21": -2999987326656858689626, "1e22": -9999995676939340502842, "best": 0},
+    "eth_vs_pancakeswap_BUSD": {"1e20": -20252206360672021168, "5e20": -102501586369890682309, "1e21": -209423958143375408245, "3e21": -663053390331214972724, "8e21": -2012307806709256446850, "1.6e22": -4869738426013405336894, "best": 0},
+    "btcb_roundtrip_BTCB": {"1e15": -74786201409352, "5e15": -1031847348458986, "1e16": -2133305398980474, "5e16": -11178563781425559, "1e17": -24830517913079648, "best": 0},
+    "xvs_WBNB": {"1e15": -476769323720315, "5e15": -4622350740896946, "2e16": -19887470315249428, "5e16": -49974384437373120, "1e17": -99992182082223871, "best": 0},
+    "cake_WBNB": {"1e6": 2169730, "1e8": 216973004, "1e10": -9864746073, "1e12": "revert (price limit)", "1e15": "revert", "1e18": "revert", "best": 216973004},
+    "eternal_WBNB": {"1e6": 116507793, "1e8": 11650779391, "1e10": 243109025831, "1e12": "revert (price limit)", "5e14": "revert", "1e15": "revert", "best": 243109025831},
+    "spc_crosspool_BUSD": {"1e12": 390254355951, "1e14": 38795374639562, "1e16": 1906072886533123, "1e17": -57512763222706845, "1e18": -964716151317891926, "best": 1906072886533123},
+    "alpaca_crosspool_WBNB": {"1e12": 33798119328, "1e13": -3278569510686, "1e14": -89034664361050, "1e15": -996952646477428, "5e15": -4999429104356705, "1e16": -9999905362981403, "5e16": -49999974205802559, "best": 33798119328},
+    "flash_selfcontained_BUSD": {"10e18..1000e18": "all reverted (route loses money; repay not covered)"},
+    "negative_control_woo_WBNB": {"1e16": -1531266720165928}
+  },
+  "usd_at_snapshot_prices": {
+    "spc_best": 0.0019,
+    "alpaca_best": 0.0000254,
+    "eternal_best": 0.00000018,
+    "cake_best": 0.00000016,
+    "total_positive_usd": 0.002
+  },
+  "interpretation": "Only microscopic cross-pool/micro-layer arbitrage is positive; every non-trivial route loses money because the pools' good-token balances are protocol fees + LP accrued fees and their tradeable in-range liquidity is razor-thin. No permissionless path reaches LP principal or protocol fees."
+}

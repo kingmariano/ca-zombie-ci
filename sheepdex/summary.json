@@ -1,0 +1,61 @@
+{
+  "finding": "L2-P2-SheepDex",
+  "title": "SheepDex (BSC) SpeFactory UniV3-fork — live extraction assessment",
+  "chains": ["bsc"],
+  "headline_extractable_usd": 0.00,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0.00, "H-O": 379109.94, "P": 48499.82, "S": 832.28},
+  "total_live_usd": 428442.03,
+  "latest_block": 127113332,
+  "block_numbers": {"bsc": 127099664, "bsc_fork_tests": 127113332},
+  "targets_checked": 81,
+  "live_targets": 51,
+  "closed_reasons": [
+    "Pool/factory/periphery math is logic-identical to canonical Uniswap v3-core v1.0.0 (token-level normalized diff of SwapMath/Tick/TickBitmap/Position/Oracle)",
+    "The only non-standard swap input (swapFee looked up by recipient) is an operator-set fee override (max 0.3%); setFee was never called and it cannot break the k-invariant or the IIA balance check",
+    "collectProtocol(address token) arbitrary-token sweep and setFeeProtocol are gated by onlyFactoryOperator = EOA 0x1efd11d3C814B873b6167d6AA402FDF3EB76E1ED; all setters revert for unprivileged callers (eth_call simulation + fork test test_access_gates 4/4)",
+    "LP positions (34,591 NFTs) are owned by the standard UniV3 periphery NFTPositionManager; decreaseLiquidity/collect/burn require isApprovedOrOwner",
+    "Arbitrage routes measured on a BSC fork all lose money except microscopic dust: the pools' good-token balances are dominated by protocol fees + LP accrued fees, and the tradeable in-range liquidity is razor-thin"
+  ],
+  "measured_arb_profits_usd": {
+    "eth_triangle_best": -0.2637,
+    "eth_vs_pancakeswap_best": -20.27,
+    "btcb_roundtrip_best": -0.0000746,
+    "xvs_best": -0.000477,
+    "cake_best_micro": 0.0000002169,
+    "eternal_best_micro": 0.0000002431,
+    "spc_crosspool_best": 0.0019,
+    "alpaca_crosspool_best": 0.0000254,
+    "total_positive": 0.00193
+  },
+  "poc": {
+    "tests_passed": 12,
+    "tests_total": 12,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38187176117",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38186340859",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38184917146"
+    ]
+  },
+  "key_facts": [
+    "Factory SpeFactory 0x571521f8c16f3c4ed5f2490f19187ba7a5a3cbdf (BSC), deployed block 11641289, Solidity 0.7.6, verified source recovered",
+    "81 pools enumerated exhaustively via full PoolCreated log scan; all created 2021 (last at block 15824303); fee tiers 1000/2000/5000 with tickSpacing 20/40/100",
+    "Total live pool balances $428,442.03 at block 127099664 (DefiLlama live $426,469-$427,015) — triage figure independently confirmed",
+    "Protocol fees summed = $48,499.82 (11.3% of all value), collectible only by operator EOA 0x1efd11d3...E1ED (last tx 2024-07-30, block 40923865); director owner EOA 0xAc80034e...CA3E",
+    "LP-claimable (pools with liquidity>0) = $379,109.94 across 34,591 position NFTs held by 1,934 distinct addresses (118,443 ERC721 Transfer events reconstructed)",
+    "Stuck excess in liquidity==0 pools = $832.28 (donations); NFTPositionManager holds $0.000002 dust; its sweepToken is permissionless but empty",
+    "No custom swap fees ever set (setFee selector 0xba364c3d absent from factory history; swapFee(bot,2000)==2000)",
+    "feeProtocol initialised to 34 (2/2) in SpePool constructor (canonical 0); live pools show 34 or 85 (5/5) — protocol takes 1/2 or 1/5 of swap fees",
+    "Pools actively arbed by bots with tiny ($20-160) swaps; major pairs track market within fees; ETH/BUSD, CAKE/WBNB, ETERNAL/WBNB retain larger stale deviations but their tradeable depth is dust",
+    "All major arb routes lose money on a fork: ETH triangle -26% at 1 BUSD; ETH-vs-Pancake -20% at 100 BUSD; CAKE -99.99995% at 0.001 WBNB; ETERNAL -99.95% at 0.0005 WBNB",
+    "Best measured positive routes: SPC cross-pool +$0.0019, ALPACA cross-pool +$0.000025, micro CAKE/ETERNAL layers ~$0.0000003 each"
+  ],
+  "caveats": [
+    "USD values are DefiLlama-priced at block 127099664; +/- 1-2% price drift vs triage",
+    "Operator key liveness is unknowable; if the operator EOA key is lost, the $48,500 protocol fees become stuck (S)",
+    "H-O assumes the 1,934 NFT holders can transact; many positions are dust and may never be claimed",
+    "Dust arb profits do not cover gas; 'extractable' figures are net of swap fees only",
+    "The first CI run was affected by load-balanced RPC replica lag; final PoC runs use a local anvil snapshot pinned ~100 blocks back"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0.002 live (dust arbs only); the $428k of pool value splits into $379k holder-recoverable LP positions (34,591 NFTs) and $48.5k operator-only protocol fees, with canonical UniV3 math and working access control closing every other path."
+}
