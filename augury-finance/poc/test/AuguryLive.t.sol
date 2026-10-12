@@ -98,7 +98,7 @@ contract AuguryLiveTest is Test {
     address constant V1_USER        = 0x1DB484E63645258e79e29E373283bDFA173f08BD;
     address constant FARM_STAKER    = 0x29965a1174645714c64F400CD54b6C0a5BBc1cb7; // 396 OMEN in pool 0
 
-    uint256 constant FORK_BLOCK = 95_385_542; // 2026-10-12
+    uint256 constant STATE_BLOCK = 95_385_542; // state snapshot used in this report (fork itself runs at latest)
 
     IERC20  usdc;
     IERC20  omen;
@@ -112,9 +112,11 @@ contract AuguryLiveTest is Test {
     IMasterAugur master;
 
     function setUp() public {
+        // NOTE: CI's POLYGON_RPC_URL endpoint does not serve historical state, so the
+        // fork runs at LATEST (assertions in this file are relative/structural).
         string memory rpc = vm.envOr("POLYGON_RPC_URL", string(""));
         if (bytes(rpc).length == 0) rpc = "https://polygon-bor-rpc.publicnode.com";
-        vm.createSelectFork(rpc, FORK_BLOCK);
+        vm.createSelectFork(rpc);
         usdc   = IERC20(USDC);
         omen   = IERC20(OMEN);
         sb0    = ISB(SB0);
