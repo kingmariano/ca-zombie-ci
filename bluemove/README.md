@@ -76,8 +76,8 @@ Escrow reachability today:
 * **Registry `Dex_Info`** `0x3f2d9f724f4a1ce5e71676448dc452be9a6243dac9c5b975a588c8c867066e92` (shared): `fee_to = 0x85bf745a…b9d3781`, `dev = 0x049cc391…68ffefa1`, `total_pool_created = 16,739`. `VersionManage` dynamic object field `0x41d5f1c1…3b5b2d` holds **version = 12**, last written 2026-07-12T01:24:51Z.
 * **Packages:** original `0xb24b6789…5454d9` (v1) … latest `0x35f3190a…f656d7` (v12); 12 versions total (`packageVersions`). Constants: v7–9 ⇒ 8, v10–11 ⇒ 10, v12 ⇒ 11.
 * **Pools:** 16,739 live (all `is_freeze = false`, all `lsp_supply > 0`).
-* **Reserve accounting (what triage summed):** SUI 183,071.62 + USDC 188.44 + USDT 31.07 ≈ **$201.6K** at scan prices (SUI ≈ $1.10; matches triage's $201,603).
-* **Legacy V1 stores (majors):** SUI **104.93** + USDC **0.66** + USDT 0.00 ≈ **$116.09** across 540 pools; the largest single holding is 72.91 SUI in pool `0x79fe3c40…` (counterparty = 9.89e17 YAWN, TreasuryCap burned).
+* **Reserve accounting (what triage summed):** SUI 183,071.62 + USDC 188.44 + USDT 31.07 ≈ **$201.6K** at local scan prices (SUI ≈ $1.10) — matches triage's $201,603; the CI scan values the same state at **$202,164.39** (SUI ≈ $1.1026) / **$198,502.25** at the run-B checkpoint (SUI ≈ $1.0826).
+* **Legacy V1 stores (majors):** SUI **104.93** + USDC **0.66** + USDT 0.00 ≈ **$116.43** across 540 pools; the largest single holding is 72.91 SUI in pool `0x79fe3c40…` (counterparty = 9.89e17 YAWN, TreasuryCap burned).
 * **Escrows (full scan of all 16,739 pools):** 15,945 pools carry only `EscownCoins` (V-mid), 399 only `EscrowCoinsV2` (v12), **0 carry both**, 395 have no escrow (392 with only legacy balances, 3 empty). Reserves exactly match one store: `r = legacy` for 784 pools, `r = EscownCoins` for 15,942, `r = EscrowCoinsV2` for 13.
 * **Escrow value:** `EscownCoins` **$181,753.52** (164,559.95 SUI + stables), `EscrowCoinsV2` **$20,384.88** (18,488.50 SUI + tokens; top pool `0x127bd40c…` = 18,407.28 SUI + SUIJAK ≈ $20.25K). Reserves total **$202,164.39** (what triage measured, at 2026-10-12 prices: SUI ≈ $1.1026). Legacy stores **$116.43**.
 * **Fees:** 12,738 pools hold accumulated fees; majors total **13,336.28 SUI + ~$3.35 stables ≈ $14,707.55** — withdrawable only by `fee_to`/`dev`/team (P).
@@ -91,7 +91,7 @@ Escrow reachability today:
 **Can (all read/derived paths verified by simulation, §5):**
 
 1. **Call v1–v6 without any gate** (swap/add/remove on legacy stores; price quoted from the shared `reserve_*` fields).
-2. **Mint LP at an inflated rate on the 2 fully-desynced pools** (`0x99c63597df15c372…`, `0x2e56b6b056433383…`: `T > r` on both sides, reserves > 0): deposit proportional to the stale small reserves, mint `LP ≈ T/r × fair`, burn against the legacy store. Extractable value **$0.054** (pool 1: 0.049 SUI + memes; pool 2: memes only). This is the July bug class, still live in the ungated V1 mint — but the state and value are gone.
+2. **Mint LP at an inflated rate on the 2 fully-desynced pools** (`0x99c63597df15c372…`, `0x2e56b6b056433383…`: `T > r` on both sides, reserves > 0) and burn in the same transaction — **simulation s8 proves the full atomic path**: v6 (ungated) public `add_liquidity_returns` mints 28,586,102 LP for a 0.0000433 SUI + 5.28M PIGU deposit, then v6 `remove_liquidity` pays out 0.0485 SUI + 352M PIGU. Net **+0.04841 SUI ≈ $0.053** (plus unpriced PIGU). This is the July bug class, still live in code — but the state and value are almost gone. (Mixing V1 and v6/v12 calls in one PTB trips a linkage error; v6-only calls work.)
 3. **Buy tokens out of imbalanced legacy stores for dust** ("faucet"): e.g. pool `0x57034562950dc6b1…` (SUI/SUITRUMP) holds legacy SUI 0.0000257 + 258,697.75 SUITRUMP; a 0.1 SUI V1 swap returns ≈258.6K SUITRUMP — **simulation SUCCESS**. Value ≈ external market value of the tokens: 0 of the top-200 imbalanced pools' big-side tokens have a DefiLlama price ⇒ ≈$0.
    The mirror direction (large major side, small other side) is bounded by the counterparty token's acquirable supply: top cases — `0x79fe3c40…` 72.91 SUI vs 9.89e17/1e18 YAWN (TreasuryCap burned at `0x0`, floating ≈1.1% ⇒ ≤~0.8 SUI extractable), `0xa0dfabd0…` 6.35 SUI vs ADRY (cap burned, 99.6% floating ⇒ ≤~6.3 SUI), `0x9e4606a8…` 5.77 SUI vs DARK (cap burned ⇒ ≤~5.8 SUI). Aggregate priced-major bound: **$116.43** (full scan); realistic extraction lower, bounded by how cheaply dead meme tokens can be acquired.
 4. Redeem legacy-store LP via V1 `remove_liquidity` (fair; holders only).
@@ -103,7 +103,7 @@ Escrow reachability today:
 3. Re-sync, skim, migrate, freeze, or change fees (gated/stubs).
 4. Set the version (dev-only), reactivate an escrow package (dev-only).
 
-Costs: Sui gas only (simulated gas ≈ 0.1 SUI-scale; storage rebates apply to object churn); no flash loans needed for the residual path.
+Costs: Sui gas only — negligible and often net-negative thanks to storage rebates (s5 sim: computation 108,000 MIST + storage 6.1M vs rebate 132.2M); no flash loans needed for any residual path.
 
 ---
 
@@ -111,20 +111,25 @@ Costs: Sui gas only (simulated gas ≈ 0.1 SUI-scale; storage rebates apply to o
 
 Harness: Sui GraphQL `simulateTransaction` (query accepting sui.rpc.v2 proto3-JSON). Minimal `0x2::coin::zero<SUI>` simulated **SUCCESS** (proves harness). Each leg was simulated against live mainnet state; nothing signed/sent.
 
-| # | PTB | Result | Exact error |
+| # | PTB | Result | Exact error / numbers |
 |---|---|---|---|
 | s1 | vmid `router::swap_exact_input_` (SUI/PAULY pool) | FAILURE | `0x08cd3348…::swap::assert_version_contract` abort **25** |
 | s2 | v12 `router::add_liquidity_returns` | FAILURE | `0x35f3190a…::swap::assert_version_contract` abort **25** |
 | s3 | V1 `router::swap_exact_input` on escrow-only pool | FAILURE | `0x2::balance::split` abort **2** (legacy store empty) |
 | s4 | V1 `router::add_liquidity` on escrow-only pool | FAILURE | `0x…b24b…::utils::quote` abort **2** |
-| s5 | V1 swap 0.1 SUI → SUITRUMP (faucet pool `0x57034562950dc6b1…`) | **SUCCESS** | — (residual path; dead-meme tokens) |
+| s5 | V1 swap 0.1 SUI → SUITRUMP (faucet pool `0x57034562950dc6b1…`) | **SUCCESS** | returns ≈258.6K SUITRUMP (dead-meme residual) |
 | s6 | v12 add → v12 remove roundtrip | FAILURE | `0x35f3190a…::swap::assert_version_contract` abort **25** |
+| s7 | V1 `router::add_liquidity` on desynced pool `0x99c63597…` (mint leg) | **SUCCESS** | `Add_Liquidity_Pool` event: in 43,319 MIST + 5,277,399 PIGU → **LP 28,586,102** minted (supply was 410,963 ⇒ 98.6% of new supply; fair mint would be ≈362 LP) |
+| s8 | **atomic attack** — v6 (ungated) `router::add_liquidity_returns` → v6 `router::remove_liquidity`, one PTB | **SUCCESS** | Mint: 43,319 MIST + 5,277,399 PIGU → **28,586,102 LP**; Burn: **48,455,534 MIST + 352,081,587 PIGU** out. **Net SUI +48,412,215 MIST (0.04841 SUI ≈ $0.053)** + 346.8M PIGU |
 
-Full-scale check (CI run 38261640532, success): all **16,739 pools** enumerated with their escrow objects; the desync precondition evaluated for both escrow versions ⇒ **v12-escrow drainable: 0 pools; V1-mint drainable: 2 pools ($0.054 total, both dominated by dead meme tokens — one holds 0.049 SUI)**. Only 3 pools have no escrow and 0 pools have both escrow types.
+The s8 atomic proof is the complete July bug-class path executed with **only unprivileged calls** (v6 package `0xa00faab5…` has no version gate and a public `add_liquidity_returns`) on live state — it works, but the remaining desynced value is $0.053. (Mixing V1 and v6/v12 calls in one PTB trips a linkage error; v6-only calls work.)
+
+Full-scale check (CI runs 38261640532 and 38266267214, both success): all **16,739 pools** enumerated with their escrow objects; the desync precondition evaluated for both escrow versions ⇒ **v12-escrow drainable: 0 pools; V1-mint drainable: 2 pools ($0.054 total, both dominated by dead meme tokens — one holds 0.0484 SUI)**. 395 pools have no escrow at all (392 with only legacy balances, 3 empty); 0 pools have both escrow types.
 
 CI runs:
-* **full enumeration + exploitability scan:** https://github.com/kingmariano/ca-zombie-ci/actions/runs/38261640532 (**conclusion: success**; workflow `poc.yml`, branch `bluemove`; artifact `result-bluemove` = `ci-out/bluemove_state.json` 15.1 MB, 16,739 pools). Checkpoint 333,206,268 (2026-10-12T14:16Z); consumed ~33 min.
-* local cross-checks: `analysis/local-bluemove.json` (triage), `analysis/pools_all.json.gz`, `analysis/escrow_sample.json` (n=600), `analysis/children/sim-poc/*` (38 evidence files), `ci-out/sim/*` (raw sim request/response JSON).
+* **run 1 — full enumeration + exploitability scan:** https://github.com/kingmariano/ca-zombie-ci/actions/runs/38261640532 (**success**; workflow `poc.yml`, branch `bluemove`; artifact `result-bluemove` = `ci-out/bluemove_state.json` 15.1 MB, 16,739 pools). Checkpoint 333,206,268 (2026-10-12T14:16Z); ~33 min.
+* **run 2 — full enumeration + gate simulations in one artifact:** https://github.com/kingmariano/ca-zombie-ci/actions/runs/38266267214 (**success**; checkpoint 333,216,143, 2026-10-12T15:26Z; ~34 min). Re-confirms identical topology (0 escrow-drainable, 2 mint-drainable) at SUI ≈ $1.0826; CI sim results: s1–s4/s6 revert with aborts 25/25/2/2/25 (raw pairs in `ci-out/sim/`).
+* local cross-checks: `analysis/local-bluemove.json` (triage), `analysis/pools_all.json.gz`, `analysis/escrow_sample.json` (n=600), `analysis/ci-run-A-state.json`, `analysis/ci-run-B-state.json`, `analysis/children/sim-poc/*` (38 evidence files), `ci-out/sim/*` (raw sim request/response JSON; `sim_results.json` = s1–s8: 8/8 expected outcomes), replayable via `ci/sim_poc.py`.
 
 ---
 
