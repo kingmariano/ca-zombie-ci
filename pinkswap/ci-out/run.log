@@ -1,0 +1,45 @@
+block 127145004
+factory {'address': '0x7d2ce25c28334e40f37b2a068ec8d5a59f11ea54', 'code_len': 14059, 'feeTo': '0xcf6a864b0d705242bf1b916bf8c097ae503bc4d5', 'feeToSetter': '0xcf6a864b0d705242bf1b916bf8c097ae503bc4d5', 'feeTo_code_len': 1, 'n_pairs': 167}
+pairs read 167
+totals {'n_pairs': 167, 'reserves_usd': 276482.94, 'skim_excess_usd_at_llama_prices': 0.0, 'feeTo_lp_value_usd': 3949.7}
+sims {"pink_mint_from_attacker": {"ok": false, "err": "execution reverted: Ownable: caller is not the owner"}, "masterchef_deposit_from_attacker": {"ok": false, "err": "execution reverted: Masterchief no more rewards"}, "masterchef_migrate_from_attacker": {"ok": false, "err": "execution reverted: migrate: no migrator"}, "pinklock2_unlock_mev_lock_from_attacker": {"ok": false, "err": "execution reverted: You are not the owner of this lock"}, "skim_top_pair_from_attacker": {"ok": true, "err": null}}
+/home/runner/work/ca-zombie-ci/ca-zombie-ci/pinkswap/ci/run.py:392: DeprecationWarning: datetime.datetime.utcfromtimestamp() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.fromtimestamp(timestamp, datetime.UTC).
+  entry["unlock_date_iso"] = datetime.datetime.utcfromtimestamp(entry["tgeDate"]).strftime("%Y-%m-%d") if 0 < entry["tgeDate"] < 2**34 else None
+PinkSwap (BSC) live state @ block 127145004
+factory 0x7d2ce25c28334e40f37b2a068ec8d5a59f11ea54: pairs=167 feeTo=0xcf6a864b0d705242bf1b916bf8c097ae503bc4d5 (EOA) feeToSetter=0xcf6a864b0d705242bf1b916bf8c097ae503bc4d5
+total reserves (llama-priced tokens) = $276,482.94
+skim() excess at llama prices          = $0.00  (12 pairs, all unpriced junk tokens)
+feeTo LP value (P, feeTo is an EOA)    = $3,949.70
+classification: E-U=$0.00  H-O=$269,866.42  P=$3,949.70  S=$2,666.82
+
+gate simulations (eth_call from attacker, read-only):
+  pink_mint_from_attacker: ok=False err=execution reverted: Ownable: caller is not the owner
+  masterchef_deposit_from_attacker: ok=False err=execution reverted: Masterchief no more rewards
+  masterchef_migrate_from_attacker: ok=False err=execution reverted: migrate: no migrator
+  pinklock2_unlock_mev_lock_from_attacker: ok=False err=execution reverted: You are not the owner of this lock
+  skim_top_pair_from_attacker: ok=True err=None
+
+top excess pairs:
+  0xb9efbd2bb41f7a2136bf2b21e8b26641651adef9 PinkE/WBNB ex0=1209887.277642 ex1=0.000000 usd=0.0
+  0x9a4682cf610d49688d520e32996cf6cdfb14b0c8 PinkS/PinkE ex0=0.000000 ex1=206856.634115 usd=0.0
+  0x030ebc2465d4003d52841043d47e636beeb07ce0 PinkE/BUSD ex0=65388.140573 ex1=0.000000 usd=0.0
+  0xd948d34ce937d9d6b7d54741e33030d4dae3f700 PinkM/WBNB ex0=2522722.658637 ex1=0.000000 usd=0.0
+  0x4e5f1ae9ffca3dd201fe1a222abf35441e265788 SFT/WBNB ex0=0.000184 ex1=0.000000 usd=0.0
+  0x05e80920cc8a51d0e3f98983c954a9611667d67a TRIII/WBNB ex0=0.000000 ex1=0.000000 usd=0.0
+  0x299c91fc4ff0cc596be7ece2aab676e7b7c21246 SAFEMOON/WBNB ex0=227.442819 ex1=0.000000 usd=0.0
+  0x510fa68a99bd3ca6845d4394f16ed8a75c764d77 PinkE/COG ex0=768230.233600 ex1=9.130170 usd=0.0
+  0xb15365734227a96f8c61d64e5dd1040ddaa3fcdd PinkS/COG ex0=0.000000 ex1=4.536323 usd=0.0
+  0x76f33b7b2af0ba9af6cd59c6873f031d1933b58a COG/SAFEHOLD ex0=13.304946 ex1=0.000000 usd=0.0
+  0xa4890c45be913c7fe9967543b07dfe753e459fa6 WBNB/COG ex0=0.000000 ex1=11.839809 usd=0.0
+  0x6c723ba7991895741de4ac537d64f469d0b4eac2 WBNB/WB3 ex0=0.000000 ex1=0.000000 usd=0.0
+
+locker locks on PinkSwap pairs:
+  pinklock2 MEV/WBNB lock#1112062 owner=0x47eb34dd761d5032cd7ff70f3cc93428491ea2c6 amount=17332799551860841620 lockDate=1687029476 unlock=2024-06-16 unlockedAmount=0
+  pinklock2 ERODE/WBNB lock#1022053 owner=0xbc27658170ffc363d253f72927f21b9dac15a101 amount=1692574015907545802 lockDate=1659172329 unlock=2122-07-06 unlockedAmount=0
+  pinklock1 Infi/WBNB lock#17881 owner=0xeb8ceb447af0ffbfb8c5f7f1648ad839538d132e amount=623211260373723832648 lockDate=1643542745 unlock=2022-07-29 unlockedAmount=0
+  pinklock1 McDOGE/WBNB lock#18771 owner=0xbb33e8f20263b4151ec4103fc52e04beecd9f5ca amount=517174792918013471306 lockDate=1643823695 unlock=2022-08-01 unlockedAmount=0
+S detail: [{"pair": "0x5cce01ada9aa19552571be68204126cc00576b3d", "sym0": "ERODE", "sym1": "WBNB", "value_usd": 2666.82, "locker": "pinklock2", "lock_id": 1022053, "unlock_date_iso": "2122-07-06", "renounced": false}]
+
+masterchef: pools=7 migrator=0x0000000000000000000000000000000000000000 owner=0x169facb54f3e1dd49eb61bd5f44c96ebd7156c36 cap_reached=True
+pink: owner=0xe981676633dcf0256aa512f4923a7e8da180c595 totalSupply=700000000000000000000000000000000
+DONE

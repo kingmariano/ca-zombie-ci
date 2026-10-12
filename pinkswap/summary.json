@@ -1,0 +1,64 @@
+{
+  "finding": "L2-Triage-A #17 / PinkSwap (zombie-hunt II Phase 2)",
+  "title": "PinkSwap (BSC) UniV2-fork DEX \u2014 live extractable value for an unprivileged attacker",
+  "chains": [
+    "bsc"
+  ],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 269866.42,
+    "P": 3949.7,
+    "S": 2666.82
+  },
+  "latest_block": 127145004,
+  "block_numbers": {
+    "bsc": 127145004,
+    "bsc_local_enumeration": 127138804,
+    "bsc_ci_run1": 127142452,
+    "bsc_local_ci_validation": 127144336
+  },
+  "targets_checked": 179,
+  "live_targets": 178,
+  "closed_reasons": [
+    "Pair liquidity is LP-token-owned (H-O): PinkswapPair is a faithful UniswapV2 fork; the only permissionless value mover is skim(to), which takes balance-reserve excess",
+    "No priced-token excess exists: full 167-pair fork scan shows zero WBNB/BUSD/USDT/ETH/BTCB excess; all 12 excess pairs hold only illiquid junk tokens (DexScreener: no markets for PinkE/COG/SFT/TRIII/WB3/SAFEMOON; PinkM excess = $0.0033)",
+    "One excess pair (COG/SAFEHOLD 0x76f33b7b...) is permanently stuck: skim() reverts because SAFEHOLD rejects zero-amount transfers",
+    "PINK token mint is onlyOwner (owner = MasterChef); no attacker-callable mint path; supply == cap (7e32)",
+    "MasterChef migrator()==0 -> migrate() reverts; emission cap reached -> deposit() reverts; updatePool() pays the caller nothing",
+    "PinkLock02 / PinkLock v1 unlock() requires lock.owner == msg.sender (attacker reverts)",
+    "feeTo and feeToSetter are the EOA 0xCF6A864b0d705242BF1B916Bf8c097aE503BC4d5 (privileged), with $3,953.65 of accrued LP (P)",
+    "All top paired tokens (PinkE, MEV, ARS, ERODE, PinkM, Infi, McDOGE, SAFEHOLD, BNBC) are fixed-supply dxsale/safemoon templates with no public mint"
+  ],
+  "poc": {
+    "tests_passed": 8,
+    "tests_total": 8,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38201588498",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38202891878"
+    ]
+  },
+  "key_facts": [
+    "Factory 0x7D2Ce25C28334E40f37b2A068ec8d5a59F11Ea54: 167 pairs, feeTo=feeToSetter=0xCF6A864b0d705242BF1B916Bf8c097aE503BC4d5 (EOA, 0 code bytes)",
+    "Total pair reserves (llama-priced tokens) = $276,482.94 at block 127,145,004 (top: PinkE/WBNB $209,282 = 279.36 WBNB + 647.5B PinkE)",
+    "skim() excess: 12 pairs, $0.00 at market prices; 11 skim-able (junk tokens only), 1 permanently stuck (COG/SAFEHOLD, SAFEHOLD zero-transfer revert)",
+    "feeTo accrued LP in 68 pairs worth $3,949.70 (P) \u2014 largest PinkS/WBNB $1,648, WBNB/BUSD $1,375",
+    "MasterChef 0xe981676633dCf0256Aa512f4923A7e8DA180C595: 7 pools, totalAllocPoint 3600, migrator 0x0, owner EOA 0x169faCB5..., PINK cap reached (supply == totalPinksReward == 7e32), deposits blocked",
+    "PINK 0x702b3f41772e321aacCdea91e1FCEF682D21125D: owner = MasterChef, mint onlyOwner, no burn",
+    "Locked LP: MEV/WBNB $35.3k in PinkLock02 lock #1112062 (owner EOA, unlockable since 2024-06-16, H-O); ERODE/WBNB $2.7k lock #1022053 until 2122-07-06 (S); Infi/WBNB $1.6k (lock #17881) + McDOGE/WBNB $1.2k (lock #18771) in PinkLock v1 (owner renounced, locks expired 2022, H-O)",
+    "CoinGecko still lists PinkSwap with ~$124/24h volume on WBNB/BUSD and USDT/WBNB pairs \u2014 the DEX is barely alive but that flow creates no extraction path",
+    "Fork PoC (CI run 2, 8/8 PASS): skim no-WBNB; full 167-pair scan priced excess = 0 wei; PINK mint revert; migrate revert; deposit revert + updatePool no-gain; lock unlock revert; feeTo privileged redemption; attacker cannot burn others' LP",
+    "Independent falsification audit (child subagent) attempted locker drains, PINK mint-and-dump, setFeeTo(attacker), MasterChef LP theft, allowance-free transferFrom, skim-for-value: all closed; verdict CONFIRMED. Best-effort skimmable dust approx $0.0052 total"
+  ],
+  "caveats": [
+    "DefiLlama prices omit 148 of 177 distinct pair tokens; the $276,482.94 'reserves' figure is a lower bound on paper value but the correct basis for realizable value",
+    "Skimmable dust is worth ~$0.005 at best-effort pair-implied prices (PinkM $0.0034 + PinkE $0.0004 + SAFEMOON/COG dust), i.e. under $0.01 and below gas cost; the COG piece sits on the one pair whose skim() always reverts (SAFEHOLD zero-transfer revert)",
+    "DexScreener market checks performed 2026-10-12; GoldRush holders list top-10 only",
+    "P (privileged) risk remains latent: MasterChef owner can setMigrator then anyone can call migrate(); feeTo EOA can redeem $3,949.70 of accrued LP; neither is attacker-extractable",
+    "Triage headline $275,306 = LP-owned pool liquidity (H-O) + team fees (P) + one dead-locked position (S); it was never attacker-extractable",
+    "Independent child audit (analysis/child-audit-1/REPORT.md) confirmed the claim and could not falsify it; its limits: bytecode==source not byte-verified (mitigated by full ABI-selector match + live gate sims), PINK deploy-time constructor mint unreadable (archive RPC), tokens in <$30 pairs not individually audited, 22/167 pairs re-sampled (exact match)",
+    "PinkLock02/v1 also hold third-party locked assets (PinkLock02 total ~333 WBNB across all locks, ~$250k) but every transfer-out path is lock-owner-gated and those assets are not PinkSwap custody"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0.00 live from PinkSwap: the $276.5k of pair reserves are LP-owned, skim() excess holds only illiquid junk tokens (one pair even reverts), and every other path (PINK mint, MasterChef migrate/deposit, locker unlock, LP burn) is gated and fork-verified closed (8/8 CI tests); only privileged surfaces remain (feeTo EOA $3,949.70 accrued LP, MasterChef owner migrator power)."
+}

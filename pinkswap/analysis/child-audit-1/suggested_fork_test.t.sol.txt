@@ -1,0 +1,151 @@
+// SPDX-License-Identifier: MIT
+// SUGGESTION ONLY — for the parent CI to run on a BSC fork (anvil --fork-url <KEYED RPC>, block 127144638).
+// Not executed by this audit (per instructions: no anvil forks in child session).
+// Rename to test/PinkswapForkChecks.t.sol and adjust the fork block as needed.
+pragma solidity ^0.8.13;
+
+import "forge-std/Test.sol";
+
+interface IPair {
+    function token0() external view returns (address);
+    function token1() external view returns (address);
+    function getReserves() external view returns (uint112, uint112, uint32);
+    function skim(address to) external;
+    function balanceOf(address) external view returns (uint256);
+    function totalSupply() external view returns (uint256);
+}
+
+interface IERC20 {
+    function balanceOf(address) external view returns (uint256);
+    function transferFrom(address, address, uint256) external returns (bool);
+}
+
+interface IMasterChef {
+    function deposit(uint256 pid, uint256 amount) external;
+    function emergencyWithdraw(uint256 pid) external;
+    function migrate(uint256 pid) external;
+    function withdraw(uint256 pid, uint256 amount) external;
+}
+
+interface IPinkLock02 {
+    function unlock(uint256 lockId) external;
+    function getLockById(uint256 lockId) external view returns (uint256, address, address, uint256, uint256, uint256, uint256, uint256, uint256, uint256, string memory);
+}
+
+interface IPinkLockV1 {
+    function unlock(uint256 lockId) external;
+    function owner() external view returns (address);
+}
+
+interface IOwnable {
+    function owner() external view returns (address);
+}
+
+contract PinkswapForkChecks is Test {
+    address constant FACTORY   = 0x7d2ce25c28334e40f37b2a068ec8d5a59f11ea54;
+    address constant MC        = 0xe981676633dcf0256aa512f4923a7e8da180c595;
+    address constant PINK      = 0x702b3f41772e321aaccdea91e1fcef682d21125d;
+    address constant LOCK02    = 0x407993575c91ce7643a4d4ccacc9a98c36ee1bbe;
+    address constant LOCKV1    = 0x7ee058420e5937496f5a2096f04caa7721cf70cc;
+    address constant PAIR_PE_WBNB = 0xb9efbd2bb41f7a2136bf2b21e8b26641651adef9;
+    address constant WBNB      = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c;
+    address attacker = address(0xA11CE);
+
+    // 1. skim() takes ONLY (balance - reserve); reserves unchanged; attacker gets dust only.
+    function test_skim_takes_only_excess() public {
+        IPair p = IPair(PAIR_PE_WBNB);
+        address t0 = p.token0();
+        address t1 = p.token1();
+        (uint112 r0, uint112 r1, ) = p.getReserves();
+        uint256 e0 = IERC20(t0).balanceOf(PAIR_PE_WBNB) - uint256(r0);
+        uint256 e1 = IERC20(t1).balanceOf(PAIR_PE_WBNB) - uint256(r1);
+        uint256 a0 = IERC20(t0).balanceOf(attacker);
+        uint256 a1 = IERC20(t1).balanceOf(attacker);
+        vm.prank(attacker);
+        p.skim(attacker);
+        assertEq(IERC20(t0).balanceOf(attacker) - a0, e0, "took wrong side-0 amount");
+        assertEq(IERC20(t1).balanceOf(attacker) - a1, e1, "took wrong side-1 amount");
+        (uint112 nr0, uint112 nr1, ) = p.getReserves();
+        assertEq(nr0, r0); assertEq(nr1, r1);
+        // quantitative bound: WBNB-side excess must be 0 (junk-token dust only)
+        if (t0 == WBNB) assertEq(e0, 0, "WBNB excess > 0");
+        if (t1 == WBNB) assertEq(e1, 0, "WBNB excess > 0");
+    }
+
+    // 2. Mining cap reached: deposit blocked, migrate blocked, PINK mint gated, withdraw/emergency still allowed.
+    function test_masterchef_gates() public {
+        assertEq(IOwnable(PINK).owner(), MC);
+        vm.prank(attacker);
+        vm.expectRevert(bytes("Masterchief no more rewards"));
+        IMasterChef(MC).deposit(0, 0);
+        vm.prank(attacker);
+        vm.expectRevert(bytes("migrate: no migrator"));
+        IMasterChef(MC).migrate(0);
+        vm.prank(attacker);
+        vm.expectRevert(bytes("withdraw: not good"));
+        IMasterChef(MC).withdraw(0, 1);
+        // PINK mint(uint256) / mint(address,uint256) owner-gated
+        vm.prank(attacker);
+        (bool ok, ) = PINK.call(abi.encodeWithSignature("mint(uint256)", 1));
+        assertFalse(ok, "public PINK.mint(uint256) succeeded");
+        vm.prank(attacker);
+        (ok, ) = PINK.call(abi.encodeWithSignature("mint(address,uint256)", attacker, 1));
+        assertFalse(ok, "public PINK.mint(address,uint256) succeeded");
+    }
+
+    // 3. Factory fee setters are gated.
+    function test_factory_feeTo_gated() public {
+        vm.prank(attacker);
+        (bool ok, ) = FACTORY.call(abi.encodeWithSignature("setFeeTo(address)", attacker));
+        assertFalse(ok);
+        vm.prank(attacker);
+        (ok, ) = FACTORY.call(abi.encodeWithSignature("setFeeToSetter(address)", attacker));
+        assertFalse(ok);
+    }
+
+    // 4. Lockers: unlock is lock-owner gated; v1 upgrade impossible (owner renounced).
+    function test_lockers_gated() public {
+        assertEq(IPinkLockV1(LOCKV1).owner(), address(0), "v1 owner not renounced");
+        vm.prank(attacker);
+        (bool ok, ) = LOCKV1.call(abi.encodeWithSignature("unlock(uint256)", 0));
+        assertFalse(ok, "v1 unlock succeeded for non-owner");
+        vm.prank(attacker);
+        (ok, ) = LOCKV1.call(abi.encodeWithSignature("upgradeTo(address)", attacker));
+        assertFalse(ok, "v1 upgrade succeeded after renounce");
+        // v2: pick a real lock id and assert unlock reverted for attacker
+        (uint256 id, , address lockOwner, , , , , , , , ) = IPinkLock02(LOCK02).getLockById(1000000);
+        assertEq(id, 1000000);
+        if (lockOwner != attacker) {
+            vm.prank(attacker);
+            (ok, ) = LOCK02.call(abi.encodeWithSignature("unlock(uint256)", 1000000));
+            assertFalse(ok, "v2 unlock succeeded for non-owner");
+        }
+    }
+
+    // 5. No named/top-reserve pair token exposes an unprivileged mint/burn (selector-level, then call-level).
+    function test_no_public_mint_on_pair_tokens() public {
+        address[10] memory toks = [
+            0x8DA0F18e4deB7Ba81dBD061DF57325a894014B5a, // PinkE
+            0x0d51df3eDBe1fa664c6499A6E28C7B65a2fEd9c7, // MEV
+            0x05a0E3f9ca0394f9C83DC2b47D1FD3807Cc51d1F, // ARS
+            0x35EbCb2dde0d407CdF67cE9DbEC363079D78A6CB, // ERODE
+            0xb6090a50f66046E3c6aFB9311846a6432E45060A, // PinkM
+            0x6fe7ba1331bF4Cc59479a34773b64cb6C6c3d2af, // Infi
+            0x65D06b352cA71099CE65B9C7EcB22151da5fD37A, // McDOGE
+            0xEce59e58046179A762513727607629641190e421, // SAFEHOLD
+            0xCE1dB03de797Ffb5bFE98e3903f2CBEc841b26f8, // COG
+            0x64F6b684a2d14C7681d001D7357ecD888c9473cC  // BNBC
+        ];
+        for (uint256 i = 0; i < toks.length; i++) {
+            vm.prank(attacker);
+            (bool ok, ) = toks[i].call(abi.encodeWithSignature("mint(uint256)", 1));
+            assertFalse(ok, "mint(uint256) succeeded");
+            vm.prank(attacker);
+            (ok, ) = toks[i].call(abi.encodeWithSignature("mint(address,uint256)", attacker, 1));
+            assertFalse(ok, "mint(address,uint256) succeeded");
+            vm.prank(attacker);
+            (ok, ) = toks[i].call(abi.encodeWithSignature("burn(uint256)", 1));
+            assertFalse(ok, "burn(uint256) succeeded");
+        }
+    }
+}

@@ -1,0 +1,38 @@
+== runtime bytecode selector presence (hex substring) ==
+PINK      0x702b3f41772e321aaccdea91e1fcef682d21125d code=12321B selectors=['mint(address,uint256)', 'mint(uint256)', 'owner()', 'getOwner()', 'renounceOwnership()', 'transferOwnership(address)']
+PinkE     0x8DA0F18e4deB7Ba81dBD061DF57325a894014B5a code=11322B selectors=['owner()', 'renounceOwnership()', 'transferOwnership(address)']
+MEV       0x0d51df3eDBe1fa664c6499A6E28C7B65a2fEd9c7 code=9572B selectors=['owner()', 'renounceOwnership()', 'transferOwnership(address)']
+ARS       0x05a0E3f9ca0394f9C83DC2b47D1FD3807Cc51d1F code=9572B selectors=['owner()', 'renounceOwnership()', 'transferOwnership(address)']
+ERODE     0x35EbCb2dde0d407CdF67cE9DbEC363079D78A6CB code=9887B selectors=['owner()', 'renounceOwnership()', 'transferOwnership(address)']
+PinkM     0xb6090a50f66046E3c6aFB9311846a6432E45060A code=10805B selectors=['owner()', 'renounceOwnership()', 'transferOwnership(address)']
+Infi      0x6fe7ba1331bF4Cc59479a34773b64cb6C6c3d2af code=14288B selectors=['owner()', 'renounceOwnership()', 'transferOwnership(address)']
+McDOGE    0x65D06b352cA71099CE65B9C7EcB22151da5fD37A code=13897B selectors=['owner()', 'renounceOwnership()', 'transferOwnership(address)']
+SAFEHOLD  0xEce59e58046179A762513727607629641190e421 code=14158B selectors=['owner()', 'renounceOwnership()', 'transferOwnership(address)']
+COG       0xCE1dB03de797Ffb5bFE98e3903f2CBEc841b26f8 code=8271B selectors=['owner()', 'renounceOwnership()', 'transferOwnership(address)']
+BNBC      0x64F6b684a2d14C7681d001D7357ecD888c9473cC code=9572B selectors=['owner()', 'renounceOwnership()', 'transferOwnership(address)']
+
+== live owner() / getOwner() ==
+PINK      owner() -> 0xe981676633dcf0256aa512f4923a7e8da180c595 (owner code size 8483B)
+PinkE     owner() -> 0xef4b839275eb4468e8183f4f82ef737463327ba4 (owner code size 0B)
+MEV       owner() -> 0xab4783ec59cd08c4188e72847cdc5ea6b767b54a (owner code size 0B)
+ARS       owner() -> 0x5bb6eb3296ff964e10a04898134e41222f549234 (owner code size 0B)
+ERODE     owner() -> 0x0000000000000000000000000000000000000000 (owner code size 0B)
+PinkM     owner() -> 0x0000000000000000000000000000000000000000 (owner code size 0B)
+Infi      owner() -> 0xeb8ceb447af0ffbfb8c5f7f1648ad839538d132e (owner code size 0B)
+McDOGE    owner() -> 0xbb33e8f20263b4151ec4103fc52e04beecd9f5ca (owner code size 0B)
+SAFEHOLD  owner() -> 0x16667f855f1e14705850c2877d3f9ac856c07e52 (owner code size 0B)
+COG       owner() -> 0x0000000000000000000000000000000000000000 (owner code size 0B)
+BNBC      owner() -> 0x910add2e698d79c1e18beba6c38af6c83e07b597 (owner code size 0B)
+
+== revert-data probe for mint/burn selectors (with dummy args) ==
+PINK      mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
+PinkE     mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
+MEV       mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
+ARS       mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
+ERODE     mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
+PinkM     mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
+Infi      mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
+McDOGE    mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
+SAFEHOLD  mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
+COG       mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
+BNBC      mint(uint256):revert | mint(address,uint256):revert | burn(uint256):revert
