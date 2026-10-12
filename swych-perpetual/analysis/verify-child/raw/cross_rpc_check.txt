@@ -1,0 +1,22 @@
+# cross-RPC replication on blockrazor (2026-10-12T21:03:54Z)
+-- heads: publicnode=127279563 blockrazor=127279566 drpc=127279571
+-- PR1 getReporterCount (blockrazor) = 3
+-- PR1 reporters(0..2) (blockrazor):
+   0x2E7B39eF3ea1a2023f21fA6c1D314e2111Bd597F
+   0x75cE0c34DB3B81c661ce9E4b77533E09245A0497
+   0x6f369f5d140ab49c587090069F03D8002D8D96a4
+-- PR1 isReporter(RAND) (blockrazor) = false
+-- PR1 executeSwapOrders from RAND (blockrazor):
+Error: execution reverted: PriceReporter:unauthorized
+
+-- PR1 executeOrder from REPORTER (blockrazor):
+Error: server returned an error response: error code 3: execution reverted: 0x, data: "0x"
+-- PR2 owner (blockrazor) = 0x719A28638aa1326aD8848DA222c665e387e12e50
+-- OM executor (blockrazor) = 0x1CB9992c13Ac8de4d14661e7d05b3DB178b70dC5
+-- OM executeOrder from RAND (blockrazor):
+Error: execution reverted: OrderManager:onlyExecutor
+
+-- TR1 totalSupply (blockrazor) = 95914522923439084299355 [9.591e22]
+-- TR1 balanceOf(HOLD) (blockrazor) = 95914522923439084299355 [9.591e22]
+-- pool.isLiquidityProvider(HOLD) (blockrazor) = true
+-- pool.isLiquidityProvider(RAND) (blockrazor) = false

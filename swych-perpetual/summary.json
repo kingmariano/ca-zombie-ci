@@ -1,0 +1,66 @@
+{
+  "finding": "swych-perpetual",
+  "title": "Swych Perpetual (BSC) \u2014 dormant Level-Finance-v1-fork perp DEX; all value paths gated, E-U = $0",
+  "chains": [
+    "bsc"
+  ],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 153972.72,
+    "P": 30037.05,
+    "S": 0
+  },
+  "latest_block": 127273590,
+  "block_numbers": {
+    "bsc": 127273590,
+    "bsc_state_read": 127267326,
+    "bsc_fork": 127273590,
+    "bsc_triage": 126994409
+  },
+  "targets_checked": 11,
+  "live_targets": 1,
+  "closed_reasons": [
+    "Pool.addLiquidity/removeLiquidity/swap require isLiquidityProvider[msg.sender] (only EOA 0x9A6A\u2026a59a verified true)",
+    "Pool.increasePosition/decreasePosition are onlyOrderManager; OrderManager.executeOrder is onlyExecutor = PriceReporter 0x1CB9\u20260dC5",
+    "PriceReporter exposes no unprivileged function: dispatcher has only reporter-gated postPriceAndExecuteOrders/executeSwapOrders/0x93a91e33 and onlyOwner admin; executeOrder/executeSwapOrder/postPrices are internal call-constants (fallback revert for every caller incl. whitelisted reporters)",
+    "Pool.liquidatePosition requires tx.gasprice <= maxLiquidationGasPrice (== 0; exactly-0 is constructible but not practically includable on BSC) OR authorizedLiquidators[msg.sender]",
+    "Pool.withdrawFee/distributeSurplus require msg.sender == feeDistributor",
+    "All Pool/OM/Oracle/LP admin + proxy upgrades are onlyOwner = Gnosis Safe 1.3.0 5-of-7",
+    "Oracle.postPrices requires isReporter (Chainlink-bounded prices only)",
+    "FeeDistributor permissionless triggers pay only fixed recipients (FD1 slots 8/9/10 = 0x9bae\u2026d3f5); FD2 has no recipients and all setters onlyOwner; fork-measured attacker deltas = 0",
+    "All 8 pending orders' owners have zero-size positions -> no execution fee claimable; no pending swap orders"
+  ],
+  "poc": {
+    "tests_passed": 6,
+    "tests_total": 6,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38305216964",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38303057285"
+    ]
+  },
+  "key_facts": [
+    "Live custody at block 127,267,326: $182,863.81 (USDT 65,233.02 + WBNB 37.1509 + WETH 20.8424 + SOL 255.1747 + BTCB 0.12610); triage $182,959 confirmed",
+    "Booked fee reserves $30,037.05 (BTCB 0.117772, WBNB 15.1596, USDT 7,439.73, WETH 0.61194, SOL 0.94673) \u2014 withdrawable only through the FeeDistributor chain to protocol recipients (P)",
+    "LP token TR1 supply 95,914.52, 100% held by whitelisted EOA 0x9A6A5Aed7e4F4454AA89517AFdbBaE9EAD0FA59a; full-LP redeemable (fork-measured mid poolValue) $153,922.50 \u2014 H-O",
+    "Fork: LP holder removeLiquidity succeeded (10% -> 15,411.448 USDT); attacker removeLiquidity reverted NOT_AUTHORIZED",
+    "Fork: FD1.withdrawFee() from attacker moved WETH 0.611937748191841578 Pool->0x9baE\u2026d3F5; attacker WETH/WBNB/ETH deltas 0",
+    "Order scan: 8 pending limit DECREASE orders, all owners positionless; 0 swap orders; nextOrderId 4317",
+    "Oracle reporter prices stale since 2025-01-01; live pricing = Chainlink \u00b11% for all 5 assets; protocol dormant since early 2025",
+    "Owner = Gnosis Safe 1.3.0 threshold 5 of 7; ProxyAdmin owner = same Safe; PriceReporter owner = single EOA 0x9958e5A78F53e58233fB175f1A6F45F22d3d4C48",
+    "Two open longs remain (BTCB guaranteedValue ~$23.7k, SOL ~$3.4k) \u2014 unreachable by unprivileged attackers and by owners without the reporter-gated executor",
+    "Each of the 8 pending orders escrows only its 0.0025 ETH execution fee (owner-cancellable, ~$50 total); no trader collateral is escrowed by them (all DECREASE orders)",
+    "Independent verification (analysis/verify-child/VERIFY.md): all three headline claims CONFIRMED from chain (both PriceReporters' 11-selector dispatcher; executeOrder/executeSwapOrder/postPrices empty-data reverts for owner and whitelisted reporters; om.executor()==PR1 probed both ways; all 8 orders' keys chain-cross-checked zero; TR1 balance==totalSupply, isLiquidityProvider true/false); falsification sweep incl. SwychLY startNewEpoch (permissionless, caller payout 0) found no unprivileged payout",
+    "Corrections from independent verification: PR2 0x161B...143d is NOT byte-identical (4,102 B vs 4,647 B) and is owned by the Gnosis Safe (PR1's owner is EOA 0x9958...); 0x93a91e33 = checkForExecutableOrders; 0-gasprice liquidatePosition theoretical residual <= ~$10 total (flat $5/position, practically un-includable)"
+  ],
+  "caveats": [
+    "LP holder EOA identity (team vs external) not verifiable on-chain; classified H-O strictly by 100% holding + whitelist status; key loss would strand the value",
+    "H-O USD range across blocks: $152,826.76 (balance-minus-fees at 127,267,326) to $153,922.50 (fork-measured redeemable at 127,273,590); prices DefiLlama 2026-10-12",
+    "Open-position owners not enumerated: CI RPC rejects eth_getLogs, public RPCs cap/block wide log ranges, GoldRush has no log index for this pool; position existence proven via trancheAssets reads",
+    "PriceReporter owner is a single EOA that could add reporters (privileged/latent, not unprivileged E-U)",
+    "Permissionless FD triggers move protocol fees to protocol recipients; no attacker payout (fork-verified)",
+    "Independent verification complete (analysis/verify-child/VERIFY.md): CONFIRMED with minor descriptive corrections; theoretical residual = 0-gasprice liquidation (<= ~$10, practically un-includable)"
+  ],
+  "one_liner": "External unprivileged attacker can extract $0 live from Swych Perpetual: every value-moving path is access-gated (whitelisted LP/swap, executor-gated orders with a reporter-gated PriceReporter exposing no unprivileged entry, authorized-only liquidations, Safe 5-of-7 admin), while the $152.8\u2013153.9k LP claim is redeemable only by the single whitelisted LP EOA (H-O) and the $30.0k fee reserves route only to Safe-controlled recipients (P). Independently verified (VERIFY.md): CONFIRMED; only theoretical residual is a practically un-includable 0-gasprice liquidation (<= ~$10)."
+}

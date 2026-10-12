@@ -1,0 +1,53 @@
+# FeeDistributor probes at 2026-10-12T20:50:06Z block=latest RPC=https://bsc-rpc.publicnode.com
+===== FD1 reads
+owner()(address)         = 0x719A28638aa1326aD8848DA222c665e387e12e50
+paused()(bool)           = false
+pool()(address)          = 0xF86f70fb4959a9FCF1e7dD67A05dC0AC95c3802d
+totalWeight()(uint256)   = 0
+feeTokens(0) = 0x2170Ed0880ac9A755fd29B2688956BD959F933F8
+feeTokens(1) = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c
+feeTokens(2) = 0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c
+feeTokens(3) = 0x55d398326f99059fF775485246999027B3197955
+feeTokens(4) = 0x570A5D26f7765Ecb712C0924E4De545B89fD43dF
+===== FD2 reads
+owner()(address)         = 0x719A28638aa1326aD8848DA222c665e387e12e50
+paused()(bool)           = false
+totalWeight()(uint256)   = 0
+feeTokens(0) = 0x2170Ed0880ac9A755fd29B2688956BD959F933F8
+feeTokens(1) = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c
+feeTokens(2) = 0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c
+feeTokens(3) = 0x55d398326f99059fF775485246999027B3197955
+feeTokens(4) = 0x570A5D26f7765Ecb712C0924E4De545B89fD43dF
+getRecipients() = 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000
+===== FD1 permissionless probes from RANDOM
+-- withdrawFee()
+0x
+-- 0xb069bec2()
+0x
+-- setSplits(1,1,1,1)
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+-- setFeeTokens([])
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+===== FD2 probes from RANDOM
+-- distributeTreasury(0)
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+- server returned an error response: error code 3: execution reverted: Ownable: caller is not the owner, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000204f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572"
+-- distributeTreasury(1)
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+- server returned an error response: error code 3: execution reverted: Ownable: caller is not the owner, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000204f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572"
+-- setRecipient(rand,1)
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+-- removeRecipient(rand)
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:

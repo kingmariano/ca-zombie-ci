@@ -1,0 +1,42 @@
+# LPT/HOOK/ORACLE probes from RANDOM at 2026-10-12T20:54:41Z block=latest
+===== LPT
+-- minter() = 0xF86f70fb4959a9FCF1e7dD67A05dC0AC95c3802d
+-- LPT.mint(RAND,1e18) from RAND
+Error: execution reverted: LPToken: !minter
+
+Context:
+-- LPT.burn(1) from RAND
+Error: execution reverted: ERC20: burn amount exceeds balance
+
+Context:
+===== HOOK
+-- owner() = 0x719A28638aa1326aD8848DA222c665e387e12e50
+-- slToken() = 0xd6624102503252Cb06C1fBb4d3b1AA6eE9A072ca
+-- HOOK.postIncreasePosition(RAND,RAND,RAND,0,0x) from RAND
+Error: execution reverted: PoolHook:!pool
+
+Context:
+-- HOOK.postSwap(RAND,RAND,RAND,0x) from RAND
+Error: execution reverted: PoolHook:!pool
+
+Context:
+===== ORACLE
+-- owner() = 0x719A28638aa1326aD8848DA222c665e387e12e50
+-- getReporterCount() = 2
+-- oracle.isReporter(RAND) = false
+-- postPrices([],[]) from RAND
+Error: execution reverted: PriceFeed:unauthorized
+
+Context:
+-- addReporter(RAND) from RAND
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+-- configToken(RAND,0,RAND,0,0,0) from RAND
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:
+-- setPriceFeedErrorSpread(1) from RAND
+Error: execution reverted: Ownable: caller is not the owner
+
+Context:

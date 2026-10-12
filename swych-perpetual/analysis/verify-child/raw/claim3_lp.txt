@@ -1,0 +1,25 @@
+# Claim 3 + OM probe at 2026-10-12T20:47:10Z, RPC=https://bsc-rpc.publicnode.com, block=latest
+== TR1 name/symbol/decimals/totalSupply
+"Tranche One"
+"TR1"
+18
+totalSupply=95914522923439084299355 [9.591e22]
+== balanceOf(holder) holder=0x9A6A5Aed7e4F4454AA89517AFdbBaE9EAD0FA59a
+balanceOf(holder)=95914522923439084299355 [9.591e22]
+== balanceOf(random)=0
+== balanceOf(0x0)=0
+== balanceOf(pool)=0
+== pool.lpToken() = 0x03F9B914f605d732dd7d5B57e6B494be8d44b28A
+== pool.isLiquidityProvider(holder) = true
+== pool.isLiquidityProvider(random) = false
+== pool.isLiquidityProvider(PR1) = false
+== OM.executeOrder(1, random) from random
+Error: execution reverted: OrderManager:onlyExecutor
+
+Context:
+- server returned an error response: error code 3: execution reverted: OrderManager:onlyExecutor, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000194f726465724d616e616765723a6f6e6c794578656375746f7200000000000000"
+== OM.executeOrder(1, random) from PR1 (the executor) [order 1 likely expired/nonexistent -> different error expected]
+Error: execution reverted: OrderManager:orderNotExists
+
+Context:
+- server returned an error response: error code 3: execution reverted: OrderManager:orderNotExists, data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001b4f726465724d616e616765723a6f726465724e6f744578697374730000000000"

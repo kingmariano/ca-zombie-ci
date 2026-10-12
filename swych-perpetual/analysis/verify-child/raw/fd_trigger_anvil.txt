@@ -1,0 +1,7 @@
+# FD1 trigger fork measurement (2026-10-12T21:05:05Z) — deltas for RAND
+BEFORE: RAND_weth=0 FD2_weth=0 POOL_weth=20842379618035697515 [2.084e19] RAND_bnb=1000000000000000000
+-- FD1.withdrawFee() from RAND
+Error: server returned an error response: error code -32603: Fork Error: Transport(HttpError(HttpError { status: 403, body: "{\"jsonrpc\":\"2.0\",\"error\":{\"code\":-32602,\"message\":\"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode\"},\"id\":106}\n\n\nHTTP diagnostics:\ncf-ray: a499102da81d0e34-AMS\nserver: cloudflare" }))
+AFTER1: RAND_weth=0 FD2_weth=611937748191841578 [6.119e17] POOL_weth=20230441869843855937 [2.023e19] RAND_bnb=999984757400000000
+-- FD1.0xb069bec2() from RAND
+AFTER2: RAND_weth=0 FD2_weth=611937748191841578 [6.119e17] POOL_weth=20230441869843855937 [2.023e19] RAND_bnb=999984757400000000

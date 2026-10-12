@@ -1,0 +1,146 @@
+{
+ "finding": "swych-perpetual",
+ "protocol": "Swych Perpetual (RWAX/Level-Finance-v1-fork perp DEX on BSC)",
+ "date": "2026-10-12",
+ "chain": "bsc",
+ "latest_block_checked": 127267326,
+ "triage_block": 126994409,
+ "status": "read-only; no mainnet transactions",
+ "usd_prices_source": "DefiLlama coins.llama.fi (2026-10-12); oracle on-chain prices are Chainlink +/- 1% fallback",
+ "core_addresses": {
+  "pool_proxy": "0xF86f70fb4959a9FCF1e7dD67A05dC0AC95c3802d",
+  "pool_impl": "0x81026C573A618B104E2a511e1AEF2854524AA196 (contract Pool, solc 0.8.15, verified)",
+  "pool_proxy_admin": "0x107876b1bb5d91c4640ea7135d01b608bd0cc35a (ProxyAdmin owner = Safe)",
+  "order_manager_proxy": "0x092D00a4965A6336c9C52BDf522b012C2DD42DCe",
+  "order_manager_impl": "0xC8bA536029Ba07B8422e6fc555a5Ab8A4ece7e10 (contract OrderManager)",
+  "lp_token": "0x03F9B914f605d732dd7d5B57e6B494be8d44b28A (name 'Tranche One', symbol TR1, 18d, minter=Pool)",
+  "lp_holder_100pct": "0x9A6A5Aed7e4F4454AA89517AFdbBaE9EAD0FA59a (EOA, isLiquidityProvider=true)",
+  "price_reporter_executor": "0x1CB9992c13Ac8de4d14661e7d05b3DB178b70dC5 (OrderManager.executor; PriceReporter, 4,647 B, owner EOA 0x9958e5A78F53e58233fB175f1A6F45F22d3d4C48)",
+  "price_reporter_2": "0x161BddB95C079AE14F6EE85A246E106D1a00143d (sibling PriceReporter; 4,102 B, same 11-selector table; owner = Gnosis Safe 0x719A...)",
+  "oracle": "0xe4460109425EbC1CE34cAd59Ab7ce60535956BF5 (PriceOracle; reporters=[0x161Bdd..., 0x1CB999...])",
+  "fee_distributor": "0x7c57c2F579175570E23CCc8C3C26723beD50D6b1 (decompiled; permissionless withdrawFee()/distribute(), recipients = 0x9baE... only)",
+  "fee_recipient": "0x9baE46B159f0ce7eF40b6F3a932DFF3d5B01d3F5 (contract 9811 bytes; owner=Safe)",
+  "pool_hook": "0x91d09810f1f03cEb4Eb343c46741D7CD58eE0c06 (owner=Safe; mints lyRWAX-style rewards; no pool-fund custody)",
+  "owner_safe": "0x719A28638aa1326aD8848DA222c665e387e12e50 (Gnosis Safe 1.3.0, threshold 5, 7 owners)",
+  "price_reporter_owner_eoa": "0x9958e5A78F53e58233fB175f1A6F45F22d3d4C48",
+  "keeper_reporters": [
+   "0x2E7B39eF3ea1a2023f21fA6c1D314e2111Bd597F",
+   "0x75cE0c34DB3B81c661ce9E4b77533E09245A0497",
+   "0x6f369f5d140ab49c587090069F03D8002D8D96a4"
+  ]
+ },
+ "assets": {
+  "BTCB": "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+  "WBNB": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+  "USDT": "0x55d398326f99059fF775485246999027B3197955",
+  "WETH": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+  "SOL": "0x570A5D26f7765Ecb712C0924E4De545B89fD43dF"
+ },
+ "custody_usd_2026_10_12": {
+  "total_pool_balance_usd": 182863.81,
+  "fee_reserves_usd": 30037.05,
+  "lp_booked_value_usd": 153336.06,
+  "lp_price_tr1_usd": 1.5983,
+  "per_token_usd": {
+   "BTCB": 10408.74,
+   "WBNB": 27555.26,
+   "USDT": 65180.25,
+   "WETH": 52332.83,
+   "SOL": 27386.73
+  },
+  "pool_value_rpc_max_usd": 154831.91,
+  "pool_value_rpc_min_usd": 151766.47,
+  "pool_value_rpc_mid_usd": 153299.19
+ },
+ "gates": {
+  "pool.addLiquidity": "isLiquidityProvider[msg.sender] (whitelist; only 0x9a6a... verified true among checked)",
+  "pool.removeLiquidity": "isLiquidityProvider[msg.sender]",
+  "pool.swap": "msg.sender == orderManager || isLiquidityProvider",
+  "pool.increasePosition/decreasePosition": "onlyOrderManager (OrderManager.executeOrder is onlyExecutor = 0x1CB999...)",
+  "pool.withdrawFee/distributeSurplus": "msg.sender == feeDistributor (0x7c57...)",
+  "pool.liquidatePosition": "tx.gasprice <= maxLiquidationGasPrice(0) || authorizedLiquidators[msg.sender] -> effectively authorized-only (exactly-0 gasprice constructible but not practically includable on BSC; <= $5/position theoretical residual)",
+  "pool.refreshVirtualPoolValue": "public; no value transfer",
+  "all admin setters / proxy upgrade": "onlyOwner = Gnosis Safe 5-of-7 (P)",
+  "oracle.postPrices": "isReporter only; prices bounded by Chainlink deviation",
+  "priceReporter.postPriceAndExecuteOrders/postPrices/executeSwapOrders": "postPriceAndExecuteOrders + executeSwapOrders + checkForExecutableOrders(0x93a91e33) are isReporter-gated; postPrices is not dispatched (call-constant)",
+  "priceReporter.executeOrder single": "NOT DISPATCHED at all (fallback empty revert for every caller incl. owner/whitelisted reporters) \u2014 verified independently in analysis/verify-child/VERIFY.md",
+  "feeDistributor.withdrawFee()/distribute()": "PERMISSIONLESS trigger, but payout recipients are fixed storage slots (0x9baE... x3 + LP mint), attacker receives nothing",
+  "orderManager.placeOrder/cancelOrder": "permissionless but self-funded (user collateral/fee); cancel restricted to order owner",
+  "orderManager.executeOrder": "tx.gasprice<=maxLiquidationGasPrice||authorized; onlyExecutor"
+ },
+ "open_state": {
+  "pending_orders": [
+   {
+    "id": 429,
+    "owner": "0xa6D6783E521513c829EE60eeD3Df33236f4A573f",
+    "token": "WBNB",
+    "type": "limit DECREASE long",
+    "position_size_now": 0
+   },
+   {
+    "id": 3073,
+    "owner": "0x6dc5709032591085423638d6faa0778414204ee2",
+    "token": "WBNB",
+    "type": "limit DECREASE long",
+    "position_size_now": 0
+   },
+   {
+    "id": 3198,
+    "owner": "0x1dcb7879c4d213cb57042c9ee20e6d27ed098ba0",
+    "token": "WETH",
+    "type": "limit DECREASE long",
+    "position_size_now": 0
+   },
+   {
+    "id": 3233,
+    "owner": "0x710f1e6c7d1186f18b2a65c5636a19c3d16519cc",
+    "token": "SOL",
+    "type": "limit DECREASE short",
+    "position_size_now": 0
+   },
+   {
+    "id": 3394,
+    "owner": "0xd5cd3a7e913c7453860adae68b7ab7a53aba2650",
+    "token": "WETH",
+    "type": "limit DECREASE long",
+    "position_size_now": 0
+   },
+   {
+    "id": 3423,
+    "owner": "0x4da48596773ee4c78c12b9d0af130634731aa902",
+    "token": "BTCB",
+    "type": "limit DECREASE short",
+    "position_size_now": 0
+   },
+   {
+    "id": 3633,
+    "owner": "0x360c4ddbdfdb4b6c72e907099f87156ab9dee706",
+    "token": "BTCB",
+    "type": "limit DECREASE long",
+    "position_size_now": 0
+   },
+   {
+    "id": 4071,
+    "owner": "0x20441af9ef92365efbc2fc793f16ee14d8b8fc2a",
+    "token": "WBNB",
+    "type": "limit DECREASE long",
+    "position_size_now": 0
+   }
+  ],
+  "pending_swap_orders": 0,
+  "open_positions_live": "2 longs by trancheAssets: guaranteedValue BTCB ~$23.7k, SOL ~$3.4k (owner enumeration blocked: CI RPC lacks eth_getLogs; public RPCs cap/block ranges)",
+  "oracle_freshness": "reporter prices last posted 2025-01-01 (ts 1735760442); now stale -> Chainlink reference +/-1% spread (live for all 5 assets)",
+  "protocol_activity": "pool/OM last interactions 2023-12..2025-01; keepers stopped 2024-03-01; protocol effectively dormant since early 2025",
+  "measured_fork_effects": {
+   "fd1_withdrawFee_from_attacker": "succeeds; WETH 0.611937748191841578 Pool->0x9baE...d3F5; attacker deltas 0",
+   "lp_holder_remove_10pct": "received 15,411.448265272852363994 USDT; full-LP redeemable mid $153,922.50"
+  }
+ },
+ "key_conclusion": {
+  "E-U": "0 (no unprivileged value path found; fork PoC in progress)",
+  "H-O": "~$152.8k LP value held/redeemable only by whitelisted EOA 0x9a6a...",
+  "P": "~$30.0k fee reserves + all admin/upgrade authority (Safe 5-of-7)",
+  "S": "none identified for pool custody; pending orders/positions are owner-recoverable only through the executor path",
+  "verification": "Independent child verification complete: all claims CONFIRMED; see analysis/verify-child/VERIFY.md"
+ }
+}
