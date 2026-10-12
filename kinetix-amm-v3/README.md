@@ -64,7 +64,7 @@ As an unprivileged attacker, every candidate path either reverts or returns zero
 | Kava | " | Staker | `0x011C835aBF4BCeD2ECb51C466E157f467F6dB5AD` | 0 NFTs, 0 tokens; upstream source |
 | Kava | " | Migrator | `0xE071871805be750C4AdCDae13De3742AeC7ea36d` | 0 balances |
 | Kava | " | SwapRouter02 | `0xc8f22018D3c5f5A4101fB1448d5E5CcdDA4f123e` | stateless (17 gwei dust) |
-| Kava | 22,995,9xx | Top pool (WAGMI/WKAVA 1 %) | `0xc81Fde7F51e432EA173e87BB3d0c5670fC7b7FF9` | 1,272,160 WKAVA + 175.4M WAGMI; protocolFees = 18,298.7 WAGMI + 70.34 WKAVA; feeProtocol 0x44; ~1,370 swaps in the last 1M blocks (lightly active, bot-scale) |
+| Kava | 22,995,949 | Top pool (WAGMI/WKAVA 1 %) | `0xc81Fde7F51e432EA173e87BB3d0c5670fC7b7FF9` | 1,272,160 WKAVA + 175.4M WAGMI; protocolFees = 18,298.7 WAGMI + 70.34 WKAVA; feeProtocol 0x44; ~1,370 swaps in the last 1M blocks (lightly active, bot-scale) |
 | Kava | " | 2nd pool (KAI/WKAVA 1 %) | `0x8dC4A3df6AE668E3CD2D813D5A3B4dD6f9c8135C` | 106,697 WKAVA + 53.1M KAI |
 | Kava | " | USDt/WKAVA 0.05 % | `0x91098391cD135A95f775752F8cBf59286729a948` | 531.57 USDt + 7,201 WKAVA; 81 NFPM positions + Steer/ICHI/Arrakis vaults |
 | Kava | " | 155 pools total | — | sum of token balances × market prices = **$184,266.26** |
@@ -86,7 +86,7 @@ Preconditions for all of the below: no keys, no privileges, only public contract
 1. `pool.collect(attacker, tickLower, tickUpper, MAX, MAX)` — the pool credits `positions[msg.sender]`; an attacker has no pool position → returns `(0,0)`, no transfer. (Position 511's range −86000..−9400 tested.)
 2. `pool.collectProtocol(attacker, MAX, MAX)` — `onlyFactoryOwner` → revert.
 3. `pool.setFeeProtocol(...)` — `onlyFactoryOwner` → revert.
-4. `NFPM.decreaseLiquidity/de collect/burn/transferFrom` on any position the attacker doesn't own — ERC721 `_isApprovedOrOwner` → revert ("Not approved"). Tested on position #511 (owned by the Safe).
+4. `NFPM.decreaseLiquidity` / `collect` / `burn` / `transferFrom` on any position the attacker doesn't own — ERC721 `_isApprovedOrOwner` → revert ("Not approved"). Tested on position #511 (owned by the Safe).
 5. `staker.unstakeToken/claimReward` — nothing is staked; staker holds no value; `deposits[tokenId].owner == 0`.
 6. `factory.setOwner` / `enableFeeAmount` — owner-only → revert.
 7. Vault shares: attacker without shares cannot withdraw from the Arrakis vault in the USDt/WKAVA pool (tested → revert).
@@ -130,12 +130,12 @@ Heavy CI job (`ci/run.sh`) additionally re-derives, from live RPCs: the CREATE2 
 ## 6. Verdict, residual & latent risk
 
 * **E-U (external unprivileged extractable): $0.00 — high confidence.** The residual value is held in canonical Uniswap V3 pools; every claim on it is either an LP position owned by an EOA/Safe, a share in a third-party vault, or (for $18) the protocol fee slot of the factory owner. None of these can be moved by an unprivileged caller.
-* **H-O: $184,292 nominal** (Kava $184,266 + Base $25.79): owner-only recovery. ≈$97.7k in liquid assets; ≈$86.5k in dead-token legs (WAGMI/HOV/KAI) whose exit liquidity is the same dormant pools.
+* **H-O: $184,292 nominal** (Kava $184,266 + Base $25.79): owner-only recovery. ≈$97.7k in liquid assets; ≈$86.5k in dead-token legs (WAGMI/HOV/KAI) whose exit liquidity is the same lightly-traded pools.
 * **P: $18.05** (protocol fees, factory-owner EOA).
 * **S: $0** identified (no bricked custody found). Caveats: (a) if the Gnosis Safe `0x7D5C…` signers are gone, $147k is effectively frozen (holder-side, not attacker); (b) Steer/ICHI/Arrakis vaults' withdrawal liveness was not fully proven (third-party contracts; the Arrakis withdrawal gate was verified to reject non-holders).
 * **Latent risk:** none found for a future attacker unless someone revives trading. A *new* swap volume would accrue more protocol fees to the owner EOA (P) but LP funds remain protected by canonical code. The one thing that would change the verdict: evidence that the deployed pool/NFPM bytecode differs from canonical Uniswap (it does not — proven) or a drainable third-party vault (separate finding if so).
 
-**Blockers/uncertainties encountered:** Kava has no working block-explorer API for third-party tools (Kavascan 403 / Routescan unsupported), so deployment archaeology was done via events + CREATE2 math; the old Kava subgraph (`kava-graph-node.metavault.trade`) is DNS-dead, so DefiLlama's Kava figure is graph-frozen (amounts confirmed on-chain instead). Two token prices (WAGMI, KAI) come from GeckoTerminal/CoinGecko with the caveat that WAGMI's only market is the pool itself.
+**Blockers/uncertainties encountered:** Kava has no working block-explorer API for third-party tools (Kavascan 403 / Routescan unsupported), so deployment archaeology was done via events + CREATE2 math; the old Kava subgraph (`kava-graph-node.metavault.trade`) is DNS-dead, so DefiLlama's Kava figure appears carried-forward (amounts confirmed on-chain instead). Two token prices (WAGMI, KAI) come from GeckoTerminal/CoinGecko with the caveat that WAGMI's only market is the pool itself.
 
 ---
 

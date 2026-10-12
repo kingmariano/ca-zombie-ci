@@ -161,8 +161,8 @@ json.dump({"kava_total_usd": round(total,2), "rows": rows}, open("ci-out/valuati
 B = json.load(open("analysis/base-pools-raw.json"))
 btot = 0.0
 for r in B:
-    a0 = int(r["bal0"]) / 10**int(r["t0"]["decimals"]) if r["bal0"] not in (None, "0") else 0
-    a1 = int(r["bal1"]) / 10**int(r["t1"]["decimals"]) if r["bal1"] not in (None, "0") else 0
+    a0 = int(str(r["bal0"]).split()[0]) / 10**int(r["t0"]["decimals"]) if r["bal0"] not in (None, "0") else 0
+    a1 = int(str(r["bal1"]).split()[0]) / 10**int(r["t1"]["decimals"]) if r["bal1"] not in (None, "0") else 0
     btot += a0 * ALIAS.get(r["t0"]["id"], 0.0) + a1 * ALIAS.get(r["t1"]["id"], 0.0)
 print(f"BASE funded-pool total: ${btot:,.2f}")
 PY
