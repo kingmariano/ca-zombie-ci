@@ -1,0 +1,1 @@
+(program 1.0.0 [(lam v0 [(lam v1 (lam v2 (lam v3 (lam v4 (force [[[v1 (force [[v0 (con string "A cobra vai fumar!")] (delay (con bool False))])] (delay (con unit ()))] (delay (error))]))))) (force (builtin ifThenElse))]) (force (builtin trace))])

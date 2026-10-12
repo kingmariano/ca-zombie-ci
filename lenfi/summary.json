@@ -1,0 +1,74 @@
+{
+ "finding": "lenfi",
+ "title": "Lenfi / ex-Aada Finance (Cardano) \u2014 V1 P2P lending + V2 Aiken contracts; full custody re-derived, claim gates CEK-proven",
+ "chains": [
+  "cardano"
+ ],
+ "headline_extractable_usd": 0.0,
+ "headline_confidence": "high",
+ "categories": {
+  "E-U": 0.0,
+  "H-O": 166270.43,
+  "P": 0.0,
+  "S": 348.96
+ },
+ "latest_block": 14058995,
+ "block_numbers": {
+  "cardano": 14058995
+ },
+ "targets_checked": 1158,
+ "live_targets": 137,
+ "closed_reasons": [
+  "V1 interest/liquidation payouts require burning the unique borrower/lender NFT (mint names bound to sha256(idx||txid) of a consumed UTxO; forging infeasible, CEK-verified 12/12)",
+  "V1 request funding and debt-request take require the tx validity range to END before requestExpiration; every live offer/request is expired (CEK-verified 4/4 on deployed debt_request_v2)",
+  "V1 collateral release requires the borrower NFT (repay) or lender NFT (liquidate); both unique and key-held",
+  "V1 staking needs both copies of the per-stake bond NFT burned; receipts are user-held",
+  "V2 leftovers/registry spends are burn-only but the gating pool NFT is locked inside its pool UTxO; liquidation leftovers need the borrower NFT",
+  "V2 pool LpAdjust drain predicate (pre-fix) is present in live bytecode, but live pools hold only min-UTxO (~$228 total incl. carriers + $47.68 tokens) and no full drain tx was CEK-proven \u2014 latent only"
+ ],
+ "poc": {
+  "type": "chain-native CEK evaluation (aiken uplc eval) of deployed on-chain scripts vs hand-built script contexts",
+  "tests_passed": 16,
+  "tests_total": 16,
+  "ci_run_urls": [
+   "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38278817782",
+   "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38277843455"
+  ],
+  "artifacts": [
+   "ci-out/cek_proofs_aiken.json",
+   "ci-out/cek_window_proofs.json"
+  ]
+ },
+ "key_facts": [
+  "full live custody re-derived: 602081.36 ADA + priced tokens = $166619.39 (V1 586643.86 ADA + V2 15437.49 ADA) at tip 14058995",
+  "V1 interest_v1 alone: 567,513.79 ADA ($143664.51); claim = burn the lender NFT; 74/74 gate NFTs alive, 14 (backing $116.8K) in the Lenfi batcher wallet",
+  "NFT policy: permissionless mint with name = sha256(idx||txid) of a consumed UTxO, unrestricted burn \u2014 names cannot be forged (CEK A1/A2/D1)",
+  "interest validator accepts iff the mint field is exactly one burn (-1) of (lenderNftCs, datum lenderNftTn); no payout checks (CEK B1..B4)",
+  "V2 was missed by the triage at stake-enabled addresses: leftovers 13,888.73 ADA (216 registries 3,946.35 + 31 liquidation leftovers 9,938.39), pools 739.17 ADA (+$47.68 tokens), collateral 275.16 ADA, pool_config 534.43 ADA",
+  "stuck: $348.96 = V1 script-held/dust + V2 carriers (101.33 ADA, datum can't type-check) + V2 no-datum dust (393.74 ADA)",
+  "audits: Vacuumlabs V1 (2022-09-02; APT fixes = AADA-006/101/202/402/104), DebtRequest (2022-11-25), Aiken (2023-03-21); AADA-006/201 (post-deadline lender takes all collateral, no oracle) acknowledged, not fixed; AADA-007 (oracle keys non-rotatable) acknowledged; shipped oracle = 3-of-3 native script",
+  "no verifiable Aug-2022 exploit exists (rekt.news / DefiLlama hacks / team posts); V1 is abandoned (site redirected, app down, DefiLlama deadUrl) but loan closes still occur via integrations (FluidTokens); Safety Module never activated"
+ ],
+ "caveats": [
+  "point-in-time read; ADA $0.24299 and token USD via DefiLlama cardano:<unit> (AADA and 60+ units unpriced)",
+  "V2 pool drain (pre-fix LpAdjust) verified as a predicate in live UPLC by the sub-audit, NOT as a full CEK drain transaction; treated as $0 E-U (latent). V2 pool datums show balance in loan-asset units; several pools' datum/UTxO accounting is inconsistent (frozen)",
+  "V2 config script (534.43 ADA + 269 NFTs) spend conditions were not analysed",
+  "no transactions were sent; no secrets in this folder",
+  "claim-NFT-holding wallet attribution (Lenfi batcher vs third-party close service) not proven",
+  "versions.json labels the 2023-01 redeploy 'Aiken rewrite', but live v0.1.1.0 bytes decompile as PlutusTx (normalized UPLC identical for request/debt_request; collateral differs by min-collateral); the Aiken audit does not describe the live scripts",
+  "DefiLlama last TVL snapshot 2026-10-12 = $164,806 (same stuck custody, price drift)"
+ ],
+ "one_liner": "External unprivileged extraction is ~$0 live: V1 value is NFT-gated (CEK-proven) and expired fund/take windows are closed; V2 adds 15.4K ADA of custody but the only known prefix flaw (LpAdjust) faces empty pools.",
+ "v1_ada": 586643.86,
+ "v2_ada": 15437.49,
+ "v2_breakdown": {
+  "pools_ada": 739.173889,
+  "pool_tokens_usd": 47.67957976745211,
+  "registries_ada": 3946.352369999998,
+  "liquidation_leftovers_ada": 9938.388696999997,
+  "collateral_ada": 275.15529,
+  "config_ada": 534.43138,
+  "carriers_ada": 101.33,
+  "nodatum_ada": 393.74
+ }
+}

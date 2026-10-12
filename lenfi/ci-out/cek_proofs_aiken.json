@@ -1,0 +1,92 @@
+{
+ "method": "aiken uplc eval (independent CEK machine) on deployed on-chain script bytes",
+ "cases": [
+  {
+   "case": "A1 lender NFT mint +1, name=sha256(ref) of consumed input",
+   "expect": "ACCEPT",
+   "got": "ACCEPT",
+   "pass": true,
+   "detail": "result=(delay (lam i i)) cpu=115178242 mem=505321"
+  },
+  {
+   "case": "A2 lender NFT mint +1, name NOT bound to any consumed input",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "Error -----  the validator crashed / exited prematurely   Costs ----- cpu: 113068783 memory: 491753  Logs ---- PT5"
+  },
+  {
+   "case": "A3 lender NFT burn -1, arbitrary name (unrestricted burn branch)",
+   "expect": "ACCEPT",
+   "got": "ACCEPT",
+   "pass": true,
+   "detail": "result=(delay (lam i i)) cpu=113471867 mem=498110"
+  },
+  {
+   "case": "B1 interest spend + exact lender-NFT burn -1, ALL value to attacker addr",
+   "expect": "ACCEPT",
+   "got": "ACCEPT",
+   "pass": true,
+   "detail": "result=(delay (lam i i)) cpu=106931051 mem=452686"
+  },
+  {
+   "case": "B2 interest spend, no NFT burn",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "Error -----  the validator crashed / exited prematurely   Costs ----- cpu: 95295244 memory: 391666  Logs ---- PT5"
+  },
+  {
+   "case": "B3 interest spend, burn of different token name",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "Error -----  the validator crashed / exited prematurely   Costs ----- cpu: 106910549 memory: 452218  Logs ---- PT5"
+  },
+  {
+   "case": "B4 interest spend, burn of right name wrong policy",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "Error -----  the validator crashed / exited prematurely   Costs ----- cpu: 106805445 memory: 452216  Logs ---- PT5"
+  },
+  {
+   "case": "C1 liquidation spend + exact borrower-NFT burn -1",
+   "expect": "ACCEPT",
+   "got": "ACCEPT",
+   "pass": true,
+   "detail": "result=(delay (lam i i)) cpu=106931051 mem=452686"
+  },
+  {
+   "case": "C2 liquidation spend, no burn",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "Error -----  the validator crashed / exited prematurely   Costs ----- cpu: 95295244 memory: 391666  Logs ---- PT5"
+  },
+  {
+   "case": "C3 liquidation spend, wrong name burn",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "Error -----  the validator crashed / exited prematurely   Costs ----- cpu: 106805445 memory: 452216  Logs ---- PT5"
+  },
+  {
+   "case": "D1 borrower NFT mint +1, name NOT bound to consumed input",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "Error -----  the validator crashed / exited prematurely   Costs ----- cpu: 113068783 memory: 491753  Logs ---- PT5"
+  },
+  {
+   "case": "D2 borrower NFT burn -1 arbitrary name",
+   "expect": "ACCEPT",
+   "got": "ACCEPT",
+   "pass": true,
+   "detail": "result=(delay (lam i i)) cpu=113471867 mem=498110"
+  }
+ ],
+ "passed": 12,
+ "total": 12,
+ "all_pass": true
+}

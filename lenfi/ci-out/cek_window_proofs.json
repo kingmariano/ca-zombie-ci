@@ -1,0 +1,36 @@
+{
+ "method": "aiken uplc eval on the deployed debt_request_v2 script bytes",
+ "cases": [
+  {
+   "case": "W1 take offer (b3af0800#1) with tx range BEFORE expiry",
+   "expect": "ACCEPT",
+   "got": "ACCEPT",
+   "pass": true,
+   "detail": "{   \"result\": \"(delay (lam i i))\",   \"cpu\": 307486478,   \"mem\": 1371380 } "
+  },
+  {
+   "case": "W2 take same offer with tx range AFTER expiry",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": " Error -----  the validator crashed / exited prematurely   Costs ----- cpu: 303212369 memory: 1349214  Logs ---- PT5 "
+  },
+  {
+   "case": "W3 lender Cancel with exact NFT burn -1",
+   "expect": "ACCEPT",
+   "got": "ACCEPT",
+   "pass": true,
+   "detail": "{   \"result\": \"(delay (lam i i))\",   \"cpu\": 186274088,   \"mem\": 765566 } "
+  },
+  {
+   "case": "W4 Cancel with wrong burn",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": " Error -----  the validator crashed / exited prematurely   Costs ----- cpu: 185869204 memory: 763496  Logs ---- PT5 "
+  }
+ ],
+ "passed": 4,
+ "total": 4,
+ "all_pass": true
+}

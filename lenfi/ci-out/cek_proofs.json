@@ -1,0 +1,77 @@
+{
+ "cases": [
+  {
+   "case": "A1 lender NFT mint +1, name=sha256(ref) of consumed input",
+   "expect": "ACCEPT",
+   "got": "REJECT",
+   "pass": false,
+   "detail": "unexpected result: BoundStateDelay BoundStateDelay(term=Lambda(var_name='v499', term=Variable(name='v499'), state=f"
+  },
+  {
+   "case": "A2 lender NFT mint +1, name NOT bound to any consumed input",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "RuntimeError: Execution called Error"
+  },
+  {
+   "case": "A3 lender NFT burn -1, arbitrary name, no matching input",
+   "expect": "ACCEPT",
+   "got": "REJECT",
+   "pass": false,
+   "detail": "unexpected result: BoundStateDelay BoundStateDelay(term=Lambda(var_name='v499', term=Variable(name='v499'), state=f"
+  },
+  {
+   "case": "B1 interest spend + exact lender-NFT burn -1, ALL value to attacker addr",
+   "expect": "ACCEPT",
+   "got": "REJECT",
+   "pass": false,
+   "detail": "unexpected result: BoundStateDelay BoundStateDelay(term=Lambda(var_name='v416', term=Variable(name='v416'), state=f"
+  },
+  {
+   "case": "B2 interest spend, no NFT burn",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "RuntimeError: Execution called Error"
+  },
+  {
+   "case": "B3 interest spend, burn of different token name",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "RuntimeError: Execution called Error"
+  },
+  {
+   "case": "B4 interest spend, burn of right name wrong policy",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "RuntimeError: Execution called Error"
+  },
+  {
+   "case": "C1 liquidation spend + exact borrower-NFT burn -1",
+   "expect": "ACCEPT",
+   "got": "REJECT",
+   "pass": false,
+   "detail": "unexpected result: BoundStateDelay BoundStateDelay(term=Lambda(var_name='v416', term=Variable(name='v416'), state=f"
+  },
+  {
+   "case": "C2 liquidation spend, no burn",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "RuntimeError: Execution called Error"
+  },
+  {
+   "case": "C3 liquidation spend, wrong name burn",
+   "expect": "REJECT",
+   "got": "REJECT",
+   "pass": true,
+   "detail": "RuntimeError: Execution called Error"
+  }
+ ],
+ "all_pass": false,
+ "passed": 6,
+ "total": 10
+}
