@@ -1,0 +1,40 @@
+{
+  "finding": "L2-Triage-A / jaypeggers (Phase 2 deep dive)",
+  "title": "Jaypeggers (Ethereum): JAY + jUSDC bonding-curve reserves and LP-staking reward ledgers — external unprivileged extraction is $0",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 225609.76, "P": 331.77, "S": 0},
+  "latest_block": 26178136,
+  "block_numbers": {"ethereum": 26178136},
+  "targets_checked": 11,
+  "live_targets": 10,
+  "closed_reasons": [
+    "Reserve outflow exists only via sell()/sellNftDiscount, which burns the caller's own JAY/jUSDC; unprivileged callers without tokens revert.",
+    "No profitable acquisition route: both DEX pools trade at/above net redemption (v1 pool $7.000 vs 90% payout $6.4092; v2 pool $1.412 vs payout $1.249) and curve mints imply worse prices ($7.457 / $1.542); fuzz-verified no arbitrage in either direction.",
+    "No admin/drain/upgrade path: no proxies, no withdraw/rescue functions; every privileged setter reverts Ownable for an attacker; initalize consumed.",
+    "Staking reward ledgers are per-share and touch-triggered: deposit() calls claim()+splitFees() before adding shares, so a fresh stake captures exactly 0 of pre-existing pending (probe-verified).",
+    "Reentrancy class from the 2022 legacy contract is absent: buy() takes no token callbacks and sell/buy are nonReentrant."
+  ],
+  "poc": {
+    "tests_passed": 10,
+    "tests_total": 10,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Live v1 JAY reserve 74.313654328551356199 ETH; JAY supply 26,182.167299878814015023 (NAV $7.1213; seller payout 90% = $6.4092).",
+    "Live v2 jUSDC USDC reserve 34,390.346614 USDC; jUSDC supply 24,784.686367516 (NAV $1.3876; seller payout 90% = $1.2488) — untracked by the triage adapter.",
+    "v1 staking: 1.856708285987792344 ETH rewards + 40.66% of the JAY/USDC pool ($51,186 pool) staked; 107 stakers; census sums to 99.51% of shares and ≈1.94 ETH pending vs 1.9413 ETH payable.",
+    "v2 staking: 71.553751 USDC rewards + 100.0000% of the jUSDC/WETH LP (pool $1,020); 5 stakers; Σ pending 147.840182 USDC == balance + 2/4 splitter.",
+    "Total live custody ≈ $248,026 vs triage $189,996 (v1 native ETH only): v2 suite (+$35.7k) and staked LP principals (+$21.8k) were missed by the DefiLlama adapter.",
+    "Owner is a single EOA 0xD5d1EE6CB2d70264ffC5307CA456a2BEd796782b; can redirect future fee addresses and raise sell fees, but cannot move reserves/principals/rewards."
+  ],
+  "caveats": [
+    "USD figures are point-in-time 2026-10-12 (ETH $2,508.98, JAY $6.9976, DefiLlama).",
+    "v1 staker census covers 957 candidate addresses recovered from initalize calldata + Deposit/Withdraw logs; Σ shares = 99.51% of totalAmountStaked (0.49% of shares belong to stakers whose events were not captured).",
+    "JAY/jUSDC holder lists not enumerable (GoldRush holders endpoint rejected); not decision-relevant since redemption requires holding the token.",
+    "A DEX market price below the net-redemption level would open a bounded reserve arbitrage for anyone with capital — market-contingent, not a code flaw; the pool is currently kept at parity by active trading.",
+    "Latent: JIT-staking can capture a strictly pro-rata share of future splitter fee inflows only (historical rate ≈0.127 ETH / ~5 months v1; ≈152.6 USDC / ~5 months v2); standing balances are uncapturable."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Jaypeggers: both bonding-curve reserves (74.31 ETH + 34,390 USDC) only pay out when the caller burns the protocol token at/below market parity, no admin/drain path exists, and the staking ledgers credit pre-existing rewards only to prior stakers — all H-O ($225.6k) belongs to JAY/jUSDC holders, stakers, and their LP principals."
+}
