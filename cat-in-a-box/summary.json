@@ -1,0 +1,52 @@
+{
+  "finding": "L2-Triage-A #22 (cat-in-a-box)",
+  "title": "Cat in a Box (Ethereum) — stETH CDP protocol; live extractable $0",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 523697.04, "P": 10872.42, "S": 0},
+  "latest_block": 26176576,
+  "block_numbers": {"ethereum": 26176576},
+  "targets_checked": 21,
+  "live_targets": 7,
+  "closed_reasons": [
+    "The only permissionless value-out path is stabilisePeg (redeem boxETH -> stETH from a borrower, Liquity-style). It requires the attacker to burn their own boxETH; gross cap = sum of borrower debt = 302.0313 boxETH (v1 7.6626 + v1.1 294.3687) => 302.03 stETH ~ $767,950 if boxETH were free (fork-proven: 301.555 stETH extracted in T7 with vm.deal'ed boxETH).",
+    "boxETH cannot be acquired profitably: only 9.76 boxETH of live pool liquidity (UniV3 0.05% 5.36 @ spot 0.9947 WETH; UniV3 wstETH 1% 4.40 @ ~0.9978 stETH), and fork-measured average buy prices are 1.078/1.360/1.923 WETH per boxETH for 0.5/2/5 WETH buys, while redemption returns ~0.998 stETH per boxETH burned (best friction fee 0.19%) => net -0.041/-0.544/-2.425 stETH. Best theoretical case (0.01 WETH buy) = +0.000022 stETH ($0.06) for 2.17M gas.",
+    "Mint-and-redeem cannot create value: v1.1 charges 0.25% x2 minting fee; cycle is -0.0439 stETH even assuming debt repayment at par (T4). v1 (no fee) is collateralised 1:1 by the attacker's own deposit.",
+    "PSM.trade, PSM.synthToFeeToken and feeSplitStaking.trade are CONVERTER_ROLE-gated (Safe 3/5 0x98e6475C + deployer EOA 0x56C40ade) and revert for outsiders ('missing role 0x9b67f1cd...') - T5.",
+    "CDP withdraw/mint/repay/liquidate/setRepayFlag are self-service only; no third-party withdrawal or seizure (T9). liquidate sends collateral to the PSM, not the caller.",
+    "unclaimed yield (v1 3.8087 + v1.1 4.5766 stETH) is credited only to the depositors' own points; third parties cannot redirect it (T10: top-6 v1 owing 2.316 <= unclaimed 3.809). Pending sync excess (0.185/0.236 stETH) is far below the 0.5% mint fee needed to capture it.",
+    "boxFEE vault (ERC4626, 248.31 boxETH assets / 2336.49 shares, NAV 0.10627 boxETH/share) mints shares 1:1 on deposit but pays NAV on redeem => entry is an immediate -89% loss; all four boxFEE pools are dead/dust, so shares cannot be bought cheaply (T6).",
+    "No admin function can move CDP collateral; admin surface is fee/pointer setters only (setFee/setMintingFee/setIncentivesModule/setFeeSplitAddress/setpsm). boxETH mint role is held only by the two CDPs."
+  ],
+  "poc": {
+    "tests_passed": 11,
+    "tests_total": 11,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38254742771",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38253777281",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38253195487"
+    ]
+  },
+  "key_facts": [
+    "Triage row ($214,034) is incomplete: it lists only CDP v1 0x7f0a0c7149a46bf943ccd412da687144b49c6014 + PSM 0x24146D1B3339Cf76b455dC42e71Ea5Cdff4aE0d7. The same protocol also operates catinaboxcdp1point1 0x6ffd098e92b606b2947b89a08911c00ca06890fa (427.78 stETH, $1.088M) and feeSplitStaking 0x320c871b6f7721083604FfdD8070E64c1d3c5d7C (2.11 stETH), both missed by DefiLlama's adapter.",
+    "Total live stETH custody at block 26176576: v1 83.723447 + v1.1 427.783573 + PSM 2.169523 + feeSplit 2.106570 = 515.783 stETH = $1,311,440 (stETH $2,542.62, DefiLlama 2026-10-12).",
+    "boxETH (0x7690202e2C2297bcD03664e31116d1dFfE7e3B73) total supply ~304.14; debt v1 7.6626 + v1.1 294.3687 = 302.03; other protocol holders: boxFEE vault 248.31, PSM 0.662, feeSplit 1.469, UniV3 pools 9.76.",
+    "Roles: boxETH ADMIN = only the two CDPs; CDP ADMIN = Safe 3/5 0x98e6475C01D018Ae78c02ef48738f687538226Af (all 5 owners EOAs); PSM CONVERTER = Safe + deployer EOA 0x56C40ade4C96800b13E20A71Ff60c4005F0bCF8e; feeSplit CONVERTER = Safe + deployer EOA + 0xe8fF7D752Adc76F93EEaF0B1BE855d99c6ec9938 + 0x66F576C1eDa4044A01bF68A78564F39bA3BbF65b (all verified via RoleGranted logs + hasRole).",
+    "H-O = depositors' withdrawable collateral: v1 71.979 stETH (63 live positions, sum deposited 79.719, sum debt 7.663) + v1.1 125.603 stETH (30 live positions, sum deposited 422.945, sum debt 294.369) = 197.582 stETH now, up to +8.385 stETH unclaimed when fetched = $523,697.",
+    "Additional holder-redeemable value: boxFEE vault holds 248.31 boxETH redeemable by 2336.49 shares (NAV 0.10627 boxETH/share) - shareholder-only, and conversion to stETH is constrained by the same debt-capped stabilisePeg queue.",
+    "P = 4.276 stETH ($10,872) in PSM+feeSplit, redeemable at par only via CONVERTER_ROLE (Safe/deployer/2 EOAs) using boxETH. If those keys are lost the funds are stranded (S).",
+    "No privileged path to the 515.78 stETH CDP collateral exists; admin functions cannot withdraw it.",
+    "Latent risk: 302 stETH of redeemable debt vs 9.76 boxETH of pool liquidity. If boxETH becomes obtainable below ~1/(1+friction fee) (0.19%-1.10% for the best v1.1 borrowers), up to ~$750k becomes extractable permissionlessly with no owner action.",
+    "v1.1 pays 100% of stETH rebase yield to borrowers by debt weight; a sole borrower could farm ~12.8 stETH/yr but cannot exit (repaying needs ~300 boxETH the market cannot supply) - design hazard, not live extraction.",
+    "boxETH burnFrom bug: 'require(allowance(account,msg.sender) - amount >= 0)' never decrements the allowance => an approved spender can repeat-burn the approver's balance (griefing/DoS only)."
+  ],
+  "caveats": [
+    "USD values use DefiLlama spot prices at 2026-10-12 (stETH $2,542.62); ETH/stETH price moves scale the USD figures.",
+    "Event-log enumeration of boxETH/boxFEE holders was truncated by the explorer 1,000-log page cap; only balances re-read directly with balanceOf are relied upon (analysis/boxeth_holders.json marked unreliable, key holders in analysis/key_holders.json).",
+    "The v1.1 points/yield accounting was reviewed analytically, not fuzzed; no invariant fuzzing was performed.",
+    "Gas is not priced into the theoretical +$0.06 best-case arb; at any realistic gas price it is a loss.",
+    "All PoC work ran on local forks (local anvil-fork + GitHub Actions fork tests); no mainnet transaction was ever signed or sent."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Cat in a Box: the only permissionless path (stabilisePeg, redeeming boxETH for borrower stETH) has a $767,950 gross ceiling but requires boxETH that the live pools price at ~par with only 9.76 boxETH depth (fork-measured round trips lose $104-$6,167; best theoretical case +$0.06 gross for 2.17M gas), while PSM/feeSplit exits are role-gated and all CDP withdrawals are self-service; 515.78 stETH ($1.31M) is live custody, split H-O ~$524k / P ~$10.9k."
+}
