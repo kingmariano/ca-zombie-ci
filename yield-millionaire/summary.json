@@ -1,0 +1,43 @@
+{
+  "finding": "L2-A:yield-millionaire",
+  "title": "Yield Millionaire (Base) — upgradeable AaveVault; triage value stale, unprivileged extraction $0",
+  "chains": ["base"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "live_funds_usd": 151340.82,
+  "categories": {"E-U": 0, "H-O": 151303.90, "P": 36.92, "S": 0},
+  "latest_block": "CI_BLOCK_PLACEHOLDER",
+  "block_numbers": {"base": "CI_BLOCK_PLACEHOLDER", "zetachain": 19445185},
+  "targets_checked": 7,
+  "live_targets": 1,
+  "closed_reasons": [
+    "v1.2.1 withdraw path verifies the share owner's EIP-191/ERC-1271 signature bound to (sender, to, amount, destinationChain, per-sender nonce, chainid, vault, deadline); garbage 65/66-byte and attacker-signed signatures revert InvalidSignature on a fork of the live block",
+    "signature replay blocked (nonce stored in vault and consumed; replayed round-trip context reverts in-test)",
+    "cross-chain onCall path requires msg.sender == GatewayEVM AND context.sender == zEVM YieldMil v1.4.2, and even then the vault burns only against a valid holder signature (YIELDMIL-impersonation test reverts)",
+    "deposit path mints only against tokens actually transferred with a transient, amount-bound gateway allowance; bare YIELDMIL-sender deposits revert (no balance/allowance)",
+    "no permissionless function pays the caller; only EVMEntry.deposit/withdraw are unprivileged and they move payer/holder funds only",
+    "all 19,736 lifetime events classified and reconciled to on-chain totalSupply exactly (delta 0) — no unexplained mint/burn"
+  ],
+  "poc": {"tests_passed": 8, "tests_total": 8, "ci_run_urls": ["CI_URL_PLACEHOLDER"]},
+  "key_facts": [
+    "Triage $192,660 stale: vault holds 151,340.818462 aUSDC at Base block CI_BLOCK_PLACEHOLDER (~$151,340.82 at $1 peg; $151,298.03 at DefiLlama USDC $0.99972)",
+    "Decline vs triage (−41,354.01 aUSDC) fully explained by ordinary same-chain user withdrawals: 42,672.53 withdrawn vs 1,292.05 deposited in the recent window",
+    "Vault = ERC-1967 ProxyBase 0xD4F3Ba2F.. impl 0x9C187591.. v1.2.1 (== repo HEAD ZetaChain-Venture-Studio/yieldmillionaire-); ASSET = aUSDC 0x4e65fE4D.., TOKEN = USDC 0x833589fC.., all USDC supplied to Aave V3 Base Pool 0xA238Dd80..",
+    "Owner AND proxy admin = Gnosis Safe 1.4.1 0xCe246ef8.. with threshold 1/2 (owners: plain EOA 0xb7406383.., EIP-7702-delegated EOA 0x31B5aBcF..) — single-key capability to upgrade or pause+rescue the whole vault (P, not E-U)",
+    "Neither deposit nor withdraw paused (EIP-7201 slot ...2d05 = 0); fee = 200 (2%); accumulatedFees = 36.921138 aUSDC",
+    "1,335 holders reconstructed; top holder 0xa8e3ef3b.. 21,874.87 shares / 22,965.27 aUSDC, nonce 0; share price 1.049847",
+    "Aave V3 Base USDC idle liquidity 16,794,523 USDC → holder exits unconstrained (0.9% of idle)",
+    "zEVM YieldMil v1.4.2 (0xE65eEe51.., owner EOA 0xABD10F0A..) maps (8453, Aave, ZRC20-USDC.BASE) -> the Base vault and (8453) -> Base EVMEntry 0xCB513DB8..; not paused",
+    "Historical v1.0.0/1.0.1/1.1.0 (Jun-Sep 2025) had no vault-side signature check, but message sender was always the caller of EVMEntry/YieldMil.withdraw (self-service only) — no third-party theft; ledger reconciles exactly",
+    "Apr-2026 ZetaChain GatewayEVM arbitrary-call exploit ($333,868) drained only ZetaChain-controlled wallets; onCall/onRevert selectors were deny-listed so Callable vaults like this were unreachable; path since disabled"
+  ],
+  "caveats": [
+    "Front-end is dead (triage deadUrl) — H-O recovery works on-chain but holders must craft/sign CallContexts manually or via any relayer",
+    "Counted H-O at totalAssets (151,303.90) and P at accumulatedFees (36.92) to avoid double-counting; the Safe could also sweep the H-O amount (privileged), reported as latent risk",
+    "Base vault only (Polygon/BNB vaults of this protocol out of scope for this row)",
+    "Impl verified by source identity with repo HEAD + behavioral fork tests, not full bytecode recompilation",
+    "USD conversions: $1.00 peg and DefiLlama base USDC $0.99972 both stated",
+    "Event history decoded from GoldRush raw logs; two v1.0.0-era 4-field Deposit/Withdraw topic hashes resolved and included; reconciliation delta 0"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Yield Millionaire's Base vault: every withdrawal requires the share holder's vault-bound signature (verified on a live fork), funds are holder-recoverable (~$151,303.90 H-O, 1,335 holders, actively withdrawing), and the only privileged sweep is the 1-of-2 Safe owner/admin — triage's $192,660 is stale (now $151,340.82, −41,354 in ordinary user exits)."
+}
