@@ -1,0 +1,38 @@
+{
+  "finding": "L2-Triage-A row 24 / rift-finance",
+  "title": "Rift Finance (Ethereum + Aurora) — external unprivileged extraction assessment",
+  "chains": ["ethereum", "aurora"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 71216, "P": 95208, "S": 0},
+  "latest_block": 0,
+  "block_numbers": {"ethereum": 26178080, "aurora": 219704632},
+  "targets_checked": 51,
+  "live_targets": 12,
+  "closed_reasons": [
+    "Ethereum: all 9 vaults have depositsEnabled=false (v2 upgrade) — a fresh attacker cannot become a participant, and nextEpoch is onlyParticipantOrStrategist; claims/withdrawals only pay the caller's own accounting; roles are EOA/Safe",
+    "Aurora: v1 vaults — nextEpoch is onlyStrategist (dormant strategist EOA), claims require an existing position, fresh depositors are trapped (no same-epoch withdrawal, no exit), rescue/pause/setters role-gated",
+    "collectFees is the only permissionless value-moving call on both chains and pays 100% to core.feeTo() (Gnosis Safes), never the caller",
+    "All implementation, admin and auxiliary contracts hold zero tokens; no unregistered funded vaults exist (deployer's creation history fully enumerated on both chains)"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": []},
+  "key_facts": [
+    "Vaults enumerated on-chain from Core VaultRegistered events: 9 on Ethereum (v2, proxies) + 8 registered + 3 dust on Aurora (v1) — no subgraph needed",
+    "Measured live value at 2026-10-12: Ethereum $71,210 + Aurora $95,214 = $166,424 at DefiLlama prices (DefiLlama live: ETH $72,289 + Aurora $126,317 = $198,607; their subgraph composition over-counts NEAR/WANNA vs actual balances)",
+    "Ethereum H-O: 869,335.35 AURORA (~$50,430) + 0.2567 WETH (~$644) claimable right now by holders (one address 0x44d41aD8… holds 296,615.51 AURORA); remaining WETH/OGN/FTM/AURORA residual is holder-recoverable via participant-triggered nextEpoch",
+    "Aurora $95,214: unlockable only by the strategist EOA 0x805300DE… (last nextEpoch Jul-2023) or governance upgrade (Gnosis Safe L2 0x4f41Aac8… owns the Aurora ProxyAdmin) => P, practically dormant",
+    "Aurora vault 0x40D23398… is paused and holds ZERO assets against books of 197,591.5 WNEAR + 4.7M TRI and 200,001 WNEAR of unprocessed withdrawals (bad debt)",
+    "Audit-noted design flaw (CertiK VCK-01 informational): nextEpoch swaps have minOut=0 and caller-supplied expected pool balances — protects against third-party sandwiching but a permitted caller (participant/strategist) can self-manipulate the pool; no external attacker can reach it today",
+    "Ethereum deposits were open under the v1 impls (2022-05) and closed by the March-2023 v2 upgrade (impls 0xF5F28e0c->0xFfbf4067 / 0xa9ba10a9->0xf9fcFE67); all 9 vaults have depositsEnabled=false today",
+    "Roles: Ethereum GOVERN=Gnosis Safe 0x96c95707… (also feeTo; owns ProxyAdmin), GUARDIAN/PAUSE/STRATEGIST EOAs; Aurora GOVERN+feeTo=Gnosis Safe L2 0x4f41Aac8…, STRATEGIST EOA 0x805300DE… (nonce 2)",
+    "Protocol is dormant: website dead (deadUrl per watchlist), repo last commit 2022-06-16, X dormant, last on-chain activity Nov-2023 (ETH claims)"
+  ],
+  "caveats": [
+    "USD at DefiLlama prices at the stated blocks; token amounts are direct on-chain reads",
+    "BSTN (Aurora vault 0xd51c…) is unpriced by DefiLlama and illiquid; its NEAR-side value is included ($2,933), BSTN side excluded",
+    "The $0 E-U verdict is gate-based (role/position), not value-based: re-enabling deposits (P) or a strategist/guardian action (P) would open the sandwich/self-epoch path",
+    "DefiLlama per-token composition for Aurora does not reproduce on-chain balances; the measured totals here are authoritative",
+    "Aurora RPCs are rate-limited public endpoints; reads were repeated at several blocks with consistent results"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Rift Finance on both chains: Ethereum vaults have deposits disabled and nextEpoch participant-gated, Aurora vaults' nextEpoch is strategist-only; measured live value $166.4k is holder-claimable (ETH, $51.1k immediately) or locked behind dormant privileged roles (Aurora $95.2k)."
+}

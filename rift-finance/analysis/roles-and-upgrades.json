@@ -1,0 +1,51 @@
+{
+  "note": "Rift Finance — implementation/upgrade + role evidence (read-only, keyless RPCs)",
+  "ethereum": {
+    "latest_block_checked": 26178080,
+    "core_proxy": "0x5D7e616B2c0bf268494A482e315a60814F97dBC8",
+    "core_impl": "0xE25fbF6A2f90D96e3B4dfB96eaBF797211D8939b",
+    "core_admin_proxyadmin": "0x40A01A4064b690cA33FA52d315ec02015eF5287E",
+    "proxyadmin_owner": "0x96c9570776157d3f0B5569F9e936cb0A9d5d31cD",
+    "governance_contract": {"type": "GnosisSafeProxy", "singleton_slot0": "0xd9db270c1b5e3bd161e8c8503c55ceabee709552", "v1.3.0": true},
+    "roles": {
+      "GOVERN_ROLE": "0x96c9570776157d3f0B5569F9e936cb0A9d5d31cD (Safe, owns ProxyAdmin)",
+      "GUARDIAN_ROLE": "0x45e393af616d51f8094b4d944e923b3bf3a0fd29 (EOA)",
+      "PAUSE_ROLE": "0xa024ed8df0a81874430bf1e56abdf8589a1a476c (EOA)",
+      "STRATEGIST_ROLE": "0x805300de5f8d8de0bb7d78e30e3dd653b57eb94f (EOA)"
+    },
+    "core_state": {"paused": false, "protocolFee": 2000, "feeTo": "0x96c9570776157d3f0B5569F9e936cb0A9d5d31cD", "whitelistDisabled": false},
+    "vault_impl_history": {
+      "created_with": {"UniswapVault_v1": "0xF5F28e0c67892DD013fEA08618aeE727b19C77ac", "MasterChefVault_v1": "0xa9ba10a9c2f0e1aea86f9846842b5be08b02f78f"},
+      "upgraded_to_v2_march2023": {"UniswapVault_v2": "0xFfbf4067568f416C1D0D332c2A92Da464cd3A383", "MasterChefVault_v2": "0xf9fcFE67DB1Fdda9C79AE5C5412fD5ED4cE3c8D6"},
+      "example_upgrade_blocks": {"0x01ebd85a": [15050436, 16379247], "0x51c6f343": [14845920, 16379187], "0x5a999fed": [14851109, 16379303]}
+    },
+    "vaults_registered_block": 15050462,
+    "vault_removed_events": 0,
+    "v2_note": "v2 vault sources (verified, solc 0.8.11) add whenDepositsEnabled gate + participant-or-strategist nextEpoch; deposits have been disabled since the March-2023 upgrade. Whitelist role exists in Core but is never checked by vault code."
+  },
+  "aurora": {
+    "latest_block_checked": 219704632,
+    "core_proxy": "0x40A01A4064b690cA33FA52d315ec02015eF5287E",
+    "core_impl": "0xCC38C652731Bd2c5CeEC4e9191a1b55D44f2aB17",
+    "core_admin_proxyadmin": "0xE25fbF6A2f90D96e3B4dfB96eaBF797211D8939b",
+    "proxyadmin_owner": "0x4f41Aac8B882362248f9271D95641592297c01E1",
+    "governance_contract": {"type": "GnosisSafeL2Proxy", "singleton_slot0": "0x3e5c63644e683549055b9be8653de26e0b4cd36e", "v1.3.0": true},
+    "roles": {
+      "GOVERN_ROLE": "0x4f41Aac8B882362248f9271D95641592297c01E1 (Safe)",
+      "STRATEGIST_ROLE": "0x805300de5F8D8dE0bb7d78e30E3DD653B57eb94f (EOA, nonce 2, last tx block 95777334 = 2023-07-05 nextEpoch on 0x5a999fed)",
+      "PAUSE_ROLE": "0xA024ED8Df0a81874430bf1e56aBdF8589A1A476C (EOA)",
+      "GUARDIAN_ROLE": "0x45E393AF616d51F8094B4D944e923b3bf3A0fD29 (EOA)"
+    },
+    "core_state": {"paused": false, "protocolFee": 2000, "feeTo": "0x4f41Aac8B882362248f9271D95641592297c01E1", "whitelistDisabled": false},
+    "vault_impls": {
+      "0x2FfDfE69826343b03611b23074D5b35185AE1b97": "UniswapVault v1 (verified 2022-04-14)",
+      "0xE780697cae0Fb8d4Af87bA50b8d3B655AB8Baf72": "unverified, selector-identical to v1 UniswapVault",
+      "0x187E1D220E182460b2d84838640577512BD86845": "unverified, v1 + rewarder()/pid() (MasterChef style)",
+      "0x7BEfEAe0ECaBEC8A6E323bE47CBD7669C81B05E3": "unverified, v1 + rewarder()/pid()"
+    },
+    "vaults_registered_blocks": [64379411, 64914592],
+    "vault_removed_events": 0,
+    "v1_note": "v1 sources: depositToken0/1 are only whenNotPaused + nonReentrant (no depositsEnabled, no whitelist check anywhere in vault code); nextEpoch is onlyStrategist. Deposits are OPEN and irreversible until a strategist epoch advance."
+  },
+  "deployer": {"eoa": "0x38e2a3FC1923767f74d2308A529A353e91763ebf", "ethereum_creations": 14, "aurora_creations": 35, "all_non_vault_contracts_hold_zero_tokens": true}
+}
