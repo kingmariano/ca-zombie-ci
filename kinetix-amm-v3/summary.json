@@ -1,0 +1,56 @@
+{
+  "finding": "L2-Kinetix AMM V3",
+  "title": "Kinetix AMM V3 (Kava+Base): canonical Uniswap V3 fork; residual custody $184.3k, unprivileged extraction $0",
+  "chains": [
+    "kava",
+    "base"
+  ],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 184292.05,
+    "P": 18.05,
+    "S": 0
+  },
+  "latest_block": 22995949,
+  "block_numbers": {
+    "kava": 22995949,
+    "base": 52524402,
+    "ethereum": 0
+  },
+  "targets_checked": 176,
+  "live_targets": 69,
+  "closed_reasons": [
+    "All 155 Kava + 21 Base pools sit at the canonical Uniswap V3 CREATE2 init-code-hash addresses (0xe34f199b...) -> deployed pool bytecode is provably canonical Uniswap V3 v1.0.0",
+    "Kava factory and NFPM runtime bytecode are byte-identical to canonical Uniswap deployments (factory: own-address literal only; NFPM: 3 immutables only) -> no Kinetix-specific logic in custody contracts",
+    "Source diffs: pool/factory/deployer/staker/NFPM are upstream Uniswap code with renames only",
+    "All 1,670 NFPM positions enumerated: 674/675 owners are EOAs; the only contract owner is a Gnosis Safe holding the dominant $147k position (holder-only)",
+    "All non-NFPM pool positions traced to identified third-party vaults (23 Steer, 4 ICHI, 1 Arrakis-style) plus 5 Kinetix x-vaults with <$2 residual; withdrawals are share-gated",
+    "Protocol fees ($18.05) are collectable only by the factory-owner EOA (onlyFactoryOwner) - privileged, not attacker",
+    "Fork tests: attacker collect/collectProtocol/decreaseLiquidity/collect/transferFrom/unstake all revert or no-op with balances unchanged; staker holds nothing"
+  ],
+  "poc": {
+    "tests_passed": 0,
+    "tests_total": 8,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Live on-chain custody today: Kava $184,266 nominal (155 pools) + Base $25.79 (21 pools) = $184,292; token amounts essentially unchanged since triage (pools lightly active, dust-level bot swaps, net balances stable)",
+    "Liquid-asset subset of Kava value ~= $97,720 (stables/WKAVA/BTC/ETH/ATOM/BIFI); ~= $86,546 is dead-token legs (WAGMI $78.6k at GeckoTerminal price whose only market is the pool itself, HOV $1.4k, KAI $6.5k)",
+    "Kava factory 0x2dBB6254231C5569B6A4313c6C1F5Fe1340b35C2 owner = EOA 0xD6F5c0737026E0E662E514eE0e08cCE6B2Bf5c4a; feeProtocol=0x44 (25% of swap fees) on pools; total accrued protocol fees $18.05",
+    "Dominant position: NFPM #511 (WAGMI/WKAVA 1% pool 0xc81Fde7F...), liquidity 15,663,710,217,888,675,764,825,981, owned by Gnosis Safe 0x7D5CEA2e5fBDFecca8CcfbFe85AC021C817a7f38, value $147,262",
+    "Staker 0x011C835aBF4BCeD2ECb51C466E157f467F6dB5AD: 0 NFTs, 0 tokens, no deposits (older 4-word deposit variant)",
+    "Kinetix USDt/WKAVA LP share-vault 0xFf05fA6e5b1B19FfdCA00392E6eAe9C696270a6D residual position value < $1; its only pool-facing function found is collect(); no deposit/withdraw resolved",
+    "Base pools all canonical; largest Base pool value $15.93 (WETH/AERO); total $25.79",
+    "Triage headline $175,793 was DefiLlama-derived (graph-frozen); on-chain token amounts are the ground truth and are unchanged"
+  ],
+  "caveats": [
+    "WAGMI/HOV/KAI prices are illiquid micro-cap estimates; WAGMI's only market is the very Kinetix pool that holds it (circular pricing). Liquid-asset value is ~$99.1k.",
+    "Third-party vault internals (Steer/ICHI) not audited (out of finding scope); Arrakis vault withdraw gate verified to reject non-holders; vault liveness not fully proven.",
+    "Kinetix AMM V1/V2, perps and airdrop contracts are separate findings and were not audited here.",
+    "Kava has no third-party-usable explorer API (Kavascan 403 / Routescan unsupported); deployment enumeration done via events + CREATE2 math, which is exhaustive for this factory but cannot prove no other factory exists outside the official deployment set.",
+    "Base block number in this file is approximate (recorded in ci-out/run-info.txt on each run)."
+  ],
+  "one_liner": "External unprivileged attacker can extract $0 live from Kinetix AMM V3: the $184.3k residual (Kava $184.3k + Base $26) sits in pools provably running canonical Uniswap V3 bytecode, owned by EOA/Gnosis-Safe LP positions and share-gated third-party vaults, with only $18 of protocol fees (owner-only)."
+}
