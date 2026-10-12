@@ -1,0 +1,49 @@
+{
+  "finding": "armada",
+  "triage_slug": "armada",
+  "title": "Armada CLP-Vault (Solana) — closed-source vault program; no unprivileged extraction path; $554.5K recoverable by LP holders, multisig-admin can capture withdrawals via withdrawal_fee",
+  "chains": ["solana"],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0.0, "H-O": 554524.13, "P": 554524.13, "S": 0.0},
+  "latest_block": 455861230,
+  "block_numbers": {"solana": 455861230},
+  "targets_checked": 25,
+  "live_targets": 24,
+  "closed_reasons": [
+    "withdraw with attacker payer + victim LP account reverts with SPL Token 'owner does not match' (Custom 4) at the burn CPI — no delegate path; whole tx reverts",
+    "withdraw/collectFees/collectRewards destination accounts are validated (6013/6014/6015 TokenVaultA/B/LpMintMismatch; 6019 IncorrectFeeOwner; 6021 IncorrectMMFeeOwner)",
+    "externalSwapSetup requires market_making_key signature (3010 AccountNotSigner); source/dest must be the vault's own token accounts (6028 InvalidSwapVault)",
+    "updateConfig/updateTokenMeta are admin-gated (6018 InccorectAdminKey; 6024 IncorrectAuthority)",
+    "deposit->withdraw round trips are net-negative (no arbitrage): -235,754 A / -1,405,074 B raw per 1.0 LP on DRgwP2sZ; -23.5 USDC / -0.14 JitoSOL per 100 LP; -2/-3 raw per 1 raw LP",
+    "vault token accounts are owned by the ClpVault PDA and LP mint authority = vault PDA; new vaults cannot reference existing vault accounts (init + PDA signature)",
+    "externalSwapCleanup can be called standalone but is balance-neutral on live state (cache poke only)"
+  ],
+  "poc": {
+    "tests_passed": 5,
+    "tests_total": 5,
+    "ci_run_urls": ["https://github.com/kingmariano/ca-zombie-ci/actions/runs/38191200745"],
+    "local_simulations": "~50 simulateTransaction runs (attack + control) across withdraw/deposit/collectFees/collectRewards/setVaultRatioCache/externalSwap/updateConfig/updateTokenMeta; all behaved as expected"
+  },
+  "key_facts": [
+    "Program ArmN3Av2boBg8pkkeCK9UuCN9zSUVc2UQg1qR2sKwm8d is upgradeable; last upgrade 2024-04-25 (slot 262177169); upgrade authority 7btJUBpZq3pzhYJBF9pkCBJ4xa4de1ZnUeJ4WiA5TiHT = Squads v3 multisig vault (2024-04-25 upgrade executed via SMPLecH534NA9acpos4G6x7uf3LWbCAwZQE9e8ZekMu)",
+    "24 ClpVault accounts (discriminator b52c34265e9a5bf0); full v0.1.3 Anchor IDL recovered from 5 on-chain zlib blobs (discriminator 184662bf3a907b9e, authority 7VKPHnP2MnahWVAZs7WadH1AWPfGnChS1H6qknEbRPDd)",
+    "Live value: $554,524.13 = staging $353,048.78 + Orca CLMM positions $201,475.36 (triage $352,107.64 was staging-only; DefiLlama adapter agrees at $550.8K)",
+    "29 of 48 Orca positions carry liquidity; vaults hold USDC 282.9K-equivalent, mSOL/JitoSOL/INF/PYTH/etc.",
+    "All 24 vaults have withdrawal_fee=0 today; performance_fee=9.5% (x2^32), market_making_fee=4.75%",
+    "Privileged seizure demonstrated: admin sets withdrawal_fee=4294967295 then holder withdraws 997,470 raw LP -> holder receives 0; fee_owner receives 419,128,724 mSOL raw + 1,813,207,853 JitoSOL raw",
+    "Self-withdraw by a real LP holder succeeds at live-fair value (1.0004x A / 0.9999x B of independently computed pro-rata share; 196,346 CU)",
+    "5 market-maker EOAs (2xFbZtJj, 3w6py7p6, 9xq6X56W, A533R5K5, 2kh5MQHV); features_enabled=1 (JIT swap) on 14 vaults",
+    "One vault (jkBWDkYC, $24) is administered by a plain EOA 9xq6X56Wus7xpCjEQiQQFiwYcB1ZJNS9j9Z2An5wtmF9 which holds 100% of its LP",
+    "Program activity window 2024-05-29..2026-07-28 (newest txs are failed probes with Anchor fallback error 101); protocol dormant but functional"
+  ],
+  "caveats": [
+    "Program is closed-source: verdict is behavioral (simulateTransaction on the deployed v0.1.3 binary) + stripped-SBF disassembly; withdraw/deposit arithmetic not fully reconstructed",
+    "Deposit pricing does not match the withdraw payout basis: deposit charged 1.112576 USDC + 0.010933 JitoSOL per LP on DRgwP2sZ while withdraw paid 0.876822 USDC + 0.009528 JitoSOL — round trip loses ~21%/12%; user-loss risk, not an extraction path",
+    "4 tokens unpriced and with no market (PSY 2.61M, GePFQaZ 4,526.77, C4Kkr9NZ 41.11, CKa9 0) excluded from USD total; DexScreener shows no pairs, Jupiter price APIs 404",
+    "Simulations use sigVerify=false/replaceRecentBlockhash=true; nothing broadcast; point-in-time at slot 455,861,230 (2026-10-12 01:13 UTC); USD via DefiLlama prices at same time",
+    "Ghost LP owners (no on-chain account) need a small SOL donation before they can pay fees to self-withdraw",
+    "MM-key compromise / JIT-swap route manipulation not exhaustively evaluated (privileged key risk only)"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Armada's 24 CLP vaults ($554.5K live): every permissionless attack path reverts on live gates (SPL burn authority Custom 4, has_one checks 6013/6014/6015, fee-owner 6019/6021, MM signer 3010, admin 6018, swap vault 6028); LP holders can self-withdraw at fair value, and the Squads-multisig admin/upgrade key can capture withdrawals via withdrawal_fee=100% (privileged)."
+}
