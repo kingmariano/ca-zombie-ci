@@ -1,0 +1,1471 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "verifier",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isEnabled",
+        "type": "bool"
+      }
+    ],
+    "name": "DesignatedVerifierUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "withdrawalIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "validatorIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "SweepReported",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakeHouse",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalETHSentToBLSKey",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sumOfAllSweeps",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "withdrawalIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "validatorIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct WithdrawalsDataStructures.Sweep[]",
+            "name": "sweeps",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct ShanghaiSweepReporting.ShanghaiReport[]",
+        "name": "_reports",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "v",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct WithdrawalsDataStructures.VerifierSignature[]",
+        "name": "_signatures",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "withdrawalCredentials",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bool",
+            "name": "slashed",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activeBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "effectiveBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "exitEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activationEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "withdrawalEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "currentCheckpointEpoch",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct ETH2Validation.ETH2DataReport[]",
+        "name": "_validatorStates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "batchReportSweepsPostRageQuit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes[]",
+        "name": "_blsPublicKeys",
+        "type": "bytes[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_unwrapAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "batchUnwrapDETH",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "cachedAccountManagerAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAccountManagerCoreModule",
+    "outputs": [
+      {
+        "internalType": "contract IAccountManagerPartialWithdrawals",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_blsPubKey",
+        "type": "bytes"
+      }
+    ],
+    "name": "getHashOfBlsPublicKey",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_withdrawalIndexes",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getListOfUnreportedWithdrawalIndexes",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "unreportedIndexes",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getSavETHRegistryCoreModule",
+    "outputs": [
+      {
+        "internalType": "contract ISavETHRegistryPartialWithdrawals",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "withdrawalIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "validatorIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct WithdrawalsDataStructures.Sweep[]",
+        "name": "_sweeps",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "getSumOfUnreportedSweeps",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "sum",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "withdrawalIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "validatorIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct WithdrawalsDataStructures.Sweep[]",
+        "name": "_sweeps",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "getSweepsHashFromSweepsArray",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "hasBLSPublicKeyBeenReportedInShanghai",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_verifier",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_universe",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_validatorSetSizePreShanghai",
+        "type": "uint256"
+      }
+    ],
+    "name": "init",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "isDesignatedVerifier",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "isSweepReported",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakeHouse",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalETHSentToBLSKey",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sumOfAllSweeps",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "withdrawalIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "validatorIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct WithdrawalsDataStructures.Sweep[]",
+            "name": "sweeps",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct ShanghaiSweepReporting.ShanghaiReport",
+        "name": "_report",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "v",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct WithdrawalsDataStructures.VerifierSignature",
+        "name": "_signature",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "withdrawalCredentials",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bool",
+            "name": "slashed",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activeBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "effectiveBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "exitEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activationEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "withdrawalEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "currentCheckpointEpoch",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct ETH2Validation.ETH2DataReport",
+        "name": "_beaconChainReport",
+        "type": "tuple"
+      }
+    ],
+    "name": "isValidShanghaiReport",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_verifier",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "_isEnabled",
+        "type": "bool"
+      }
+    ],
+    "name": "manageDesignatedVerifier",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakeHouse",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalETHSentToBLSKey",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sumOfAllSweeps",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "withdrawalIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "validatorIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct WithdrawalsDataStructures.Sweep[]",
+            "name": "sweeps",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct ShanghaiSweepReporting.ShanghaiReport",
+        "name": "_report",
+        "type": "tuple"
+      }
+    ],
+    "name": "previewTotalMintableDETH",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_optimisticWithdrawal",
+        "type": "bool"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakeHouse",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalETHSentToBLSKey",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sumOfAllSweeps",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "withdrawalIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "validatorIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct WithdrawalsDataStructures.Sweep[]",
+            "name": "sweeps",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct ShanghaiSweepReporting.ShanghaiReport",
+        "name": "_report",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "v",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct WithdrawalsDataStructures.VerifierSignature",
+        "name": "_signature",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "withdrawalCredentials",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bool",
+            "name": "slashed",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activeBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "effectiveBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "exitEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activationEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "withdrawalEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "currentCheckpointEpoch",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct ETH2Validation.ETH2DataReport",
+        "name": "_validatorState",
+        "type": "tuple"
+      }
+    ],
+    "name": "reportAndWithdrawETH",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakeHouse",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalETHSentToBLSKey",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sumOfAllSweeps",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "withdrawalIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "validatorIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct WithdrawalsDataStructures.Sweep[]",
+            "name": "sweeps",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct ShanghaiSweepReporting.ShanghaiReport",
+        "name": "_report",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "v",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct WithdrawalsDataStructures.VerifierSignature",
+        "name": "_signature",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "withdrawalCredentials",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bool",
+            "name": "slashed",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activeBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "effectiveBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "exitEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activationEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "withdrawalEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "currentCheckpointEpoch",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct ETH2Validation.ETH2DataReport",
+        "name": "_validatorState",
+        "type": "tuple"
+      }
+    ],
+    "name": "reportSweeps",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakeHouse",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalETHSentToBLSKey",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sumOfAllSweeps",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "withdrawalIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "validatorIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct WithdrawalsDataStructures.Sweep[]",
+            "name": "sweeps",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct ShanghaiSweepReporting.ShanghaiReport[]",
+        "name": "_reports",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "v",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct WithdrawalsDataStructures.VerifierSignature[]",
+        "name": "_signatures",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "withdrawalCredentials",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bool",
+            "name": "slashed",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activeBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "effectiveBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "exitEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activationEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "withdrawalEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "currentCheckpointEpoch",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct ETH2Validation.ETH2DataReport[]",
+        "name": "_validatorStates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "reportSweepsForMultipleBLSPublicKeys",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakeHouse",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalETHSentToBLSKey",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sumOfAllSweeps",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "withdrawalIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "validatorIndex",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct WithdrawalsDataStructures.Sweep[]",
+            "name": "sweeps",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct ShanghaiSweepReporting.ShanghaiReport",
+        "name": "_report",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "v",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct WithdrawalsDataStructures.VerifierSignature",
+        "name": "_signature",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes",
+            "name": "blsPublicKey",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "withdrawalCredentials",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bool",
+            "name": "slashed",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activeBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "effectiveBalance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "exitEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "activationEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "withdrawalEpoch",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "currentCheckpointEpoch",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct ETH2Validation.ETH2DataReport",
+        "name": "_validatorState",
+        "type": "tuple"
+      }
+    ],
+    "name": "reportSweepsPostRageQuit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "totalETHSentToBlsPublicKey",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "totalReportedETHNotWithdrawn",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_blsPublicKey",
+        "type": "bytes"
+      }
+    ],
+    "name": "totalReportedUnknownTopUpsForBlsPublicKey",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "totalSweepsReportedAgainstUnknownTopUpsForBlsPublicKey",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "universe",
+    "outputs": [
+      {
+        "internalType": "contract StakeHouseUniverse",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_blsPublicKey",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_unwrapAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "unwrapDETH",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_blsPubKey",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalETHSentToBlsPublicKeyInWei",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateTotalETHSentToBlsPublicKeyFromFinalReport",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "validatorSetSizeBeforeShanghai",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

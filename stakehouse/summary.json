@@ -1,0 +1,40 @@
+{
+  "finding": "stakehouse (L2-Triage-A row 30)",
+  "title": "Stakehouse / Blockswap (Ethereum) — AccountManager vault 64.3057 ETH; all payout paths core-module + designated-verifier gated",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 161798.49, "S": 0},
+  "latest_block": 26178656,
+  "block_numbers": {"ethereum": 26178656},
+  "targets_checked": 12,
+  "live_targets": 1,
+  "closed_reasons": [
+    "AccountManager (0xDd6E6794…) holds 64.305717944108928421 ETH but every ETH-moving/state-mutating function (withdrawETH, rageQuitKnot, markKnotAsWithdrawn, setLifecycleExited, updateAccountState, update*FromReport, registerValidatorInitials) reverts 'Only core' for an unprivileged caller — fork-proven (6/6 tests) and eth_call-proven",
+    "FullWithdrawals.reportFinalSweepAndWithdraw (the only full-sweep claim path) requires isUserEnabledForKnotWithdrawal[msg.sender][knot] (rage quit), !userWithdrawn, a beacon-chain final-sweep report and a designated-verifier ECDSA signature ('Signature expired'/'ECDSA: invalid signature'/'Not rage quit' in deployed bytecode); attacker call fork-reverts at report validation ('Active balance')",
+    "ShanghaiSweepReporting report/withdraw paths require a verifier-signed ShanghaiReport that must match on-chain state ('Invalid Report', 'Active balance', 'Invalid total ETH sent for BLS key') plus per-sweep replay guards ('Sweep already reported', 'Duplicate') — attacker calls fork-revert",
+    "TransactionRouter rage-quit/exit entry points are caller-gated to the knot user/smart-wallet owner or an authorized representative; rage quit burns the caller's own derivatives",
+    "RageQuitAssistant instances hold only dust (<0.18 ETH each) and permissionless claims pay recorded beneficiaries only",
+    "The designated verifier 0x9785f8e5… is an EOA with nonce 0 (off-chain signer only); last sweep report block 20,478,005 (2024-08-06), last full claim block 20,234,472 (2024-07-04) — the reporting pipeline is dead, so even the rightful holders cannot withdraw today"
+  ],
+  "poc": {"tests_passed": 6, "tests_total": 6, "ci_run_urls": []},
+  "key_facts": [
+    "Live AccountManager balance at block 26178656: 64.305717944108928421 ETH ($161,798.49 @ $2,516.08 ETH, DefiLlama 2026-10-12)",
+    "The balance decomposes exactly into two orphaned full-validator sweeps + legacy dust: knot 78 / validator 1,109,420 = 32.005324832 ETH (block 20482055, 2024-08-08); knot 44 / validator 747,994 = 31.086158519 ETH (block 23726929, 2025-11-04); dust 1.214234593 ETH",
+    "Knot census (85): 48 UNSTAKED (all claimed, 48 FullWithdrawalExecuted events totalling 1,557.451161 ETH), 35 never deposited, 1 TOKENS_MINTED (knot 44, enabled=0 → needs rage quit), 1 EXITED (knot 78, enabled=1, withdrawn=0)",
+    "Knot 78's beneficiary is active EOA 0xddb50ffd… (on-chain txs in 2026) and knot 44's is smart wallet 0x246269f8… owned by 0x831138ee…; both are one dormant-verifier signature away from claiming",
+    "All-time flows reconcile: ~1,637.616 ETH in (≈49-50 beacon deposits ×32 + 37.6 rewards/top-ups) → 1,573.311 out (48 full claims 1,557.451 + 69 partial 15.860) → 64.306 left",
+    "The sum of totalReportedETHNotWithdrawn across all knots (21.3727 ETH) is stale accounting, not a separate pot: knot 81 claimed 32.065710 ETH (block 19626256) while its counter still reads 0.065710 ETH",
+    "Core modules (9, no revocations): Universe, AccountManager, TransactionRouter, SLOTRegistry, savETHRegistry, savETHTransactionRouter, savETHBatchRouter, ShanghaiSweepReporting, FullWithdrawals; the AccountManager pays ETH only on instructions from these",
+    "Fork PoC test_02 proves the vault's only gate is core status: impersonating FullWithdrawals, withdrawETH(attacker, 1 ETH) succeeds",
+    "Triage value re-confirmed and slightly up in USD: 64.3057 ETH = $160,401 at triage, $161,798.49 today (ETH price move); no live value exists in any other Stakehouse contract (all 0 ETH)"
+  ],
+  "caveats": [
+    "The AccountManager/TransactionRouter/FullWithdrawals/ShanghaiSweepReporting implementations are unverified on Etherscan; gating was recovered from deployed bytecode (pyevmasm disassembly, dispatch tables, revert strings) and fork/eth_call simulations — high confidence, not source-level",
+    "P = 161,798.49 is verifier-gated (privileged off-chain signature by 0x9785f8e5…), with the ultimate beneficiaries being the two knot holders (latent H-O); if the verifier key is lost the funds are permanently stuck (S) — key existence cannot be determined on-chain",
+    "The 21.37 ETH 'reportedNotWithdrawn' counters being stale is inferred from knot 81's exact claim amount matching final-sweep + reported amounts; even if some counter value were live it would still require the dormant verifier signature",
+    "USD value uses DefiLlama ETH price at 2026-10-12; the ETH/USD move changes the headline",
+    "Read-only research; no mainnet transactions; PoC runs only on local forks / CI forks"
+  ],
+  "one_liner": "External unprivileged attacker can extract $0 live from Stakehouse: the 64.3057 ETH ($161,798) AccountManager vault is 'Only core'-gated, and every user-facing payout path additionally requires a designated-verifier ECDSA signature (verifier is a nonce-0 EOA dormant since 2024-08-06), so even the two rightful holders of the orphaned full sweeps (32.0053 ETH knot 78 + 31.0862 ETH knot 44) cannot self-withdraw today — privileged/verifier-gated (latent H-O)."
+}
