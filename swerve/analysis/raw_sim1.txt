@@ -1,0 +1,51 @@
+### E-U attempt: burn_coin(USDT) from attacker (26173849)
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### E-U attempt: burn_coin(DAI) from attacker (burner=0xcDED, DAI bal=0)
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### E-U attempt: burn_coin(USDC) from attacker (burner=0xcDED)
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### E-U attempt: burn_coin(random coin 0x00..01) burners=0x0
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### E-U attempt: burn_eth from attacker
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### E-U attempt: burn(0xcDED) from attacker (direct Burner.burn call)
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### E-U attempt: withdraw_admin_fees(pool) from attacker
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+rc=1
+### E-U attempt: apply_transfer_ownership(pool) from attacker
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+rc=1
+### E-U attempt: apply_new_parameters(pool) from attacker
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### E-U attempt: apply_new_fee(pool) from attacker
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### E-U attempt: set_burner(USDT, attacker) from attacker -> expect Access denied
+Error: execution reverted: Access denied
+
+Context:
+- server returned an error response: error code 3: execution reverted: Access denied, data: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000d4163636573732064656e69656400000000000000000000000000000000000000"
+rc=1
+### P attempt: set_burner(USDT, attacker) from admin EOA
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### P attempt: apply_set_admins from admin EOA (future==current, no-op)
+0x
+rc=0
+### P attempt: donate_admin_fees(pool) from admin EOA
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### P attempt: commit_transfer_ownership(pool,attacker) from admin EOA (pool owner=0 -> expect revert)
+Error: server returned an error response: error code 3: execution reverted
+rc=1
+### proxy allowances (USDC,TUSD to 0xcDED)
+0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48: 115792089237316195423570985008687907853269984665640564039457584007873611723231 [1.157e77]
+0x0000000000085d4780B73119b644AE5ecd22b376: 115792089237316195423570985008687907853269984665640564021478085185585593631045 [1.157e77]

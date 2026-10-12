@@ -1,0 +1,54 @@
+{
+  "finding": "L2-P2-swerve",
+  "title": "Swerve (Ethereum) — Curve yPool clone: stale pool-vs-market mispricing ($0.25 net on-chain, $4.05 conditional on TUSD sourcing); $304.7k holder-recoverable; $30.4k proxy USDT stuck",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0.25,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0.25, "H-O": 304688.21, "P": 0, "S": 30390.02},
+  "latest_block": 26174168,
+  "block_numbers": {"ethereum": 26174168},
+  "targets_checked": 8,
+  "live_targets": 4,
+  "closed_reasons": [
+    "Pool owner() = 0x0 since 2023-04-06 (NewAdmin(0x0) block 16,984,235 after the 2023-04-02 governance takeover 0x2E322C04…): withdraw_admin_fees / commit+apply_transfer_ownership / commit+apply_new_parameters / kill_me / unkill_me all revert for every caller incl. via the DAO proxy (fork-tested)",
+    "Admin-fee surplus $5.4966 (actual minus virtual balances) unclaimable forever (owner=0); donations identically frozen (only withdraw_admin_fees reads actual balances; VP/get_dy unchanged by donation)",
+    "Internally the pool is fair to the wei (Curve's sUSD-pool bytecode reused): get_dy == exchange output (±5 wei), exact Vyper-math replica 96/96 quotes and 6/6 LP round trips to the wei; swap round trips lose 2x fee; 256-run fuzz clean; make-rich→deposit→skewed-exit cycle -$67.82/$60k",
+    "The naive par-unit curvature-slack capture (+$1.1663 in 18-dec units) is NOT market-profitable: at DefiLlama prices the same cycle is -$0.14498 (extracted USDT trades below the input basket) — fork-proven (test_slack_capture_par_vs_market)",
+    "LP token swUSD (Vyper 0.2.4): pool is minter; EOA mint/burn/set_minter revert; pool never calls LP transfer/transferFrom/set_minter (audited + selector scan) -> minter bypass unreachable; minter can never change",
+    "Gauge (Curve original LiquidityGauge): withdraw live and actively used (real exits blocks 26,128,304-26,130,030); live staker exact pro-rata exit proven; claimable SWRV 0; GaugeController admin 0xdEaD; TokenMinter.mint pays only caller's own claim; veSWRV/SWRV ≈ $0",
+    "DAO proxy 0x2638d268: 30,408.429720 USDT stuck (S) — burners(USDT)=0 and set_burner(USDT,non-zero) reverts for everyone incl. ownership_admin 0x996E539a (Tether approve returns no data -> Vyper returndata check); no other token-moving function; the 2023 admin fees were already swept by EOA 0xcDEDb901… to Binance/OKX",
+    "Delegator immutable (1 DELEGATECALL, hardcoded impl = Curve's live sUSD pool bytecode, no upgrade path); no hidden entry points (non-dispatched constants all revert); no reentrancy surface (plain ERC-20s, no ETH; all mutators nonreentrant); Vyper 0.1.0b17 not in CVE-2023-39363 set"
+  ],
+  "poc": {
+    "tests_passed": 17,
+    "tests_total": 17,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38202421386",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38205261742",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38205912061",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38207640307"
+    ]
+  },
+  "key_facts": [
+    "E-U headline (high, deep-liquidity executable): exchange(USDC->DAI) of 1,480 USDC — in $1,479.6361 -> out $1,479.9332 at DefiLlama 2026-10-12 prices = +$0.2971 gross (~+$0.25 net after ~$0.05 gas), single tx; fork-exact (test_market_usdc_to_dai_swap, on-chain get_dy 4,995.693 DAI@5k). LP-op variant (no-TUSD add + DAI+USDT imbalance removal) +$0.3316 gross / 3 txs",
+    "E-U conditional (medium): exchange(TUSD->DAI) of 5,414 TUSD = in $5,406.4219 -> out $5,410.5096 = +$4.0877 gross (optimum 5,450); gated by TUSD sourcing at its $0.9986 DefiLlama price — on-chain TUSD DEX depth is ~$0 (uniV2 TUSD/USDT 0/0; TUSD/USDC ~$2.1k/side; uniV3 tiers ~0/small)",
+    "Par-vs-market correction (documented, tests): proportional-add + USDT-rich remove_liquidity_imbalance yields +$1.166321498267826388 in 18-dec par units but -$0.144982813480498555 at market prices; remaining-LP book dilution == capture (to the wei) — market-priced optimizer max was +$0.0023 on that family",
+    "Live custody (blocks 26,173,731-26,174,168): virtual book DAI 75,005.743491044521345789 / USDC 74,120.265381 / USDT 81,118.909394 / TUSD 74,604.782023302163442796 = $304,688.46; actual +$5.4966 surplus; swUSD supply 284,914.257245196369584766; gauge staked 274,199.686492129967389502 (96.24%); 116 non-gauge holders 10,714.570753 swUSD; grand total incl. DAO-proxy USDT $30,384.52 = $335,078.48",
+    "Architecture: pool 0x329239599afB305DA0A2eC69c58F8a6697F9F88d = Solidity YPoolDelegator delegatecalling 0xA5407eAE9Ba41422680e2e00537571bcC53efBfD = Curve's live sUSD pool (Vyper 0.1.0b17; impl coins DAI/USDC/USDT/sUSD, LP crvPlain3andSUSD 0xc25a3a3b…, owner 0xecb4…); Swerve deployer 0xa6df4fcb…; LP swUSD 0x77C6E4a5…",
+    "Ownership lineage: deployer -> DAO proxy 0x2638d268… (2020-09-08) -> 0x2E322C04… (2023-04-02, Halborn-documented governance takeover) -> 0x0 (2023-04-06); admin_fee 33.33% (Oct-2020) -> 0; verified by NewAdmin/CommitNewAdmin/NewParameters events",
+    "2023 fee history: permissionless DAO.withdraw_admin_fees(pool) pulled $123.6k to the proxy on 2023-03-25 (DAI 35,672.94 / USDC 39,517.92 / USDT 30,408.43 / TUSD 17,979.50); non-USDT swept via burner approvals to EOA 0xcDEDb901… (Binance/OKX deposits per child-B); USDT remains stuck",
+    "Gauge/LP live proofs: user_checkpoint succeeds from any address; gauge_relative_weight = 1e18; live staker 0x15fba769… withdrew LP and redeemed with payouts exactly == balances[i]*amount/totalSupply; gauge deposit/withdraw activity through block 26,130,030",
+    "CI: final run 17 tests passed / 0 failed (fuzz 256) after market-priced test additions; earlier green runs 15/15; custom CI job dumps live state + source hashes each run",
+    "Independent child audits: childB delivered (analysis/childB_reward_stack.md; reward stack + DAO proxy, its S=$30,383.84 at its snapshot); childA delivered (analysis/childA_pool_adversarial.md; independently confirmed internal fairness 96/96 + 6/6 to the wei, all admin/LP/reentrancy paths dead, concluded E-U=$0 under a fair-quote/cross-venue-excluded reading; it did not evaluate the market-priced spread capture that yields the +$0.30/+$4.09 branches)"
+  ],
+  "caveats": [
+    "The E-U is a stale-pool-vs-market arbitrage, not a contract exploit: it converges as it is taken (one swap; MEV-visible) and shrinks/persists with market spreads (USDC/DAI relationship; TUSD depeg)",
+    "The +$4.09 TUSD branch is acquisition-gated: on-chain TUSD DEX depth is ~$0 today, so it assumes off-chain/OTC sourcing at the DefiLlama price; the strictly on-chain executable subset is the ~$0.30 branch (H-O nets the $0.25 skim; the conditional $4.09 branch is not netted)",
+    "USD at DefiLlama 2026-10-12 snapshot (DAI 1.0003359 / USDC 0.9997541 / USDT 0.9992137 / TUSD 0.9986003; ETH 2,557.32 for gas); par-valuation would overstate stablecoin-composition deltas (explicitly demonstrated)",
+    "CI forks at latest state (public RPCs cannot serve pinned archive blocks); pool state was unchanged across all runs (last on-chain tx 2026-10-02)",
+    "2023 context: the 'governance attack' headline targeted admin fees ($123.6k, already withdrawn); owner powers cannot move LP reserves — consistent with Halborn/The Block and with the on-chain events",
+    "Child A's E-U=$0 conclusion is superseded only for the market-priced arb branches; all its other closure findings are adopted and consistent with the parent's",
+    "No transactions were signed or sent; all state reads/fork tests read-only; no keyed RPC URLs or secrets written to any file in this folder"
+  ],
+  "one_liner": "External unprivileged attacker can net ~$0.25 live on-chain (stale pool-vs-market mispricing: USDC→DAI swap; plus a conditional +$4.05 TUSD→DAI branch gated by TUSD off-chain sourcing — on-chain TUSD depth ~$0, while a naive par-unit $1.17 slack capture is market-negative −$0.145); $304.7k is holder-recoverable (gauge exit live), ownership was renounced to 0x0 in 2023 so all admin/governance paths are dead, and $30.4k USDT in the DAO proxy is permanently stuck (Tether-approve quirk blocks even the admin's set_burner)."
+}

@@ -1,0 +1,113 @@
+== identity ==
+block=26173859
+pool code hdr:  0x6080604052600436106100f75760003560e01c80...
+impl code hdr:  0x600436101561000d5761569e565b600035601c52...
+pool runtime code contains impl target 73a5407eae...: 1
+impl own coins (proves 0xA5407eAE is itself Curve sUSD pool):
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+TypeError: int() can't convert non-string with explicit base
+Error: You must provide an Etherscan API key if you're fetching a remote contract's storage.
+  impl _coins[0] = 
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+TypeError: int() can't convert non-string with explicit base
+Error: You must provide an Etherscan API key if you're fetching a remote contract's storage.
+  impl _coins[1] = 
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+TypeError: int() can't convert non-string with explicit base
+Error: You must provide an Etherscan API key if you're fetching a remote contract's storage.
+  impl _coins[2] = 
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+TypeError: int() can't convert non-string with explicit base
+Error: You must provide an Etherscan API key if you're fetching a remote contract's storage.
+  impl _coins[3] = 
+impl own slot6 owner = 0x000000000000000000000000ecb456ea5365865ebab8a2661b0c503410e9b347
+impl own slot7 token = 0x000000000000000000000000c25a3a3b969415c80451098fa907ec722572917f
+
+== pool storage slots 6..15 ==
+  slot 6  0x0000000000000000000000000000000000000000000000000000000000000000
+  slot 7  0x00000000000000000000000077c6e4a580c0dce4e5c7a17d0bc077188a83a059
+  slot 8  0x0000000000000000000000000000000000000000000000000000000000000000
+  slot 9  0x0000000000000000000000000000000000000000000000000000000000000000
+  slot 10 0x0000000000000000000000000000000000000000000000000000000000000064
+  slot 11 0x00000000000000000000000000000000000000000000000000000000002dc6c0
+  slot 12 0x0000000000000000000000000000000000000000000000000000000000000000
+  slot 13 0x0000000000000000000000000000000000000000000000000000000000000000
+  slot 14 0x000000000000000000000000000000000000000000000000000000005fa0fb44
+  slot 15 0x0000000000000000000000000000000000000000000000000000000000000000
+
+== LP token (swUSD) forensics ==
+LP totalSupply()                                           rc=0 :: 284914257245196369584766 [2.849e23]
+LP balanceOf(pool)                                         rc=0 :: 0
+LP balanceOf(gauge)                                        rc=0 :: 274199686492129967389502 [2.741e23]
+LP balanceOf(gaugeself)                                    rc=0 :: 274199686492129967389502 [2.741e23]
+LP set_minter(ATT) from POOL                               rc=0 :: 0x
+LP set_minter(ATT) from ATT                                rc=1 :: Error: server returned an error response: error code 3: execution reverted, data: "0x"
+LP mint(ATT,1) from POOL                                   rc=0 :: 0x
+LP mint(ATT,1) from ATT                                    rc=1 :: Error: server returned an error response: error code 3: execution reverted, data: "0x"
+LP burnFrom(ATT,1) from POOL                               rc=1 :: Error: server returned an error response: error code 3: execution reverted
+LP burnFrom(ATT,1) from ATT                                rc=1 :: Error: execution reverted: Only minter is allowed to burn
+LP transferFrom(gauge,ATT,1) from POOL(minter?)            rc=0 :: 0x0000000000000000000000000000000000000000000000000000000000000001
+LP transferFrom(gauge,ATT,1) from ATT                      rc=1 :: Error: server returned an error response: error code 3: execution reverted
+
+== dust probes: get_dy(i,j,0) for all ordered pairs ==
+get_dy(0,1,0)                                              rc=0 :: 0
+get_dy(0,2,0)                                              rc=0 :: 0
+get_dy(0,3,0)                                              rc=0 :: 0
+get_dy(1,0,0)                                              rc=0 :: 0
+get_dy(1,2,0)                                              rc=0 :: 0
+get_dy(1,3,0)                                              rc=0 :: 0
+get_dy(2,0,0)                                              rc=0 :: 0
+get_dy(2,1,0)                                              rc=0 :: 0
+get_dy(2,3,0)                                              rc=0 :: 0
+get_dy(3,0,0)                                              rc=0 :: 0
+get_dy(3,1,0)                                              rc=0 :: 0
+get_dy(3,2,0)                                              rc=0 :: 0
+
+== get_dy vs get_dy_underlying equality ==
+  pair(0->1) dx=1000000000000000000  dy=999580 [9.995e5]  dy_underlying=999580 [9.995e5]  equal=YES
+  pair(1->0) dx=1000000  dy=999820314189098726 [9.998e17]  dy_underlying=999820314189098726 [9.998e17]  equal=YES
+  pair(0->2) dx=1000000000000000000  dy=1000460 [1e6]  dy_underlying=1000460 [1e6]  equal=YES
+  pair(2->0) dx=1000000  dy=998940054686657228 [9.989e17]  dy_underlying=998940054686657228 [9.989e17]  equal=YES
+  pair(0->3) dx=1000000000000000000  dy=999645679839916238 [9.996e17]  dy_underlying=999645679839916238 [9.996e17]  equal=YES
+  pair(3->0) dx=1000000000000000000  dy=999754052806766155 [9.997e17]  dy_underlying=999754052806766155 [9.997e17]  equal=YES
+  pair(1->2) dx=1000000  dy=1000581 [1e6]  dy_underlying=1000581 [1e6]  equal=YES
+  pair(2->1) dx=1000000  dy=998820 [9.988e5]  dy_underlying=998820 [9.988e5]  equal=YES
+  pair(1->3) dx=1000000  dy=999766121931424044 [9.997e17]  dy_underlying=999766121931424044 [9.997e17]  equal=YES
+  pair(3->1) dx=1000000000000000000  dy=999634 [9.996e5]  dy_underlying=999634 [9.996e5]  equal=YES
+  pair(2->3) dx=1000000  dy=998885910079682459 [9.988e17]  dy_underlying=998885910079682459 [9.988e17]  equal=YES
+  pair(3->2) dx=1000000000000000000  dy=1000514 [1e6]  dy_underlying=1000514 [1e6]  equal=YES
+
+== admin function deadness (attacker = 0x1111111111111111111111111111111111111111) ==
+owner()                                                    rc=0 :: 0x0000000000000000000000000000000000000000
+withdraw_admin_fees() from ATT                             rc=1 :: Error: server returned an error response: error code 3: execution reverted
+kill_me() from ATT                                         rc=1 :: Error: server returned an error response: error code 3: execution reverted, data: "0x"
+unkill_me() from ATT                                       rc=1 :: Error: server returned an error response: error code 3: execution reverted, data: "0x"
+commit_new_parameters from ATT                             rc=1 :: Error: server returned an error response: error code 3: execution reverted, data: "0x"
+apply_new_parameters from ATT                              rc=1 :: Error: server returned an error response: error code 3: execution reverted
+commit_transfer_ownership from ATT                         rc=1 :: Error: server returned an error response: error code 3: execution reverted, data: "0x"
+apply_transfer_ownership from ATT                          rc=1 :: Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+== zero-dx exchange reachability (no balance/allowance needed) ==
+exchange(0,1,0,0) from ATT                                 rc=0 :: 0x
+exchange(3,0,0,0) from ATT                                 rc=0 :: 0x
+
+== pool allowances to others (approve paths in impl are lending-only) ==
+DAI allowance(pool,pool)                                   rc=0 :: 0
+USDC allowance(pool,pool)                                  rc=0 :: 0
+USDT allowance(pool,pool)                                  rc=0 :: 0
+TUSD allowance(pool,pool)                                  rc=0 :: 0
+
+== gauge0xb4d0 + minter info ==
+gauge.lp_token()                                           rc=0 :: 0x77C6E4a580c0dCE4E5c7a17d0bc077188a83A059
+gauge.totalSupply()                                        rc=0 :: 274199686492129967389502 [2.741e23]
+gauge.minter()                                             rc=0 :: 0x2c988c3974AD7E604E276AE0294a7228DEf67974
+gauge.crv_token()                                          rc=0 :: 0xB8BAa0e4287890a5F79863aB62b7F175ceCbD433
+gauge.balanceOf(pool)                                      rc=0 :: 0
+minter.token()                                             rc=0 :: 0xB8BAa0e4287890a5F79863aB62b7F175ceCbD433
+minter.controller()                                        rc=0 :: 0x0C4d90ca69104B4cb937fB21c8533c29554AE32c
+gauge code size: 11185
+minter code size: 3075

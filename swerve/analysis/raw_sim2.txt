@@ -1,0 +1,18 @@
+== uninplemented-on-impl wrapper sims (admin caller) - all expected revert ==
+ramp_A: Error: server returned an error response: error code 3: execution reverted
+stop_ramp_A: Error: server returned an error response: error code 3: execution reverted
+commit_new_fee: Error: server returned an error response: error code 3: execution reverted
+set_aave_referral: Error: server returned an error response: error code 3: execution reverted, data: "0x"
+kill_me: Error: server returned an error response: error code 3: execution reverted, data: "0x"
+== Aragon vote executability (block 26,174,xxx) ==
+canExecute(0): false
+canExecute(1): false
+canExecute(2): false
+canExecute(3): true
+canExecute(4): false
+canExecute(5): false
+canExecute(6): false
+executeVote(3) from attacker: Error: execution reverted: EVMCALLS_CALL_REVERTED
+Voting.execute() direct: Error: server returned an error response: error code 3: execution reverted
+== vote3 script decode ==
+outer target=Voting 0xdff7beb0; selector=b61d27f6 (execute(address,uint256,bytes)); inner target=Voting; inner selector=5eb24332 (changeMinAcceptQuorumPct(uint64)); inner arg=90000000000000000 (9%); spec=0x1

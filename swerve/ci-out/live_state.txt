@@ -1,0 +1,40 @@
+== Swerve live state @ 2026-10-12T04:58:03Z ==
+block: 26174143
+block timestamp: 1791781079
+pool owner(): 0x0000000000000000000000000000000000000000
+pool A(): 100
+pool fee(): 3000000 [3e6]
+pool admin_fee(): 0
+pool is_killed(slot15): 0x0000000000000000000000000000000000000000000000000000000000000000
+pool kill_deadline(slot14): 0x000000000000000000000000000000000000000000000000000000005fa0fb44
+pool admin_actions_deadline: 0
+pool transfer_ownership_deadline: 0
+pool future_owner: 0x0000000000000000000000000000000000000000
+pool virtual price: 1069962750518212171 [1.069e18]
+coin[0]=0x6B175474E89094C44Da98b954EedeAC495271d0F bal_virtual=75005743491044521345789 [7.5e22] bal_actual=75006062368951846825607 [7.5e22]
+coin[1]=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 bal_virtual=74120265381 [7.412e10] bal_actual=74121739631 [7.412e10]
+coin[2]=0xdAC17F958D2ee523a2206206994597C13D831ec7 bal_virtual=81118909394 [8.111e10] bal_actual=81120830111 [8.112e10]
+coin[3]=0x0000000000085d4780B73119b644AE5ecd22b376 bal_virtual=74604782023302163442796 [7.46e22] bal_actual=74606569064860399996265 [7.46e22]
+swUSD totalSupply: 284914257245196369584766 [2.849e23]
+swUSD minter slot6: 0x000000000000000000000000329239599afb305da0a2ec69c58f8a6697f9f88d
+gauge totalSupply: 274199686492129967389502 [2.741e23]
+gauge lp_token: 0x77C6E4a580c0dCE4E5c7a17d0bc077188a83A059
+DAO proxy USDT: 30408429720 [3.04e10]
+== admin paths from random caller (expect revert) ==
+  withdraw_admin_fees() -> Error: server returned an error response: error code 3: execution reverted
+  commit_transfer_ownership(address) -> Error: server returned an error response: error code 3: execution reverted
+  apply_transfer_ownership() -> Error: server returned an error response: error code 3: execution reverted
+  kill_me() -> Error: server returned an error response: error code 3: execution reverted
+  unkill_me() -> Error: server returned an error response: error code 3: execution reverted
+== staker exit simulation (gauge.withdraw is state-changing; checkpoint check) ==
+  user_checkpoint from staker: 0x0000000000000000000000000000000000000000000000000000000000000001
+  staker gauge balance: 57255532138369086005 [5.725e19]
+== source hashes (local files) ==
+80d7d44f559442a65f91fdb267ccc9ce4729d7beaeb2a589fc6f739b0cb65f6d  analysis/sources/0x2638d2680AB4914126ee05b9c5EE95bAC311A95E.sol
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  analysis/sources/0x2E322C0430c8c2ad5179660Bb6298e3FBae03f87.sol
+e58d5a9eecfd239aed9bb850818902787e382944ccf150315ff8c9124180815f  analysis/sources/0x77c6e4a580c0dce4e5c7a17d0bc077188a83a059.sol
+15d89b8225c9fa454be6e78de53a3b8ecf148255206fffe69b6732b2867322fc  analysis/sources/0xB8BAa0e4287890a5F79863aB62b7F175ceCbD433.sol
+91a5ecb1e71e91366a29ccc235cfc230fdf738dba28a440d0d03208ed80c5aa7  analysis/sources/gauge_0x2c988c.sol
+68d0f78c81358e03936312efe9d46169edcb8ab03a1733dc41c56b0b2db11ac1  analysis/sources/gauge_0xb4d0C929.sol
+3de05e532ff528ecf29237f90b8085c3b48b142a94b7f188323ffd57f649c971  analysis/sources/impl_0xA5407eAE.sol
+c1e8173670b02dd448d4b8e3023d2c8e3846bc83a870e814c31880679a2e78ae  analysis/sources/pool_0x3292.sol
