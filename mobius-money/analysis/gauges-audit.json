@@ -1,0 +1,1464 @@
+{
+ "meta": {
+  "chain": "celo",
+  "chain_id": 42220,
+  "generated": "2026-10-12",
+  "blocks": {
+   "live_scan": 79923216,
+   "block_number": 79922881,
+   "claimables_participants": 79928392
+  },
+  "rpc": "https://forno.celo.org (keyless, read-only)",
+  "gauge_implementation": "Vyper 0.2.12 Liquidity Gauge v3 (Curve fork, 'Mobius Finance'); verified source on Blockscout, source sha256(ec0c072bc3ea87bd..) identical for 0xdAA2/0xc96A/0x107F/0x1250; GitHub mobiusAMM/mobi-dao-contracts contracts/gauges/LiquidityGaugeV3.vy",
+  "prices": {
+   "CELO": {
+    "dec": 18,
+    "price": 0.09380045113532264,
+    "price_src": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99"
+   },
+   "POOF": {
+    "dec": 18,
+    "price": 2.247e-05,
+    "price_src": "DexScreener ubeswap POOF liq $54 (2026-10-12)"
+   },
+   "MOO": {
+    "dec": 18,
+    "price": 0.0002403,
+    "price_src": "DexScreener ubeswap MOO liq $474 (2026-10-12)"
+   }
+  }
+ },
+ "classification": {
+  "E-U": [
+   {
+    "item": "gauge claim paths",
+    "reason": "claim_rewards pays only to _addr / rewards_receiver[_addr]; fresh-address test claimable_reward=0; claim_rewards(any) sim succeeds but moves nothing else"
+   },
+   {
+    "item": "gauge withdraw/kick/set_rewards",
+    "reason": "withdraw only own balance; kick only adjusts working_balances; set_rewards/set_killed admin (GaugeProxy) only"
+   },
+   {
+    "item": "reward contracts",
+    "reason": "guards confirmed via eth_call: notifyRewardAmount only rewardsDistribution, setRewardsDuration/updatePeriodFinish only owner, recoverERC20 blocks staking token; earned(gauge)=0 all RCs"
+   },
+   {
+    "item": "Minter/mint",
+    "reason": "mint sends only msg.sender's accrued MOBI; mint_for needs approval; MOBI.mint restricted to Minter (random-caller sim reverts); MOBI ~$0"
+   },
+   {
+    "item": "burner 0x84c991",
+    "reason": "withdrawETH() callable by anyone but balance 0; holds no tokens (checked CELO/MOBI/cUSD + Blockscout token list + native)"
+   },
+   {
+    "item": "GaugeProxy.accept_transfer_ownership(gauge)",
+    "reason": "permissionless in GaugeProxy.vy, but no gauge has a pending future_admin (checked all 27: 22 have future_admin==admin==GaugeProxy -> no-op; 5 have future_admin==0)"
+   }
+  ],
+  "H-O": [
+   {
+    "item": "3,566.513523 CELO unclaimed rewards",
+    "usd": 334.54,
+    "detail": "100% attributed (residual=0) to 300+ claimant addresses across 10 gauges; each recovers own claim_data via claim_rewards()/withdraw(true)",
+    "claim_positions": 389
+   },
+   {
+    "item": "staked LP tokens",
+    "usd_estimate": 329528.04,
+    "detail": "withdrawable only by stakers 1:1 through gauge withdraw(); LP held by StakingRewards (recoverERC20 blocks staking token)"
+   },
+   {
+    "item": "POOF/MOO gauge balances",
+    "usd": 0.3662,
+    "detail": "claimable by current holders + exited stakers (residual = stored claim_data)"
+   }
+  ],
+  "S": [
+   {
+    "item": "reward-contract dust CELO (~5.13 CELO)",
+    "usd": 0.48,
+    "detail": "leftover balances in RCs after streams ended; recoverable only by RC owners (recoverERC20 allows reward token: eth_call as owner returns success), else stuck"
+   },
+   {
+    "item": "reward-contract dust MOO (~11,038 MOO)",
+    "usd": 2.65,
+    "detail": "leftover balances in MOO-gauge reward contracts after streams ended; recoverable only by RC owners (recoverERC20 allows reward token), else stuck"
+   },
+   {
+    "item": "donations sent directly to gauges",
+    "usd": 0,
+    "detail": "not counted by reward_integral (balance diff only during claim call) -> permanently stuck if ever sent"
+   }
+  ]
+ },
+ "gauges": {
+  "0xdAA2ab880b7f3D5697e6F85e63c28b9120AA9E07": {
+   "lp": "0xd7bf6946b740930c60131044bd2f08787e1ddbd4",
+   "stakedLP": "66432152788523315709893",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1781940080",
+   "rewardTokens": [
+    {
+     "symbol": "CELO",
+     "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+     "priceUSD": 0.09380045113532264,
+     "priceSource": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99",
+     "gaugeBalance": "203349467779289424687",
+     "claimable_allKnownClaimants": "203349467771008606660",
+     "residual_unattributed": "8280818027",
+     "n_claimants": 130,
+     "rcBalance": "2701587336876004175",
+     "claimableUSD": 19.0743
+    }
+   ],
+   "rewardContract": {
+    "address": "0xc8b86c28a0026ea72b7624fa3c912ad77f1d5fe0",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0xd7bf6946b740930c60131044bd2f08787e1ddbd4",
+    "rewardsToken": "0x471ece3750da237f93b8e339c536989b8978a438",
+    "periodFinish": "1637929562",
+    "lastUpdateTime": "1637929562",
+    "rewardRate": "7301587301587301",
+    "getRewardForDuration": "4415999999999999644800",
+    "totalSupply_stakedLP": "66432152788523315709893",
+    "gaugeStake": "66432152788523315709893",
+    "gaugeUserRewardPerTokenPaid": "1892066624070130",
+    "rewardPerTokenStored": "1892066624070130",
+    "earned_gauge_now": "0",
+    "owner": "0x16e319d8dafef25aacec0df0f1e349819d36993c",
+    "rewardsDistribution": "0x16e319d8dafef25aacec0df0f1e349819d36993c"
+   },
+   "stakedLPValueUSD": 67579.58,
+   "remainingClaimableUSD": 19.074271815825103,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0xD38e76E17E66b562B61c149Ca0EE53CEa1145733": {
+   "lp": "0x846b784ab5302155542c1b3952b54305f220fd84",
+   "stakedLP": "1662527432099593299",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "1467608447488584474",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "0",
+   "rewardTokens": [],
+   "rewardContract": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": null,
+    "rewardsToken": null,
+    "periodFinish": "None",
+    "lastUpdateTime": "None",
+    "rewardRate": "None",
+    "getRewardForDuration": "None",
+    "totalSupply_stakedLP": "None",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "None",
+    "earned_gauge_now": "0",
+    "owner": null,
+    "rewardsDistribution": null
+   },
+   "stakedLPValueUSD": 2781.64,
+   "remainingClaimableUSD": 0.0,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0x1A8938a37093d34581B21bAd2AE7DC1c19150C05": {
+   "lp": "0x8cd0e2f11ed2e896a8307280deeee15b27e46bbe",
+   "stakedLP": "14871281023",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "0",
+   "rewardTokens": [],
+   "rewardContract": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": null,
+    "rewardsToken": null,
+    "periodFinish": "None",
+    "lastUpdateTime": "None",
+    "rewardRate": "None",
+    "getRewardForDuration": "None",
+    "totalSupply_stakedLP": "None",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "None",
+    "earned_gauge_now": "0",
+    "owner": null,
+    "rewardsDistribution": null
+   },
+   "stakedLPValueUSD": 29669.17,
+   "remainingClaimableUSD": 0.0,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0xd1B3C05FE24bda6F52e704daf1ACBa8c440d8573": {
+   "lp": "0x635aec36c4b61bac5eb1c3eee191147d006f8a21",
+   "stakedLP": "22494709480334322716533",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1789415035",
+   "rewardTokens": [
+    {
+     "symbol": "CELO",
+     "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+     "priceUSD": 0.09380045113532264,
+     "priceSource": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99",
+     "gaugeBalance": "61760608635794298140",
+     "claimable_allKnownClaimants": "61760608635338610957",
+     "residual_unattributed": "455687183",
+     "n_claimants": 68,
+     "rcBalance": "800128049",
+     "claimableUSD": 5.7932
+    }
+   ],
+   "rewardContract": {
+    "address": "0x0c7136ff3db7c8d70f62d42d6b43f7572f589269",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x635aec36c4b61bac5eb1c3eee191147d006f8a21",
+    "rewardsToken": "0x471ece3750da237f93b8e339c536989b8978a438",
+    "periodFinish": "1637935150",
+    "lastUpdateTime": "1637935150",
+    "rewardRate": "729166666666666",
+    "getRewardForDuration": "440999999999999596800",
+    "totalSupply_stakedLP": "22494709480334322716533",
+    "gaugeStake": "22494709480334322716533",
+    "gaugeUserRewardPerTokenPaid": "2695934198743856",
+    "rewardPerTokenStored": "2695934198743856",
+    "earned_gauge_now": "0",
+    "owner": "0x16e319d8dafef25aacec0df0f1e349819d36993c",
+    "rewardsDistribution": "0x16e319d8dafef25aacec0df0f1e349819d36993c"
+   },
+   "stakedLPValueUSD": 22994.08,
+   "remainingClaimableUSD": 5.793172952429608,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0xe2d6095685248F38Ae9fef1b360D772b78Ea19D1": {
+   "lp": "0xc7a4c6ef4a16dc24634cc2a951ba5fec4398f7e0",
+   "stakedLP": "20508888696426310353609",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "1467608447488584474",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "0",
+   "rewardTokens": [],
+   "rewardContract": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": null,
+    "rewardsToken": null,
+    "periodFinish": "None",
+    "lastUpdateTime": "None",
+    "rewardRate": "None",
+    "getRewardForDuration": "None",
+    "totalSupply_stakedLP": "None",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "None",
+    "earned_gauge_now": "0",
+    "owner": null,
+    "rewardsDistribution": null
+   },
+   "stakedLPValueUSD": 20797.29,
+   "remainingClaimableUSD": 0.0,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0x52517feb1Fc6141d5CF6718111C7Cc0FD764fA5d": {
+   "lp": "0xf5b454cf47caca418d95930aa03975ee4bf409bc",
+   "stakedLP": "353538269543422015114",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1765955728",
+   "rewardTokens": [
+    {
+     "symbol": "CELO",
+     "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+     "priceUSD": 0.09380045113532264,
+     "priceSource": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99",
+     "gaugeBalance": "1650612800205428819",
+     "claimable_allKnownClaimants": "1650612799606135081",
+     "residual_unattributed": "599293738",
+     "n_claimants": 15,
+     "rcBalance": "547701720832408215",
+     "claimableUSD": 0.1548
+    }
+   ],
+   "rewardContract": {
+    "address": "0x3804da7a53fd810cd7f5bfcd1166ea2e0e9e9ae0",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0xf5b454cf47caca418d95930aa03975ee4bf409bc",
+    "rewardsToken": "0x471ece3750da237f93b8e339c536989b8978a438",
+    "periodFinish": "1637931387",
+    "lastUpdateTime": "1637931387",
+    "rewardRate": "1459986772486772",
+    "getRewardForDuration": "882999999999999705600",
+    "totalSupply_stakedLP": "353538269543422015114",
+    "gaugeStake": "353538269543422015114",
+    "gaugeUserRewardPerTokenPaid": "4874088662091738",
+    "rewardPerTokenStored": "4874088662091738",
+    "earned_gauge_now": "0",
+    "owner": "0x16e319d8dafef25aacec0df0f1e349819d36993c",
+    "rewardsDistribution": "0x16e319d8dafef25aacec0df0f1e349819d36993c"
+   },
+   "stakedLPValueUSD": 123.65,
+   "remainingClaimableUSD": 0.1548282253090074,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0x27D9Bfa5F864862BeDC23cFab7e00b6b94488CC6": {
+   "lp": "0xafee90ab6a2d3b265262f94f6e437e7f6d94e26e",
+   "stakedLP": "33787153285262749345084",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1768171692",
+   "rewardTokens": [
+    {
+     "symbol": "CELO",
+     "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+     "priceUSD": 0.09380045113532264,
+     "priceSource": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99",
+     "gaugeBalance": "740435468940542113883",
+     "claimable_allKnownClaimants": "740435468933794465717",
+     "residual_unattributed": "6747648166",
+     "n_claimants": 35,
+     "rcBalance": "489095581834036505",
+     "claimableUSD": 69.4532
+    }
+   ],
+   "rewardContract": {
+    "address": "0xedd2c93858507a64b29a4af0591bd2c571851829",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0xafee90ab6a2d3b265262f94f6e437e7f6d94e26e",
+    "rewardsToken": "0x471ece3750da237f93b8e339c536989b8978a438",
+    "periodFinish": "1648918382",
+    "lastUpdateTime": "1648918382",
+    "rewardRate": "4489087301587301",
+    "getRewardForDuration": "2714999999999999644800",
+    "totalSupply_stakedLP": "33787153285262749345084",
+    "gaugeStake": "33787153285262749345084",
+    "gaugeUserRewardPerTokenPaid": "20792097028461979",
+    "rewardPerTokenStored": "20792097028461979",
+    "earned_gauge_now": "0",
+    "owner": "0x16e319d8dafef25aacec0df0f1e349819d36993c",
+    "rewardsDistribution": "0xc77b8e88590223fe6190414bed066a947b0e5871"
+   },
+   "stakedLPValueUSD": 34601.45,
+   "remainingClaimableUSD": 69.45318102321703,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0x1A648004d8AB84eE34d2D1cd2F2A7a7828D6939F": {
+   "lp": "0x68095d768b3c78919c6048f52cc68267ad2b37fd",
+   "stakedLP": "0",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "4851598173515981735",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x6c0d6fba3bcdb224278474e8d524f19c6bb55850",
+   "futureAdmin": "0x6c0d6fba3bcdb224278474e8d524f19c6bb55850",
+   "lastClaim_gauge": "0",
+   "rewardTokens": [],
+   "rewardContract": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": null,
+    "rewardsToken": null,
+    "periodFinish": "None",
+    "lastUpdateTime": "None",
+    "rewardRate": "None",
+    "getRewardForDuration": "None",
+    "totalSupply_stakedLP": "None",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "None",
+    "earned_gauge_now": "0",
+    "owner": null,
+    "rewardsDistribution": null
+   },
+   "stakedLPValueUSD": null,
+   "remainingClaimableUSD": 0.0,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0x1250D6dd3B51D20c14a8ECb10CC2dd713967767e": {
+   "lp": "0x57f008172cf89b972db3db7dd032e66be4af1a8c",
+   "stakedLP": "28290376163109803869",
+   "gaugeSymbol": "mobLP",
+   "killed": true,
+   "gaugeInflationRate": "4851598173515981735",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x6c0d6fba3bcdb224278474e8d524f19c6bb55850",
+   "futureAdmin": "0x6c0d6fba3bcdb224278474e8d524f19c6bb55850",
+   "lastClaim_gauge": "1641002640",
+   "rewardTokens": [
+    {
+     "symbol": "POOF",
+     "address": "0x00400fcbf0816bebb94654259de7273f4a05c762",
+     "priceUSD": 2.247e-05,
+     "priceSource": "DexScreener ubeswap POOF liq $54 (2026-10-12)",
+     "gaugeBalance": "326448286969508183",
+     "claimable_currentHolders": "326448286848157305",
+     "residual_exStakers_or_dust": "121350878",
+     "rcBalance": "351165714",
+     "claimableUSD": 0.0,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    },
+    {
+     "symbol": "MOO",
+     "address": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+     "priceUSD": 0.0002403,
+     "priceSource": "DexScreener ubeswap MOO liq $474 (2026-10-12)",
+     "gaugeBalance": "450325235409841530",
+     "claimable_currentHolders": "450325235289989572",
+     "residual_exStakers_or_dust": "119851958",
+     "rcBalance": "80853174603353997221",
+     "claimableUSD": 0.0001,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    }
+   ],
+   "rewardContract": {
+    "address": "0x92e515887fa9a494c870d3fc1f90bc0214215539",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x57f008172cf89b972db3db7dd032e66be4af1a8c",
+    "rewardsToken": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+    "periodFinish": "1636659238",
+    "lastUpdateTime": "1636659238",
+    "rewardRate": "16760208455810307",
+    "getRewardForDuration": "10136574074074073673600",
+    "totalSupply_stakedLP": "28290376163109803869",
+    "gaugeStake": "28290376163109803869",
+    "gaugeUserRewardPerTokenPaid": "48826657900566449",
+    "rewardPerTokenStored": "48826657900566449",
+    "earned_gauge_now": "0",
+    "owner": "0x313bc86d3d6e86ba164b2b451cb0d9cfa7943e5c",
+    "rewardsDistribution": "0x313bc86d3d6e86ba164b2b451cb0d9cfa7943e5c"
+   },
+   "stakedLPValueUSD": 0.0,
+   "remainingClaimableUSD": 0.00011554844707718978,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0xCF34F4ec5DC9E09428A4f4a45475f6277694166c": {
+   "lp": "0x2642ab16bfb7a8b36ee42c9cba2289c4ca9f33b9",
+   "stakedLP": "2225074471243588397766",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "4851598173515981735",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1644351171",
+   "rewardTokens": [
+    {
+     "symbol": "POOF",
+     "address": "0x00400fcbf0816bebb94654259de7273f4a05c762",
+     "priceUSD": 2.247e-05,
+     "priceSource": "DexScreener ubeswap POOF liq $54 (2026-10-12)",
+     "gaugeBalance": "255236900083009933537",
+     "claimable_currentHolders": "255236900082879856234",
+     "residual_exStakers_or_dust": "130077303",
+     "rcBalance": "305966557",
+     "claimableUSD": 0.0057,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    },
+    {
+     "symbol": "MOO",
+     "address": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+     "priceUSD": 0.0002403,
+     "priceSource": "DexScreener ubeswap MOO liq $474 (2026-10-12)",
+     "gaugeBalance": "277361406541613519479",
+     "claimable_currentHolders": "277361406541490211524",
+     "residual_exStakers_or_dust": "123307955",
+     "rcBalance": "40467923280575618823",
+     "claimableUSD": 0.0666,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    }
+   ],
+   "rewardContract": {
+    "address": "0x31ccb9dc068058672d96e92baf96b1607855822e",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x2642ab16bfb7a8b36ee42c9cba2289c4ca9f33b9",
+    "rewardsToken": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+    "periodFinish": "1640300662",
+    "lastUpdateTime": "1640300662",
+    "rewardRate": "8267195767195767",
+    "getRewardForDuration": "4999999999999999881600",
+    "totalSupply_stakedLP": "2225074471243588397766",
+    "gaugeStake": "2225074471243588397766",
+    "gaugeUserRewardPerTokenPaid": "182637127049989783",
+    "rewardPerTokenStored": "182637127049989783",
+    "earned_gauge_now": "0",
+    "owner": "0x313bc86d3d6e86ba164b2b451cb0d9cfa7943e5c",
+    "rewardsDistribution": "0x3b0b4c9928c1412fbb69e2bdd50d6b7b98398d96"
+   },
+   "stakedLPValueUSD": 20.75,
+   "remainingClaimableUSD": 0.07238511913681496,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0x5489b2F0A1992b889F47601D71E068Fd15c63f26": {
+   "lp": "0x4d6b17828d0173668e8eb730106444556a98c0f9",
+   "stakedLP": "2800974573177198589089",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1782055147",
+   "rewardTokens": [
+    {
+     "symbol": "POOF",
+     "address": "0x00400fcbf0816bebb94654259de7273f4a05c762",
+     "priceUSD": 2.247e-05,
+     "priceSource": "DexScreener ubeswap POOF liq $54 (2026-10-12)",
+     "gaugeBalance": "526695538627570523441",
+     "claimable_currentHolders": "507291837257087798282",
+     "residual_exStakers_or_dust": "19403701370482725159",
+     "rcBalance": "333754327",
+     "claimableUSD": 0.0118,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    },
+    {
+     "symbol": "MOO",
+     "address": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+     "priceUSD": 0.0002403,
+     "priceSource": "DexScreener ubeswap MOO liq $474 (2026-10-12)",
+     "gaugeBalance": "564122521173482621581",
+     "claimable_currentHolders": "542199451104974295618",
+     "residual_exStakers_or_dust": "21923070068508325963",
+     "rcBalance": "40509259259412528332",
+     "claimableUSD": 0.1356,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    }
+   ],
+   "rewardContract": {
+    "address": "0xb6a5059a228a16fa2827e28e52cec96bbc63d639",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x4d6b17828d0173668e8eb730106444556a98c0f9",
+    "rewardsToken": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+    "periodFinish": "1640300682",
+    "lastUpdateTime": "1640300682",
+    "rewardRate": "8267195767195767",
+    "getRewardForDuration": "4999999999999999881600",
+    "totalSupply_stakedLP": "2800974573177198589089",
+    "gaugeStake": "2800974573177198589089",
+    "gaugeUserRewardPerTokenPaid": "283581689671985662",
+    "rewardPerTokenStored": "283581689671985662",
+    "earned_gauge_now": "0",
+    "owner": "0x313bc86d3d6e86ba164b2b451cb0d9cfa7943e5c",
+    "rewardsDistribution": "0x3b0b4c9928c1412fbb69e2bdd50d6b7b98398d96"
+   },
+   "stakedLPValueUSD": 5.54,
+   "remainingClaimableUSD": 0.1473934905909494,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0x2459BDb59a3BF6Ab6C412Ac0b220e7CDA1D4ea26": {
+   "lp": "0x18d71b8664e69d6dd61c79247dbf12bfaaf66c10",
+   "stakedLP": "890976180335712251519",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "2668378995433789953",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1691032190",
+   "rewardTokens": [
+    {
+     "symbol": "POOF",
+     "address": "0x00400fcbf0816bebb94654259de7273f4a05c762",
+     "priceUSD": 2.247e-05,
+     "priceSource": "DexScreener ubeswap POOF liq $54 (2026-10-12)",
+     "gaugeBalance": "31384116164530422997",
+     "claimable_currentHolders": "22139722984064074405",
+     "residual_exStakers_or_dust": "9244393180466348592",
+     "rcBalance": "1472791963",
+     "claimableUSD": 0.0007,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    },
+    {
+     "symbol": "MOO",
+     "address": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+     "priceUSD": 0.0002403,
+     "priceSource": "DexScreener ubeswap MOO liq $474 (2026-10-12)",
+     "gaugeBalance": "87747857024987716720",
+     "claimable_currentHolders": "61693745737334013736",
+     "residual_exStakers_or_dust": "26054111287653702984",
+     "rcBalance": "694224173",
+     "claimableUSD": 0.0211,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    }
+   ],
+   "rewardContract": {
+    "address": "0xe8b286649713447d8d5fbebc28c731830d19b6c9",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x18d71b8664e69d6dd61c79247dbf12bfaaf66c10",
+    "rewardsToken": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+    "periodFinish": "1640300647",
+    "lastUpdateTime": "1640300647",
+    "rewardRate": "16534391534391534",
+    "getRewardForDuration": "9999999999999999763200",
+    "totalSupply_stakedLP": "890976180335712251519",
+    "gaugeStake": "890976180335712251519",
+    "gaugeUserRewardPerTokenPaid": "71010425171196863",
+    "rewardPerTokenStored": "71010425171196863",
+    "earned_gauge_now": "0",
+    "owner": "0x313bc86d3d6e86ba164b2b451cb0d9cfa7943e5c",
+    "rewardsDistribution": "0x3b0b4c9928c1412fbb69e2bdd50d6b7b98398d96"
+   },
+   "stakedLPValueUSD": 323.63,
+   "remainingClaimableUSD": 0.021791011133321547,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0xF2ae5c2D2D2eD13dd324C0942163054fc4A3D4d9": {
+   "lp": "0x730e677f39c4ca96012c394b9da09a025e922f81",
+   "stakedLP": "516296247042730854179",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "1467608447488584474",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "0",
+   "rewardTokens": [],
+   "rewardContract": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": null,
+    "rewardsToken": null,
+    "periodFinish": "None",
+    "lastUpdateTime": "None",
+    "rewardRate": "None",
+    "getRewardForDuration": "None",
+    "totalSupply_stakedLP": "None",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "None",
+    "earned_gauge_now": "0",
+    "owner": null,
+    "rewardsDistribution": null
+   },
+   "stakedLPValueUSD": 533.27,
+   "remainingClaimableUSD": 0.0,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0xc96AeeaFF32129da934149F6134Aa7bf291a754E": {
+   "lp": "0x39b6f09ef97db406ab78d869471adb2384c494e3",
+   "stakedLP": "6392085808728922500161",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1777482029",
+   "rewardTokens": [
+    {
+     "symbol": "CELO",
+     "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+     "priceUSD": 0.09380045113532264,
+     "priceSource": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99",
+     "gaugeBalance": "1466799170419766436399",
+     "claimable_allKnownClaimants": "1466799170402840128259",
+     "residual_unattributed": "16926308140",
+     "n_claimants": 51,
+     "rcBalance": "26568325183",
+     "claimableUSD": 137.5864
+    }
+   ],
+   "rewardContract": {
+    "address": "0x764771ed5bddc8892506336a15d9ab62a10d74f9",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x39b6f09ef97db406ab78d869471adb2384c494e3",
+    "rewardsToken": "0x471ece3750da237f93b8e339c536989b8978a438",
+    "periodFinish": "1648918362",
+    "lastUpdateTime": "1648918362",
+    "rewardRate": "13171296296296296",
+    "getRewardForDuration": "7965999999999999820800",
+    "totalSupply_stakedLP": "6392085808728922500161",
+    "gaugeStake": "6392085808728922500161",
+    "gaugeUserRewardPerTokenPaid": "17850388957627721",
+    "rewardPerTokenStored": "17850388957627721",
+    "earned_gauge_now": "0",
+    "owner": "0x16e319d8dafef25aacec0df0f1e349819d36993c",
+    "rewardsDistribution": "0xc77b8e88590223fe6190414bed066a947b0e5871"
+   },
+   "stakedLPValueUSD": 2141.07,
+   "remainingClaimableUSD": 137.58642391029107,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0x487c30CB18AA9Ced435911E2B414e0E85D7E52bB": {
+   "lp": "0x4ff08e2a4e7114af4b575aef9250144f95790982",
+   "stakedLP": "12452877427211347578",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1776169838",
+   "rewardTokens": [
+    {
+     "symbol": "CELO",
+     "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+     "priceUSD": 0.09380045113532264,
+     "priceSource": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99",
+     "gaugeBalance": "281665341523720946617",
+     "claimable_allKnownClaimants": "281665341523720687935",
+     "residual_unattributed": "258682",
+     "n_claimants": 12,
+     "rcBalance": "2526317",
+     "claimableUSD": 26.4203
+    }
+   ],
+   "rewardContract": {
+    "address": "0x0757c02ba58c0ffc992478b5b8a3cf437a93e7c1",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x4ff08e2a4e7114af4b575aef9250144f95790982",
+    "rewardsToken": "0x471ece3750da237f93b8e339c536989b8978a438",
+    "periodFinish": "1641053241",
+    "lastUpdateTime": "1641053241",
+    "rewardRate": "3694009589947089",
+    "getRewardForDuration": "2234136999999999427200",
+    "totalSupply_stakedLP": "12452877427211347578",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "18366609017539602278507",
+    "earned_gauge_now": "0",
+    "owner": "0x16e319d8dafef25aacec0df0f1e349819d36993c",
+    "rewardsDistribution": "0x16e319d8dafef25aacec0df0f1e349819d36993c"
+   },
+   "stakedLPValueUSD": 21345.29,
+   "remainingClaimableUSD": 26.420336104109747,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0x127b524c74C2162Ee4BB2e42d8d2eB9050C0293E": {
+   "lp": "0x20d7274c5af4f9de6e8c93025e44af3979d9ab2b",
+   "stakedLP": "438021383674868497",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1778022580",
+   "rewardTokens": [
+    {
+     "symbol": "CELO",
+     "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+     "priceUSD": 0.09380045113532264,
+     "priceSource": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99",
+     "gaugeBalance": "250850743520056173066",
+     "claimable_allKnownClaimants": "250850743520056158861",
+     "residual_unattributed": "14205",
+     "n_claimants": 13,
+     "rcBalance": "2306735",
+     "claimableUSD": 23.5299
+    }
+   ],
+   "rewardContract": {
+    "address": "0x66d6575375c4539367660afdae38a1c595ff8f04",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x20d7274c5af4f9de6e8c93025e44af3979d9ab2b",
+    "rewardsToken": "0x471ece3750da237f93b8e339c536989b8978a438",
+    "periodFinish": "1641054326",
+    "lastUpdateTime": "1641054326",
+    "rewardRate": "3694009589947089",
+    "getRewardForDuration": "2234136999999999427200",
+    "totalSupply_stakedLP": "438021383674868497",
+    "gaugeStake": "438021383674868497",
+    "gaugeUserRewardPerTokenPaid": "44954829004533661457089",
+    "rewardPerTokenStored": "44954829004533661457089",
+    "earned_gauge_now": "0",
+    "owner": "0x16e319d8dafef25aacec0df0f1e349819d36993c",
+    "rewardsDistribution": "0x16e319d8dafef25aacec0df0f1e349819d36993c"
+   },
+   "stakedLPValueUSD": 38156.17,
+   "remainingClaimableUSD": 23.52991290981238,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0x0A125D473cd3b1968e728DDF7d424c928C09222A": {
+   "lp": "0x68b239b415970dd7a5234a9701cbb5bfab544c7c",
+   "stakedLP": "4547892059116020577920",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "1467608447488584474",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1708346953",
+   "rewardTokens": [
+    {
+     "symbol": "CELO",
+     "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+     "priceUSD": 0.09380045113532264,
+     "priceSource": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99",
+     "gaugeBalance": "51251856865747693894",
+     "claimable_allKnownClaimants": "51251856863511018909",
+     "residual_unattributed": "2236674985",
+     "n_claimants": 12,
+     "rcBalance": "2800852641",
+     "claimableUSD": 4.8074
+    }
+   ],
+   "rewardContract": {
+    "address": "0xbcb4029fac568f65fa9bde21aadca088ce62b1d0",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x68b239b415970dd7a5234a9701cbb5bfab544c7c",
+    "rewardsToken": "0x471ece3750da237f93b8e339c536989b8978a438",
+    "periodFinish": "1648918392",
+    "lastUpdateTime": "1648918392",
+    "rewardRate": "2994378306878306",
+    "getRewardForDuration": "1810999999999999468800",
+    "totalSupply_stakedLP": "4547892059116020577920",
+    "gaugeStake": "4547892059116020577920",
+    "gaugeUserRewardPerTokenPaid": "448858474963404764",
+    "rewardPerTokenStored": "448858474963404764",
+    "earned_gauge_now": "0",
+    "owner": "0x16e319d8dafef25aacec0df0f1e349819d36993c",
+    "rewardsDistribution": "0xc77b8e88590223fe6190414bed066a947b0e5871"
+   },
+   "stakedLPValueUSD": 3652.71,
+   "remainingClaimableUSD": 4.807447295530117,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0xE1f9D952EecC07cfEFa69df9fBB0cEF260957119": {
+   "lp": "0x274dd2df039f1f6131419c82173d97770e6af6b7",
+   "stakedLP": "83314557054260735096665",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "1467608447488584474",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1708872112",
+   "rewardTokens": [
+    {
+     "symbol": "CELO",
+     "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+     "priceUSD": 0.09380045113532264,
+     "priceSource": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99",
+     "gaugeBalance": "486982813380467628733",
+     "claimable_allKnownClaimants": "486982813374781814903",
+     "residual_unattributed": "5685813830",
+     "n_claimants": 21,
+     "rcBalance": "7868134431",
+     "claimableUSD": 45.6792
+    }
+   ],
+   "rewardContract": {
+    "address": "0x78c5a63b87059394b3062c750d87cb70033e183c",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x274dd2df039f1f6131419c82173d97770e6af6b7",
+    "rewardsToken": "0x471ece3750da237f93b8e339c536989b8978a438",
+    "periodFinish": "1648918372",
+    "lastUpdateTime": "1648918372",
+    "rewardRate": "4489087301587301",
+    "getRewardForDuration": "2714999999999999644800",
+    "totalSupply_stakedLP": "83314557054260735096665",
+    "gaugeStake": "83314557054260735096665",
+    "gaugeUserRewardPerTokenPaid": "24601322260432759",
+    "rewardPerTokenStored": "24601322260432759",
+    "earned_gauge_now": "0",
+    "owner": "0x16e319d8dafef25aacec0df0f1e349819d36993c",
+    "rewardsDistribution": "0xc77b8e88590223fe6190414bed066a947b0e5871"
+   },
+   "stakedLPValueUSD": 84580.11,
+   "remainingClaimableUSD": 45.679207590236494,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0xE965Dd2B957448CaE3291048A9944fC2F3a693D8": {
+   "lp": "0x9da9a2dafd92c41a2d03adb7255014cb341b7e59",
+   "stakedLP": "0",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "4851598173515981735",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x6c0d6fba3bcdb224278474e8d524f19c6bb55850",
+   "futureAdmin": "0x6c0d6fba3bcdb224278474e8d524f19c6bb55850",
+   "lastClaim_gauge": "0",
+   "rewardTokens": [],
+   "rewardContract": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": null,
+    "rewardsToken": null,
+    "periodFinish": "None",
+    "lastUpdateTime": "None",
+    "rewardRate": "None",
+    "getRewardForDuration": "None",
+    "totalSupply_stakedLP": "None",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "None",
+    "earned_gauge_now": "0",
+    "owner": null,
+    "rewardsDistribution": null
+   },
+   "stakedLPValueUSD": null,
+   "remainingClaimableUSD": 0.0,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0x73fDa87297627Fe985bc1D40c7d68868C2624D67": {
+   "lp": "0xbd8be270141cfb652c68e4c3647e7fcf8533471c",
+   "stakedLP": "0",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "4851598173515981735",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x6c0d6fba3bcdb224278474e8d524f19c6bb55850",
+   "futureAdmin": "0x6c0d6fba3bcdb224278474e8d524f19c6bb55850",
+   "lastClaim_gauge": "0",
+   "rewardTokens": [],
+   "rewardContract": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": null,
+    "rewardsToken": null,
+    "periodFinish": "None",
+    "lastUpdateTime": "None",
+    "rewardRate": "None",
+    "getRewardForDuration": "None",
+    "totalSupply_stakedLP": "None",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "None",
+    "earned_gauge_now": "0",
+    "owner": null,
+    "rewardsDistribution": null
+   },
+   "stakedLPValueUSD": null,
+   "remainingClaimableUSD": 0.0,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0x4E3E91b61c6cA47cF3664aA88Ee3f690e3E41185": {
+   "lp": "0xb1dd4e9ad1edcd0d4b8ee270187a1465316625b4",
+   "stakedLP": "0",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "4851598173515981735",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x6c0d6fba3bcdb224278474e8d524f19c6bb55850",
+   "futureAdmin": "0x6c0d6fba3bcdb224278474e8d524f19c6bb55850",
+   "lastClaim_gauge": "0",
+   "rewardTokens": [],
+   "rewardContract": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": null,
+    "rewardsToken": null,
+    "periodFinish": "None",
+    "lastUpdateTime": "None",
+    "rewardRate": "None",
+    "getRewardForDuration": "None",
+    "totalSupply_stakedLP": "None",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "None",
+    "earned_gauge_now": "0",
+    "owner": null,
+    "rewardsDistribution": null
+   },
+   "stakedLPValueUSD": null,
+   "remainingClaimableUSD": 0.0,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0xE7195E651Cc47853f0054d85c8ADFc79D532929f": {
+   "lp": "0x07e137e5605e15c93f22545868fa70cecfcbbffe",
+   "stakedLP": "2629473798115400058561",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "2668378995433789953",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1729372045",
+   "rewardTokens": [
+    {
+     "symbol": "POOF",
+     "address": "0x00400fcbf0816bebb94654259de7273f4a05c762",
+     "priceUSD": 2.247e-05,
+     "priceSource": "DexScreener ubeswap POOF liq $54 (2026-10-12)",
+     "gaugeBalance": "17889455228369593665",
+     "claimable_currentHolders": "14794117278808601225",
+     "residual_exStakers_or_dust": "3095337949560992440",
+     "rcBalance": "368420530",
+     "claimableUSD": 0.0004,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    },
+    {
+     "symbol": "MOO",
+     "address": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+     "priceUSD": 0.0002403,
+     "priceSource": "DexScreener ubeswap MOO liq $474 (2026-10-12)",
+     "gaugeBalance": "24196871555388433396",
+     "claimable_currentHolders": "22742568893813428689",
+     "residual_exStakers_or_dust": "1454302661575004707",
+     "rcBalance": "5438359788359972500981",
+     "claimableUSD": 0.0058,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    }
+   ],
+   "rewardContract": {
+    "address": "0xca54a6cc4e9c7d1eeea044d3e7bd7fe145b59bef",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x07e137e5605e15c93f22545868fa70cecfcbbffe",
+    "rewardsToken": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+    "periodFinish": "1645139695",
+    "lastUpdateTime": "1645139695",
+    "rewardRate": "5586442717519106",
+    "getRewardForDuration": "3378680555555555308800",
+    "totalSupply_stakedLP": "2629473798115400058561",
+    "gaugeStake": "2629473798115400058561",
+    "gaugeUserRewardPerTokenPaid": "209593864724756197",
+    "rewardPerTokenStored": "209593864724756197",
+    "earned_gauge_now": "0",
+    "owner": "0x313bc86d3d6e86ba164b2b451cb0d9cfa7943e5c",
+    "rewardsDistribution": "0x3b0b4c9928c1412fbb69e2bdd50d6b7b98398d96"
+   },
+   "stakedLPValueUSD": 0.67,
+   "remainingClaimableUSD": 0.006216484293741306,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0xD0d57a6689188F854F996BEAE0Cb1949FDB5FF86": {
+   "lp": "0xaffd8d6b5e5a0e25034dd3d075532f9ce01c305c",
+   "stakedLP": "3366976529327626534862",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1776170357",
+   "rewardTokens": [
+    {
+     "symbol": "POOF",
+     "address": "0x00400fcbf0816bebb94654259de7273f4a05c762",
+     "priceUSD": 2.247e-05,
+     "priceSource": "DexScreener ubeswap POOF liq $54 (2026-10-12)",
+     "gaugeBalance": "414792637895394764256",
+     "claimable_currentHolders": "268665818180396118291",
+     "residual_exStakers_or_dust": "146126819714998645965",
+     "rcBalance": "204512036",
+     "claimableUSD": 0.0093,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    },
+    {
+     "symbol": "MOO",
+     "address": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+     "priceUSD": 0.0002403,
+     "priceSource": "DexScreener ubeswap MOO liq $474 (2026-10-12)",
+     "gaugeBalance": "378939629827900169417",
+     "claimable_currentHolders": "266143639786676498642",
+     "residual_exStakers_or_dust": "112795990041223670775",
+     "rcBalance": "2719014550264641568440",
+     "claimableUSD": 0.0911,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    }
+   ],
+   "rewardContract": {
+    "address": "0x64d996b71a5867886814bc9d45d2822bde027122",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0xaffd8d6b5e5a0e25034dd3d075532f9ce01c305c",
+    "rewardsToken": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+    "periodFinish": "1645139725",
+    "lastUpdateTime": "1645139725",
+    "rewardRate": "3724404499454102",
+    "getRewardForDuration": "2252519841269840889600",
+    "totalSupply_stakedLP": "3366976529327626534862",
+    "gaugeStake": "3366976529327626534862",
+    "gaugeUserRewardPerTokenPaid": "262499241213767338",
+    "rewardPerTokenStored": "262499241213767338",
+    "earned_gauge_now": "0",
+    "owner": "0x313bc86d3d6e86ba164b2b451cb0d9cfa7943e5c",
+    "rewardsDistribution": "0x3b0b4c9928c1412fbb69e2bdd50d6b7b98398d96"
+   },
+   "stakedLPValueUSD": 46.31,
+   "remainingClaimableUSD": 0.10037958362115394,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0xCAEd243de23264Bdd8297c6eECcF320846eee18A": {
+   "lp": "0xec8e37876fd9de919b58788b87a078e546149f87",
+   "stakedLP": "3991008592785759859453",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "2668378995433789953",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1675202888",
+   "rewardTokens": [
+    {
+     "symbol": "POOF",
+     "address": "0x00400fcbf0816bebb94654259de7273f4a05c762",
+     "priceUSD": 2.247e-05,
+     "priceSource": "DexScreener ubeswap POOF liq $54 (2026-10-12)",
+     "gaugeBalance": "99299291512223469378",
+     "claimable_currentHolders": "99299291512162001011",
+     "residual_exStakers_or_dust": "61468367",
+     "rcBalance": "142427813",
+     "claimableUSD": 0.0022,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    },
+    {
+     "symbol": "MOO",
+     "address": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+     "priceUSD": 0.0002403,
+     "priceSource": "DexScreener ubeswap MOO liq $474 (2026-10-12)",
+     "gaugeBalance": "65231993078347455300",
+     "claimable_currentHolders": "65231993078289305698",
+     "residual_exStakers_or_dust": "58149602",
+     "rcBalance": "2718849206349274258874",
+     "claimableUSD": 0.0157,
+     "gaugeBalanceBlock": "~79923216-79925000"
+    }
+   ],
+   "rewardContract": {
+    "address": "0xc99cda8ffd6fb7bc31d56932713a447cd48a6bff",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0xec8e37876fd9de919b58788b87a078e546149f87",
+    "rewardsToken": "0x17700282592d6917f6a73d0bf8accf4d578c131e",
+    "periodFinish": "1645139710",
+    "lastUpdateTime": "1645139710",
+    "rewardRate": "3724322483623078",
+    "getRewardForDuration": "2252470238095237574400",
+    "totalSupply_stakedLP": "3991008592785759859453",
+    "gaugeStake": "3991008592785759859453",
+    "gaugeUserRewardPerTokenPaid": "271665399951476365",
+    "rewardPerTokenStored": "271665399951476365",
+    "earned_gauge_now": "0",
+    "owner": "0x313bc86d3d6e86ba164b2b451cb0d9cfa7943e5c",
+    "rewardsDistribution": "0x3b0b4c9928c1412fbb69e2bdd50d6b7b98398d96"
+   },
+   "stakedLPValueUSD": 7.69,
+   "remainingClaimableUSD": 0.017906503017006553,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0x107F94409746E8c8E6eFF139A100D17D9ca7FdfE": {
+   "lp": "0x9438e7281d7e3e99a9dd21e0ead9c6a254e17ab2",
+   "stakedLP": "7273192098316812912262",
+   "gaugeSymbol": "MobLP",
+   "killed": true,
+   "gaugeInflationRate": "443951555365296802",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "1782121773",
+   "rewardTokens": [
+    {
+     "symbol": "CELO",
+     "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+     "priceUSD": 0.09380045113532264,
+     "priceSource": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99",
+     "gaugeBalance": "21767439394166612919",
+     "claimable_allKnownClaimants": "21767439392079505791",
+     "residual_unattributed": "2087107128",
+     "n_claimants": 32,
+     "rcBalance": "5238123362",
+     "claimableUSD": 2.0418
+    }
+   ],
+   "rewardContract": {
+    "address": "0x84282839be40c037fbcc7867320c386e83cfdb62",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": "0x9438e7281d7e3e99a9dd21e0ead9c6a254e17ab2",
+    "rewardsToken": "0x471ece3750da237f93b8e339c536989b8978a438",
+    "periodFinish": "1648918407",
+    "lastUpdateTime": "1648918407",
+    "rewardRate": "2695105820105820",
+    "getRewardForDuration": "1629999999999999936000",
+    "totalSupply_stakedLP": "7273192098316812912262",
+    "gaugeStake": "7273192098316812912262",
+    "gaugeUserRewardPerTokenPaid": "12570755229501659",
+    "rewardPerTokenStored": "12570755229501659",
+    "earned_gauge_now": "0",
+    "owner": "0xcd943ee26221ac3e6e7f3e38598f2b08baea87dd",
+    "rewardsDistribution": "0xc77b8e88590223fe6190414bed066a947b0e5871"
+   },
+   "stakedLPValueUSD": 75.54,
+   "remainingClaimableUSD": 2.041795635233622,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0"
+   ]
+  },
+  "0x7ed927E685d7196Ff2e7Bc48c5cB5e8af88c9332": {
+   "lp": "0xe10fd4788a76d19ba0110b1bfda5e13d35ed4359",
+   "stakedLP": "91997667348310368909",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "2668378995433789953",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "0",
+   "rewardTokens": [],
+   "rewardContract": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": null,
+    "rewardsToken": null,
+    "periodFinish": "None",
+    "lastUpdateTime": "None",
+    "rewardRate": "None",
+    "getRewardForDuration": "None",
+    "totalSupply_stakedLP": "None",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "None",
+    "earned_gauge_now": "0",
+    "owner": null,
+    "rewardsDistribution": null
+   },
+   "stakedLPValueUSD": 92.45,
+   "remainingClaimableUSD": 0.0,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  },
+  "0x70AE7265545f001cb015399D672B85D8f2CaCA72": {
+   "lp": "0x4730ff6bc3008a40cf74d660d3f20d5b51646da0",
+   "stakedLP": "189920651595007453095",
+   "gaugeSymbol": "MobLP",
+   "killed": false,
+   "gaugeInflationRate": "1467608447488584474",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "minter": "0x5f0200ca03196d5b817e2044a0bb0d837e0a7823",
+   "votingEscrow": "0xd813a846aa9d572140d7abbb4efac8cd786b4c0e",
+   "admin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "futureAdmin": "0x0a3ac12422c95f84b5bd18a6d9904d132a161c68",
+   "lastClaim_gauge": "0",
+   "rewardTokens": [],
+   "rewardContract": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "type": "Synthetix-style StakingRewards (unverified bytecode; selectors identified via 4byte)",
+    "stakingToken": null,
+    "rewardsToken": null,
+    "periodFinish": "None",
+    "lastUpdateTime": "None",
+    "rewardRate": "None",
+    "getRewardForDuration": "None",
+    "totalSupply_stakedLP": "None",
+    "gaugeStake": "None",
+    "gaugeUserRewardPerTokenPaid": "None",
+    "rewardPerTokenStored": "None",
+    "earned_gauge_now": "0",
+    "owner": null,
+    "rewardsDistribution": null
+   },
+   "stakedLPValueUSD": null,
+   "remainingClaimableUSD": 0.0,
+   "notes": [
+    "all external reward streams ended (periodFinish 2021-2022); earned(gauge)=0",
+    "gauge NOT killed -> MOBI emissions still accrue (value ~0)"
+   ]
+  }
+ },
+ "totals": {
+  "gaugeCELO_wei": "3566513523259756757157",
+  "gaugeCELO_USD": 334.54,
+  "gaugePOOF_wei": "1345624387798068215457",
+  "gaugeMOO_wei": "1398050604437129757423",
+  "claimable_external_USD": 334.9068,
+  "stakedLPValueUSD_estimate": 329528.04,
+  "votingEscrow_lockedMOBI_wei": "66407864730943943602645442",
+  "mobi_priceUSD": 3.453e-06,
+  "mobi_price_src": "DexScreener ubeswap MOBI/CELO liq $1415 pair 0x0B81CF47C8F97275d14C006E537D5101b6C87300"
+ },
+ "minter": {
+  "address": "0x5F0200CA03196D5b817E2044a0Bb0D837e0A7823",
+  "token": "0x73a210637f6F6B7005512677Ba6B3C96bb4AA44B (MOBI)",
+  "controller": "0x7530E03056D3a8eD0323e61091ea2f17a1aC5C25",
+  "verified": true,
+  "type": "Curve TokenMinter fork (Vyper ^0.2.4)",
+  "mint": "mint(gauge)/mint_many mint only msg.sender accrued; mint_for requires toggle_approve_mint; assert gauge_types(gauge)>=0",
+  "mobi_token_admin": "0x6c0d6Fba3bcdb224278474E8d524F19c6BB55850 (EOA, no code) is MOBI admin; MOBI minter is the Minter contract",
+  "mobi_mint_guard_test": "mint(address,uint256) from 0x..dEaD reverts (restricted to Minter)",
+  "mobi_priceUSD": 3.453e-06,
+  "abuse_value": "MOBI ~= $0 (no DefiLlama feed; Ubeswap pool liq $1.4k); gauge inflation_rate>0 on 16 gauges but is_killed gates rate=0"
+ },
+ "votingEscrow": {
+  "address": "0xd813a846aA9D572140d7ABBB4eFaC8cD786b4c0E",
+  "verified": true,
+  "type": "Curve VotingEscrow fork",
+  "totalSupply_veMOBI": "277458493571829369924860",
+  "supply_lockedMOBI": "66407864730943943602645442",
+  "mobi_balanceOf_VE": "66407864730943943602645442",
+  "celo_balanceOf_VE": "0",
+  "other_tokens": "none (Blockscout token-balances lists only MOBI)",
+  "admin": "0x6c0dFba3bcdb224278474E8d524F19c6BB55850 (EOA)",
+  "future_admin": "0x0",
+  "withdraw_logic": "standard Curve: assert unlock time reached, votes/point updates; no extra assets; admin cannot seize locks"
+ },
+ "otherContracts": {
+  "0x4ea77424da100ac856ece3ddfabd8b528570ca0d": {
+   "type": "EOA (no code)",
+   "role": "owner() of pool 0x81b6a3d9f725ab5d706d9e552b128bc5bb0b58a1 (paused; LP 0x57f00817.. = gauge 0x1250 underlying)"
+  },
+  "0x6c0d6Fba3bcdb224278474E8d524F19c6BB55850": {
+   "type": "EOA (no code)",
+   "role": "VotingEscrow admin, MOBI token admin, devaddr on several pools"
+  },
+  "0x84c991aF33B6D1F14D65E50d37828FD9F744625a": {
+   "type": "contract (1774 bytes, UNVERIFIED)",
+   "owner": "0x6BE0fF2BED16a50169f941DafEf6be050182f88c (EOA)",
+   "selectors": [
+    "transfer",
+    "transferFrom",
+    "withdrawToken(address[])",
+    "withdrawETH()",
+    "owner/renounce/transferOwnership",
+    "0x89afcb44"
+   ],
+   "balances": "native 0; CELO 0; MOBI 0; cUSD 0; Blockscout token-balances empty",
+   "guard_tests": "withdrawETH() succeeds from 0x..dEaD (permissionless) but contract holds 0; withdrawToken([CELO]) from 0x..dEaD reverts 'transfer value exceeded balance of sender'"
+  },
+  "GaugeProxy_0x0a3Ac12422C95F84b5bD18A6d9904d132a161C68": {
+   "type": "contract (verified? no; source in mobiusAMM/mobi-dao-contracts contracts/GaugeProxy.vy)",
+   "ownership_admin": "0x7d9Af9dF33D6CAB895B4cF3422D790cbE98B48c8 (Timelock)",
+   "emergency_admin": "0x16E319d8dAFeF25AAcec0dF0f1E349819D36993c (Gnosis Safe, 4 owners)",
+   "quirk": "accept_transfer_ownership(gauge) has no access check, but no gauge has a pending future_admin: 22x future_admin==admin==GaugeProxy (self/no-op), 5x future_admin==0; no takeover"
+  },
+  "GaugeController_0x7530E03056D3a8eD0323e61091ea2f17a1aC5C25": {
+   "admin": "0x7d9Af9dF.. Timelock",
+   "n_gauges": 27,
+   "voting_escrow": "0xd813a846.."
+  },
+  "RC_owners": {
+   "mostly": "0x16E319d8dAFeF25AAcec0dF0f1E349819D36993c (Safe)",
+   "MOO-gauges": "0x313bc86d3d6e86ba164b2b451cb0d9cfa7943e5c (owner 0xd7f77169d5E6a32C5044052F9a49eb94697b25ED EOA)",
+   "recoverERC20": "allows reward token (CELO eth_call as owner succeeded); blocks staking token"
+  }
+ }
+}

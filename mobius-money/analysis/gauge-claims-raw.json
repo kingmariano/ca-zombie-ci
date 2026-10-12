@@ -1161,5 +1161,152 @@
    "CELO_gauge": "0x0000000000000000000000000000000000000000000000000000000000000000",
    "MOBI_gauge": "0x0000000000000000000000000000000000000000000000000000000000000000"
   }
+ },
+ "addendum": {
+  "note": "raw outputs for auxiliary checks; all read-only eth_call/eth_getStorageAt, 2026-10-12. gas-free sims used --from to test access control.",
+  "blocks": {
+   "storage_and_rc_reads_dAA2": 79922881,
+   "live_scan": 79923216,
+   "fresh_addr_and_guard_sims": "~79923000-79924000",
+   "participants_claimables": 79928392
+  },
+  "storage_0xdAA2": {
+   "slot20_reward_data": "0x00000000000000006a363f70c8b86c28a0026ea72b7624fa3c912ad77f1d5fe0",
+   "decoded": {
+    "reward_contract": "0xC8B86C28A0026eA72b7624FA3C912ad77F1D5fe0",
+    "last_claim": 1781940080
+   },
+   "slot22_reward_sigs": "0xa694fc3a2e1a7d4d3d18b9120000000000000000000000000000000000000000",
+   "decoded_sigs": {
+    "deposit": "stake(uint256) 0xa694fc3a",
+    "withdraw": "withdraw(uint256) 0x2e1a7d4d",
+    "claim": "getReward() 0x3d18b912"
+   }
+  },
+  "fresh_addr_tests_0xdAA2": {
+   "claimable_reward(0xdEaD,CELO)": "0",
+   "claimable_tokens(0xdEaD)": "0",
+   "claim_rewards(0xdEaD,0xdEaD)": "0x (success, no payout)",
+   "claim_rewards(0xdEaD,0)": "0x (success, pays to 0xdEaD's receiver if any)",
+   "user_checkpoint(0xdEaD)": "true",
+   "claimable_reward_write_semantics": "checkpoints only; stores claim_data; never transfers (source lines 437-450)"
+  },
+  "rc_guard_sims_0xC8B86C28": {
+   "recoverERC20(CELO,1)_from_owner": "0x success -> owner may sweep reward-token dust",
+   "recoverERC20(stakingLP,1)_from_owner": "revert: Cannot withdraw the staking token",
+   "updatePeriodFinish(0)_from_0xdEaD": "revert: Only the contract owner may perform this action",
+   "notifyRewardAmount(0)_from_0xdEaD": "revert: Caller is not RewardsDistribution contract",
+   "setRewardsDuration(604800)_from_0xdEaD": "revert: Only the contract owner may perform this action"
+  },
+  "rc_state_0xC8B86C28": {
+   "stakingToken": "0xd7Bf6946b740930c60131044bD2F08787e1DdBd4",
+   "rewardsToken": "0x471EcE3750Da237f93B8E339c536989b8978a438",
+   "periodFinish": 1637929562,
+   "lastUpdateTime": 1637929562,
+   "rewardRate": 7301587301587301,
+   "rewardsDuration": 604800,
+   "rewardPerTokenStored": 1892066624070130,
+   "rewardPerToken_now": 1892066624070130,
+   "totalSupply": "66432152788523315709893",
+   "balanceOf(gauge)": "66432152788523315709893",
+   "rewards(gauge)": 0,
+   "userRewardPerTokenPaid(gauge)": 1892066624070130,
+   "getRewardForDuration": 4415999999999999644800,
+   "owner": "0x16E319d8dAFeF25AAcec0dF0f1E349819D36993c",
+   "nominatedOwner": "0x0",
+   "rewardsDistribution": "0x16E319d8dAFeF25AAcec0dF0f1E349819D36993c",
+   "earned_gauge": "0 (== rewards(gauge); paid==stored)"
+  },
+  "all_rcs_earned_zero": "for all 17 RCs: userRewardPerTokenPaid(gauge) == rewardPerTokenStored, rewards(gauge)=0 -> nothing claimable from RCs",
+  "burner_0x84c991": {
+   "code_len_bytes": 1774,
+   "verified": false,
+   "owner": "0x6BE0fF2BED16a50169f941DafEf6be050182f88c (EOA)",
+   "selectors": [
+    "0x23b872dd transferFrom(address,address,uint256)",
+    "0xa9059cbb transfer(address,uint256)",
+    "0x70a08231 balanceOf(address)",
+    "0x8da5cb5b owner()",
+    "0x715018a6 renounceOwnership()",
+    "0xf2fde38b transferOwnership(address)",
+    "0x4b0879fe withdrawToken(address[])",
+    "0xe086e5ec withdrawETH()",
+    "0x89afcb44 (unidentified)"
+   ],
+   "balances": {
+    "native": 0,
+    "CELO": 0,
+    "MOBI": 0,
+    "cUSD": 0,
+    "blockscout_token_list": "[]"
+   },
+   "sims": {
+    "withdrawETH()_from_0xdEaD": "0x\u202601 (success, permissionless)",
+    "withdrawToken([CELO])_from_0xdEaD": "revert: transfer value exceeded balance of sender",
+    "transfer(0xdEaD,1)_from_0xdEaD": "0x success (0 balance no-op)",
+    "transferFrom(0xdEaD,0xdEaD,1)_from_0xdEaD": "0x success (0 balance no-op)"
+   }
+  },
+  "minter_0x5F02": {
+   "verified": "Curve TokenMinter fork (Vyper ^0.2.4)",
+   "token": "0x73a210637f6f6b7005512677ba6b3c96bb4aa44b (MOBI)",
+   "controller": "0x7530e03056d3a8ed0323e61091ea2f17a1ac5c25",
+   "mobi_minter": "0x5F0200CA03196D5b817E2044a0Bb0D837e0A7823",
+   "mobi_admin": "0x6c0d6Fba3bcdb224278474E8d524F19c6BB55850",
+   "mobi_mint_sim_from_0xdEaD": "revert",
+   "mobi_totalSupply": "792087086108588120589889408"
+  },
+  "voting_escrow_0xd813": {
+   "verified": "Curve VotingEscrow fork",
+   "totalSupply_veMOBI": "277458493571829369924860",
+   "supply_lockedMOBI": "66407864730943943602645442",
+   "mobi_balanceOf_VE": "66407864730943943602645442",
+   "celo_balanceOf_VE": "0",
+   "token_balances_api": "[MOBI only]",
+   "admin": "0x6c0d6Fba3bcdb224278474E8d524F19c6BB55850",
+   "future_admin": "0x0",
+   "smart_wallet_checker": "0x0",
+   "epoch": 18273
+  },
+  "controller_0x7530": {
+   "admin": "0x7d9Af9dF33D6CAB895B4cF3422D790cbE98B48c8",
+   "future_admin": "same",
+   "voting_escrow": "0xd813a846aA9D572140d7ABBB4eFaC8cD786b4c0E",
+   "n_gauges": 27,
+   "gauge_types(0xdAA2)": 0
+  },
+  "gauge_admin_checks": {
+   "gauge_admin": "0x0a3Ac12422C95F84b5bD18A6d9904d132a161C68 (GaugeProxy)",
+   "future_admin_equals_admin_all_27": true,
+   "gaugeproxy_ownership_admin": "0x7d9Af9dF33D6CAB895B4cF3422D790cbE98B48c8",
+   "gaugeproxy_emergency_admin": "0x16E319d8dAFeF25AAcec0dF0f1E349819D36993c",
+   "gaugeproxy_quirk": "accept_transfer_ownership(gauge) has no access check in GaugeProxy.vy line 81-86; harmless today (no pending future_admin)"
+  },
+  "rc_owners": {
+   "safes": "0x16E319d8dAFeF25AAcec0dF0f1E349819D36993c getOwners() = [0xE35E97438Fd16593e285546260C8585dea7909Dd, 0x59A6AbC89C158ef88d5872CaB4aC3B08474883D9, 0xB811Ad5C016c37d9f40dffA8fc360F9B3fFC0d2A, 0xc59cd8251ABb06C307819D0beb95546CB4de172f]",
+   "other_owner": "0x313bc86d3d6e86ba164b2b451cb0d9cfa7943e5c (owner 0xd7f77169d5E6a32C5044052F9a49eb94697b25ED EOA)"
+  },
+  "eoa_checks": {
+   "0x4ea77424da100ac856ece3ddfabd8b528570ca0d": "no code (EOA)",
+   "0x6c0d6Fba3bcdb224278474E8d524F19c6BB55850": "no code (EOA)"
+  },
+  "prices_2026_10_12": {
+   "CELO": {
+    "usd": 0.09380045113532264,
+    "src": "DefiLlama celo:0x471E.. ts 1791829384 conf 0.99"
+   },
+   "MOBI": {
+    "usd": 3.453e-06,
+    "src": "DexScreener ubeswap pair 0x0B81CF47C8F97275d14C006E537D5101b6C87300 liq $1415"
+   },
+   "POOF": {
+    "usd": 2.247e-05,
+    "src": "DexScreener ubeswap liq $54"
+   },
+   "MOO": {
+    "usd": 0.0002403,
+    "src": "DexScreener ubeswap liq $474"
+   }
+  }
  }
 }
