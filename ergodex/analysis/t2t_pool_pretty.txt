@@ -1,0 +1,30 @@
+{
+  val v1 = OUTPUTS(#{0})
+  val v2 = SELF.getReg(4).get
+  val v3 = v1.tokens
+  val v4 = SELF.tokens
+  val v5 = v3(#{1})
+  val v6 = v4(#{2})
+  val v7 = v3(#{3})
+  val v8 = v4(#{4})
+  val v9 = v3(#{5})
+  val v10 = v4(#{6})
+  val v11 = #{7} - v6._2
+  val v12 = #{8} - v5._2 - v11
+  val v13 = v8._2
+  val v14 = v7._2 - v13
+  val v15 = v14 > #{9}
+  val v16 = v10._2
+  val v17 = upcast(v16)
+  val v18 = upcast(v14)
+  val v19 = v9._2 - v16
+  val v20 = upcast(v13)
+  val v21 = #{10}
+  val v22 = upcast(v19)
+  val v23 = upcast(v12)
+  val v24 = upcast(v11)
+  val v25 = v18 * v24
+  val v26 = v22 * v24
+  sigmaProp(v1.propBytes == SELF.propBytes && v1.getReg(4).get == v2 && v1.value >= SELF.value && v3(#{11}) == v4(#{12}) && v5._1 == v6._1 && v7._1 == v8._1 && v9._1 == v10._1 && if (v12 == #{13}) if (v15) v17 * v18 * upcast(v2) >= upcast(-v19) * v20 * upcast(v21) + upcast(v14 * upcast(v2)) else v20 * v22 * upcast(v2) >= upcast(-v14) * v17 * upcast(v21) + upcast(v19 * upcast(v2)) else if (v15 && v19 > #{14}) v23 <= v25 / v20 min v26 / v17 else v25 >= v23 * v20 && v26 >= v23 * v17)
+}
+

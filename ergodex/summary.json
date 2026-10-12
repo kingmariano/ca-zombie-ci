@@ -1,0 +1,47 @@
+{
+  "finding": "ergodex",
+  "title": "ErgoDEX v1 (Ergo) — live n2t/t2t AMM pools, locks and LQ farms: contract-level extraction is closed",
+  "chains": ["ergo"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 420795.43, "P": 0, "S": 106.61},
+  "latest_block": 1892615,
+  "block_numbers": {"ergo": 1892615},
+  "targets_checked": 8,
+  "live_targets": 5,
+  "closed_reasons": [
+    "Deployed pool ergoTree (412 bytes at P2S 5vSUZRZb...) is byte-identical to the canonical AMMContracts N2TCFMMContracts.pool / SDK PoolSample tree; decompiled with sigma-rust and diffed against the audited ErgoScript source (only compiler constant-dedup/val-inlining differences).",
+    "Pool script invariants are sound: successor must preserve script, pool NFT (full tuple), fee config, LP/Y token ids and exactly 3 tokens; swap is bounded by the constant-product-with-fee inequality, deposits cap LP minting at min(dX*S0/X0, dY*S0/Y0), redemptions cap reserve removal at the burned LP's proportional share; removing both reserves with LP unchanged is mathematically impossible.",
+    "Chain-native evaluation of the deployed source against a real live pool box: drain-via-swap, unfair swap (+1 nanoErg), remove-both, over-redeem X/Y and over-mint LP / free-LP all evaluate to false; fair swap/deposit/redeem evaluate true (14/14 scenarios, public node executeWithContext).",
+    "Fee-aware arbitrage maximisation over all 54 pools with a DefiLlama-priced Y token sums to $0.01 — pools are at market because they are actively arbitraged (47/285 n2t pool boxes recreated in <24h; e.g. the 115,535 ERG SigUSD pool box ~2h before the snapshot, the 251,397 ERG RSN pool ~1.4d).",
+    "t2t pools (P2S 3gb1RZuc...) decompile to the identical invariant family (X/Y are tokens; successor.value >= SELF.value); no extraction path.",
+    "TokenLock / LQ-mining contracts are Pk/accounting-gated (owner-only relock/withdraw, farmer LP accounting); live value is dust.",
+    "18 anomalous boxes at the n2t address (326.4 ERG, incl. 4 two-token 'Mew Fund' boxes with 325.3 ERG) fail script evaluation (tokens(2) out of bounds / missing R4) => unspendable; classified S."
+  ],
+  "poc": {
+    "tests_passed": 14,
+    "tests_total": 14,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Live state at Ergo height 1,892,615 (2026-10-12 00:40 UTC): n2t P2S 5vSUZRZb... holds 632,482.61 ERG + 755 token entries in 285 unspent boxes (267 pools + 18 anomalies); box-value sum reconciles exactly to balance/total.",
+    "Valuation (DefiLlama, ERG $0.3266): n2t $410,997.12 (ERG $206,556.40 + priced tokens $204,440.72: RSN $83.2K, SigUSD $37.5K, rsBTC $13.9K, rsFIRO $9.4K, MEOW $7.4K, SigRSV $5.8K, ...); t2t $9,898.36 (2.79 ERG + tokens); TokenLock $0.20; LQ farms $6.36; total ErgoDEX v1 custody $420,902.04.",
+    "Triage correction: the contracts are NOT dead — 47 n2t pool boxes recreated in the last 24h, 45 within 7d, 82 older than 1y; pools are live, arbitraged AMM liquidity (frontend/domain dead only).",
+    "An attacker can spend a pool box directly (no order box, no DexFee) but only at the pool's own invariant price; the only gain is skipping the 0.1-0.2% order DexFee.",
+    "FeeNum (R4) distribution across pools: 997/990/970/995/996/... down to 1 (3 pools, 99.9% fee, frozen); 14 boxes have no R4 (stuck).",
+    "Long-overflow residual: the inner Long term dX*feeNum0 wraps only for dX >= 2^64/fee (>= ~9.25M ERG at fee=997) which is strictly unprofitable (attacker must add that ERG to the pool); no live pool has an exploitable feeNum.",
+    "2023-03-04 commit ce716e132f changed only INPUTS.size == 2 -> >= 2 in the user order contracts (functionality fix; Pool contract untouched).",
+    "18 anomalous boxes: 7 zero-token/no-R4 (1.118 ERG), 7 one-token/no-R4 (0.0043 ERG), 4 two-token Mew Fund boxes (325.30 ERG) — all fail script evaluation => S = 326.42 ERG = $106.61.",
+    "Other ErgoDEX v1 surfaces checked: t2t pools 293 boxes/262 pools ($9,898), TokenLock 227 boxes ($0.20), LQ unmanaged 2 boxes, LQ managed 37 boxes ($6.36), n2dexyGOLD/USD pool template 0 boxes (never deployed)."
+  ],
+  "caveats": [
+    "H-O figure is the upper bound of holder-recoverable custody (LP redemption + lock withdrawal); a fraction of each pool's reserves is permanently locked because part of the 2^63-1 initially minted LP was burned at creation — the exact per-pool fraction needs creation history and is not readable from current boxes (that slice belongs in S but is unquantified).",
+    "157 of 211 distinct Y tokens have no DefiLlama price and are valued at $0 (lower bound); no demonstrable stale-price extraction exists for them, but no market reference exists either.",
+    "Parked order boxes (user funds at per-order parameterised addresses), legacy PoolBoot bootstrap boxes and the parameterised SDK arbPool template cannot be exhaustively enumerated because the project indexer/API is dead; no evidence of live value in the variants that could be address-checked.",
+    "Parked orders are effectively market orders (fairPrice uses live reserves), so an executor can sandwich them — MEV against the order owner, not protocol-value extraction; order contracts cannot be spent to steal (reward must pay Pk).",
+    "The address is actively traded, so the box set drifts minute-to-minute; the union fetch is reconciled against balance/total at snapshot time.",
+    "For the 4 two-token Mew boxes the public node's evaluator returns an internal ERROR (NPE) instead of a clean false; any script evaluation error invalidates an input, so they are unspendable either way (a zeroed default would still fail the Y-token-id equality).",
+    "No transactions were signed or sent; evaluation used the public node's script compile/execute endpoints read-only."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from ErgoDEX v1 on Ergo: the deployed 412-byte pool script (byte-identical to the canonical tree) enforces sound constant-product/proportional-LP invariants (chain-native eval: 10/10 adversarial scenarios false), the $410,997 n2t + $9,898 t2t custody is live arbitraged liquidity (47 pools touched <24h, arb profit $0.01), and only $107 is stuck in script-error boxes."
+}
