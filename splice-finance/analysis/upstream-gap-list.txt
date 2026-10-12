@@ -1,0 +1,153 @@
+2024-03-14 e5fbce78 Minor fixes for apxETH symbol & preview revert
+      core/libraries/Errors.sol
+2024-03-15 ff53ade2 Added deployHelper contracT
+      interfaces/IPMarketFactoryV3.sol
+      interfaces/IPYieldContractFactory.sol
+2024-03-19 860b6b95 Rename contracts & add docs
+      interfaces/IPPtOracle.sol
+2024-03-27 d836b4aa Make RouterV3 upgradable & create RouterV4
+      interfaces/IDiamondCut.sol
+      interfaces/IDiamondLoupe.sol
+      interfaces/IPAllActionV3.sol
+      router/ActionCallbackV3.sol
+      router/PendleRouterHelper.sol
+      router/PendleRouterV3.sol
+      router/base/MarketApproxLib.sol
+2024-04-01 135d5720 Remove permit for YT PT LP
+      core/Market/v3/PendleMarketV3.sol
+      core/YieldContracts/PendlePrincipalToken.sol
+      core/YieldContracts/PendleYieldToken.sol
+2024-04-22 570f78cd Change all custom errors to error string
+      interfaces/IPActionStorageStatic.sol
+      interfaces/IPMiniDiamond.sol
+      router/ActionAddRemoveLiqV3.sol
+      router/ActionCallbackV3.sol
+      router/ActionMiscV3.sol
+      router/ActionSwapYTV3.sol
+      router/base/ActionBase.sol
+      router/base/MarketApproxLib.sol
+2024-04-24 902470af Improve error messages of Router
+      router/ActionCallbackV3.sol
+2024-05-15 463ff97d Fix getLpToAssetRate to work post-expiry
+      offchain-helpers/router-static/base/ActionMarketAuxStatic.sol
+2024-05-27 12b8e004 Added IPTokenWithSupplyCap & apply for Karak USDE
+      interfaces/IERC4626.sol
+2024-06-02 9e273be6 CallAndReflect + ExitAll
+      interfaces/IPActionMiscV3.sol
+      router/ActionMiscV3.sol
+      router/ActionSwapYTV3.sol
+      router/base/ActionBase.sol
+2024-06-04 4f6d2730 YT Oracle
+      oracles/PendleLpOracleLib.sol
+      oracles/PendlePtOracleLib.sol
+2024-06-13 d708fc40 Fix ArrayLib.create(4) issue
+      core/libraries/ArrayLib.sol
+2024-06-13 ad011361 Mellow vault implementation
+      core/libraries/ArrayLib.sol
+2024-06-19 631d6c01 Correct naming
+      core/Market/MarketMathCore.sol
+      core/RewardManager/RewardManagerAbstract.sol
+      core/YieldContracts/PendleYieldToken.sol
+      oracles/PendleLpOracleLib.sol
+2024-06-22 931827a8 WEETHs deposit
+      core/libraries/ArrayLib.sol
+2024-07-02 6573ff85 Add isValid caching to GaugeController
+      core/Market/MarketMathCore.sol
+      core/RewardManager/RewardManager.sol
+      core/libraries/math/PMath.sol
+2024-07-27 a904c7b5 gUSDC implementation
+      core/StandardizedYield/implementations/PendleERC4626SY.sol
+2024-07-29 e456aa0d Add getYtToSyRate
+      interfaces/IPActionMarketAuxStatic.sol
+      offchain-helpers/router-static/base/ActionMarketAuxStatic.sol
+2024-08-05 21aab835 Add RouterStatic functions swap exact SY/token to pt with approx (#568)
+      core/RewardManager/RewardManager.sol
+      core/libraries/math/PMath.sol
+      interfaces/IPActionMarketAuxStatic.sol
+      offchain-helpers/router-static/base/ActionMarketAuxStatic.sol
+2024-08-09 f09f2a40 Add getYieldTokenAndPtRate
+      interfaces/IPActionMarketAuxStatic.sol
+      offchain-helpers/router-static/base/ActionMarketAuxStatic.sol
+2024-08-23 a904c7d9 Improve RouterStatic
+      offchain-helpers/router-static/base/ActionMarketAuxStatic.sol
+2024-10-15 df42ecd7 SY SUSDS implementation
+      core/StandardizedYield/implementations/PendleERC4626SY.sol
+2024-10-21 0a3cc91b Approx with onchain estimation and dynamic range extension (#583)
+      core/libraries/math/PMath.sol
+      interfaces/IPActionAddRemoveLiqV3.sol
+      interfaces/IPActionMarketAuxStatic.sol
+      interfaces/IPActionMiscV3.sol
+      interfaces/IPActionStorageStatic.sol
+      interfaces/IPActionSwapPTV3.sol
+      interfaces/IPActionSwapYTV3.sol
+      interfaces/IPAllActionTypeV3.sol
+      interfaces/IPAllActionV3.sol
+      interfaces/IPRouterHelper.sol
+      offchain-helpers/router-static/base/ActionMarketAuxStatic.sol
+      offchain-helpers/router-static/base/StorageLayout.sol
+      router/ActionAddRemoveLiqV3.sol
+      router/ActionMiscV3.sol
+      router/ActionSwapPTV3.sol
+      router/ActionSwapYTV3.sol
+      router/base/ActionBase.sol
+      router/base/MarketApproxLib.sol
+2024-10-21 25ada4bc RedeemRewardsAndSwap
+      interfaces/IPActionMiscV3.sol
+      router/ActionMiscV3.sol
+      router/swap-aggregator/IPSwapAggregator.sol
+2024-10-22 122e744d Improve comments
+      interfaces/IPActionAddRemoveLiqV3.sol
+      interfaces/IPActionMiscV3.sol
+      interfaces/IPActionSwapPTV3.sol
+      interfaces/IPActionSwapYTV3.sol
+2024-10-23 a6715c9e Add Odos scaling
+      router/swap-aggregator/IPSwapAggregator.sol
+2024-11-05 73e41b7f Upgrade routerStatic to prepare for fee change
+      interfaces/IPActionMarketCoreStatic.sol
+      offchain-helpers/router-static/base/ActionInfoStatic.sol
+      offchain-helpers/router-static/base/ActionMarketAuxStatic.sol
+      offchain-helpers/router-static/base/ActionMarketCoreStatic.sol
+2024-11-19 da71da29 Morpho SY with supply cap
+      interfaces/IERC4626.sol
+2024-11-22 0e8394d1 Make V2 ERC4626
+      core/StandardizedYield/implementations/PendleERC4626SY.sol
+2024-11-22 61a139c0 Change ERC4626 exchangeRate to use convertToAsset instead
+      core/StandardizedYield/implementations/PendleERC4626SY.sol
+2024-11-25 f42e1747 Add events to PendleSwap
+      router/swap-aggregator/IPSwapAggregator.sol
+2024-11-27 fade1537 Add functions to interfaces
+      interfaces/IPLimitRouter.sol
+2024-11-27 6d30e08b Reorder files
+      oracles/PendleLpOracleLib.sol
+2024-12-05 a014fadf Apply formatting changes
+      core/StandardizedYield/implementations/PendleERC4626SY.sol
+      interfaces/IPLimitRouter.sol
+2024-12-06 d5f55766 Allow returning excess input
+      router/base/ActionBase.sol
+2024-12-16 f2206765 Remove SY from repo (#676)
+      core/StandardizedYield/SYBase.sol
+      core/StandardizedYield/implementations/PendleERC20SY.sol
+      core/StandardizedYield/implementations/PendleERC4626SY.sol
+      core/StandardizedYield/implementations/Renzo/PendleEzETHL2SY.sol
+      interfaces/Connext/IConnext.sol
+      interfaces/IERC4626.sol
+      interfaces/IPPreviewHelper.sol
+      interfaces/Renzo/IRenzoDepositL2.sol
+      interfaces/Renzo/IRenzoOracle.sol
+      interfaces/Renzo/IRenzoRestakeManager.sol
+2024-12-22 19317a95 Improve Approx algo & Delete unused contracts
+      interfaces/IPActionAddRemoveLiqV3.sol
+      interfaces/IPActionMarketAuxStatic.sol
+      interfaces/IPActionMiscV3.sol
+      interfaces/IPActionStorageStatic.sol
+      interfaces/IPActionSwapPTV3.sol
+      interfaces/IPActionSwapYTV3.sol
+      interfaces/IPActionVePendleStatic.sol
+      offchain-helpers/router-static/base/ActionMarketAuxStatic.sol
+      offchain-helpers/router-static/base/ActionMarketCoreStatic.sol
+      offchain-helpers/router-static/base/StorageLayout.sol
+      router/ActionAddRemoveLiqV3.sol
+      router/ActionMiscV3.sol
+      router/ActionSwapYTV3.sol
+      router/base/ActionBase.sol
+      router/swap-aggregator/IPSwapAggregator.sol

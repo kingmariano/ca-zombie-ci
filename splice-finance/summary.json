@@ -1,0 +1,64 @@
+{
+  "finding": "L2-Phase2 splice-finance",
+  "title": "Splice Finance (Blast + Mode) \u2014 dead Pendle V2 fork: $491.3k live, external unprivileged extractable $0",
+  "chains": [
+    "blast",
+    "mode"
+  ],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 457645.45,
+    "P": 19295.68,
+    "S": 14359.12
+  },
+  "latest_block": 41475467,
+  "block_numbers": {
+    "blast": 41475467,
+    "mode": 45796981
+  },
+  "targets_checked": 57,
+  "live_targets": 20,
+  "closed_reasons": [
+    "SY.redeem with burnFromInternalBalance=true cannot be abused: every SY's self-balance is 0 (all 21 SYs, Blast+Mode).",
+    "YT.redeemPY/redeemPYMulti pays 0: every YT contract's PT balance is 0 (so the permissionless post-expiry sweep has nothing to take); bogus amounts revert on PT burn.",
+    "Market.burn requires LP ownership (burns from the market's own balance); outsiders have 0 LP.",
+    "Market.skim() is permissionless but pays the factory treasury EOA, not the caller (PoC-verified: 93.07 SY + 253.42 PT).",
+    "YT.redeemInterestAndRewardsPostExpiryForTreasury() is permissionless but pays the factory treasury EOA (PoC-verified: 15,158.78 SY); interestFeeRate=0.",
+    "YT.redeemDueInterestAndRewards(user,...) always pays `user`, never the caller.",
+    "All 25 markets expired in 2024 (mint/swaps notExpired-blocked); SY deposit->redeem is 1:1 (shares == ERC4626 vault shares) with rounding favouring the vault.",
+    "Backing vaults are standard ERC4626 with cash == totalAssets (hUSDB/hWETH/sWETH/sUSDB); donation/inflation attacks are strict net losses; Wasabi wUSDB vault holds 0 cash (drained 2026-04-30)."
+  ],
+  "poc": {
+    "tests_passed": 15,
+    "tests_total": 15,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38189685116"
+    ]
+  },
+  "key_facts": [
+    "Target set enumerated exhaustively: 25 markets (9 Blast incl. two PTs with two markets each, 16 Mode) + 23 SYs (7 Blast incl. two empty ezETH:ETH SYs, 16 Mode) + 5 backing ERC4626 vaults + 4 factories (2 market, 2 yield-contract) = 57 checked; 20 with live value (15 markets + 4 live-backed vaults + the drained wUSDB vault carrying a book claim).",
+    "CI re-verification (run 38189685116): full Blast+Mode state dump reproduced at blast 41,478,275 / mode 45,799,418 -> $493,248.34 deduped live total (+0.4% vs the local pin, price/block drift); 15/15 fork tests pass.",
+    "Triage $484,392.71 re-verified live at blast block 41,475,467 / mode block 45,796,981: total $491,300.24 (deduped by SY, DefiLlama prices; drift from triage is price/block drift).",
+    "E-U = $0.00: no permissionless function pays value to an unprivileged caller; the only remaining value flows are holder redemptions (H-O) and treasury sweeps (P).",
+    "H-O = $457,645.45 redeemable by holders, verified by executing every redemption path against live state: real YT holder 0x13FeFdD5... claims 1,411.47 SY; real LP holder 0x45D2E892... burns 1,799.07 LP for pro-rata SY+PT; SY.redeem pays 1.117696 USDB/SY from the live hUSDB vault; PT redeems via deployed redeemPY; Mode SYs redeem 1:1 for ezETH/MODE.",
+    "P = $19,295.68 accrued post-expiry interest already assigned to the factory treasury EOAs 0x88653cb8... (Hyper, factory-1) and 0x04d440CE... (Splice, factory-2/Mode); plus small skim surpluses in markets.",
+    "S = $14,359.12: SY-wUSDB claim on Wasabi wUSDB vault 0x4BeD2A92... which was drained on 2026-04-30 (all 163,243.246 USDB moved to malicious strategy 0xe1e6f6d4..., block 34,362,930); vault cash = 0, redemption reverts InsufficientBalance; recovery is team/multisig-only (RecoveryStrategy 0xac4eb51b... holds 0 USDB).",
+    "Backing: hUSDB vault 343,696.92 USDB cash == totalAssets; hWETH 40.6757 WETH == totalAssets; sWETH 2.5218 WETH; sUSDB 2,848.99 USDB (all cash == totalAssets to the wei); SY shares are 1:1 with vault shares.",
+    "Unverified Blast SYs 0xc28fb4cc (sWETH) and 0x0e999eb7 (sUSDB) have byte-identical dispatchers (md5 of first 1000 runtime bytes) to verified SpliceWUSDBSY 0xF904fA59... -> same PendleERC4626SY+supply-cap implementation.",
+    "Mode SYs are PendleERC20SY/L2-SY wrappers holding the exact underlying 1:1; the exchange-rate oracles (0x8Bda20db.../0x1ECa0b41.../0xC7dE2201...) are owner-updated, monotone non-decreasing and frozen - not manipulable.",
+    "Two markets share each Blast PT (factory-1 markets 0x6b61cfce/0x258133c3 for hUSDB, 0xb9612af2/0xaa09cff2 for hWETH); 9 markets total on Blast, 16 on Mode.",
+    "Privileged (P) risk: SY/vault owners are EOAs (0x88653cb8..., 0x04d440CE...); SYBase.pause() can freeze SY transfers/burns; Wasabi recovery EOA can UUPS-upgrade the drained vault. None of this is E-U.",
+    "Blast L2 wind-down announced 2026-10-02: interface withdrawals close 2026-10-26 - the $452.8k Blast H-O value is time-bounded.",
+    "Fork-vs-canonical diff (analysis/fork-diff.md): the fork is a Dec-2023-Mar-2024 Pendle-V2 snapshot (package v4.2.3) - 94/109 files byte-identical to canonical base 4321be0e6b; 5 differing files are cosmetic (NAME/SYMBOL, trailing newline, unused import); 10 are fork-only Mode additions; 17/17 deployed Mode contracts byte-identical to a local compile (immutables/metadata masked). No fork-introduced extraction path."
+  ],
+  "caveats": [
+    "USD values use DefiLlama prices at ~2026-10-12 00:30 UTC (USDB $1.00146, WETH $2,535.27); USDB/WETH drift continuously so USD figures move slightly.",
+    "eth_call simulations and fork tests prove the paths at the pinned blocks against live state; they do not guarantee future blocks (owner pause, Blast shutdown, Wasabi recovery actions).",
+    "sWETH/sUSDB vaults and the two SYs are unverified on Blastscan; conclusions rest on bytecode selector analysis, identical-dispatcher comparison and exact cash==totalAssets equality plus successful live redemption simulations.",
+    "The wUSDB S amount is the SY-level claim ($14,359.12); the whole wUSDB vault book ($163,481.58) is unredeemable but not part of Splice's live value.",
+    "Mode-side permissionless paths were validated by code-identity + read-only state + fork tests (no Mode-specific deviations found); no Mode infra contract holds SY/PT/YT/LP."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from Splice Finance; the $491.3k re-verified live is holder-redeemable ($457.6k H-O), treasury-accrued ($19.3k P) or stuck in the drained Wasabi vault ($14.4k S) - no permissionless path pays an outsider."
+}
