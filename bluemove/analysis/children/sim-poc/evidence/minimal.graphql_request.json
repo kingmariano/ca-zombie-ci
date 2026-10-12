@@ -1,0 +1,30 @@
+{
+ "query": "query Sim($tx: JSON!, $checks: Boolean, $gasSelect: Boolean) {\n  simulateTransaction(transaction: $tx, checksEnabled: $checks, doGasSelection: $gasSelect) {\n    effects {\n      digest\n      status\n      executionError { message identifier abortCode constant module { name } function { name } }\n      effectsJson\n    }\n    outputs {\n      returnValues {\n        value { json bcs type { repr } }\n      }\n    }\n  }\n}",
+ "variables": {
+  "tx": {
+   "sender": "0x0feb54a725aa357ff2f5bc6bb023c05b310285bd861275a30521f339a434ebb3",
+   "kind": {
+    "kind": "PROGRAMMABLE_TRANSACTION",
+    "programmableTransaction": {
+     "inputs": [],
+     "commands": [
+      {
+       "moveCall": {
+        "package": "0x0000000000000000000000000000000000000000000000000000000000000002",
+        "module": "coin",
+        "function": "zero",
+        "typeArguments": [
+         "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+        ],
+        "arguments": []
+       }
+      }
+     ]
+    }
+   }
+  },
+  "checks": false,
+  "gasSelect": true
+ },
+ "operationName": "Sim"
+}

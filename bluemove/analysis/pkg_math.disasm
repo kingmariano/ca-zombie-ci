@@ -1,0 +1,417 @@
+// Move bytecode v6
+module b24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9.math {
+
+public overflow_add(Arg0: u128, Arg1: u128): u128 {
+L2:	loc0: u128
+B0:
+	0: LdConst[3](u128: 3402..)
+	1: CopyLoc[1](Arg1: u128)
+	2: Sub
+	3: StLoc[2](loc0: u128)
+	4: CopyLoc[2](loc0: u128)
+	5: CopyLoc[0](Arg0: u128)
+	6: Lt
+	7: BrFalse(14)
+B1:
+	8: MoveLoc[0](Arg0: u128)
+	9: MoveLoc[2](loc0: u128)
+	10: Sub
+	11: LdU128(1)
+	12: Sub
+	13: Ret
+B2:
+	14: LdConst[3](u128: 3402..)
+	15: CopyLoc[0](Arg0: u128)
+	16: Sub
+	17: StLoc[2](loc0: u128)
+	18: CopyLoc[2](loc0: u128)
+	19: CopyLoc[1](Arg1: u128)
+	20: Lt
+	21: BrFalse(28)
+B3:
+	22: MoveLoc[1](Arg1: u128)
+	23: MoveLoc[2](loc0: u128)
+	24: Sub
+	25: LdU128(1)
+	26: Sub
+	27: Ret
+B4:
+	28: MoveLoc[0](Arg0: u128)
+	29: MoveLoc[1](Arg1: u128)
+	30: Add
+	31: Ret
+}
+
+public mul_div(Arg0: u64, Arg1: u64, Arg2: u64): u64 {
+B0:
+	0: CopyLoc[2](Arg2: u64)
+	1: LdU64(0)
+	2: Neq
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 2000)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u64)
+	8: CastU128
+	9: MoveLoc[1](Arg1: u64)
+	10: CastU128
+	11: Mul
+	12: MoveLoc[2](Arg2: u64)
+	13: CastU128
+	14: Div
+	15: CastU64
+	16: Ret
+}
+
+public mul_div_u128(Arg0: u128, Arg1: u128, Arg2: u128): u64 {
+B0:
+	0: CopyLoc[2](Arg2: u128)
+	1: LdU128(0)
+	2: Neq
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 2000)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u128)
+	8: MoveLoc[1](Arg1: u128)
+	9: Mul
+	10: MoveLoc[2](Arg2: u128)
+	11: Div
+	12: CastU64
+	13: Ret
+}
+
+public mul_to_u128(Arg0: u64, Arg1: u64): u128 {
+B0:
+	0: MoveLoc[0](Arg0: u64)
+	1: CastU128
+	2: MoveLoc[1](Arg1: u64)
+	3: CastU128
+	4: Mul
+	5: Ret
+}
+
+public pow_10(Arg0: u8): u64 {
+L1:	loc0: u8
+L2:	loc1: u64
+B0:
+	0: LdU64(1)
+	1: StLoc[2](loc1: u64)
+	2: LdU8(0)
+	3: StLoc[1](loc0: u8)
+B1:
+	4: Nop
+	5: CopyLoc[1](loc0: u8)
+	6: CopyLoc[0](Arg0: u8)
+	7: Lt
+	8: BrFalse(19)
+B2:
+	9: Branch(10)
+B3:
+	10: MoveLoc[2](loc1: u64)
+	11: LdU64(10)
+	12: Mul
+	13: StLoc[2](loc1: u64)
+	14: MoveLoc[1](loc0: u8)
+	15: LdU8(1)
+	16: Add
+	17: StLoc[1](loc0: u8)
+	18: Branch(4)
+B4:
+	19: MoveLoc[2](loc1: u64)
+	20: Ret
+}
+
+public min_u64(Arg0: u64, Arg1: u64): u64 {
+L2:	loc0: u64
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: CopyLoc[1](Arg1: u64)
+	2: Lt
+	3: BrFalse(7)
+B1:
+	4: MoveLoc[0](Arg0: u64)
+	5: StLoc[2](loc0: u64)
+	6: Branch(9)
+B2:
+	7: MoveLoc[1](Arg1: u64)
+	8: StLoc[2](loc0: u64)
+B3:
+	9: MoveLoc[2](loc0: u64)
+	10: Ret
+}
+
+public mul_div_up_u128(Arg0: u128, Arg1: u128, Arg2: u128): u64 {
+L3:	loc0: u128
+B0:
+	0: CopyLoc[2](Arg2: u128)
+	1: LdU128(0)
+	2: Neq
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 2000)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u128)
+	8: MoveLoc[1](Arg1: u128)
+	9: Mul
+	10: LdU128(1)
+	11: Sub
+	12: MoveLoc[2](Arg2: u128)
+	13: Div
+	14: LdU128(1)
+	15: Add
+	16: StLoc[3](loc0: u128)
+	17: CopyLoc[3](loc0: u128)
+	18: LdConst[2](u128: 1844..)
+	19: Le
+	20: BrFalse(22)
+B4:
+	21: Branch(24)
+B5:
+	22: LdConst[1](u64: 2001)
+	23: Abort
+B6:
+	24: MoveLoc[3](loc0: u128)
+	25: CastU64
+	26: Ret
+}
+
+public sqrt(Arg0: u128): u128 {
+L1:	loc0: u128
+L2:	loc1: u128
+L3:	loc2: u128
+L4:	loc3: u128
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdU128(4)
+	2: Lt
+	3: BrFalse(16)
+B1:
+	4: MoveLoc[0](Arg0: u128)
+	5: LdU128(0)
+	6: Eq
+	7: BrFalse(11)
+B2:
+	8: LdU128(0)
+	9: StLoc[1](loc0: u128)
+	10: Branch(13)
+B3:
+	11: LdU128(1)
+	12: StLoc[1](loc0: u128)
+B4:
+	13: MoveLoc[1](loc0: u128)
+	14: StLoc[2](loc1: u128)
+	15: Branch(42)
+B5:
+	16: CopyLoc[0](Arg0: u128)
+	17: StLoc[4](loc3: u128)
+	18: CopyLoc[0](Arg0: u128)
+	19: LdU128(2)
+	20: Div
+	21: LdU128(1)
+	22: Add
+	23: StLoc[3](loc2: u128)
+B6:
+	24: CopyLoc[3](loc2: u128)
+	25: CopyLoc[4](loc3: u128)
+	26: Lt
+	27: BrFalse(40)
+B7:
+	28: Branch(29)
+B8:
+	29: CopyLoc[3](loc2: u128)
+	30: StLoc[4](loc3: u128)
+	31: CopyLoc[0](Arg0: u128)
+	32: CopyLoc[3](loc2: u128)
+	33: Div
+	34: MoveLoc[3](loc2: u128)
+	35: Add
+	36: LdU128(2)
+	37: Div
+	38: StLoc[3](loc2: u128)
+	39: Branch(24)
+B9:
+	40: MoveLoc[4](loc3: u128)
+	41: StLoc[2](loc1: u128)
+B10:
+	42: MoveLoc[2](loc1: u128)
+	43: Ret
+}
+
+public sqrt_u64(Arg0: u128): u64 {
+L1:	loc0: u64
+L2:	loc1: u64
+L3:	loc2: u128
+L4:	loc3: u128
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: LdU128(4)
+	2: Lt
+	3: BrFalse(16)
+B1:
+	4: MoveLoc[0](Arg0: u128)
+	5: LdU128(0)
+	6: Eq
+	7: BrFalse(11)
+B2:
+	8: LdU64(0)
+	9: StLoc[1](loc0: u64)
+	10: Branch(13)
+B3:
+	11: LdU64(1)
+	12: StLoc[1](loc0: u64)
+B4:
+	13: MoveLoc[1](loc0: u64)
+	14: StLoc[2](loc1: u64)
+	15: Branch(43)
+B5:
+	16: CopyLoc[0](Arg0: u128)
+	17: StLoc[4](loc3: u128)
+	18: CopyLoc[0](Arg0: u128)
+	19: LdU128(2)
+	20: Div
+	21: LdU128(1)
+	22: Add
+	23: StLoc[3](loc2: u128)
+B6:
+	24: CopyLoc[3](loc2: u128)
+	25: CopyLoc[4](loc3: u128)
+	26: Lt
+	27: BrFalse(40)
+B7:
+	28: Branch(29)
+B8:
+	29: CopyLoc[3](loc2: u128)
+	30: StLoc[4](loc3: u128)
+	31: CopyLoc[0](Arg0: u128)
+	32: CopyLoc[3](loc2: u128)
+	33: Div
+	34: MoveLoc[3](loc2: u128)
+	35: Add
+	36: LdU128(2)
+	37: Div
+	38: StLoc[3](loc2: u128)
+	39: Branch(24)
+B9:
+	40: MoveLoc[4](loc3: u128)
+	41: CastU64
+	42: StLoc[2](loc1: u64)
+B10:
+	43: MoveLoc[2](loc1: u64)
+	44: Ret
+}
+
+public min(Arg0: u128, Arg1: u128): u128 {
+L2:	loc0: u128
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: CopyLoc[1](Arg1: u128)
+	2: Gt
+	3: BrFalse(7)
+B1:
+	4: MoveLoc[1](Arg1: u128)
+	5: StLoc[2](loc0: u128)
+	6: Branch(9)
+B2:
+	7: MoveLoc[0](Arg0: u128)
+	8: StLoc[2](loc0: u128)
+B3:
+	9: MoveLoc[2](loc0: u128)
+	10: Ret
+}
+
+public max_u64(Arg0: u64, Arg1: u64): u64 {
+L2:	loc0: u64
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: CopyLoc[1](Arg1: u64)
+	2: Lt
+	3: BrFalse(7)
+B1:
+	4: MoveLoc[1](Arg1: u64)
+	5: StLoc[2](loc0: u64)
+	6: Branch(9)
+B2:
+	7: MoveLoc[0](Arg0: u64)
+	8: StLoc[2](loc0: u64)
+B3:
+	9: MoveLoc[2](loc0: u64)
+	10: Ret
+}
+
+public max(Arg0: u128, Arg1: u128): u128 {
+L2:	loc0: u128
+B0:
+	0: CopyLoc[0](Arg0: u128)
+	1: CopyLoc[1](Arg1: u128)
+	2: Lt
+	3: BrFalse(7)
+B1:
+	4: MoveLoc[1](Arg1: u128)
+	5: StLoc[2](loc0: u128)
+	6: Branch(9)
+B2:
+	7: MoveLoc[0](Arg0: u128)
+	8: StLoc[2](loc0: u128)
+B3:
+	9: MoveLoc[2](loc0: u128)
+	10: Ret
+}
+
+public pow(Arg0: u128, Arg1: u8): u128 {
+L2:	loc0: u128
+B0:
+	0: LdU128(1)
+	1: StLoc[2](loc0: u128)
+B1:
+	2: CopyLoc[1](Arg1: u8)
+	3: LdU8(1)
+	4: BitAnd
+	5: LdU8(1)
+	6: Eq
+	7: BrFalse(13)
+B2:
+	8: Branch(9)
+B3:
+	9: MoveLoc[2](loc0: u128)
+	10: CopyLoc[0](Arg0: u128)
+	11: Mul
+	12: StLoc[2](loc0: u128)
+B4:
+	13: MoveLoc[1](Arg1: u8)
+	14: LdU8(1)
+	15: Shr
+	16: StLoc[1](Arg1: u8)
+	17: CopyLoc[0](Arg0: u128)
+	18: MoveLoc[0](Arg0: u128)
+	19: Mul
+	20: StLoc[0](Arg0: u128)
+	21: CopyLoc[1](Arg1: u8)
+	22: LdU8(0)
+	23: Eq
+	24: BrFalse(26)
+B5:
+	25: Branch(27)
+B6:
+	26: Branch(2)
+B7:
+	27: MoveLoc[2](loc0: u128)
+	28: Ret
+}
+
+Constants [
+	0 => u64: 2000
+	1 => u64: 2001
+	2 => u128: 18446744073709551615
+	3 => u128: 340282366920938463463374607431768211455
+]
+}

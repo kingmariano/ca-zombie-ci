@@ -1,0 +1,145 @@
+// Move bytecode v7
+module b24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9.uq64x64 {
+
+struct UQ64x64 has copy, drop, store {
+	v: u128
+}
+
+public encode(Arg0: u64): UQ64x64 {
+B0:
+	0: MoveLoc[0](Arg0: u64)
+	1: CastU128
+	2: LdConst[1](u128: 1844..)
+	3: Mul
+	4: Pack[0](UQ64x64)
+	5: Ret
+}
+
+public decode(Arg0: UQ64x64): u64 {
+B0:
+	0: ImmBorrowLoc[0](Arg0: UQ64x64)
+	1: ImmBorrowField[0](UQ64x64.v: u128)
+	2: ReadRef
+	3: LdConst[1](u128: 1844..)
+	4: Div
+	5: CastU64
+	6: Ret
+}
+
+public to_u128(Arg0: UQ64x64): u128 {
+B0:
+	0: ImmBorrowLoc[0](Arg0: UQ64x64)
+	1: ImmBorrowField[0](UQ64x64.v: u128)
+	2: ReadRef
+	3: Ret
+}
+
+public mul(Arg0: UQ64x64, Arg1: u64): UQ64x64 {
+B0:
+	0: ImmBorrowLoc[0](Arg0: UQ64x64)
+	1: ImmBorrowField[0](UQ64x64.v: u128)
+	2: ReadRef
+	3: MoveLoc[1](Arg1: u64)
+	4: CastU128
+	5: Mul
+	6: Pack[0](UQ64x64)
+	7: Ret
+}
+
+public div(Arg0: UQ64x64, Arg1: u64): UQ64x64 {
+B0:
+	0: CopyLoc[1](Arg1: u64)
+	1: LdU64(0)
+	2: Neq
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 100)
+	6: Abort
+B3:
+	7: ImmBorrowLoc[0](Arg0: UQ64x64)
+	8: ImmBorrowField[0](UQ64x64.v: u128)
+	9: ReadRef
+	10: MoveLoc[1](Arg1: u64)
+	11: CastU128
+	12: Div
+	13: Pack[0](UQ64x64)
+	14: Ret
+}
+
+public fraction(Arg0: u64, Arg1: u64): UQ64x64 {
+B0:
+	0: CopyLoc[1](Arg1: u64)
+	1: LdU64(0)
+	2: Neq
+	3: BrFalse(5)
+B1:
+	4: Branch(7)
+B2:
+	5: LdConst[0](u64: 100)
+	6: Abort
+B3:
+	7: MoveLoc[0](Arg0: u64)
+	8: CastU128
+	9: LdConst[1](u128: 1844..)
+	10: Mul
+	11: MoveLoc[1](Arg1: u64)
+	12: CastU128
+	13: Div
+	14: Pack[0](UQ64x64)
+	15: Ret
+}
+
+public compare(Arg0: &UQ64x64, Arg1: &UQ64x64): u8 {
+B0:
+	0: CopyLoc[0](Arg0: &UQ64x64)
+	1: ImmBorrowField[0](UQ64x64.v: u128)
+	2: ReadRef
+	3: CopyLoc[1](Arg1: &UQ64x64)
+	4: ImmBorrowField[0](UQ64x64.v: u128)
+	5: ReadRef
+	6: Eq
+	7: BrFalse(14)
+B1:
+	8: MoveLoc[1](Arg1: &UQ64x64)
+	9: Pop
+	10: MoveLoc[0](Arg0: &UQ64x64)
+	11: Pop
+	12: LdConst[2](u8: 0)
+	13: Ret
+B2:
+	14: MoveLoc[0](Arg0: &UQ64x64)
+	15: ImmBorrowField[0](UQ64x64.v: u128)
+	16: ReadRef
+	17: MoveLoc[1](Arg1: &UQ64x64)
+	18: ImmBorrowField[0](UQ64x64.v: u128)
+	19: ReadRef
+	20: Lt
+	21: BrFalse(24)
+B3:
+	22: LdConst[3](u8: 1)
+	23: Ret
+B4:
+	24: LdConst[4](u8: 2)
+	25: Ret
+}
+
+public is_zero(Arg0: &UQ64x64): bool {
+B0:
+	0: MoveLoc[0](Arg0: &UQ64x64)
+	1: ImmBorrowField[0](UQ64x64.v: u128)
+	2: ReadRef
+	3: LdU128(0)
+	4: Eq
+	5: Ret
+}
+
+Constants [
+	0 => u64: 100
+	1 => u128: 18446744073709551615
+	2 => u8: 0
+	3 => u8: 1
+	4 => u8: 2
+]
+}

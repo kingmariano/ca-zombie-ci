@@ -1,0 +1,99 @@
+{
+ "query": "query Sim($tx: JSON!, $checks: Boolean, $gasSelect: Boolean) {\n  simulateTransaction(transaction: $tx, checksEnabled: $checks, doGasSelection: $gasSelect) {\n    effects {\n      digest\n      status\n      executionError { message identifier abortCode constant module { name } function { name } }\n      effectsJson\n    }\n    outputs {\n      returnValues {\n        value { json bcs type { repr } }\n      }\n    }\n  }\n}",
+ "variables": {
+  "tx": {
+   "sender": "0x0feb54a725aa357ff2f5bc6bb023c05b310285bd861275a30521f339a434ebb3",
+   "kind": {
+    "kind": "PROGRAMMABLE_TRANSACTION",
+    "programmableTransaction": {
+     "inputs": [
+      {
+       "kind": "SHARED",
+       "objectId": "0x3f2d9f724f4a1ce5e71676448dc452be9a6243dac9c5b975a588c8c867066e92",
+       "version": "1587827",
+       "mutable": true,
+       "mutability": "MUTABLE"
+      },
+      {
+       "kind": "PURE",
+       "pure": "D+tUpyWqNX/y9bxrsCPAWzEChb2GEnWjBSHzOaQ067M="
+      },
+      {
+       "kind": "PURE",
+       "pure": "ECcAAAAAAAA="
+      },
+      {
+       "kind": "PURE",
+       "pure": "ECcAAAAAAAA="
+      },
+      {
+       "kind": "PURE",
+       "pure": "AAAAAAAAAAA="
+      }
+     ],
+     "commands": [
+      {
+       "splitCoins": {
+        "coin": {
+         "kind": "GAS"
+        },
+        "amounts": [
+         {
+          "kind": "INPUT",
+          "input": 3
+         }
+        ]
+       }
+      },
+      {
+       "moveCall": {
+        "package": "0x08cd33481587d4c4612865b164796d937df13747d8c763b8a178c87e3244498f",
+        "module": "router",
+        "function": "swap_exact_input_",
+        "typeArguments": [
+         "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+         "0xe7131700f8b336a011ff2d0e3403eb719ae9d5c15fc71bf371e4990eccf013a7::pauly::PAULY"
+        ],
+        "arguments": [
+         {
+          "kind": "INPUT",
+          "input": 2
+         },
+         {
+          "kind": "RESULT",
+          "result": 0
+         },
+         {
+          "kind": "INPUT",
+          "input": 4
+         },
+         {
+          "kind": "INPUT",
+          "input": 0
+         }
+        ]
+       }
+      },
+      {
+       "transferObjects": {
+        "objects": [
+         {
+          "kind": "RESULT",
+          "result": 1
+         }
+        ],
+        "address": {
+         "kind": "INPUT",
+         "input": 1
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "checks": false,
+  "gasSelect": true
+ },
+ "operationName": "Sim"
+}

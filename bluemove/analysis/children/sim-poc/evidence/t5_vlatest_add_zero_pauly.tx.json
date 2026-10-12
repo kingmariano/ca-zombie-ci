@@ -1,0 +1,128 @@
+{
+ "sender": "0x0feb54a725aa357ff2f5bc6bb023c05b310285bd861275a30521f339a434ebb3",
+ "kind": {
+  "kind": "PROGRAMMABLE_TRANSACTION",
+  "programmableTransaction": {
+   "inputs": [
+    {
+     "kind": "SHARED",
+     "objectId": "0x3f2d9f724f4a1ce5e71676448dc452be9a6243dac9c5b975a588c8c867066e92",
+     "version": "1587827",
+     "mutable": true,
+     "mutability": "MUTABLE"
+    },
+    {
+     "kind": "PURE",
+     "pure": "D+tUpyWqNX/y9bxrsCPAWzEChb2GEnWjBSHzOaQ067M="
+    },
+    {
+     "kind": "PURE",
+     "pure": "gJaYAAAAAAA="
+    },
+    {
+     "kind": "PURE",
+     "pure": "gJaYAAAAAAA="
+    },
+    {
+     "kind": "PURE",
+     "pure": "AAAAAAAAAAA="
+    },
+    {
+     "kind": "PURE",
+     "pure": "AAAAAAAAAAA="
+    },
+    {
+     "kind": "PURE",
+     "pure": "AAAAAAAAAAA="
+    }
+   ],
+   "commands": [
+    {
+     "splitCoins": {
+      "coin": {
+       "kind": "GAS"
+      },
+      "amounts": [
+       {
+        "kind": "INPUT",
+        "input": 2
+       }
+      ]
+     }
+    },
+    {
+     "moveCall": {
+      "package": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "module": "coin",
+      "function": "zero",
+      "typeArguments": [
+       "0xe7131700f8b336a011ff2d0e3403eb719ae9d5c15fc71bf371e4990eccf013a7::pauly::PAULY"
+      ],
+      "arguments": []
+     }
+    },
+    {
+     "moveCall": {
+      "package": "0x35f3190a41b98da22c997c9266143523816d73a902123dde6f60fac2e0f656d7",
+      "module": "router",
+      "function": "add_liquidity_returns",
+      "typeArguments": [
+       "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+       "0xe7131700f8b336a011ff2d0e3403eb719ae9d5c15fc71bf371e4990eccf013a7::pauly::PAULY"
+      ],
+      "arguments": [
+       {
+        "kind": "INPUT",
+        "input": 3
+       },
+       {
+        "kind": "RESULT",
+        "result": 0
+       },
+       {
+        "kind": "INPUT",
+        "input": 4
+       },
+       {
+        "kind": "RESULT",
+        "result": 1
+       },
+       {
+        "kind": "INPUT",
+        "input": 5
+       },
+       {
+        "kind": "INPUT",
+        "input": 6
+       },
+       {
+        "kind": "INPUT",
+        "input": 0
+       }
+      ]
+     }
+    },
+    {
+     "transferObjects": {
+      "objects": [
+       {
+        "kind": "RESULT",
+        "result": 2,
+        "subresult": 0
+       },
+       {
+        "kind": "RESULT",
+        "result": 2,
+        "subresult": 1
+       }
+      ],
+      "address": {
+       "kind": "INPUT",
+       "input": 1
+      }
+     }
+    }
+   ]
+  }
+ }
+}

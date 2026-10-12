@@ -1,0 +1,2431 @@
+// Move bytecode v6
+module b24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9.swap {
+use b24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9::math;
+use b24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9::u256;
+use b24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9::utils;
+use 0000000000000000000000000000000000000000000000000000000000000001::string;
+use 0000000000000000000000000000000000000000000000000000000000000002::balance;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::dynamic_object_field;
+use 0000000000000000000000000000000000000000000000000000000000000002::event;
+use 0000000000000000000000000000000000000000000000000000000000000002::object;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+struct Created_Pool_Event has copy, drop {
+	pool_id: ID,
+	creator: address,
+	token_x_name: String,
+	token_y_name: String,
+	token_x_amount_in: u64,
+	token_y_amount_in: u64,
+	lsp_balance: u64
+}
+
+struct Add_Liquidity_Pool has copy, drop {
+	pool_id: ID,
+	user: address,
+	token_x_name: String,
+	token_y_name: String,
+	token_x_amount_in: u64,
+	token_y_amount_in: u64,
+	lsp_balance: u64,
+	fee_amount: u64
+}
+
+struct Remove_Liqidity_Pool has copy, drop {
+	pool_id: ID,
+	user: address,
+	token_x_name: String,
+	token_y_name: String,
+	token_x_amount_out: u64,
+	token_y_amount_out: u64,
+	fee_amount: u64
+}
+
+struct Swap_Event<phantom Ty0, phantom Ty1> has copy, drop {
+	pool_id: ID,
+	user: address,
+	token_x_in: String,
+	amount_x_in: u64,
+	token_y_in: String,
+	amount_y_in: u64,
+	token_x_out: String,
+	amount_x_out: u64,
+	token_y_out: String,
+	amount_y_out: u64
+}
+
+struct Freeze_Event has copy, drop {
+	pool_id: ID,
+	token_x_in: String,
+	token_y_out: String,
+	lsp_balance: u64,
+	is_freeze: bool
+}
+
+struct LSP<phantom Ty0, phantom Ty1> has drop {
+	dummy_field: bool
+}
+
+struct Pool<phantom Ty0, phantom Ty1> has store, key {
+	id: UID,
+	creator: address,
+	token_x: Balance<Ty0>,
+	token_y: Balance<Ty1>,
+	lsp_supply: Supply<LSP<Ty0, Ty1>>,
+	fee_amount: Balance<LSP<Ty0, Ty1>>,
+	fee_x: Balance<Ty0>,
+	fee_y: Balance<Ty1>,
+	minimum_liq: Balance<LSP<Ty0, Ty1>>,
+	k_last: u128,
+	reserve_x: u64,
+	reserve_y: u64,
+	is_freeze: bool
+}
+
+struct Dex_Info has store, key {
+	id: UID,
+	fee_to: address,
+	dev: address,
+	total_pool_created: u64
+}
+
+init(Arg0: &mut TxContext) {
+B0:
+	0: CopyLoc[0](Arg0: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: Pop
+	4: MoveLoc[0](Arg0: &mut TxContext)
+	5: Call object::new(&mut TxContext): UID
+	6: LdConst[0](address: 0x85..)
+	7: LdConst[1](address: 0x04..)
+	8: LdU64(0)
+	9: Pack[7](Dex_Info)
+	10: Call transfer::public_share_object<Dex_Info>(Dex_Info)
+	11: Ret
+}
+
+public(friend) create_new_pool<Ty0, Ty1>(Arg0: &mut Dex_Info, Arg1: &mut TxContext) {
+B0:
+	0: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	1: BrFalse(6)
+B1:
+	2: MoveLoc[0](Arg0: &mut Dex_Info)
+	3: MoveLoc[1](Arg1: &mut TxContext)
+	4: Call create_pool_internal<Ty0, Ty1>(&mut Dex_Info, &mut TxContext)
+	5: Branch(9)
+B2:
+	6: MoveLoc[0](Arg0: &mut Dex_Info)
+	7: MoveLoc[1](Arg1: &mut TxContext)
+	8: Call create_pool_internal<Ty1, Ty0>(&mut Dex_Info, &mut TxContext)
+B3:
+	9: Ret
+}
+
+entry public create_new_pool_admin<Ty0, Ty1>(Arg0: &mut Dex_Info, Arg1: &mut TxContext) {
+B0:
+	0: CopyLoc[1](Arg1: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: CopyLoc[0](Arg0: &mut Dex_Info)
+	4: ImmBorrowField[0](Dex_Info.dev: address)
+	5: ReadRef
+	6: Eq
+	7: BrFalse(9)
+B1:
+	8: Branch(15)
+B2:
+	9: MoveLoc[0](Arg0: &mut Dex_Info)
+	10: Pop
+	11: MoveLoc[1](Arg1: &mut TxContext)
+	12: Pop
+	13: LdConst[23](u64: 17)
+	14: Abort
+B3:
+	15: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	16: BrFalse(21)
+B4:
+	17: MoveLoc[0](Arg0: &mut Dex_Info)
+	18: MoveLoc[1](Arg1: &mut TxContext)
+	19: Call create_pool_internal<Ty0, Ty1>(&mut Dex_Info, &mut TxContext)
+	20: Branch(24)
+B5:
+	21: MoveLoc[0](Arg0: &mut Dex_Info)
+	22: MoveLoc[1](Arg1: &mut TxContext)
+	23: Call create_pool_internal<Ty1, Ty0>(&mut Dex_Info, &mut TxContext)
+B6:
+	24: Ret
+}
+
+create_pool_internal<Ty0, Ty1>(Arg0: &mut Dex_Info, Arg1: &mut TxContext) {
+L2:	loc0: String
+L3:	loc1: Supply<LSP<Ty0, Ty1>>
+L4:	loc2: Pool<Ty0, Ty1>
+L5:	loc3: ID
+L6:	loc4: UID
+L7:	loc5: address
+L8:	loc6: String
+L9:	loc7: String
+B0:
+	0: Call utils::get_lp_name<Ty0, Ty1>(): String
+	1: StLoc[2](loc0: String)
+	2: CopyLoc[0](Arg0: &mut Dex_Info)
+	3: ImmBorrowField[1](Dex_Info.id: UID)
+	4: CopyLoc[2](loc0: String)
+	5: Call dynamic_object_field::exists_<String>(&UID, String): bool
+	6: Not
+	7: BrFalse(9)
+B1:
+	8: Branch(15)
+B2:
+	9: MoveLoc[0](Arg0: &mut Dex_Info)
+	10: Pop
+	11: MoveLoc[1](Arg1: &mut TxContext)
+	12: Pop
+	13: LdConst[11](u64: 1)
+	14: Abort
+B3:
+	15: CopyLoc[1](Arg1: &mut TxContext)
+	16: FreezeRef
+	17: Call tx_context::sender(&TxContext): address
+	18: StLoc[7](loc5: address)
+	19: LdFalse
+	20: PackGeneric[0](LSP<Ty0, Ty1>)
+	21: Call balance::create_supply<LSP<Ty0, Ty1>>(LSP<Ty0, Ty1>): Supply<LSP<Ty0, Ty1>>
+	22: StLoc[3](loc1: Supply<LSP<Ty0, Ty1>>)
+	23: MoveLoc[1](Arg1: &mut TxContext)
+	24: Call object::new(&mut TxContext): UID
+	25: StLoc[6](loc4: UID)
+	26: ImmBorrowLoc[6](loc4: UID)
+	27: Call object::uid_to_inner(&UID): ID
+	28: StLoc[5](loc3: ID)
+	29: MoveLoc[6](loc4: UID)
+	30: CopyLoc[7](loc5: address)
+	31: Call balance::zero<Ty0>(): Balance<Ty0>
+	32: Call balance::zero<Ty1>(): Balance<Ty1>
+	33: MoveLoc[3](loc1: Supply<LSP<Ty0, Ty1>>)
+	34: Call balance::zero<LSP<Ty0, Ty1>>(): Balance<LSP<Ty0, Ty1>>
+	35: Call balance::zero<Ty0>(): Balance<Ty0>
+	36: Call balance::zero<Ty1>(): Balance<Ty1>
+	37: Call balance::zero<LSP<Ty0, Ty1>>(): Balance<LSP<Ty0, Ty1>>
+	38: LdU128(0)
+	39: LdU64(0)
+	40: LdU64(0)
+	41: LdFalse
+	42: PackGeneric[1](Pool<Ty0, Ty1>)
+	43: StLoc[4](loc2: Pool<Ty0, Ty1>)
+	44: CopyLoc[0](Arg0: &mut Dex_Info)
+	45: ImmBorrowField[2](Dex_Info.total_pool_created: u64)
+	46: ReadRef
+	47: LdU64(1)
+	48: Add
+	49: CopyLoc[0](Arg0: &mut Dex_Info)
+	50: MutBorrowField[2](Dex_Info.total_pool_created: u64)
+	51: WriteRef
+	52: MoveLoc[0](Arg0: &mut Dex_Info)
+	53: MutBorrowField[1](Dex_Info.id: UID)
+	54: MoveLoc[2](loc0: String)
+	55: MoveLoc[4](loc2: Pool<Ty0, Ty1>)
+	56: Call dynamic_object_field::add<String, Pool<Ty0, Ty1>>(&mut UID, String, Pool<Ty0, Ty1>)
+	57: Call utils::get_token_name<Ty0>(): String
+	58: StLoc[8](loc6: String)
+	59: Call utils::get_token_name<Ty1>(): String
+	60: StLoc[9](loc7: String)
+	61: MoveLoc[5](loc3: ID)
+	62: MoveLoc[7](loc5: address)
+	63: MoveLoc[8](loc6: String)
+	64: MoveLoc[9](loc7: String)
+	65: LdU64(0)
+	66: LdU64(0)
+	67: LdU64(0)
+	68: Pack[0](Created_Pool_Event)
+	69: Call event::emit<Created_Pool_Event>(Created_Pool_Event)
+	70: Ret
+}
+
+entry public freeze_pool<Ty0, Ty1>(Arg0: bool, Arg1: &mut Dex_Info, Arg2: &mut TxContext) {
+L3:	loc0: &mut Pool<Ty0, Ty1>
+L4:	loc1: &mut Pool<Ty1, Ty0>
+B0:
+	0: MoveLoc[2](Arg2: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: CopyLoc[1](Arg1: &mut Dex_Info)
+	4: ImmBorrowField[0](Dex_Info.dev: address)
+	5: ReadRef
+	6: Eq
+	7: BrFalse(9)
+B1:
+	8: Branch(13)
+B2:
+	9: MoveLoc[1](Arg1: &mut Dex_Info)
+	10: Pop
+	11: LdConst[23](u64: 17)
+	12: Abort
+B3:
+	13: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	14: BrFalse(34)
+B4:
+	15: MoveLoc[1](Arg1: &mut Dex_Info)
+	16: Call get_pool<Ty0, Ty1>(&mut Dex_Info): &mut Pool<Ty0, Ty1>
+	17: StLoc[3](loc0: &mut Pool<Ty0, Ty1>)
+	18: CopyLoc[0](Arg0: bool)
+	19: CopyLoc[3](loc0: &mut Pool<Ty0, Ty1>)
+	20: MutBorrowFieldGeneric[0](Pool.is_freeze: bool)
+	21: WriteRef
+	22: CopyLoc[3](loc0: &mut Pool<Ty0, Ty1>)
+	23: ImmBorrowFieldGeneric[1](Pool.id: UID)
+	24: Call object::uid_to_inner(&UID): ID
+	25: Call utils::get_token_name<Ty0>(): String
+	26: Call utils::get_token_name<Ty1>(): String
+	27: MoveLoc[3](loc0: &mut Pool<Ty0, Ty1>)
+	28: ImmBorrowFieldGeneric[2](Pool.lsp_supply: Supply<LSP<Ty0, Ty1>>)
+	29: Call balance::supply_value<LSP<Ty0, Ty1>>(&Supply<LSP<Ty0, Ty1>>): u64
+	30: MoveLoc[0](Arg0: bool)
+	31: Pack[4](Freeze_Event)
+	32: Call event::emit<Freeze_Event>(Freeze_Event)
+	33: Branch(52)
+B5:
+	34: MoveLoc[1](Arg1: &mut Dex_Info)
+	35: Call get_pool<Ty1, Ty0>(&mut Dex_Info): &mut Pool<Ty1, Ty0>
+	36: StLoc[4](loc1: &mut Pool<Ty1, Ty0>)
+	37: CopyLoc[0](Arg0: bool)
+	38: CopyLoc[4](loc1: &mut Pool<Ty1, Ty0>)
+	39: MutBorrowFieldGeneric[3](Pool.is_freeze: bool)
+	40: WriteRef
+	41: CopyLoc[4](loc1: &mut Pool<Ty1, Ty0>)
+	42: ImmBorrowFieldGeneric[4](Pool.id: UID)
+	43: Call object::uid_to_inner(&UID): ID
+	44: Call utils::get_token_name<Ty1>(): String
+	45: Call utils::get_token_name<Ty0>(): String
+	46: MoveLoc[4](loc1: &mut Pool<Ty1, Ty0>)
+	47: ImmBorrowFieldGeneric[5](Pool.lsp_supply: Supply<LSP<Ty1, Ty0>>)
+	48: Call balance::supply_value<LSP<Ty1, Ty0>>(&Supply<LSP<Ty1, Ty0>>): u64
+	49: MoveLoc[0](Arg0: bool)
+	50: Pack[4](Freeze_Event)
+	51: Call event::emit<Freeze_Event>(Freeze_Event)
+B6:
+	52: Ret
+}
+
+entry public set_fee_to(Arg0: &mut Dex_Info, Arg1: address, Arg2: &mut TxContext) {
+B0:
+	0: MoveLoc[2](Arg2: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: CopyLoc[0](Arg0: &mut Dex_Info)
+	4: ImmBorrowField[0](Dex_Info.dev: address)
+	5: ReadRef
+	6: Eq
+	7: BrFalse(9)
+B1:
+	8: Branch(13)
+B2:
+	9: MoveLoc[0](Arg0: &mut Dex_Info)
+	10: Pop
+	11: LdConst[23](u64: 17)
+	12: Abort
+B3:
+	13: MoveLoc[1](Arg1: address)
+	14: MoveLoc[0](Arg0: &mut Dex_Info)
+	15: MutBorrowField[6](Dex_Info.fee_to: address)
+	16: WriteRef
+	17: Ret
+}
+
+entry public withdraw_fee<Ty0, Ty1>(Arg0: &mut Dex_Info, Arg1: &mut TxContext) {
+L2:	loc0: bool
+L3:	loc1: u64
+L4:	loc2: u64
+L5:	loc3: u64
+L6:	loc4: u64
+L7:	loc5: u64
+L8:	loc6: u64
+L9:	loc7: &mut Pool<Ty0, Ty1>
+L10:	loc8: &mut Pool<Ty1, Ty0>
+L11:	loc9: address
+B0:
+	0: CopyLoc[1](Arg1: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[11](loc9: address)
+	4: CopyLoc[11](loc9: address)
+	5: CopyLoc[0](Arg0: &mut Dex_Info)
+	6: ImmBorrowField[6](Dex_Info.fee_to: address)
+	7: ReadRef
+	8: Eq
+	9: BrFalse(13)
+B1:
+	10: LdTrue
+	11: StLoc[2](loc0: bool)
+	12: Branch(19)
+B2:
+	13: CopyLoc[11](loc9: address)
+	14: CopyLoc[0](Arg0: &mut Dex_Info)
+	15: ImmBorrowField[0](Dex_Info.dev: address)
+	16: ReadRef
+	17: Eq
+	18: StLoc[2](loc0: bool)
+B3:
+	19: MoveLoc[2](loc0: bool)
+	20: BrFalse(22)
+B4:
+	21: Branch(28)
+B5:
+	22: MoveLoc[0](Arg0: &mut Dex_Info)
+	23: Pop
+	24: MoveLoc[1](Arg1: &mut TxContext)
+	25: Pop
+	26: LdConst[23](u64: 17)
+	27: Abort
+B6:
+	28: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	29: BrFalse(87)
+B7:
+	30: MoveLoc[0](Arg0: &mut Dex_Info)
+	31: Call get_pool<Ty0, Ty1>(&mut Dex_Info): &mut Pool<Ty0, Ty1>
+	32: StLoc[9](loc7: &mut Pool<Ty0, Ty1>)
+	33: CopyLoc[9](loc7: &mut Pool<Ty0, Ty1>)
+	34: ImmBorrowFieldGeneric[6](Pool.fee_amount: Balance<LSP<Ty0, Ty1>>)
+	35: Call balance::value<LSP<Ty0, Ty1>>(&Balance<LSP<Ty0, Ty1>>): u64
+	36: StLoc[3](loc1: u64)
+	37: CopyLoc[3](loc1: u64)
+	38: LdU64(0)
+	39: Gt
+	40: BrFalse(49)
+B8:
+	41: CopyLoc[9](loc7: &mut Pool<Ty0, Ty1>)
+	42: MutBorrowFieldGeneric[6](Pool.fee_amount: Balance<LSP<Ty0, Ty1>>)
+	43: MoveLoc[3](loc1: u64)
+	44: Call balance::split<LSP<Ty0, Ty1>>(&mut Balance<LSP<Ty0, Ty1>>, u64): Balance<LSP<Ty0, Ty1>>
+	45: CopyLoc[1](Arg1: &mut TxContext)
+	46: Call coin::from_balance<LSP<Ty0, Ty1>>(Balance<LSP<Ty0, Ty1>>, &mut TxContext): Coin<LSP<Ty0, Ty1>>
+	47: CopyLoc[11](loc9: address)
+	48: Call transfer::public_transfer<Coin<LSP<Ty0, Ty1>>>(Coin<LSP<Ty0, Ty1>>, address)
+B9:
+	49: CopyLoc[9](loc7: &mut Pool<Ty0, Ty1>)
+	50: ImmBorrowFieldGeneric[7](Pool.fee_x: Balance<Ty0>)
+	51: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	52: StLoc[5](loc3: u64)
+	53: CopyLoc[5](loc3: u64)
+	54: LdU64(0)
+	55: Gt
+	56: BrFalse(65)
+B10:
+	57: CopyLoc[9](loc7: &mut Pool<Ty0, Ty1>)
+	58: MutBorrowFieldGeneric[7](Pool.fee_x: Balance<Ty0>)
+	59: MoveLoc[5](loc3: u64)
+	60: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	61: CopyLoc[1](Arg1: &mut TxContext)
+	62: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	63: CopyLoc[11](loc9: address)
+	64: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+B11:
+	65: CopyLoc[9](loc7: &mut Pool<Ty0, Ty1>)
+	66: ImmBorrowFieldGeneric[8](Pool.fee_y: Balance<Ty1>)
+	67: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	68: StLoc[7](loc5: u64)
+	69: CopyLoc[7](loc5: u64)
+	70: LdU64(0)
+	71: Gt
+	72: BrFalse(82)
+B12:
+	73: MoveLoc[9](loc7: &mut Pool<Ty0, Ty1>)
+	74: MutBorrowFieldGeneric[8](Pool.fee_y: Balance<Ty1>)
+	75: MoveLoc[7](loc5: u64)
+	76: Call balance::split<Ty1>(&mut Balance<Ty1>, u64): Balance<Ty1>
+	77: MoveLoc[1](Arg1: &mut TxContext)
+	78: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	79: MoveLoc[11](loc9: address)
+	80: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	81: Branch(86)
+B13:
+	82: MoveLoc[9](loc7: &mut Pool<Ty0, Ty1>)
+	83: Pop
+	84: MoveLoc[1](Arg1: &mut TxContext)
+	85: Pop
+B14:
+	86: Branch(143)
+B15:
+	87: MoveLoc[0](Arg0: &mut Dex_Info)
+	88: Call get_pool<Ty1, Ty0>(&mut Dex_Info): &mut Pool<Ty1, Ty0>
+	89: StLoc[10](loc8: &mut Pool<Ty1, Ty0>)
+	90: CopyLoc[10](loc8: &mut Pool<Ty1, Ty0>)
+	91: ImmBorrowFieldGeneric[9](Pool.fee_amount: Balance<LSP<Ty1, Ty0>>)
+	92: Call balance::value<LSP<Ty1, Ty0>>(&Balance<LSP<Ty1, Ty0>>): u64
+	93: StLoc[4](loc2: u64)
+	94: CopyLoc[4](loc2: u64)
+	95: LdU64(0)
+	96: Gt
+	97: BrFalse(106)
+B16:
+	98: CopyLoc[10](loc8: &mut Pool<Ty1, Ty0>)
+	99: MutBorrowFieldGeneric[9](Pool.fee_amount: Balance<LSP<Ty1, Ty0>>)
+	100: MoveLoc[4](loc2: u64)
+	101: Call balance::split<LSP<Ty1, Ty0>>(&mut Balance<LSP<Ty1, Ty0>>, u64): Balance<LSP<Ty1, Ty0>>
+	102: CopyLoc[1](Arg1: &mut TxContext)
+	103: Call coin::from_balance<LSP<Ty1, Ty0>>(Balance<LSP<Ty1, Ty0>>, &mut TxContext): Coin<LSP<Ty1, Ty0>>
+	104: CopyLoc[11](loc9: address)
+	105: Call transfer::public_transfer<Coin<LSP<Ty1, Ty0>>>(Coin<LSP<Ty1, Ty0>>, address)
+B17:
+	106: CopyLoc[10](loc8: &mut Pool<Ty1, Ty0>)
+	107: ImmBorrowFieldGeneric[10](Pool.fee_x: Balance<Ty1>)
+	108: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	109: StLoc[6](loc4: u64)
+	110: CopyLoc[6](loc4: u64)
+	111: LdU64(0)
+	112: Gt
+	113: BrFalse(122)
+B18:
+	114: CopyLoc[10](loc8: &mut Pool<Ty1, Ty0>)
+	115: MutBorrowFieldGeneric[10](Pool.fee_x: Balance<Ty1>)
+	116: MoveLoc[6](loc4: u64)
+	117: Call balance::split<Ty1>(&mut Balance<Ty1>, u64): Balance<Ty1>
+	118: CopyLoc[1](Arg1: &mut TxContext)
+	119: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	120: CopyLoc[11](loc9: address)
+	121: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+B19:
+	122: CopyLoc[10](loc8: &mut Pool<Ty1, Ty0>)
+	123: ImmBorrowFieldGeneric[11](Pool.fee_y: Balance<Ty0>)
+	124: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	125: StLoc[8](loc6: u64)
+	126: CopyLoc[8](loc6: u64)
+	127: LdU64(0)
+	128: Gt
+	129: BrFalse(139)
+B20:
+	130: MoveLoc[10](loc8: &mut Pool<Ty1, Ty0>)
+	131: MutBorrowFieldGeneric[11](Pool.fee_y: Balance<Ty0>)
+	132: MoveLoc[8](loc6: u64)
+	133: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	134: MoveLoc[1](Arg1: &mut TxContext)
+	135: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	136: MoveLoc[11](loc9: address)
+	137: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	138: Branch(143)
+B21:
+	139: MoveLoc[10](loc8: &mut Pool<Ty1, Ty0>)
+	140: Pop
+	141: MoveLoc[1](Arg1: &mut TxContext)
+	142: Pop
+B22:
+	143: Ret
+}
+
+public(friend) add_liquidity<Ty0, Ty1>(Arg0: u64, Arg1: u64, Arg2: Coin<Ty0>, Arg3: Coin<Ty1>, Arg4: &mut Pool<Ty0, Ty1>, Arg5: &mut TxContext): u64 * u64 * u64 {
+L6:	loc0: u64
+L7:	loc1: u64
+L8:	loc2: Coin<Ty0>
+L9:	loc3: Coin<Ty1>
+L10:	loc4: Coin<LSP<Ty0, Ty1>>
+L11:	loc5: u64
+L12:	loc6: u64
+L13:	loc7: address
+B0:
+	0: CopyLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](Pool.is_freeze: bool)
+	2: ReadRef
+	3: Not
+	4: BrFalse(6)
+B1:
+	5: Branch(12)
+B2:
+	6: MoveLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	7: Pop
+	8: MoveLoc[5](Arg5: &mut TxContext)
+	9: Pop
+	10: LdConst[29](u64: 24)
+	11: Abort
+B3:
+	12: MoveLoc[0](Arg0: u64)
+	13: ImmBorrowLoc[2](Arg2: Coin<Ty0>)
+	14: Call assert_input_amount<Ty0>(u64, &Coin<Ty0>)
+	15: MoveLoc[1](Arg1: u64)
+	16: ImmBorrowLoc[3](Arg3: Coin<Ty1>)
+	17: Call assert_input_amount<Ty1>(u64, &Coin<Ty1>)
+	18: MoveLoc[2](Arg2: Coin<Ty0>)
+	19: MoveLoc[3](Arg3: Coin<Ty1>)
+	20: CopyLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	21: CopyLoc[5](Arg5: &mut TxContext)
+	22: Call add_liquidity_direct<Ty0, Ty1>(Coin<Ty0>, Coin<Ty1>, &mut Pool<Ty0, Ty1>, &mut TxContext): u64 * u64 * Coin<LSP<Ty0, Ty1>> * u64 * Coin<Ty0> * Coin<Ty1>
+	23: StLoc[9](loc3: Coin<Ty1>)
+	24: StLoc[8](loc2: Coin<Ty0>)
+	25: StLoc[11](loc5: u64)
+	26: StLoc[10](loc4: Coin<LSP<Ty0, Ty1>>)
+	27: StLoc[7](loc1: u64)
+	28: StLoc[6](loc0: u64)
+	29: MoveLoc[5](Arg5: &mut TxContext)
+	30: FreezeRef
+	31: Call tx_context::sender(&TxContext): address
+	32: StLoc[13](loc7: address)
+	33: ImmBorrowLoc[10](loc4: Coin<LSP<Ty0, Ty1>>)
+	34: Call coin::value<LSP<Ty0, Ty1>>(&Coin<LSP<Ty0, Ty1>>): u64
+	35: StLoc[12](loc6: u64)
+	36: CopyLoc[12](loc6: u64)
+	37: LdU64(0)
+	38: Gt
+	39: BrFalse(41)
+B4:
+	40: Branch(45)
+B5:
+	41: MoveLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	42: Pop
+	43: LdConst[15](u64: 7)
+	44: Abort
+B6:
+	45: MoveLoc[10](loc4: Coin<LSP<Ty0, Ty1>>)
+	46: CopyLoc[13](loc7: address)
+	47: Call transfer::public_transfer<Coin<LSP<Ty0, Ty1>>>(Coin<LSP<Ty0, Ty1>>, address)
+	48: ImmBorrowLoc[8](loc2: Coin<Ty0>)
+	49: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	50: LdU64(0)
+	51: Gt
+	52: BrFalse(57)
+B7:
+	53: MoveLoc[8](loc2: Coin<Ty0>)
+	54: CopyLoc[13](loc7: address)
+	55: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	56: Branch(59)
+B8:
+	57: MoveLoc[8](loc2: Coin<Ty0>)
+	58: Call coin::destroy_zero<Ty0>(Coin<Ty0>)
+B9:
+	59: ImmBorrowLoc[9](loc3: Coin<Ty1>)
+	60: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	61: LdU64(0)
+	62: Gt
+	63: BrFalse(68)
+B10:
+	64: MoveLoc[9](loc3: Coin<Ty1>)
+	65: CopyLoc[13](loc7: address)
+	66: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	67: Branch(70)
+B11:
+	68: MoveLoc[9](loc3: Coin<Ty1>)
+	69: Call coin::destroy_zero<Ty1>(Coin<Ty1>)
+B12:
+	70: MoveLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	71: ImmBorrowFieldGeneric[1](Pool.id: UID)
+	72: Call object::uid_to_inner(&UID): ID
+	73: MoveLoc[13](loc7: address)
+	74: Call utils::get_token_name<Ty0>(): String
+	75: Call utils::get_token_name<Ty1>(): String
+	76: CopyLoc[6](loc0: u64)
+	77: CopyLoc[7](loc1: u64)
+	78: CopyLoc[12](loc6: u64)
+	79: MoveLoc[11](loc5: u64)
+	80: Pack[1](Add_Liquidity_Pool)
+	81: Call event::emit<Add_Liquidity_Pool>(Add_Liquidity_Pool)
+	82: MoveLoc[6](loc0: u64)
+	83: MoveLoc[7](loc1: u64)
+	84: MoveLoc[12](loc6: u64)
+	85: Ret
+}
+
+add_liquidity_direct<Ty0, Ty1>(Arg0: Coin<Ty0>, Arg1: Coin<Ty1>, Arg2: &mut Pool<Ty0, Ty1>, Arg3: &mut TxContext): u64 * u64 * Coin<LSP<Ty0, Ty1>> * u64 * Coin<Ty0> * Coin<Ty1> {
+L4:	loc0: bool
+L5:	loc1: u64
+L6:	loc2: u64
+L7:	loc3: u64
+L8:	loc4: u64
+L9:	loc5: u64
+L10:	loc6: u64
+L11:	loc7: u64
+L12:	loc8: u64
+L13:	loc9: u64
+L14:	loc10: u64
+L15:	loc11: Balance<Ty0>
+L16:	loc12: Balance<Ty1>
+L17:	loc13: u64
+L18:	loc14: Coin<Ty0>
+L19:	loc15: Coin<Ty1>
+L20:	loc16: Coin<LSP<Ty0, Ty1>>
+B0:
+	0: ImmBorrowLoc[0](Arg0: Coin<Ty0>)
+	1: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	2: StLoc[11](loc7: u64)
+	3: ImmBorrowLoc[1](Arg1: Coin<Ty1>)
+	4: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	5: StLoc[13](loc9: u64)
+	6: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	8: ReadRef
+	9: LdU64(0)
+	10: Eq
+	11: BrFalse(19)
+B1:
+	12: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	13: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	14: ReadRef
+	15: LdU64(0)
+	16: Eq
+	17: StLoc[4](loc0: bool)
+	18: Branch(21)
+B2:
+	19: LdFalse
+	20: StLoc[4](loc0: bool)
+B3:
+	21: MoveLoc[4](loc0: bool)
+	22: BrFalse(28)
+B4:
+	23: CopyLoc[11](loc7: u64)
+	24: CopyLoc[13](loc9: u64)
+	25: StLoc[8](loc4: u64)
+	26: StLoc[7](loc3: u64)
+	27: Branch(74)
+B5:
+	28: CopyLoc[11](loc7: u64)
+	29: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	30: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	31: ReadRef
+	32: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	33: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	34: ReadRef
+	35: Call utils::quote(u64, u64, u64): u64
+	36: StLoc[14](loc10: u64)
+	37: CopyLoc[14](loc10: u64)
+	38: CopyLoc[13](loc9: u64)
+	39: Le
+	40: BrFalse(46)
+B6:
+	41: CopyLoc[11](loc7: u64)
+	42: MoveLoc[14](loc10: u64)
+	43: StLoc[6](loc2: u64)
+	44: StLoc[5](loc1: u64)
+	45: Branch(70)
+B7:
+	46: CopyLoc[13](loc9: u64)
+	47: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	48: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	49: ReadRef
+	50: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	51: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	52: ReadRef
+	53: Call utils::quote(u64, u64, u64): u64
+	54: StLoc[12](loc8: u64)
+	55: CopyLoc[12](loc8: u64)
+	56: CopyLoc[11](loc7: u64)
+	57: Le
+	58: BrFalse(60)
+B8:
+	59: Branch(66)
+B9:
+	60: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	61: Pop
+	62: MoveLoc[3](Arg3: &mut TxContext)
+	63: Pop
+	64: LdConst[16](u64: 8)
+	65: Abort
+B10:
+	66: MoveLoc[12](loc8: u64)
+	67: CopyLoc[13](loc9: u64)
+	68: StLoc[6](loc2: u64)
+	69: StLoc[5](loc1: u64)
+B11:
+	70: MoveLoc[5](loc1: u64)
+	71: MoveLoc[6](loc2: u64)
+	72: StLoc[8](loc4: u64)
+	73: StLoc[7](loc3: u64)
+B12:
+	74: MoveLoc[7](loc3: u64)
+	75: MoveLoc[8](loc4: u64)
+	76: StLoc[10](loc6: u64)
+	77: StLoc[9](loc5: u64)
+	78: CopyLoc[9](loc5: u64)
+	79: CopyLoc[11](loc7: u64)
+	80: Le
+	81: BrFalse(83)
+B13:
+	82: Branch(89)
+B14:
+	83: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	84: Pop
+	85: MoveLoc[3](Arg3: &mut TxContext)
+	86: Pop
+	87: LdConst[14](u64: 6)
+	88: Abort
+B15:
+	89: CopyLoc[10](loc6: u64)
+	90: CopyLoc[13](loc9: u64)
+	91: Le
+	92: BrFalse(94)
+B16:
+	93: Branch(100)
+B17:
+	94: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	95: Pop
+	96: MoveLoc[3](Arg3: &mut TxContext)
+	97: Pop
+	98: LdConst[14](u64: 6)
+	99: Abort
+B18:
+	100: MutBorrowLoc[0](Arg0: Coin<Ty0>)
+	101: MoveLoc[11](loc7: u64)
+	102: CopyLoc[9](loc5: u64)
+	103: Sub
+	104: CopyLoc[3](Arg3: &mut TxContext)
+	105: Call coin::split<Ty0>(&mut Coin<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	106: StLoc[18](loc14: Coin<Ty0>)
+	107: MutBorrowLoc[1](Arg1: Coin<Ty1>)
+	108: MoveLoc[13](loc9: u64)
+	109: CopyLoc[10](loc6: u64)
+	110: Sub
+	111: CopyLoc[3](Arg3: &mut TxContext)
+	112: Call coin::split<Ty1>(&mut Coin<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	113: StLoc[19](loc15: Coin<Ty1>)
+	114: MoveLoc[0](Arg0: Coin<Ty0>)
+	115: Call coin::into_balance<Ty0>(Coin<Ty0>): Balance<Ty0>
+	116: StLoc[15](loc11: Balance<Ty0>)
+	117: MoveLoc[1](Arg1: Coin<Ty1>)
+	118: Call coin::into_balance<Ty1>(Coin<Ty1>): Balance<Ty1>
+	119: StLoc[16](loc12: Balance<Ty1>)
+	120: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	121: MutBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	122: MoveLoc[15](loc11: Balance<Ty0>)
+	123: Call balance::join<Ty0>(&mut Balance<Ty0>, Balance<Ty0>): u64
+	124: Pop
+	125: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	126: MutBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	127: MoveLoc[16](loc12: Balance<Ty1>)
+	128: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	129: Pop
+	130: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	131: MoveLoc[3](Arg3: &mut TxContext)
+	132: Call mint<Ty0, Ty1>(&mut Pool<Ty0, Ty1>, &mut TxContext): Coin<LSP<Ty0, Ty1>> * u64
+	133: StLoc[17](loc13: u64)
+	134: StLoc[20](loc16: Coin<LSP<Ty0, Ty1>>)
+	135: MoveLoc[9](loc5: u64)
+	136: MoveLoc[10](loc6: u64)
+	137: MoveLoc[20](loc16: Coin<LSP<Ty0, Ty1>>)
+	138: MoveLoc[17](loc13: u64)
+	139: MoveLoc[18](loc14: Coin<Ty0>)
+	140: MoveLoc[19](loc15: Coin<Ty1>)
+	141: Ret
+}
+
+public(friend) remove_liquidity<Ty0, Ty1>(Arg0: u64, Arg1: Coin<LSP<Ty0, Ty1>>, Arg2: &mut Pool<Ty0, Ty1>, Arg3: &mut TxContext): u64 * u64 {
+L4:	loc0: u64
+L5:	loc1: u64
+L6:	loc2: Coin<Ty0>
+L7:	loc3: Coin<Ty1>
+L8:	loc4: u64
+L9:	loc5: address
+B0:
+	0: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](Pool.is_freeze: bool)
+	2: ReadRef
+	3: Not
+	4: BrFalse(6)
+B1:
+	5: Branch(12)
+B2:
+	6: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	7: Pop
+	8: MoveLoc[3](Arg3: &mut TxContext)
+	9: Pop
+	10: LdConst[29](u64: 24)
+	11: Abort
+B3:
+	12: ImmBorrowLoc[1](Arg1: Coin<LSP<Ty0, Ty1>>)
+	13: Call coin::value<LSP<Ty0, Ty1>>(&Coin<LSP<Ty0, Ty1>>): u64
+	14: MoveLoc[0](Arg0: u64)
+	15: Eq
+	16: BrFalse(18)
+B4:
+	17: Branch(24)
+B5:
+	18: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	19: Pop
+	20: MoveLoc[3](Arg3: &mut TxContext)
+	21: Pop
+	22: LdConst[20](u64: 14)
+	23: Abort
+B6:
+	24: MoveLoc[1](Arg1: Coin<LSP<Ty0, Ty1>>)
+	25: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	26: CopyLoc[3](Arg3: &mut TxContext)
+	27: Call remove_liquidity_direct<Ty0, Ty1>(Coin<LSP<Ty0, Ty1>>, &mut Pool<Ty0, Ty1>, &mut TxContext): Coin<Ty0> * Coin<Ty1> * u64
+	28: StLoc[8](loc4: u64)
+	29: StLoc[7](loc3: Coin<Ty1>)
+	30: StLoc[6](loc2: Coin<Ty0>)
+	31: ImmBorrowLoc[6](loc2: Coin<Ty0>)
+	32: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	33: StLoc[4](loc0: u64)
+	34: ImmBorrowLoc[7](loc3: Coin<Ty1>)
+	35: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	36: StLoc[5](loc1: u64)
+	37: MoveLoc[3](Arg3: &mut TxContext)
+	38: FreezeRef
+	39: Call tx_context::sender(&TxContext): address
+	40: StLoc[9](loc5: address)
+	41: MoveLoc[6](loc2: Coin<Ty0>)
+	42: CopyLoc[9](loc5: address)
+	43: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	44: MoveLoc[7](loc3: Coin<Ty1>)
+	45: CopyLoc[9](loc5: address)
+	46: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	47: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	48: ImmBorrowFieldGeneric[1](Pool.id: UID)
+	49: Call object::uid_to_inner(&UID): ID
+	50: MoveLoc[9](loc5: address)
+	51: Call utils::get_token_name<Ty0>(): String
+	52: Call utils::get_token_name<Ty1>(): String
+	53: CopyLoc[4](loc0: u64)
+	54: CopyLoc[5](loc1: u64)
+	55: MoveLoc[8](loc4: u64)
+	56: Pack[2](Remove_Liqidity_Pool)
+	57: Call event::emit<Remove_Liqidity_Pool>(Remove_Liqidity_Pool)
+	58: MoveLoc[4](loc0: u64)
+	59: MoveLoc[5](loc1: u64)
+	60: Ret
+}
+
+public(friend) swap_exact_x_to_y<Ty0, Ty1>(Arg0: u64, Arg1: Coin<Ty0>, Arg2: address, Arg3: &mut Pool<Ty0, Ty1>, Arg4: &mut TxContext): u64 * Coin<Ty1> {
+L5:	loc0: u64
+L6:	loc1: Coin<Ty0>
+L7:	loc2: Coin<Ty1>
+B0:
+	0: CopyLoc[3](Arg3: &mut Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](Pool.is_freeze: bool)
+	2: ReadRef
+	3: Not
+	4: BrFalse(6)
+B1:
+	5: Branch(12)
+B2:
+	6: MoveLoc[3](Arg3: &mut Pool<Ty0, Ty1>)
+	7: Pop
+	8: MoveLoc[4](Arg4: &mut TxContext)
+	9: Pop
+	10: LdConst[29](u64: 24)
+	11: Abort
+B3:
+	12: MoveLoc[0](Arg0: u64)
+	13: ImmBorrowLoc[1](Arg1: Coin<Ty0>)
+	14: Call assert_input_amount<Ty0>(u64, &Coin<Ty0>)
+	15: MoveLoc[1](Arg1: Coin<Ty0>)
+	16: MoveLoc[3](Arg3: &mut Pool<Ty0, Ty1>)
+	17: MoveLoc[4](Arg4: &mut TxContext)
+	18: Call swap_exact_x_to_y_direct<Ty0, Ty1>(Coin<Ty0>, &mut Pool<Ty0, Ty1>, &mut TxContext): Coin<Ty0> * Coin<Ty1>
+	19: StLoc[7](loc2: Coin<Ty1>)
+	20: StLoc[6](loc1: Coin<Ty0>)
+	21: ImmBorrowLoc[7](loc2: Coin<Ty1>)
+	22: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	23: StLoc[5](loc0: u64)
+	24: MoveLoc[6](loc1: Coin<Ty0>)
+	25: Call coin::destroy_zero<Ty0>(Coin<Ty0>)
+	26: MoveLoc[5](loc0: u64)
+	27: MoveLoc[7](loc2: Coin<Ty1>)
+	28: Ret
+}
+
+public(friend) swap_exact_x_to_y_direct<Ty0, Ty1>(Arg0: Coin<Ty0>, Arg1: &mut Pool<Ty0, Ty1>, Arg2: &mut TxContext): Coin<Ty0> * Coin<Ty1> {
+L3:	loc0: u64
+L4:	loc1: u64
+L5:	loc2: Coin<Ty0>
+L6:	loc3: Balance<Ty0>
+L7:	loc4: Coin<Ty0>
+L8:	loc5: Coin<Ty1>
+L9:	loc6: u64
+L10:	loc7: u64
+L11:	loc8: u64
+B0:
+	0: ImmBorrowLoc[0](Arg0: Coin<Ty0>)
+	1: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	2: StLoc[3](loc0: u64)
+	3: CopyLoc[3](loc0: u64)
+	4: LdU64(10)
+	5: Mul
+	6: LdConst[30](u64: 10000)
+	7: Div
+	8: StLoc[11](loc8: u64)
+	9: MutBorrowLoc[0](Arg0: Coin<Ty0>)
+	10: CopyLoc[11](loc8: u64)
+	11: CopyLoc[2](Arg2: &mut TxContext)
+	12: Call coin::split<Ty0>(&mut Coin<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	13: StLoc[5](loc2: Coin<Ty0>)
+	14: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	15: MutBorrowFieldGeneric[7](Pool.fee_x: Balance<Ty0>)
+	16: MoveLoc[5](loc2: Coin<Ty0>)
+	17: Call coin::into_balance<Ty0>(Coin<Ty0>): Balance<Ty0>
+	18: Call balance::join<Ty0>(&mut Balance<Ty0>, Balance<Ty0>): u64
+	19: Pop
+	20: MoveLoc[0](Arg0: Coin<Ty0>)
+	21: Call coin::into_balance<Ty0>(Coin<Ty0>): Balance<Ty0>
+	22: StLoc[6](loc3: Balance<Ty0>)
+	23: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	24: MutBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	25: MoveLoc[6](loc3: Balance<Ty0>)
+	26: Call balance::join<Ty0>(&mut Balance<Ty0>, Balance<Ty0>): u64
+	27: Pop
+	28: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	29: FreezeRef
+	30: Call token_reserves<Ty0, Ty1>(&Pool<Ty0, Ty1>): u64 * u64
+	31: StLoc[10](loc7: u64)
+	32: StLoc[9](loc6: u64)
+	33: MoveLoc[3](loc0: u64)
+	34: MoveLoc[11](loc8: u64)
+	35: Sub
+	36: MoveLoc[9](loc6: u64)
+	37: MoveLoc[10](loc7: u64)
+	38: Call utils::get_amount_out(u64, u64, u64): u64
+	39: StLoc[4](loc1: u64)
+	40: LdU64(0)
+	41: MoveLoc[4](loc1: u64)
+	42: MoveLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	43: MoveLoc[2](Arg2: &mut TxContext)
+	44: Call swap<Ty0, Ty1>(u64, u64, &mut Pool<Ty0, Ty1>, &mut TxContext): Coin<Ty0> * Coin<Ty1>
+	45: StLoc[8](loc5: Coin<Ty1>)
+	46: StLoc[7](loc4: Coin<Ty0>)
+	47: ImmBorrowLoc[7](loc4: Coin<Ty0>)
+	48: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	49: LdU64(0)
+	50: Eq
+	51: BrFalse(53)
+B1:
+	52: Branch(55)
+B2:
+	53: LdConst[19](u64: 13)
+	54: Abort
+B3:
+	55: MoveLoc[7](loc4: Coin<Ty0>)
+	56: MoveLoc[8](loc5: Coin<Ty1>)
+	57: Ret
+}
+
+public(friend) swap_x_to_exact_y<Ty0, Ty1>(Arg0: u64, Arg1: Coin<Ty0>, Arg2: u64, Arg3: address, Arg4: &mut Pool<Ty0, Ty1>, Arg5: &mut TxContext): u64 * Coin<Ty1> {
+L6:	loc0: Coin<Ty1>
+B0:
+	0: CopyLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](Pool.is_freeze: bool)
+	2: ReadRef
+	3: Not
+	4: BrFalse(6)
+B1:
+	5: Branch(12)
+B2:
+	6: MoveLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	7: Pop
+	8: MoveLoc[5](Arg5: &mut TxContext)
+	9: Pop
+	10: LdConst[29](u64: 24)
+	11: Abort
+B3:
+	12: CopyLoc[0](Arg0: u64)
+	13: ImmBorrowLoc[1](Arg1: Coin<Ty0>)
+	14: Call assert_input_amount<Ty0>(u64, &Coin<Ty0>)
+	15: MoveLoc[1](Arg1: Coin<Ty0>)
+	16: MoveLoc[2](Arg2: u64)
+	17: MoveLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	18: MoveLoc[5](Arg5: &mut TxContext)
+	19: Call swap_x_to_exact_y_direct<Ty0, Ty1>(Coin<Ty0>, u64, &mut Pool<Ty0, Ty1>, &mut TxContext): Coin<Ty0> * Coin<Ty1>
+	20: StLoc[6](loc0: Coin<Ty1>)
+	21: Call coin::destroy_zero<Ty0>(Coin<Ty0>)
+	22: MoveLoc[0](Arg0: u64)
+	23: MoveLoc[6](loc0: Coin<Ty1>)
+	24: Ret
+}
+
+public(friend) swap_x_to_exact_y_direct<Ty0, Ty1>(Arg0: Coin<Ty0>, Arg1: u64, Arg2: &mut Pool<Ty0, Ty1>, Arg3: &mut TxContext): Coin<Ty0> * Coin<Ty1> {
+L4:	loc0: Balance<Ty0>
+L5:	loc1: Balance<Ty0>
+L6:	loc2: Coin<Ty0>
+L7:	loc3: Coin<Ty1>
+L8:	loc4: u64
+B0:
+	0: MoveLoc[0](Arg0: Coin<Ty0>)
+	1: Call coin::into_balance<Ty0>(Coin<Ty0>): Balance<Ty0>
+	2: StLoc[5](loc1: Balance<Ty0>)
+	3: ImmBorrowLoc[5](loc1: Balance<Ty0>)
+	4: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	5: LdU64(10)
+	6: Mul
+	7: LdConst[30](u64: 10000)
+	8: Div
+	9: StLoc[8](loc4: u64)
+	10: MutBorrowLoc[5](loc1: Balance<Ty0>)
+	11: MoveLoc[8](loc4: u64)
+	12: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	13: StLoc[4](loc0: Balance<Ty0>)
+	14: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	15: MutBorrowFieldGeneric[7](Pool.fee_x: Balance<Ty0>)
+	16: MoveLoc[4](loc0: Balance<Ty0>)
+	17: Call balance::join<Ty0>(&mut Balance<Ty0>, Balance<Ty0>): u64
+	18: Pop
+	19: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	20: MutBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	21: MoveLoc[5](loc1: Balance<Ty0>)
+	22: Call balance::join<Ty0>(&mut Balance<Ty0>, Balance<Ty0>): u64
+	23: Pop
+	24: LdU64(0)
+	25: MoveLoc[1](Arg1: u64)
+	26: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	27: MoveLoc[3](Arg3: &mut TxContext)
+	28: Call swap<Ty0, Ty1>(u64, u64, &mut Pool<Ty0, Ty1>, &mut TxContext): Coin<Ty0> * Coin<Ty1>
+	29: StLoc[7](loc3: Coin<Ty1>)
+	30: StLoc[6](loc2: Coin<Ty0>)
+	31: ImmBorrowLoc[6](loc2: Coin<Ty0>)
+	32: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	33: LdU64(0)
+	34: Eq
+	35: BrFalse(37)
+B1:
+	36: Branch(39)
+B2:
+	37: LdConst[19](u64: 13)
+	38: Abort
+B3:
+	39: MoveLoc[6](loc2: Coin<Ty0>)
+	40: MoveLoc[7](loc3: Coin<Ty1>)
+	41: Ret
+}
+
+public(friend) swap_exact_y_to_x<Ty0, Ty1>(Arg0: u64, Arg1: Coin<Ty1>, Arg2: &mut Pool<Ty0, Ty1>, Arg3: address, Arg4: &mut TxContext): u64 * Coin<Ty0> {
+L5:	loc0: u64
+L6:	loc1: Coin<Ty0>
+L7:	loc2: Coin<Ty1>
+B0:
+	0: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](Pool.is_freeze: bool)
+	2: ReadRef
+	3: Not
+	4: BrFalse(6)
+B1:
+	5: Branch(12)
+B2:
+	6: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	7: Pop
+	8: MoveLoc[4](Arg4: &mut TxContext)
+	9: Pop
+	10: LdConst[29](u64: 24)
+	11: Abort
+B3:
+	12: MoveLoc[0](Arg0: u64)
+	13: ImmBorrowLoc[1](Arg1: Coin<Ty1>)
+	14: Call assert_input_amount<Ty1>(u64, &Coin<Ty1>)
+	15: MoveLoc[1](Arg1: Coin<Ty1>)
+	16: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	17: MoveLoc[4](Arg4: &mut TxContext)
+	18: Call swap_exact_y_to_x_direct<Ty0, Ty1>(Coin<Ty1>, &mut Pool<Ty0, Ty1>, &mut TxContext): Coin<Ty0> * Coin<Ty1>
+	19: StLoc[7](loc2: Coin<Ty1>)
+	20: StLoc[6](loc1: Coin<Ty0>)
+	21: ImmBorrowLoc[6](loc1: Coin<Ty0>)
+	22: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	23: StLoc[5](loc0: u64)
+	24: MoveLoc[7](loc2: Coin<Ty1>)
+	25: Call coin::destroy_zero<Ty1>(Coin<Ty1>)
+	26: MoveLoc[5](loc0: u64)
+	27: MoveLoc[6](loc1: Coin<Ty0>)
+	28: Ret
+}
+
+public(friend) swap_exact_y_to_x_direct<Ty0, Ty1>(Arg0: Coin<Ty1>, Arg1: &mut Pool<Ty0, Ty1>, Arg2: &mut TxContext): Coin<Ty0> * Coin<Ty1> {
+L3:	loc0: u64
+L4:	loc1: Coin<Ty1>
+L5:	loc2: Balance<Ty1>
+L6:	loc3: Coin<Ty0>
+L7:	loc4: Coin<Ty1>
+L8:	loc5: u64
+L9:	loc6: u64
+L10:	loc7: u64
+B0:
+	0: ImmBorrowLoc[0](Arg0: Coin<Ty1>)
+	1: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	2: StLoc[3](loc0: u64)
+	3: CopyLoc[3](loc0: u64)
+	4: LdU64(10)
+	5: Mul
+	6: LdConst[30](u64: 10000)
+	7: Div
+	8: StLoc[10](loc7: u64)
+	9: MutBorrowLoc[0](Arg0: Coin<Ty1>)
+	10: CopyLoc[10](loc7: u64)
+	11: CopyLoc[2](Arg2: &mut TxContext)
+	12: Call coin::split<Ty1>(&mut Coin<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	13: StLoc[4](loc1: Coin<Ty1>)
+	14: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	15: MutBorrowFieldGeneric[8](Pool.fee_y: Balance<Ty1>)
+	16: MoveLoc[4](loc1: Coin<Ty1>)
+	17: Call coin::into_balance<Ty1>(Coin<Ty1>): Balance<Ty1>
+	18: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	19: Pop
+	20: MoveLoc[0](Arg0: Coin<Ty1>)
+	21: Call coin::into_balance<Ty1>(Coin<Ty1>): Balance<Ty1>
+	22: StLoc[5](loc2: Balance<Ty1>)
+	23: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	24: MutBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	25: MoveLoc[5](loc2: Balance<Ty1>)
+	26: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	27: Pop
+	28: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	29: FreezeRef
+	30: Call token_reserves<Ty0, Ty1>(&Pool<Ty0, Ty1>): u64 * u64
+	31: StLoc[8](loc5: u64)
+	32: StLoc[9](loc6: u64)
+	33: MoveLoc[3](loc0: u64)
+	34: MoveLoc[10](loc7: u64)
+	35: Sub
+	36: MoveLoc[8](loc5: u64)
+	37: MoveLoc[9](loc6: u64)
+	38: Call utils::get_amount_out(u64, u64, u64): u64
+	39: LdU64(0)
+	40: MoveLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	41: MoveLoc[2](Arg2: &mut TxContext)
+	42: Call swap<Ty0, Ty1>(u64, u64, &mut Pool<Ty0, Ty1>, &mut TxContext): Coin<Ty0> * Coin<Ty1>
+	43: StLoc[7](loc4: Coin<Ty1>)
+	44: StLoc[6](loc3: Coin<Ty0>)
+	45: ImmBorrowLoc[7](loc4: Coin<Ty1>)
+	46: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	47: LdU64(0)
+	48: Eq
+	49: BrFalse(51)
+B1:
+	50: Branch(53)
+B2:
+	51: LdConst[19](u64: 13)
+	52: Abort
+B3:
+	53: MoveLoc[6](loc3: Coin<Ty0>)
+	54: MoveLoc[7](loc4: Coin<Ty1>)
+	55: Ret
+}
+
+public(friend) swap_y_to_exact_x<Ty0, Ty1>(Arg0: u64, Arg1: Coin<Ty1>, Arg2: u64, Arg3: address, Arg4: &mut Pool<Ty0, Ty1>, Arg5: &mut TxContext): u64 * Coin<Ty0> {
+L6:	loc0: Coin<Ty0>
+L7:	loc1: Coin<Ty1>
+B0:
+	0: CopyLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[0](Pool.is_freeze: bool)
+	2: ReadRef
+	3: Not
+	4: BrFalse(6)
+B1:
+	5: Branch(12)
+B2:
+	6: MoveLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	7: Pop
+	8: MoveLoc[5](Arg5: &mut TxContext)
+	9: Pop
+	10: LdConst[29](u64: 24)
+	11: Abort
+B3:
+	12: CopyLoc[0](Arg0: u64)
+	13: ImmBorrowLoc[1](Arg1: Coin<Ty1>)
+	14: Call assert_input_amount<Ty1>(u64, &Coin<Ty1>)
+	15: MoveLoc[1](Arg1: Coin<Ty1>)
+	16: MoveLoc[2](Arg2: u64)
+	17: MoveLoc[4](Arg4: &mut Pool<Ty0, Ty1>)
+	18: MoveLoc[5](Arg5: &mut TxContext)
+	19: Call swap_y_to_exact_x_direct<Ty0, Ty1>(Coin<Ty1>, u64, &mut Pool<Ty0, Ty1>, &mut TxContext): Coin<Ty0> * Coin<Ty1>
+	20: StLoc[7](loc1: Coin<Ty1>)
+	21: StLoc[6](loc0: Coin<Ty0>)
+	22: MoveLoc[7](loc1: Coin<Ty1>)
+	23: Call coin::destroy_zero<Ty1>(Coin<Ty1>)
+	24: MoveLoc[0](Arg0: u64)
+	25: MoveLoc[6](loc0: Coin<Ty0>)
+	26: Ret
+}
+
+public(friend) swap_y_to_exact_x_direct<Ty0, Ty1>(Arg0: Coin<Ty1>, Arg1: u64, Arg2: &mut Pool<Ty0, Ty1>, Arg3: &mut TxContext): Coin<Ty0> * Coin<Ty1> {
+L4:	loc0: Balance<Ty1>
+L5:	loc1: Coin<Ty1>
+L6:	loc2: Coin<Ty0>
+L7:	loc3: Coin<Ty1>
+L8:	loc4: u64
+B0:
+	0: ImmBorrowLoc[0](Arg0: Coin<Ty1>)
+	1: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	2: LdU64(10)
+	3: Mul
+	4: LdConst[30](u64: 10000)
+	5: Div
+	6: StLoc[8](loc4: u64)
+	7: MutBorrowLoc[0](Arg0: Coin<Ty1>)
+	8: MoveLoc[8](loc4: u64)
+	9: CopyLoc[3](Arg3: &mut TxContext)
+	10: Call coin::split<Ty1>(&mut Coin<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	11: StLoc[5](loc1: Coin<Ty1>)
+	12: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	13: MutBorrowFieldGeneric[8](Pool.fee_y: Balance<Ty1>)
+	14: MoveLoc[5](loc1: Coin<Ty1>)
+	15: Call coin::into_balance<Ty1>(Coin<Ty1>): Balance<Ty1>
+	16: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	17: Pop
+	18: MoveLoc[0](Arg0: Coin<Ty1>)
+	19: Call coin::into_balance<Ty1>(Coin<Ty1>): Balance<Ty1>
+	20: StLoc[4](loc0: Balance<Ty1>)
+	21: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	22: MutBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	23: MoveLoc[4](loc0: Balance<Ty1>)
+	24: Call balance::join<Ty1>(&mut Balance<Ty1>, Balance<Ty1>): u64
+	25: Pop
+	26: MoveLoc[1](Arg1: u64)
+	27: LdU64(0)
+	28: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	29: MoveLoc[3](Arg3: &mut TxContext)
+	30: Call swap<Ty0, Ty1>(u64, u64, &mut Pool<Ty0, Ty1>, &mut TxContext): Coin<Ty0> * Coin<Ty1>
+	31: StLoc[7](loc3: Coin<Ty1>)
+	32: StLoc[6](loc2: Coin<Ty0>)
+	33: ImmBorrowLoc[7](loc3: Coin<Ty1>)
+	34: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	35: LdU64(0)
+	36: Eq
+	37: BrFalse(39)
+B1:
+	38: Branch(41)
+B2:
+	39: LdConst[19](u64: 13)
+	40: Abort
+B3:
+	41: MoveLoc[6](loc2: Coin<Ty0>)
+	42: MoveLoc[7](loc3: Coin<Ty1>)
+	43: Ret
+}
+
+swap<Ty0, Ty1>(Arg0: u64, Arg1: u64, Arg2: &mut Pool<Ty0, Ty1>, Arg3: &mut TxContext): Coin<Ty0> * Coin<Ty1> {
+L4:	loc0: bool
+L5:	loc1: bool
+L6:	loc2: u64
+L7:	loc3: u64
+L8:	loc4: bool
+L9:	loc5: bool
+L10:	loc6: bool
+L11:	loc7: bool
+L12:	loc8: bool
+L13:	loc9: u64
+L14:	loc10: u64
+L15:	loc11: u64
+L16:	loc12: u128
+L17:	loc13: Balance<Ty0>
+L18:	loc14: u64
+L19:	loc15: u128
+L20:	loc16: Balance<Ty1>
+L21:	loc17: Coin<Ty0>
+L22:	loc18: Coin<Ty1>
+L23:	loc19: U256
+L24:	loc20: U256
+L25:	loc21: u128
+L26:	loc22: u128
+L27:	loc23: u128
+B0:
+	0: CopyLoc[0](Arg0: u64)
+	1: LdU64(0)
+	2: Gt
+	3: BrFalse(7)
+B1:
+	4: LdTrue
+	5: StLoc[4](loc0: bool)
+	6: Branch(11)
+B2:
+	7: CopyLoc[1](Arg1: u64)
+	8: LdU64(0)
+	9: Gt
+	10: StLoc[4](loc0: bool)
+B3:
+	11: MoveLoc[4](loc0: bool)
+	12: BrFalse(14)
+B4:
+	13: Branch(20)
+B5:
+	14: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	15: Pop
+	16: MoveLoc[3](Arg3: &mut TxContext)
+	17: Pop
+	18: LdConst[19](u64: 13)
+	19: Abort
+B6:
+	20: CopyLoc[0](Arg0: u64)
+	21: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	22: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	23: ReadRef
+	24: Lt
+	25: BrFalse(33)
+B7:
+	26: CopyLoc[1](Arg1: u64)
+	27: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	28: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	29: ReadRef
+	30: Lt
+	31: StLoc[5](loc1: bool)
+	32: Branch(35)
+B8:
+	33: LdFalse
+	34: StLoc[5](loc1: bool)
+B9:
+	35: MoveLoc[5](loc1: bool)
+	36: BrFalse(38)
+B10:
+	37: Branch(44)
+B11:
+	38: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	39: Pop
+	40: MoveLoc[3](Arg3: &mut TxContext)
+	41: Pop
+	42: LdConst[15](u64: 7)
+	43: Abort
+B12:
+	44: CopyLoc[3](Arg3: &mut TxContext)
+	45: Call coin::zero<Ty0>(&mut TxContext): Coin<Ty0>
+	46: StLoc[21](loc17: Coin<Ty0>)
+	47: CopyLoc[3](Arg3: &mut TxContext)
+	48: Call coin::zero<Ty1>(&mut TxContext): Coin<Ty1>
+	49: StLoc[22](loc18: Coin<Ty1>)
+	50: CopyLoc[0](Arg0: u64)
+	51: LdU64(0)
+	52: Gt
+	53: BrFalse(64)
+B13:
+	54: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	55: MutBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	56: CopyLoc[0](Arg0: u64)
+	57: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	58: StLoc[17](loc13: Balance<Ty0>)
+	59: MutBorrowLoc[21](loc17: Coin<Ty0>)
+	60: MoveLoc[17](loc13: Balance<Ty0>)
+	61: CopyLoc[3](Arg3: &mut TxContext)
+	62: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	63: Call coin::join<Ty0>(&mut Coin<Ty0>, Coin<Ty0>)
+B14:
+	64: CopyLoc[1](Arg1: u64)
+	65: LdU64(0)
+	66: Gt
+	67: BrFalse(79)
+B15:
+	68: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	69: MutBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	70: CopyLoc[1](Arg1: u64)
+	71: Call balance::split<Ty1>(&mut Balance<Ty1>, u64): Balance<Ty1>
+	72: StLoc[20](loc16: Balance<Ty1>)
+	73: MutBorrowLoc[22](loc18: Coin<Ty1>)
+	74: MoveLoc[20](loc16: Balance<Ty1>)
+	75: MoveLoc[3](Arg3: &mut TxContext)
+	76: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	77: Call coin::join<Ty1>(&mut Coin<Ty1>, Coin<Ty1>)
+	78: Branch(81)
+B16:
+	79: MoveLoc[3](Arg3: &mut TxContext)
+	80: Pop
+B17:
+	81: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	82: FreezeRef
+	83: Call token_balances<Ty0, Ty1>(&Pool<Ty0, Ty1>): u64 * u64
+	84: StLoc[18](loc14: u64)
+	85: StLoc[15](loc11: u64)
+	86: CopyLoc[15](loc11: u64)
+	87: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	88: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	89: ReadRef
+	90: CopyLoc[0](Arg0: u64)
+	91: Sub
+	92: Gt
+	93: BrFalse(103)
+B18:
+	94: CopyLoc[15](loc11: u64)
+	95: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	96: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	97: ReadRef
+	98: MoveLoc[0](Arg0: u64)
+	99: Sub
+	100: Sub
+	101: StLoc[6](loc2: u64)
+	102: Branch(105)
+B19:
+	103: LdU64(0)
+	104: StLoc[6](loc2: u64)
+B20:
+	105: MoveLoc[6](loc2: u64)
+	106: StLoc[13](loc9: u64)
+	107: CopyLoc[18](loc14: u64)
+	108: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	109: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	110: ReadRef
+	111: CopyLoc[1](Arg1: u64)
+	112: Sub
+	113: Gt
+	114: BrFalse(124)
+B21:
+	115: CopyLoc[18](loc14: u64)
+	116: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	117: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	118: ReadRef
+	119: MoveLoc[1](Arg1: u64)
+	120: Sub
+	121: Sub
+	122: StLoc[7](loc3: u64)
+	123: Branch(126)
+B22:
+	124: LdU64(0)
+	125: StLoc[7](loc3: u64)
+B23:
+	126: MoveLoc[7](loc3: u64)
+	127: StLoc[14](loc10: u64)
+	128: CopyLoc[13](loc9: u64)
+	129: LdU64(0)
+	130: Gt
+	131: BrFalse(135)
+B24:
+	132: LdTrue
+	133: StLoc[8](loc4: bool)
+	134: Branch(139)
+B25:
+	135: CopyLoc[14](loc10: u64)
+	136: LdU64(0)
+	137: Gt
+	138: StLoc[8](loc4: bool)
+B26:
+	139: MoveLoc[8](loc4: bool)
+	140: BrFalse(142)
+B27:
+	141: Branch(146)
+B28:
+	142: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	143: Pop
+	144: LdConst[20](u64: 14)
+	145: Abort
+B29:
+	146: LdConst[30](u64: 10000)
+	147: CastU128
+	148: StLoc[25](loc21: u128)
+	149: CopyLoc[15](loc11: u64)
+	150: CastU128
+	151: CopyLoc[25](loc21: u128)
+	152: Mul
+	153: MoveLoc[13](loc9: u64)
+	154: CastU128
+	155: LdU128(20)
+	156: Mul
+	157: Sub
+	158: StLoc[16](loc12: u128)
+	159: CopyLoc[18](loc14: u64)
+	160: CastU128
+	161: CopyLoc[25](loc21: u128)
+	162: Mul
+	163: MoveLoc[14](loc10: u64)
+	164: CastU128
+	165: LdU128(20)
+	166: Mul
+	167: Sub
+	168: StLoc[19](loc15: u128)
+	169: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	170: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	171: ReadRef
+	172: CastU128
+	173: CopyLoc[25](loc21: u128)
+	174: Mul
+	175: StLoc[26](loc22: u128)
+	176: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	177: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	178: ReadRef
+	179: CastU128
+	180: MoveLoc[25](loc21: u128)
+	181: Mul
+	182: StLoc[27](loc23: u128)
+	183: CopyLoc[16](loc12: u128)
+	184: LdU128(0)
+	185: Gt
+	186: BrFalse(192)
+B30:
+	187: CopyLoc[26](loc22: u128)
+	188: LdU128(0)
+	189: Gt
+	190: StLoc[9](loc5: bool)
+	191: Branch(194)
+B31:
+	192: LdFalse
+	193: StLoc[9](loc5: bool)
+B32:
+	194: MoveLoc[9](loc5: bool)
+	195: BrFalse(203)
+B33:
+	196: LdConst[34](u128: 3402..)
+	197: CopyLoc[16](loc12: u128)
+	198: Div
+	199: CopyLoc[19](loc15: u128)
+	200: Gt
+	201: StLoc[10](loc6: bool)
+	202: Branch(205)
+B34:
+	203: LdFalse
+	204: StLoc[10](loc6: bool)
+B35:
+	205: MoveLoc[10](loc6: bool)
+	206: BrFalse(214)
+B36:
+	207: LdConst[34](u128: 3402..)
+	208: CopyLoc[26](loc22: u128)
+	209: Div
+	210: CopyLoc[27](loc23: u128)
+	211: Gt
+	212: StLoc[11](loc7: bool)
+	213: Branch(216)
+B37:
+	214: LdFalse
+	215: StLoc[11](loc7: bool)
+B38:
+	216: MoveLoc[11](loc7: bool)
+	217: BrFalse(227)
+B39:
+	218: MoveLoc[16](loc12: u128)
+	219: MoveLoc[19](loc15: u128)
+	220: Mul
+	221: MoveLoc[26](loc22: u128)
+	222: MoveLoc[27](loc23: u128)
+	223: Mul
+	224: Ge
+	225: StLoc[12](loc8: bool)
+	226: Branch(239)
+B40:
+	227: MoveLoc[16](loc12: u128)
+	228: MoveLoc[19](loc15: u128)
+	229: Call u256::mul_u128(u128, u128): U256
+	230: StLoc[24](loc20: U256)
+	231: MoveLoc[26](loc22: u128)
+	232: MoveLoc[27](loc23: u128)
+	233: Call u256::mul_u128(u128, u128): U256
+	234: StLoc[23](loc19: U256)
+	235: ImmBorrowLoc[24](loc20: U256)
+	236: ImmBorrowLoc[23](loc19: U256)
+	237: Call u256::ge(&U256, &U256): bool
+	238: StLoc[12](loc8: bool)
+B41:
+	239: MoveLoc[12](loc8: bool)
+	240: BrFalse(242)
+B42:
+	241: Branch(246)
+B43:
+	242: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	243: Pop
+	244: LdConst[21](u64: 15)
+	245: Abort
+B44:
+	246: MoveLoc[15](loc11: u64)
+	247: MoveLoc[18](loc14: u64)
+	248: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	249: Call update<Ty0, Ty1>(u64, u64, &mut Pool<Ty0, Ty1>)
+	250: MoveLoc[21](loc17: Coin<Ty0>)
+	251: MoveLoc[22](loc18: Coin<Ty1>)
+	252: Ret
+}
+
+remove_liquidity_direct<Ty0, Ty1>(Arg0: Coin<LSP<Ty0, Ty1>>, Arg1: &mut Pool<Ty0, Ty1>, Arg2: &mut TxContext): Coin<Ty0> * Coin<Ty1> * u64 {
+B0:
+	0: MoveLoc[0](Arg0: Coin<LSP<Ty0, Ty1>>)
+	1: MoveLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	2: MoveLoc[2](Arg2: &mut TxContext)
+	3: Call burn<Ty0, Ty1>(Coin<LSP<Ty0, Ty1>>, &mut Pool<Ty0, Ty1>, &mut TxContext): Coin<Ty0> * Coin<Ty1> * u64
+	4: Ret
+}
+
+burn<Ty0, Ty1>(Arg0: Coin<LSP<Ty0, Ty1>>, Arg1: &mut Pool<Ty0, Ty1>, Arg2: &mut TxContext): Coin<Ty0> * Coin<Ty1> * u64 {
+L3:	loc0: bool
+L4:	loc1: u64
+L5:	loc2: u64
+L6:	loc3: u64
+L7:	loc4: u64
+L8:	loc5: u64
+L9:	loc6: u64
+L10:	loc7: Balance<LSP<Ty0, Ty1>>
+L11:	loc8: u64
+L12:	loc9: Coin<Ty0>
+L13:	loc10: Coin<Ty1>
+B0:
+	0: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	2: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	3: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	5: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	6: StLoc[7](loc4: u64)
+	7: StLoc[6](loc3: u64)
+	8: ImmBorrowLoc[0](Arg0: Coin<LSP<Ty0, Ty1>>)
+	9: Call coin::value<LSP<Ty0, Ty1>>(&Coin<LSP<Ty0, Ty1>>): u64
+	10: StLoc[9](loc6: u64)
+	11: CopyLoc[9](loc6: u64)
+	12: LdU64(0)
+	13: Gt
+	14: BrFalse(16)
+B1:
+	15: Branch(22)
+B2:
+	16: MoveLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	17: Pop
+	18: MoveLoc[2](Arg2: &mut TxContext)
+	19: Pop
+	20: LdConst[15](u64: 7)
+	21: Abort
+B3:
+	22: MoveLoc[0](Arg0: Coin<LSP<Ty0, Ty1>>)
+	23: Call coin::into_balance<LSP<Ty0, Ty1>>(Coin<LSP<Ty0, Ty1>>): Balance<LSP<Ty0, Ty1>>
+	24: StLoc[10](loc7: Balance<LSP<Ty0, Ty1>>)
+	25: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	26: Call mint_fee<Ty0, Ty1>(&mut Pool<Ty0, Ty1>): u64
+	27: StLoc[8](loc5: u64)
+	28: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	29: ImmBorrowFieldGeneric[2](Pool.lsp_supply: Supply<LSP<Ty0, Ty1>>)
+	30: Call balance::supply_value<LSP<Ty0, Ty1>>(&Supply<LSP<Ty0, Ty1>>): u64
+	31: StLoc[11](loc8: u64)
+	32: MoveLoc[6](loc3: u64)
+	33: CastU128
+	34: CopyLoc[9](loc6: u64)
+	35: CastU128
+	36: Mul
+	37: CopyLoc[11](loc8: u64)
+	38: CastU128
+	39: Div
+	40: CastU64
+	41: StLoc[4](loc1: u64)
+	42: MoveLoc[7](loc4: u64)
+	43: CastU128
+	44: MoveLoc[9](loc6: u64)
+	45: CastU128
+	46: Mul
+	47: MoveLoc[11](loc8: u64)
+	48: CastU128
+	49: Div
+	50: CastU64
+	51: StLoc[5](loc2: u64)
+	52: CopyLoc[4](loc1: u64)
+	53: LdU64(0)
+	54: Gt
+	55: BrFalse(61)
+B4:
+	56: CopyLoc[5](loc2: u64)
+	57: LdU64(0)
+	58: Gt
+	59: StLoc[3](loc0: bool)
+	60: Branch(63)
+B5:
+	61: LdFalse
+	62: StLoc[3](loc0: bool)
+B6:
+	63: MoveLoc[3](loc0: bool)
+	64: BrFalse(66)
+B7:
+	65: Branch(72)
+B8:
+	66: MoveLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	67: Pop
+	68: MoveLoc[2](Arg2: &mut TxContext)
+	69: Pop
+	70: LdConst[18](u64: 10)
+	71: Abort
+B9:
+	72: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	73: MutBorrowFieldGeneric[2](Pool.lsp_supply: Supply<LSP<Ty0, Ty1>>)
+	74: MoveLoc[10](loc7: Balance<LSP<Ty0, Ty1>>)
+	75: Call balance::decrease_supply<LSP<Ty0, Ty1>>(&mut Supply<LSP<Ty0, Ty1>>, Balance<LSP<Ty0, Ty1>>): u64
+	76: Pop
+	77: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	78: MutBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	79: MoveLoc[4](loc1: u64)
+	80: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	81: CopyLoc[2](Arg2: &mut TxContext)
+	82: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	83: StLoc[12](loc9: Coin<Ty0>)
+	84: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	85: MutBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	86: MoveLoc[5](loc2: u64)
+	87: Call balance::split<Ty1>(&mut Balance<Ty1>, u64): Balance<Ty1>
+	88: MoveLoc[2](Arg2: &mut TxContext)
+	89: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	90: StLoc[13](loc10: Coin<Ty1>)
+	91: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	92: ImmBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	93: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	94: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	95: ImmBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	96: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	97: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	98: Call update<Ty0, Ty1>(u64, u64, &mut Pool<Ty0, Ty1>)
+	99: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	100: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	101: ReadRef
+	102: CastU128
+	103: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	104: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	105: ReadRef
+	106: CastU128
+	107: Mul
+	108: MoveLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	109: MutBorrowFieldGeneric[16](Pool.k_last: u128)
+	110: WriteRef
+	111: MoveLoc[12](loc9: Coin<Ty0>)
+	112: MoveLoc[13](loc10: Coin<Ty1>)
+	113: MoveLoc[8](loc5: u64)
+	114: Ret
+}
+
+mint<Ty0, Ty1>(Arg0: &mut Pool<Ty0, Ty1>, Arg1: &mut TxContext): Coin<LSP<Ty0, Ty1>> * u64 {
+L2:	loc0: u128
+L3:	loc1: u128
+L4:	loc2: u128
+L5:	loc3: u64
+L6:	loc4: u64
+L7:	loc5: u64
+L8:	loc6: u128
+L9:	loc7: u128
+L10:	loc8: u128
+L11:	loc9: Coin<LSP<Ty0, Ty1>>
+L12:	loc10: Balance<LSP<Ty0, Ty1>>
+L13:	loc11: u128
+L14:	loc12: u128
+B0:
+	0: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	2: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	3: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	5: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	6: StLoc[6](loc4: u64)
+	7: StLoc[5](loc3: u64)
+	8: CopyLoc[5](loc3: u64)
+	9: CastU128
+	10: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	11: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	12: ReadRef
+	13: CastU128
+	14: Sub
+	15: StLoc[3](loc1: u128)
+	16: CopyLoc[6](loc4: u64)
+	17: CastU128
+	18: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	19: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	20: ReadRef
+	21: CastU128
+	22: Sub
+	23: StLoc[4](loc2: u128)
+	24: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	25: Call mint_fee<Ty0, Ty1>(&mut Pool<Ty0, Ty1>): u64
+	26: StLoc[7](loc5: u64)
+	27: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	28: ImmBorrowFieldGeneric[2](Pool.lsp_supply: Supply<LSP<Ty0, Ty1>>)
+	29: Call balance::supply_value<LSP<Ty0, Ty1>>(&Supply<LSP<Ty0, Ty1>>): u64
+	30: CastU128
+	31: StLoc[14](loc12: u128)
+	32: CopyLoc[14](loc12: u128)
+	33: LdU128(0)
+	34: Eq
+	35: BrFalse(70)
+B1:
+	36: MoveLoc[3](loc1: u128)
+	37: MoveLoc[4](loc2: u128)
+	38: Mul
+	39: Call math::sqrt(u128): u128
+	40: StLoc[13](loc11: u128)
+	41: CopyLoc[13](loc11: u128)
+	42: LdConst[8](u128: 1000)
+	43: Gt
+	44: BrFalse(46)
+B2:
+	45: Branch(52)
+B3:
+	46: MoveLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	47: Pop
+	48: MoveLoc[1](Arg1: &mut TxContext)
+	49: Pop
+	50: LdConst[13](u64: 4)
+	51: Abort
+B4:
+	52: MoveLoc[13](loc11: u128)
+	53: LdConst[8](u128: 1000)
+	54: Sub
+	55: StLoc[8](loc6: u128)
+	56: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	57: MutBorrowFieldGeneric[2](Pool.lsp_supply: Supply<LSP<Ty0, Ty1>>)
+	58: LdConst[8](u128: 1000)
+	59: CastU64
+	60: Call balance::increase_supply<LSP<Ty0, Ty1>>(&mut Supply<LSP<Ty0, Ty1>>, u64): Balance<LSP<Ty0, Ty1>>
+	61: StLoc[12](loc10: Balance<LSP<Ty0, Ty1>>)
+	62: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	63: MutBorrowFieldGeneric[17](Pool.minimum_liq: Balance<LSP<Ty0, Ty1>>)
+	64: MoveLoc[12](loc10: Balance<LSP<Ty0, Ty1>>)
+	65: Call balance::join<LSP<Ty0, Ty1>>(&mut Balance<LSP<Ty0, Ty1>>, Balance<LSP<Ty0, Ty1>>): u64
+	66: Pop
+	67: MoveLoc[8](loc6: u128)
+	68: StLoc[2](loc0: u128)
+	69: Branch(101)
+B5:
+	70: MoveLoc[3](loc1: u128)
+	71: CopyLoc[14](loc12: u128)
+	72: Mul
+	73: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	74: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	75: ReadRef
+	76: CastU128
+	77: Div
+	78: MoveLoc[4](loc2: u128)
+	79: MoveLoc[14](loc12: u128)
+	80: Mul
+	81: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	82: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	83: ReadRef
+	84: CastU128
+	85: Div
+	86: Call math::min(u128, u128): u128
+	87: StLoc[9](loc7: u128)
+	88: CopyLoc[9](loc7: u128)
+	89: LdU128(0)
+	90: Gt
+	91: BrFalse(93)
+B6:
+	92: Branch(99)
+B7:
+	93: MoveLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	94: Pop
+	95: MoveLoc[1](Arg1: &mut TxContext)
+	96: Pop
+	97: LdConst[13](u64: 4)
+	98: Abort
+B8:
+	99: MoveLoc[9](loc7: u128)
+	100: StLoc[2](loc0: u128)
+B9:
+	101: MoveLoc[2](loc0: u128)
+	102: StLoc[10](loc8: u128)
+	103: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	104: MutBorrowFieldGeneric[2](Pool.lsp_supply: Supply<LSP<Ty0, Ty1>>)
+	105: MoveLoc[10](loc8: u128)
+	106: CastU64
+	107: Call balance::increase_supply<LSP<Ty0, Ty1>>(&mut Supply<LSP<Ty0, Ty1>>, u64): Balance<LSP<Ty0, Ty1>>
+	108: MoveLoc[1](Arg1: &mut TxContext)
+	109: Call coin::from_balance<LSP<Ty0, Ty1>>(Balance<LSP<Ty0, Ty1>>, &mut TxContext): Coin<LSP<Ty0, Ty1>>
+	110: StLoc[11](loc9: Coin<LSP<Ty0, Ty1>>)
+	111: MoveLoc[5](loc3: u64)
+	112: MoveLoc[6](loc4: u64)
+	113: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	114: Call update<Ty0, Ty1>(u64, u64, &mut Pool<Ty0, Ty1>)
+	115: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	116: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	117: ReadRef
+	118: CastU128
+	119: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	120: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	121: ReadRef
+	122: CastU128
+	123: Mul
+	124: MoveLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	125: MutBorrowFieldGeneric[16](Pool.k_last: u128)
+	126: WriteRef
+	127: MoveLoc[11](loc9: Coin<LSP<Ty0, Ty1>>)
+	128: MoveLoc[7](loc5: u64)
+	129: Ret
+}
+
+mint_fee<Ty0, Ty1>(Arg0: &mut Pool<Ty0, Ty1>): u64 {
+L1:	loc0: Balance<LSP<Ty0, Ty1>>
+L2:	loc1: u128
+L3:	loc2: u64
+L4:	loc3: u128
+L5:	loc4: u128
+L6:	loc5: u128
+B0:
+	0: LdU64(0)
+	1: StLoc[3](loc2: u64)
+	2: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	3: ImmBorrowFieldGeneric[16](Pool.k_last: u128)
+	4: ReadRef
+	5: LdU128(0)
+	6: Neq
+	7: BrFalse(73)
+B1:
+	8: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	9: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	10: ReadRef
+	11: CastU128
+	12: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	13: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	14: ReadRef
+	15: CastU128
+	16: Mul
+	17: Call math::sqrt(u128): u128
+	18: StLoc[5](loc4: u128)
+	19: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	20: ImmBorrowFieldGeneric[16](Pool.k_last: u128)
+	21: ReadRef
+	22: Call math::sqrt(u128): u128
+	23: StLoc[6](loc5: u128)
+	24: CopyLoc[5](loc4: u128)
+	25: CopyLoc[6](loc5: u128)
+	26: Gt
+	27: BrFalse(70)
+B2:
+	28: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	29: ImmBorrowFieldGeneric[2](Pool.lsp_supply: Supply<LSP<Ty0, Ty1>>)
+	30: Call balance::supply_value<LSP<Ty0, Ty1>>(&Supply<LSP<Ty0, Ty1>>): u64
+	31: CastU128
+	32: CopyLoc[5](loc4: u128)
+	33: CopyLoc[6](loc5: u128)
+	34: Sub
+	35: Mul
+	36: LdU128(10)
+	37: Mul
+	38: StLoc[4](loc3: u128)
+	39: MoveLoc[6](loc5: u128)
+	40: LdU128(20)
+	41: Mul
+	42: MoveLoc[5](loc4: u128)
+	43: LdU128(10)
+	44: Mul
+	45: Add
+	46: StLoc[2](loc1: u128)
+	47: MoveLoc[4](loc3: u128)
+	48: MoveLoc[2](loc1: u128)
+	49: Div
+	50: CastU64
+	51: StLoc[3](loc2: u64)
+	52: CopyLoc[3](loc2: u64)
+	53: LdU64(0)
+	54: Gt
+	55: BrFalse(67)
+B3:
+	56: CopyLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	57: MutBorrowFieldGeneric[2](Pool.lsp_supply: Supply<LSP<Ty0, Ty1>>)
+	58: CopyLoc[3](loc2: u64)
+	59: Call balance::increase_supply<LSP<Ty0, Ty1>>(&mut Supply<LSP<Ty0, Ty1>>, u64): Balance<LSP<Ty0, Ty1>>
+	60: StLoc[1](loc0: Balance<LSP<Ty0, Ty1>>)
+	61: MoveLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	62: MutBorrowFieldGeneric[6](Pool.fee_amount: Balance<LSP<Ty0, Ty1>>)
+	63: MoveLoc[1](loc0: Balance<LSP<Ty0, Ty1>>)
+	64: Call balance::join<LSP<Ty0, Ty1>>(&mut Balance<LSP<Ty0, Ty1>>, Balance<LSP<Ty0, Ty1>>): u64
+	65: Pop
+	66: Branch(69)
+B4:
+	67: MoveLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	68: Pop
+B5:
+	69: Branch(72)
+B6:
+	70: MoveLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	71: Pop
+B7:
+	72: Branch(75)
+B8:
+	73: MoveLoc[0](Arg0: &mut Pool<Ty0, Ty1>)
+	74: Pop
+B9:
+	75: MoveLoc[3](loc2: u64)
+	76: Ret
+}
+
+update<Ty0, Ty1>(Arg0: u64, Arg1: u64, Arg2: &mut Pool<Ty0, Ty1>) {
+B0:
+	0: MoveLoc[0](Arg0: u64)
+	1: CopyLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	2: MutBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	3: WriteRef
+	4: MoveLoc[1](Arg1: u64)
+	5: MoveLoc[2](Arg2: &mut Pool<Ty0, Ty1>)
+	6: MutBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	7: WriteRef
+	8: Ret
+}
+
+public check_pool_exist<Ty0, Ty1>(Arg0: &Dex_Info): bool {
+L1:	loc0: String
+B0:
+	0: Call utils::get_lp_name<Ty0, Ty1>(): String
+	1: StLoc[1](loc0: String)
+	2: MoveLoc[0](Arg0: &Dex_Info)
+	3: ImmBorrowField[1](Dex_Info.id: UID)
+	4: MoveLoc[1](loc0: String)
+	5: Call dynamic_object_field::exists_<String>(&UID, String): bool
+	6: Ret
+}
+
+public get_amounts<Ty0, Ty1>(Arg0: &Pool<Ty0, Ty1>): u64 * u64 * u64 {
+B0:
+	0: CopyLoc[0](Arg0: &Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	2: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	3: CopyLoc[0](Arg0: &Pool<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	5: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	6: MoveLoc[0](Arg0: &Pool<Ty0, Ty1>)
+	7: ImmBorrowFieldGeneric[2](Pool.lsp_supply: Supply<LSP<Ty0, Ty1>>)
+	8: Call balance::supply_value<LSP<Ty0, Ty1>>(&Supply<LSP<Ty0, Ty1>>): u64
+	9: Ret
+}
+
+public token_reserves<Ty0, Ty1>(Arg0: &Pool<Ty0, Ty1>): u64 * u64 {
+B0:
+	0: CopyLoc[0](Arg0: &Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	2: ReadRef
+	3: MoveLoc[0](Arg0: &Pool<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	5: ReadRef
+	6: Ret
+}
+
+public token_balances<Ty0, Ty1>(Arg0: &Pool<Ty0, Ty1>): u64 * u64 {
+B0:
+	0: CopyLoc[0](Arg0: &Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	2: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	3: MoveLoc[0](Arg0: &Pool<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	5: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	6: Ret
+}
+
+public get_pool<Ty0, Ty1>(Arg0: &mut Dex_Info): &mut Pool<Ty0, Ty1> {
+L1:	loc0: String
+B0:
+	0: CopyLoc[0](Arg0: &mut Dex_Info)
+	1: FreezeRef
+	2: Call check_pool_exist<Ty0, Ty1>(&Dex_Info): bool
+	3: BrFalse(5)
+B1:
+	4: Branch(9)
+B2:
+	5: MoveLoc[0](Arg0: &mut Dex_Info)
+	6: Pop
+	7: LdConst[28](u64: 23)
+	8: Abort
+B3:
+	9: Call utils::get_lp_name<Ty0, Ty1>(): String
+	10: StLoc[1](loc0: String)
+	11: MoveLoc[0](Arg0: &mut Dex_Info)
+	12: MutBorrowField[1](Dex_Info.id: UID)
+	13: MoveLoc[1](loc0: String)
+	14: Call dynamic_object_field::borrow_mut<String, Pool<Ty0, Ty1>>(&mut UID, String): &mut Pool<Ty0, Ty1>
+	15: Ret
+}
+
+public add_swap_event_internal<Ty0, Ty1>(Arg0: u64, Arg1: u64, Arg2: u64, Arg3: u64, Arg4: &mut Dex_Info, Arg5: &mut TxContext) {
+B0:
+	0: MoveLoc[5](Arg5: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: MoveLoc[0](Arg0: u64)
+	4: MoveLoc[1](Arg1: u64)
+	5: MoveLoc[2](Arg2: u64)
+	6: MoveLoc[3](Arg3: u64)
+	7: MoveLoc[4](Arg4: &mut Dex_Info)
+	8: Call add_swap_event_with_address_internal<Ty0, Ty1>(address, u64, u64, u64, u64, &mut Dex_Info)
+	9: Ret
+}
+
+add_swap_event_with_address_internal<Ty0, Ty1>(Arg0: address, Arg1: u64, Arg2: u64, Arg3: u64, Arg4: u64, Arg5: &mut Dex_Info) {
+L6:	loc0: &mut Pool<Ty0, Ty1>
+L7:	loc1: &mut Pool<Ty1, Ty0>
+B0:
+	0: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	1: BrFalse(13)
+B1:
+	2: MoveLoc[5](Arg5: &mut Dex_Info)
+	3: Call get_pool<Ty0, Ty1>(&mut Dex_Info): &mut Pool<Ty0, Ty1>
+	4: StLoc[6](loc0: &mut Pool<Ty0, Ty1>)
+	5: MoveLoc[0](Arg0: address)
+	6: MoveLoc[1](Arg1: u64)
+	7: MoveLoc[2](Arg2: u64)
+	8: MoveLoc[3](Arg3: u64)
+	9: MoveLoc[4](Arg4: u64)
+	10: MoveLoc[6](loc0: &mut Pool<Ty0, Ty1>)
+	11: Call add_swap_event_with_address<Ty0, Ty1>(address, u64, u64, u64, u64, &mut Pool<Ty0, Ty1>)
+	12: Branch(23)
+B2:
+	13: MoveLoc[5](Arg5: &mut Dex_Info)
+	14: Call get_pool<Ty1, Ty0>(&mut Dex_Info): &mut Pool<Ty1, Ty0>
+	15: StLoc[7](loc1: &mut Pool<Ty1, Ty0>)
+	16: MoveLoc[0](Arg0: address)
+	17: MoveLoc[2](Arg2: u64)
+	18: MoveLoc[1](Arg1: u64)
+	19: MoveLoc[4](Arg4: u64)
+	20: MoveLoc[3](Arg3: u64)
+	21: MoveLoc[7](loc1: &mut Pool<Ty1, Ty0>)
+	22: Call add_swap_event_with_address<Ty1, Ty0>(address, u64, u64, u64, u64, &mut Pool<Ty1, Ty0>)
+B3:
+	23: Ret
+}
+
+public add_swap_event_with_address<Ty0, Ty1>(Arg0: address, Arg1: u64, Arg2: u64, Arg3: u64, Arg4: u64, Arg5: &mut Pool<Ty0, Ty1>) {
+B0:
+	0: MoveLoc[5](Arg5: &mut Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[1](Pool.id: UID)
+	2: Call object::uid_to_inner(&UID): ID
+	3: MoveLoc[0](Arg0: address)
+	4: Call utils::get_token_name<Ty0>(): String
+	5: MoveLoc[1](Arg1: u64)
+	6: Call utils::get_token_name<Ty1>(): String
+	7: MoveLoc[2](Arg2: u64)
+	8: Call utils::get_token_name<Ty0>(): String
+	9: MoveLoc[3](Arg3: u64)
+	10: Call utils::get_token_name<Ty1>(): String
+	11: MoveLoc[4](Arg4: u64)
+	12: PackGeneric[2](Swap_Event<Ty0, Ty1>)
+	13: Call event::emit<Swap_Event<Ty0, Ty1>>(Swap_Event<Ty0, Ty1>)
+	14: Ret
+}
+
+public assert_input_amount<Ty0>(Arg0: u64, Arg1: &Coin<Ty0>) {
+B0:
+	0: MoveLoc[1](Arg1: &Coin<Ty0>)
+	1: Call coin::value<Ty0>(&Coin<Ty0>): u64
+	2: MoveLoc[0](Arg0: u64)
+	3: Eq
+	4: BrFalse(6)
+B1:
+	5: Branch(8)
+B2:
+	6: LdConst[20](u64: 14)
+	7: Abort
+B3:
+	8: Ret
+}
+
+entry public withdraw_fee_direct<Ty0, Ty1>(Arg0: u64, Arg1: &mut Dex_Info, Arg2: &mut TxContext) {
+L3:	loc0: bool
+L4:	loc1: bool
+L5:	loc2: bool
+L6:	loc3: bool
+L7:	loc4: &mut Pool<Ty0, Ty1>
+L8:	loc5: &mut Pool<Ty1, Ty0>
+L9:	loc6: address
+B0:
+	0: CopyLoc[2](Arg2: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[9](loc6: address)
+	4: CopyLoc[9](loc6: address)
+	5: LdConst[2](address: 0x9c..)
+	6: Eq
+	7: BrFalse(11)
+B1:
+	8: LdTrue
+	9: StLoc[3](loc0: bool)
+	10: Branch(15)
+B2:
+	11: CopyLoc[9](loc6: address)
+	12: LdConst[3](address: 0x97..)
+	13: Eq
+	14: StLoc[3](loc0: bool)
+B3:
+	15: MoveLoc[3](loc0: bool)
+	16: BrFalse(20)
+B4:
+	17: LdTrue
+	18: StLoc[4](loc1: bool)
+	19: Branch(24)
+B5:
+	20: CopyLoc[9](loc6: address)
+	21: LdConst[4](address: 0x5e..)
+	22: Eq
+	23: StLoc[4](loc1: bool)
+B6:
+	24: MoveLoc[4](loc1: bool)
+	25: BrFalse(29)
+B7:
+	26: LdTrue
+	27: StLoc[5](loc2: bool)
+	28: Branch(33)
+B8:
+	29: CopyLoc[9](loc6: address)
+	30: LdConst[5](address: 0x95..)
+	31: Eq
+	32: StLoc[5](loc2: bool)
+B9:
+	33: MoveLoc[5](loc2: bool)
+	34: BrFalse(38)
+B10:
+	35: LdTrue
+	36: StLoc[6](loc3: bool)
+	37: Branch(42)
+B11:
+	38: MoveLoc[9](loc6: address)
+	39: LdConst[6](address: 0xa6..)
+	40: Eq
+	41: StLoc[6](loc3: bool)
+B12:
+	42: MoveLoc[6](loc3: bool)
+	43: BrFalse(45)
+B13:
+	44: Branch(51)
+B14:
+	45: MoveLoc[1](Arg1: &mut Dex_Info)
+	46: Pop
+	47: MoveLoc[2](Arg2: &mut TxContext)
+	48: Pop
+	49: LdU64(999)
+	50: Abort
+B15:
+	51: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	52: BrFalse(61)
+B16:
+	53: MoveLoc[1](Arg1: &mut Dex_Info)
+	54: Call get_pool<Ty0, Ty1>(&mut Dex_Info): &mut Pool<Ty0, Ty1>
+	55: StLoc[7](loc4: &mut Pool<Ty0, Ty1>)
+	56: MoveLoc[0](Arg0: u64)
+	57: MoveLoc[7](loc4: &mut Pool<Ty0, Ty1>)
+	58: MoveLoc[2](Arg2: &mut TxContext)
+	59: Call withdraw_fee_<Ty0, Ty1>(u64, &mut Pool<Ty0, Ty1>, &mut TxContext)
+	60: Branch(68)
+B17:
+	61: MoveLoc[1](Arg1: &mut Dex_Info)
+	62: Call get_pool<Ty1, Ty0>(&mut Dex_Info): &mut Pool<Ty1, Ty0>
+	63: StLoc[8](loc5: &mut Pool<Ty1, Ty0>)
+	64: MoveLoc[0](Arg0: u64)
+	65: MoveLoc[8](loc5: &mut Pool<Ty1, Ty0>)
+	66: MoveLoc[2](Arg2: &mut TxContext)
+	67: Call withdraw_fee_<Ty1, Ty0>(u64, &mut Pool<Ty1, Ty0>, &mut TxContext)
+B18:
+	68: Ret
+}
+
+public withdraw_fee_<Ty0, Ty1>(Arg0: u64, Arg1: &mut Pool<Ty0, Ty1>, Arg2: &mut TxContext) {
+L3:	loc0: bool
+L4:	loc1: u64
+L5:	loc2: u64
+L6:	loc3: u64
+L7:	loc4: u64
+L8:	loc5: address
+L9:	loc6: u64
+L10:	loc7: Coin<Ty0>
+L11:	loc8: Coin<Ty1>
+B0:
+	0: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	1: ImmBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	2: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	3: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	4: ImmBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	5: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	6: StLoc[7](loc4: u64)
+	7: StLoc[6](loc3: u64)
+	8: CopyLoc[2](Arg2: &mut TxContext)
+	9: FreezeRef
+	10: Call tx_context::sender(&TxContext): address
+	11: StLoc[8](loc5: address)
+	12: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	13: ImmBorrowFieldGeneric[2](Pool.lsp_supply: Supply<LSP<Ty0, Ty1>>)
+	14: Call balance::supply_value<LSP<Ty0, Ty1>>(&Supply<LSP<Ty0, Ty1>>): u64
+	15: StLoc[9](loc6: u64)
+	16: MoveLoc[6](loc3: u64)
+	17: CastU128
+	18: CopyLoc[0](Arg0: u64)
+	19: CastU128
+	20: Mul
+	21: CopyLoc[9](loc6: u64)
+	22: CastU128
+	23: Div
+	24: CastU64
+	25: StLoc[4](loc1: u64)
+	26: MoveLoc[7](loc4: u64)
+	27: CastU128
+	28: MoveLoc[0](Arg0: u64)
+	29: CastU128
+	30: Mul
+	31: MoveLoc[9](loc6: u64)
+	32: CastU128
+	33: Div
+	34: CastU64
+	35: StLoc[5](loc2: u64)
+	36: CopyLoc[4](loc1: u64)
+	37: LdU64(0)
+	38: Gt
+	39: BrFalse(45)
+B1:
+	40: CopyLoc[5](loc2: u64)
+	41: LdU64(0)
+	42: Gt
+	43: StLoc[3](loc0: bool)
+	44: Branch(47)
+B2:
+	45: LdFalse
+	46: StLoc[3](loc0: bool)
+B3:
+	47: MoveLoc[3](loc0: bool)
+	48: BrFalse(50)
+B4:
+	49: Branch(56)
+B5:
+	50: MoveLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	51: Pop
+	52: MoveLoc[2](Arg2: &mut TxContext)
+	53: Pop
+	54: LdConst[18](u64: 10)
+	55: Abort
+B6:
+	56: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	57: MutBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	58: MoveLoc[4](loc1: u64)
+	59: Call balance::split<Ty0>(&mut Balance<Ty0>, u64): Balance<Ty0>
+	60: CopyLoc[2](Arg2: &mut TxContext)
+	61: Call coin::from_balance<Ty0>(Balance<Ty0>, &mut TxContext): Coin<Ty0>
+	62: StLoc[10](loc7: Coin<Ty0>)
+	63: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	64: MutBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	65: MoveLoc[5](loc2: u64)
+	66: Call balance::split<Ty1>(&mut Balance<Ty1>, u64): Balance<Ty1>
+	67: MoveLoc[2](Arg2: &mut TxContext)
+	68: Call coin::from_balance<Ty1>(Balance<Ty1>, &mut TxContext): Coin<Ty1>
+	69: StLoc[11](loc8: Coin<Ty1>)
+	70: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	71: ImmBorrowFieldGeneric[14](Pool.token_x: Balance<Ty0>)
+	72: Call balance::value<Ty0>(&Balance<Ty0>): u64
+	73: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	74: ImmBorrowFieldGeneric[15](Pool.token_y: Balance<Ty1>)
+	75: Call balance::value<Ty1>(&Balance<Ty1>): u64
+	76: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	77: Call update<Ty0, Ty1>(u64, u64, &mut Pool<Ty0, Ty1>)
+	78: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	79: ImmBorrowFieldGeneric[12](Pool.reserve_x: u64)
+	80: ReadRef
+	81: CastU128
+	82: CopyLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	83: ImmBorrowFieldGeneric[13](Pool.reserve_y: u64)
+	84: ReadRef
+	85: CastU128
+	86: Mul
+	87: MoveLoc[1](Arg1: &mut Pool<Ty0, Ty1>)
+	88: MutBorrowFieldGeneric[16](Pool.k_last: u128)
+	89: WriteRef
+	90: MoveLoc[10](loc7: Coin<Ty0>)
+	91: CopyLoc[8](loc5: address)
+	92: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	93: MoveLoc[11](loc8: Coin<Ty1>)
+	94: MoveLoc[8](loc5: address)
+	95: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	96: Ret
+}
+
+Constants [
+	0 => address: 0x85bf745a737a34bf73f360c22d5c8aea1f1767f3c458f5269a7c2f821b9d3781
+	1 => address: 0x049cc391ab4d3503e03dbb24c4f9e28f3cdd2ddf8a459e0d43012c3868ffefa1
+	2 => address: 0x9c8c8293866415a0b631a87e7b2ff960c65c9a497945df83827dfacb69627123
+	3 => address: 0x97a745334d470988140336826a83ec47a44714635e376ca705bbf10381223213
+	4 => address: 0x5e99f037c9dc2158925d8db3f5331d8d16024ec650ee2b870cc432af5e2231bd
+	5 => address: 0x95d659964cdf8f4740d1c3be1404b789543fb69629e53ec63c97cbab394325c1
+	6 => address: 0xa67511f039c3f45a1c716460a2f496f113bdb896ac2b10d007245d8ab6b5930b
+	7 => address: 0x0000000000000000000000000000000000000000000000000000000000000000
+	8 => u128: 1000
+	9 => u64: 32
+	10 => u64: 0
+	11 => u64: 1
+	12 => u64: 2
+	13 => u64: 4
+	14 => u64: 6
+	15 => u64: 7
+	16 => u64: 8
+	17 => u64: 9
+	18 => u64: 10
+	19 => u64: 13
+	20 => u64: 14
+	21 => u64: 15
+	22 => u64: 16
+	23 => u64: 17
+	24 => u64: 18
+	25 => u64: 19
+	26 => u64: 21
+	27 => u64: 22
+	28 => u64: 23
+	29 => u64: 24
+	30 => u64: 10000
+	31 => u64: 3
+	32 => u128: 10000
+	33 => u64: 1844674407370955
+	34 => u128: 340282366920938463463374607431768211455
+]
+}

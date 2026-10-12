@@ -1,0 +1,6395 @@
+{
+ "SimulationResult": {
+  "name": "SimulationResult",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "effects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionEffects",
+     "ofType": null
+    }
+   },
+   {
+    "name": "outputs",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "CommandResult",
+       "ofType": null
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ExecutedTransaction": null,
+ "TransactionEffects": {
+  "name": "TransactionEffects",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "digest",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "transaction",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Transaction",
+     "ofType": null
+    }
+   },
+   {
+    "name": "checkpoint",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Checkpoint",
+     "ofType": null
+    }
+   },
+   {
+    "name": "status",
+    "type": {
+     "kind": "ENUM",
+     "name": "ExecutionStatus",
+     "ofType": null
+    }
+   },
+   {
+    "name": "version",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "lamportVersion",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "executionError",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ExecutionError",
+     "ofType": null
+    }
+   },
+   {
+    "name": "timestamp",
+    "type": {
+     "kind": "SCALAR",
+     "name": "DateTime",
+     "ofType": null
+    }
+   },
+   {
+    "name": "epoch",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Epoch",
+     "ofType": null
+    }
+   },
+   {
+    "name": "events",
+    "type": {
+     "kind": "OBJECT",
+     "name": "EventConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balanceChanges",
+    "type": {
+     "kind": "OBJECT",
+     "name": "BalanceChangeConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balanceChangesJson",
+    "type": {
+     "kind": "SCALAR",
+     "name": "JSON",
+     "ofType": null
+    }
+   },
+   {
+    "name": "effectsBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "effectsJson",
+    "type": {
+     "kind": "SCALAR",
+     "name": "JSON",
+     "ofType": null
+    }
+   },
+   {
+    "name": "effectsDigest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectChanges",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectChangeConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "gasEffects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "GasEffects",
+     "ofType": null
+    }
+   },
+   {
+    "name": "unchangedConsensusObjects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "UnchangedConsensusObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dependencies",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionConnection",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Transaction": {
+  "name": "Transaction",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "id",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "ID",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "digest",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "effects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionEffects",
+     "ofType": null
+    }
+   },
+   {
+    "name": "kind",
+    "type": {
+     "kind": "UNION",
+     "name": "TransactionKind",
+     "ofType": null
+    }
+   },
+   {
+    "name": "expiration",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Epoch",
+     "ofType": null
+    }
+   },
+   {
+    "name": "gasInput",
+    "type": {
+     "kind": "OBJECT",
+     "name": "GasInput",
+     "ofType": null
+    }
+   },
+   {
+    "name": "sender",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "transactionBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "transactionJson",
+    "type": {
+     "kind": "SCALAR",
+     "name": "JSON",
+     "ofType": null
+    }
+   },
+   {
+    "name": "signatures",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "UserSignature"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "GasPayment": null,
+ "ExecutionResult": {
+  "name": "ExecutionResult",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "effects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionEffects",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ObjectChange": {
+  "name": "ObjectChange",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "address",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "SuiAddress",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "inputState",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "outputState",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "idCreated",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Boolean",
+     "ofType": null
+    }
+   },
+   {
+    "name": "idDeleted",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Boolean",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "BalanceChange": {
+  "name": "BalanceChange",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "owner",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "coinType",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveType",
+     "ofType": null
+    }
+   },
+   {
+    "name": "amount",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "CommandResult": {
+  "name": "CommandResult",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "returnValues",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "CommandOutput",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "mutatedReferences",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "CommandOutput",
+       "ofType": null
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Checkpoint": {
+  "name": "Checkpoint",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "id",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "ID",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "sequenceNumber",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "UInt53",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "query",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Query",
+     "ofType": null
+    }
+   },
+   {
+    "name": "artifactsDigest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "digest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "contentDigest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "epoch",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Epoch",
+     "ofType": null
+    }
+   },
+   {
+    "name": "networkTotalTransactions",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "previousCheckpointDigest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "rollingGasSummary",
+    "type": {
+     "kind": "OBJECT",
+     "name": "GasCostSummary",
+     "ofType": null
+    }
+   },
+   {
+    "name": "summaryBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "contentBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "timestamp",
+    "type": {
+     "kind": "SCALAR",
+     "name": "DateTime",
+     "ofType": null
+    }
+   },
+   {
+    "name": "validatorSignatures",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ValidatorAggregatedSignature",
+     "ofType": null
+    }
+   },
+   {
+    "name": "transactions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionConnection",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ExecutionError": {
+  "name": "ExecutionError",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "abortCode",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "sourceLineNumber",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "instructionOffset",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "identifier",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "constant",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "module",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveModule",
+     "ofType": null
+    }
+   },
+   {
+    "name": "function",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveFunction",
+     "ofType": null
+    }
+   },
+   {
+    "name": "message",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Epoch": {
+  "name": "Epoch",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "id",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "ID",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "epochId",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "UInt53",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "checkpoints",
+    "type": {
+     "kind": "OBJECT",
+     "name": "CheckpointConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "coinDenyList",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "endTimestamp",
+    "type": {
+     "kind": "SCALAR",
+     "name": "DateTime",
+     "ofType": null
+    }
+   },
+   {
+    "name": "fundInflow",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "fundOutflow",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "fundSize",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "liveObjectSetDigest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "netInflow",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "protocolConfigs",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ProtocolConfigs",
+     "ofType": null
+    }
+   },
+   {
+    "name": "referenceGasPrice",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "startTimestamp",
+    "type": {
+     "kind": "SCALAR",
+     "name": "DateTime",
+     "ofType": null
+    }
+   },
+   {
+    "name": "systemPackages",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MovePackageConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "systemState",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValue",
+     "ofType": null
+    }
+   },
+   {
+    "name": "totalCheckpoints",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "totalGasFees",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "totalStakeRewards",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "totalStakeSubsidies",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "totalTransactions",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "transactions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "validatorSet",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ValidatorSet",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "EventConnection": {
+  "name": "EventConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "EventEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "Event"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "BalanceChangeConnection": {
+  "name": "BalanceChangeConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "BalanceChangeEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "BalanceChange"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ObjectChangeConnection": {
+  "name": "ObjectChangeConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "ObjectChangeEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "ObjectChange"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "GasEffects": {
+  "name": "GasEffects",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "gasObject",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "gasSummary",
+    "type": {
+     "kind": "OBJECT",
+     "name": "GasCostSummary",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "UnchangedConsensusObjectConnection": {
+  "name": "UnchangedConsensusObjectConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "UnchangedConsensusObjectEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "UNION",
+        "name": "UnchangedConsensusObject"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "TransactionConnection": {
+  "name": "TransactionConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "TransactionEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "Transaction"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "GasInput": {
+  "name": "GasInput",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "gasSponsor",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "gasPrice",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "gasBudget",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "gasPayment",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Address": {
+  "name": "Address",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "id",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "ID",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "address",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "SuiAddress",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "addressAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asObject",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asTransactionObject",
+    "type": {
+     "kind": "UNION",
+     "name": "TransactionObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balance",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Balance",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balances",
+    "type": {
+     "kind": "OBJECT",
+     "name": "BalanceConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "defaultNameRecord",
+    "type": {
+     "kind": "OBJECT",
+     "name": "NameRecord",
+     "ofType": null
+    }
+   },
+   {
+    "name": "derivedObject",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicFields",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicFieldConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicObjectField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "multiGetDerivedObjects",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveObject",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicObjectFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetBalances",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Balance",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "objects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "transactions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionConnection",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "UserSignature": {
+  "name": "UserSignature",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "signatureBytes",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "scheme",
+    "type": {
+     "kind": "UNION",
+     "name": "SignatureScheme",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Object": {
+  "name": "Object",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "id",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "ID",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "address",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "SuiAddress",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "addressAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "version",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "digest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asMoveObject",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asMovePackage",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MovePackage",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asTransactionObject",
+    "type": {
+     "kind": "UNION",
+     "name": "TransactionObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balance",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Balance",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balances",
+    "type": {
+     "kind": "OBJECT",
+     "name": "BalanceConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "defaultNameRecord",
+    "type": {
+     "kind": "OBJECT",
+     "name": "NameRecord",
+     "ofType": null
+    }
+   },
+   {
+    "name": "derivedObject",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicFields",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicFieldConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicObjectField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "multiGetDerivedObjects",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveObject",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicObjectFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetBalances",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Balance",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "objectAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersionsAfter",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersionsBefore",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "owner",
+    "type": {
+     "kind": "UNION",
+     "name": "Owner",
+     "ofType": null
+    }
+   },
+   {
+    "name": "previousTransaction",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Transaction",
+     "ofType": null
+    }
+   },
+   {
+    "name": "storageRebate",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "receivedTransactions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionConnection",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveType": {
+  "name": "MoveType",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "repr",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "signature",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "MoveTypeSignature",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "layout",
+    "type": {
+     "kind": "SCALAR",
+     "name": "MoveTypeLayout",
+     "ofType": null
+    }
+   },
+   {
+    "name": "abilities",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "ENUM",
+       "name": "MoveAbility",
+       "ofType": null
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "CommandOutput": {
+  "name": "CommandOutput",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "argument",
+    "type": {
+     "kind": "UNION",
+     "name": "TransactionArgument",
+     "ofType": null
+    }
+   },
+   {
+    "name": "value",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValue",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Query": {
+  "name": "Query",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "INTERFACE",
+     "name": "Node",
+     "ofType": null
+    }
+   },
+   {
+    "name": "address",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "chainIdentifier",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "checkpoint",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Checkpoint",
+     "ofType": null
+    }
+   },
+   {
+    "name": "checkpoints",
+    "type": {
+     "kind": "OBJECT",
+     "name": "CheckpointConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "coinMetadata",
+    "type": {
+     "kind": "OBJECT",
+     "name": "CoinMetadata",
+     "ofType": null
+    }
+   },
+   {
+    "name": "epoch",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Epoch",
+     "ofType": null
+    }
+   },
+   {
+    "name": "epochs",
+    "type": {
+     "kind": "OBJECT",
+     "name": "EpochConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "events",
+    "type": {
+     "kind": "OBJECT",
+     "name": "EventConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "multiGetAddresses",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Address",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetBalances",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "Balance"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetCheckpoints",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Checkpoint",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetEpochs",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Epoch",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDerivedObjects",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveObject",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicObjectFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetObjects",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Object",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetPackages",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MovePackage",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetTransactions",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Transaction",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetTransactionEffects",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "TransactionEffects",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetTypes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveType",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "nameRecord",
+    "type": {
+     "kind": "OBJECT",
+     "name": "NameRecord",
+     "ofType": null
+    }
+   },
+   {
+    "name": "object",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "package",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MovePackage",
+     "ofType": null
+    }
+   },
+   {
+    "name": "packages",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MovePackageConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "packageVersions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MovePackageConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "protocolConfigs",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ProtocolConfigs",
+     "ofType": null
+    }
+   },
+   {
+    "name": "serviceConfig",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "ServiceConfig",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "transaction",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Transaction",
+     "ofType": null
+    }
+   },
+   {
+    "name": "transactionEffects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionEffects",
+     "ofType": null
+    }
+   },
+   {
+    "name": "transactions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "type",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveType",
+     "ofType": null
+    }
+   },
+   {
+    "name": "simulateTransaction",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "SimulationResult",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "verifySignature",
+    "type": {
+     "kind": "OBJECT",
+     "name": "SignatureVerifyResult",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "GasCostSummary": {
+  "name": "GasCostSummary",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "computationCost",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "storageCost",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "storageRebate",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "nonRefundableStorageFee",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ValidatorAggregatedSignature": {
+  "name": "ValidatorAggregatedSignature",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "epoch",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Epoch",
+     "ofType": null
+    }
+   },
+   {
+    "name": "signature",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "signersMap",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "SCALAR",
+        "name": "Int"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveModule": {
+  "name": "MoveModule",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "package",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MovePackage",
+     "ofType": null
+    }
+   },
+   {
+    "name": "name",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "bytes",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "datatype",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveDatatype",
+     "ofType": null
+    }
+   },
+   {
+    "name": "datatypes",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveDatatypeConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "disassembly",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "enum",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveEnum",
+     "ofType": null
+    }
+   },
+   {
+    "name": "enums",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveEnumConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "fileFormatVersion",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "friends",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveModuleConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "fullyQualifiedName",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "function",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveFunction",
+     "ofType": null
+    }
+   },
+   {
+    "name": "functions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveFunctionConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "struct",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveStruct",
+     "ofType": null
+    }
+   },
+   {
+    "name": "structs",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveStructConnection",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveFunction": {
+  "name": "MoveFunction",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "module",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveModule",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "name",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "fullyQualifiedName",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "isEntry",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Boolean",
+     "ofType": null
+    }
+   },
+   {
+    "name": "parameters",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "OpenMoveType",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "return",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "OpenMoveType",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "typeParameters",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveFunctionTypeParameter",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "visibility",
+    "type": {
+     "kind": "ENUM",
+     "name": "MoveVisibility",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "CheckpointConnection": {
+  "name": "CheckpointConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "CheckpointEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "Checkpoint"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ProtocolConfigs": {
+  "name": "ProtocolConfigs",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "protocolVersion",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "UInt53",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "config",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ProtocolConfig",
+     "ofType": null
+    }
+   },
+   {
+    "name": "configs",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "ProtocolConfig"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "featureFlag",
+    "type": {
+     "kind": "OBJECT",
+     "name": "FeatureFlag",
+     "ofType": null
+    }
+   },
+   {
+    "name": "featureFlags",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "FeatureFlag"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MovePackageConnection": {
+  "name": "MovePackageConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MovePackageEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MovePackage"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveValue": {
+  "name": "MoveValue",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "asAddress",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asVector",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValueConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "bcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "display",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Display",
+     "ofType": null
+    }
+   },
+   {
+    "name": "extract",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValue",
+     "ofType": null
+    }
+   },
+   {
+    "name": "format",
+    "type": {
+     "kind": "SCALAR",
+     "name": "JSON",
+     "ofType": null
+    }
+   },
+   {
+    "name": "json",
+    "type": {
+     "kind": "SCALAR",
+     "name": "JSON",
+     "ofType": null
+    }
+   },
+   {
+    "name": "type",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveType",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ValidatorSet": {
+  "name": "ValidatorSet",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "activeValidators",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ValidatorConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "contents",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValue",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "PageInfo": {
+  "name": "PageInfo",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "hasPreviousPage",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "Boolean",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "hasNextPage",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "Boolean",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "startCursor",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "endCursor",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "EventEdge": {
+  "name": "EventEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "Event",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Event": {
+  "name": "Event",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "contents",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValue",
+     "ofType": null
+    }
+   },
+   {
+    "name": "eventBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "sender",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "sequenceNumber",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "UInt53",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "timestamp",
+    "type": {
+     "kind": "SCALAR",
+     "name": "DateTime",
+     "ofType": null
+    }
+   },
+   {
+    "name": "transaction",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Transaction",
+     "ofType": null
+    }
+   },
+   {
+    "name": "transactionModule",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveModule",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "BalanceChangeEdge": {
+  "name": "BalanceChangeEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "BalanceChange",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ObjectChangeEdge": {
+  "name": "ObjectChangeEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "ObjectChange",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "UnchangedConsensusObjectEdge": {
+  "name": "UnchangedConsensusObjectEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "UNION",
+      "name": "UnchangedConsensusObject",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "TransactionEdge": {
+  "name": "TransactionEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "Transaction",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ObjectConnection": {
+  "name": "ObjectConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "ObjectEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "Object"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Balance": {
+  "name": "Balance",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "coinType",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveType",
+     "ofType": null
+    }
+   },
+   {
+    "name": "totalBalance",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "coinBalance",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "addressBalance",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "coinMetadata",
+    "type": {
+     "kind": "OBJECT",
+     "name": "CoinMetadata",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "BalanceConnection": {
+  "name": "BalanceConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "BalanceEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "Balance"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "NameRecord": {
+  "name": "NameRecord",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "domain",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "contents",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveValue",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "target",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "parent",
+    "type": {
+     "kind": "OBJECT",
+     "name": "NameRecord",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveObject": {
+  "name": "MoveObject",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "id",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "ID",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "address",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "SuiAddress",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "addressAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "version",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "digest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asCoinMetadata",
+    "type": {
+     "kind": "OBJECT",
+     "name": "CoinMetadata",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asDynamicField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asTransactionObject",
+    "type": {
+     "kind": "UNION",
+     "name": "TransactionObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balance",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Balance",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balances",
+    "type": {
+     "kind": "OBJECT",
+     "name": "BalanceConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "contents",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValue",
+     "ofType": null
+    }
+   },
+   {
+    "name": "defaultNameRecord",
+    "type": {
+     "kind": "OBJECT",
+     "name": "NameRecord",
+     "ofType": null
+    }
+   },
+   {
+    "name": "derivedObject",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicFields",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicFieldConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicObjectField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "hasPublicTransfer",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Boolean",
+     "ofType": null
+    }
+   },
+   {
+    "name": "multiGetDerivedObjects",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveObject",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetBalances",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Balance",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicObjectFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "moveObjectBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersionsAfter",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersionsBefore",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "owner",
+    "type": {
+     "kind": "UNION",
+     "name": "Owner",
+     "ofType": null
+    }
+   },
+   {
+    "name": "previousTransaction",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Transaction",
+     "ofType": null
+    }
+   },
+   {
+    "name": "storageRebate",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "receivedTransactions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionConnection",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "DynamicField": {
+  "name": "DynamicField",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "id",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "ID",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "address",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "SuiAddress",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "addressAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "version",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "digest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asTransactionObject",
+    "type": {
+     "kind": "UNION",
+     "name": "TransactionObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balance",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Balance",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balances",
+    "type": {
+     "kind": "OBJECT",
+     "name": "BalanceConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "contents",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValue",
+     "ofType": null
+    }
+   },
+   {
+    "name": "defaultNameRecord",
+    "type": {
+     "kind": "OBJECT",
+     "name": "NameRecord",
+     "ofType": null
+    }
+   },
+   {
+    "name": "derivedObject",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicFields",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicFieldConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicObjectField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "hasPublicTransfer",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Boolean",
+     "ofType": null
+    }
+   },
+   {
+    "name": "multiGetDerivedObjects",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveObject",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicObjectFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "moveObjectBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "multiGetBalances",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Balance",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "name",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValue",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersionsAfter",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersionsBefore",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "owner",
+    "type": {
+     "kind": "UNION",
+     "name": "Owner",
+     "ofType": null
+    }
+   },
+   {
+    "name": "previousTransaction",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Transaction",
+     "ofType": null
+    }
+   },
+   {
+    "name": "storageRebate",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "receivedTransactions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "value",
+    "type": {
+     "kind": "UNION",
+     "name": "DynamicFieldValue",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "DynamicFieldConnection": {
+  "name": "DynamicFieldConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "DynamicFieldEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "DynamicField"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveObjectConnection": {
+  "name": "MoveObjectConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveObjectEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveObject"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MovePackage": {
+  "name": "MovePackage",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "id",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "ID",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "address",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "SuiAddress",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "addressAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "version",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "digest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asTransactionObject",
+    "type": {
+     "kind": "UNION",
+     "name": "TransactionObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balance",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Balance",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balances",
+    "type": {
+     "kind": "OBJECT",
+     "name": "BalanceConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "defaultNameRecord",
+    "type": {
+     "kind": "OBJECT",
+     "name": "NameRecord",
+     "ofType": null
+    }
+   },
+   {
+    "name": "module",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveModule",
+     "ofType": null
+    }
+   },
+   {
+    "name": "modules",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveModuleConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "derivedObject",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "moduleBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "multiGetBalances",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Balance",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDerivedObjects",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveObject",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "objects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersionsAfter",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersionsBefore",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "owner",
+    "type": {
+     "kind": "UNION",
+     "name": "Owner",
+     "ofType": null
+    }
+   },
+   {
+    "name": "packageAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MovePackage",
+     "ofType": null
+    }
+   },
+   {
+    "name": "packageBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "packageVersionsAfter",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MovePackageConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "packageVersionsBefore",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MovePackageConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "previousTransaction",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Transaction",
+     "ofType": null
+    }
+   },
+   {
+    "name": "linkage",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Linkage",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "storageRebate",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "receivedTransactions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "typeOrigins",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "TypeOrigin",
+       "ofType": null
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Node": {
+  "name": "Node",
+  "kind": "INTERFACE",
+  "fields": [
+   {
+    "name": "id",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "ID",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "CoinMetadata": {
+  "name": "CoinMetadata",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "address",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "SuiAddress",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "addressAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Address",
+     "ofType": null
+    }
+   },
+   {
+    "name": "version",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "digest",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asTransactionObject",
+    "type": {
+     "kind": "UNION",
+     "name": "TransactionObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balance",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Balance",
+     "ofType": null
+    }
+   },
+   {
+    "name": "balances",
+    "type": {
+     "kind": "OBJECT",
+     "name": "BalanceConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "contents",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValue",
+     "ofType": null
+    }
+   },
+   {
+    "name": "decimals",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "defaultNameRecord",
+    "type": {
+     "kind": "OBJECT",
+     "name": "NameRecord",
+     "ofType": null
+    }
+   },
+   {
+    "name": "description",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "derivedObject",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicFields",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicFieldConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "dynamicObjectField",
+    "type": {
+     "kind": "OBJECT",
+     "name": "DynamicField",
+     "ofType": null
+    }
+   },
+   {
+    "name": "hasPublicTransfer",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Boolean",
+     "ofType": null
+    }
+   },
+   {
+    "name": "iconUrl",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "multiGetDerivedObjects",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveObject",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "multiGetDynamicObjectFields",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "DynamicField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "moveObjectBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "multiGetBalances",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "Balance",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "name",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectAt",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Object",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectBcs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Base64",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersionsAfter",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objectVersionsBefore",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "objects",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObjectConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "owner",
+    "type": {
+     "kind": "UNION",
+     "name": "Owner",
+     "ofType": null
+    }
+   },
+   {
+    "name": "previousTransaction",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Transaction",
+     "ofType": null
+    }
+   },
+   {
+    "name": "storageRebate",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "receivedTransactions",
+    "type": {
+     "kind": "OBJECT",
+     "name": "TransactionConnection",
+     "ofType": null
+    }
+   },
+   {
+    "name": "regulatedState",
+    "type": {
+     "kind": "ENUM",
+     "name": "RegulatedState",
+     "ofType": null
+    }
+   },
+   {
+    "name": "allowGlobalPause",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Boolean",
+     "ofType": null
+    }
+   },
+   {
+    "name": "denyCap",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveObject",
+     "ofType": null
+    }
+   },
+   {
+    "name": "supplyState",
+    "type": {
+     "kind": "ENUM",
+     "name": "SupplyState",
+     "ofType": null
+    }
+   },
+   {
+    "name": "supply",
+    "type": {
+     "kind": "SCALAR",
+     "name": "BigInt",
+     "ofType": null
+    }
+   },
+   {
+    "name": "symbol",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "EpochConnection": {
+  "name": "EpochConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "EpochEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "Epoch"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ServiceConfig": {
+  "name": "ServiceConfig",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "mutationTimeoutMs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "queryTimeoutMs",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxQueryDepth",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxQueryNodes",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxOutputNodes",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxTransactionPayloadSize",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxQueryPayloadSize",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "defaultPageSize",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxPageSize",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxMultiGetSize",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxTypeArgumentDepth",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxTypeArgumentWidth",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxTypeNodes",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxMoveValueDepth",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxMoveValueBound",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxDisplayFieldDepth",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxDisplayFormatNodes",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxDisplayObjectLoads",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxDisplayOutputSize",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxDisassembledModuleSize",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "maxRichQueries",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Int",
+     "ofType": null
+    }
+   },
+   {
+    "name": "availableRange",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "AvailableRange",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "SignatureVerifyResult": {
+  "name": "SignatureVerifyResult",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "success",
+    "type": {
+     "kind": "SCALAR",
+     "name": "Boolean",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveDatatype": {
+  "name": "MoveDatatype",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "module",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveModule",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "name",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "fullyQualifiedName",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "abilities",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "ENUM",
+       "name": "MoveAbility",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "asMoveStruct",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveStruct",
+     "ofType": null
+    }
+   },
+   {
+    "name": "asMoveEnum",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveEnum",
+     "ofType": null
+    }
+   },
+   {
+    "name": "typeParameters",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveDatatypeTypeParameter",
+       "ofType": null
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveDatatypeConnection": {
+  "name": "MoveDatatypeConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveDatatypeEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveDatatype"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveEnum": {
+  "name": "MoveEnum",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "module",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveModule",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "name",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "fullyQualifiedName",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "abilities",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "ENUM",
+       "name": "MoveAbility",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "variants",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveEnumVariant",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "typeParameters",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveDatatypeTypeParameter",
+       "ofType": null
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveEnumConnection": {
+  "name": "MoveEnumConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveEnumEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveEnum"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveModuleConnection": {
+  "name": "MoveModuleConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveModuleEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveModule"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveFunctionConnection": {
+  "name": "MoveFunctionConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveFunctionEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveFunction"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveStruct": {
+  "name": "MoveStruct",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "module",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveModule",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "name",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "fullyQualifiedName",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "abilities",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "ENUM",
+       "name": "MoveAbility",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "fields",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveField",
+       "ofType": null
+      }
+     }
+    }
+   },
+   {
+    "name": "typeParameters",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveDatatypeTypeParameter",
+       "ofType": null
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveStructConnection": {
+  "name": "MoveStructConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveStructEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveStruct"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "OpenMoveType": {
+  "name": "OpenMoveType",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "signature",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "OpenMoveTypeSignature",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "repr",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveFunctionTypeParameter": {
+  "name": "MoveFunctionTypeParameter",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "constraints",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "ENUM",
+        "name": "MoveAbility"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "CheckpointEdge": {
+  "name": "CheckpointEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "Checkpoint",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ProtocolConfig": {
+  "name": "ProtocolConfig",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "key",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "value",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "FeatureFlag": {
+  "name": "FeatureFlag",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "key",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "value",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "Boolean",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MovePackageEdge": {
+  "name": "MovePackageEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MovePackage",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveValueConnection": {
+  "name": "MoveValueConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveValueEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "MoveValue"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Display": {
+  "name": "Display",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "output",
+    "type": {
+     "kind": "SCALAR",
+     "name": "JSON",
+     "ofType": null
+    }
+   },
+   {
+    "name": "errors",
+    "type": {
+     "kind": "SCALAR",
+     "name": "JSON",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ValidatorConnection": {
+  "name": "ValidatorConnection",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "pageInfo",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "PageInfo",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "edges",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "ValidatorEdge"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "nodes",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "OBJECT",
+        "name": "Validator"
+       }
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ObjectEdge": {
+  "name": "ObjectEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "Object",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "BalanceEdge": {
+  "name": "BalanceEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "Balance",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "DynamicFieldEdge": {
+  "name": "DynamicFieldEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "DynamicField",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveObjectEdge": {
+  "name": "MoveObjectEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveObject",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Linkage": {
+  "name": "Linkage",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "originalId",
+    "type": {
+     "kind": "SCALAR",
+     "name": "SuiAddress",
+     "ofType": null
+    }
+   },
+   {
+    "name": "upgradedId",
+    "type": {
+     "kind": "SCALAR",
+     "name": "SuiAddress",
+     "ofType": null
+    }
+   },
+   {
+    "name": "version",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "TypeOrigin": {
+  "name": "TypeOrigin",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "module",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "struct",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "definingId",
+    "type": {
+     "kind": "SCALAR",
+     "name": "SuiAddress",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "EpochEdge": {
+  "name": "EpochEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "Epoch",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "AvailableRange": {
+  "name": "AvailableRange",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "first",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Checkpoint",
+     "ofType": null
+    }
+   },
+   {
+    "name": "last",
+    "type": {
+     "kind": "OBJECT",
+     "name": "Checkpoint",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveDatatypeTypeParameter": {
+  "name": "MoveDatatypeTypeParameter",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "constraints",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "LIST",
+      "name": null,
+      "ofType": {
+       "kind": "NON_NULL",
+       "name": null,
+       "ofType": {
+        "kind": "ENUM",
+        "name": "MoveAbility"
+       }
+      }
+     }
+    }
+   },
+   {
+    "name": "isPhantom",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "Boolean",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveDatatypeEdge": {
+  "name": "MoveDatatypeEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveDatatype",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveEnumVariant": {
+  "name": "MoveEnumVariant",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "name",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "fields",
+    "type": {
+     "kind": "LIST",
+     "name": null,
+     "ofType": {
+      "kind": "NON_NULL",
+      "name": null,
+      "ofType": {
+       "kind": "OBJECT",
+       "name": "MoveField",
+       "ofType": null
+      }
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveEnumEdge": {
+  "name": "MoveEnumEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveEnum",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveModuleEdge": {
+  "name": "MoveModuleEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveModule",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveFunctionEdge": {
+  "name": "MoveFunctionEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveFunction",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveField": {
+  "name": "MoveField",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "name",
+    "type": {
+     "kind": "SCALAR",
+     "name": "String",
+     "ofType": null
+    }
+   },
+   {
+    "name": "type",
+    "type": {
+     "kind": "OBJECT",
+     "name": "OpenMoveType",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveStructEdge": {
+  "name": "MoveStructEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveStruct",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "MoveValueEdge": {
+  "name": "MoveValueEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "MoveValue",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "ValidatorEdge": {
+  "name": "ValidatorEdge",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "node",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "OBJECT",
+      "name": "Validator",
+      "ofType": null
+     }
+    }
+   },
+   {
+    "name": "cursor",
+    "type": {
+     "kind": "NON_NULL",
+     "name": null,
+     "ofType": {
+      "kind": "SCALAR",
+      "name": "String",
+      "ofType": null
+     }
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ },
+ "Validator": {
+  "name": "Validator",
+  "kind": "OBJECT",
+  "fields": [
+   {
+    "name": "atRisk",
+    "type": {
+     "kind": "SCALAR",
+     "name": "UInt53",
+     "ofType": null
+    }
+   },
+   {
+    "name": "contents",
+    "type": {
+     "kind": "OBJECT",
+     "name": "MoveValue",
+     "ofType": null
+    }
+   },
+   {
+    "name": "reportRecords",
+    "type": {
+     "kind": "OBJECT",
+     "name": "ValidatorConnection",
+     "ofType": null
+    }
+   }
+  ],
+  "inputFields": null,
+  "enumValues": null
+ }
+}

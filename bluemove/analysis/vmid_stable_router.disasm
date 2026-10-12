@@ -1,0 +1,493 @@
+// Move bytecode v6
+module b24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9.stable_router {
+use b24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9::stable_swap;
+use b24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9::utils;
+use 0000000000000000000000000000000000000000000000000000000000000002::clock;
+use 0000000000000000000000000000000000000000000000000000000000000002::coin;
+use 0000000000000000000000000000000000000000000000000000000000000002::pay;
+use 0000000000000000000000000000000000000000000000000000000000000002::transfer;
+use 0000000000000000000000000000000000000000000000000000000000000002::tx_context;
+
+entry public create_stable_pool<Ty0, Ty1>(Arg0: Coin<Ty0>, Arg1: u64, Arg2: Coin<Ty1>, Arg3: u64, Arg4: u8, Arg5: u8, Arg6: u64, Arg7: u64, Arg8: &mut Dex_Stable_Info, Arg9: &Clock, Arg10: &mut TxContext) {
+L11:	loc0: bool
+L12:	loc1: Coin<Ty1>
+L13:	loc2: Coin<Ty0>
+L14:	loc3: Coin<LSP<Ty0, Ty1>>
+L15:	loc4: Coin<LSP<Ty1, Ty0>>
+L16:	loc5: address
+B0:
+	0: CopyLoc[10](Arg10: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[16](loc5: address)
+	4: CopyLoc[16](loc5: address)
+	5: LdConst[1](address: 0x04..)
+	6: Eq
+	7: BrFalse(9)
+B1:
+	8: Branch(17)
+B2:
+	9: MoveLoc[8](Arg8: &mut Dex_Stable_Info)
+	10: Pop
+	11: MoveLoc[10](Arg10: &mut TxContext)
+	12: Pop
+	13: MoveLoc[9](Arg9: &Clock)
+	14: Pop
+	15: LdConst[2](u64: 1)
+	16: Abort
+B3:
+	17: CopyLoc[8](Arg8: &mut Dex_Stable_Info)
+	18: FreezeRef
+	19: Call stable_swap::check_stable_pool_exist<Ty0, Ty1>(&Dex_Stable_Info): bool
+	20: BrFalse(24)
+B4:
+	21: LdTrue
+	22: StLoc[11](loc0: bool)
+	23: Branch(28)
+B5:
+	24: CopyLoc[8](Arg8: &mut Dex_Stable_Info)
+	25: FreezeRef
+	26: Call stable_swap::check_stable_pool_exist<Ty1, Ty0>(&Dex_Stable_Info): bool
+	27: StLoc[11](loc0: bool)
+B6:
+	28: MoveLoc[11](loc0: bool)
+	29: Not
+	30: BrFalse(39)
+B7:
+	31: MoveLoc[4](Arg4: u8)
+	32: MoveLoc[5](Arg5: u8)
+	33: MoveLoc[6](Arg6: u64)
+	34: MoveLoc[7](Arg7: u64)
+	35: CopyLoc[8](Arg8: &mut Dex_Stable_Info)
+	36: CopyLoc[9](Arg9: &Clock)
+	37: CopyLoc[10](Arg10: &mut TxContext)
+	38: Call stable_swap::create_pool<Ty0, Ty1>(u8, u8, u64, u64, &mut Dex_Stable_Info, &Clock, &mut TxContext)
+B8:
+	39: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	40: BrFalse(61)
+B9:
+	41: MoveLoc[8](Arg8: &mut Dex_Stable_Info)
+	42: Call stable_swap::get_stable_pool<Ty0, Ty1>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty0, Ty1>
+	43: MoveLoc[9](Arg9: &Clock)
+	44: MoveLoc[0](Arg0: Coin<Ty0>)
+	45: LdU64(0)
+	46: MoveLoc[2](Arg2: Coin<Ty1>)
+	47: LdU64(0)
+	48: MoveLoc[10](Arg10: &mut TxContext)
+	49: Call stable_swap::add_liquidity<Ty0, Ty1>(&mut Stable_Pool<Ty0, Ty1>, &Clock, Coin<Ty0>, u64, Coin<Ty1>, u64, &mut TxContext): Coin<Ty0> * Coin<Ty1> * Coin<LSP<Ty0, Ty1>>
+	50: StLoc[14](loc3: Coin<LSP<Ty0, Ty1>>)
+	51: StLoc[12](loc1: Coin<Ty1>)
+	52: CopyLoc[16](loc5: address)
+	53: Call utils::destroy_zero_coin<Ty0>(Coin<Ty0>, address)
+	54: MoveLoc[12](loc1: Coin<Ty1>)
+	55: CopyLoc[16](loc5: address)
+	56: Call utils::destroy_zero_coin<Ty1>(Coin<Ty1>, address)
+	57: MoveLoc[14](loc3: Coin<LSP<Ty0, Ty1>>)
+	58: MoveLoc[16](loc5: address)
+	59: Call transfer::public_transfer<Coin<LSP<Ty0, Ty1>>>(Coin<LSP<Ty0, Ty1>>, address)
+	60: Branch(80)
+B10:
+	61: MoveLoc[8](Arg8: &mut Dex_Stable_Info)
+	62: Call stable_swap::get_stable_pool<Ty1, Ty0>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty1, Ty0>
+	63: MoveLoc[9](Arg9: &Clock)
+	64: MoveLoc[2](Arg2: Coin<Ty1>)
+	65: LdU64(0)
+	66: MoveLoc[0](Arg0: Coin<Ty0>)
+	67: LdU64(0)
+	68: MoveLoc[10](Arg10: &mut TxContext)
+	69: Call stable_swap::add_liquidity<Ty1, Ty0>(&mut Stable_Pool<Ty1, Ty0>, &Clock, Coin<Ty1>, u64, Coin<Ty0>, u64, &mut TxContext): Coin<Ty1> * Coin<Ty0> * Coin<LSP<Ty1, Ty0>>
+	70: StLoc[15](loc4: Coin<LSP<Ty1, Ty0>>)
+	71: StLoc[13](loc2: Coin<Ty0>)
+	72: CopyLoc[16](loc5: address)
+	73: Call utils::destroy_zero_coin<Ty1>(Coin<Ty1>, address)
+	74: MoveLoc[13](loc2: Coin<Ty0>)
+	75: CopyLoc[16](loc5: address)
+	76: Call utils::destroy_zero_coin<Ty0>(Coin<Ty0>, address)
+	77: MoveLoc[15](loc4: Coin<LSP<Ty1, Ty0>>)
+	78: MoveLoc[16](loc5: address)
+	79: Call transfer::public_transfer<Coin<LSP<Ty1, Ty0>>>(Coin<LSP<Ty1, Ty0>>, address)
+B11:
+	80: Ret
+}
+
+entry public add_stable_liquidity<Ty0, Ty1>(Arg0: Coin<Ty0>, Arg1: u64, Arg2: u64, Arg3: Coin<Ty1>, Arg4: u64, Arg5: u64, Arg6: &mut Dex_Stable_Info, Arg7: &Clock, Arg8: &mut TxContext) {
+L9:	loc0: Coin<Ty0>
+L10:	loc1: Coin<Ty1>
+L11:	loc2: Coin<Ty1>
+L12:	loc3: Coin<Ty0>
+L13:	loc4: Coin<LSP<Ty0, Ty1>>
+L14:	loc5: Coin<LSP<Ty1, Ty0>>
+L15:	loc6: address
+B0:
+	0: CopyLoc[8](Arg8: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[15](loc6: address)
+	4: MutBorrowLoc[0](Arg0: Coin<Ty0>)
+	5: MoveLoc[1](Arg1: u64)
+	6: CopyLoc[8](Arg8: &mut TxContext)
+	7: Call coin::split<Ty0>(&mut Coin<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	8: StLoc[9](loc0: Coin<Ty0>)
+	9: MoveLoc[0](Arg0: Coin<Ty0>)
+	10: CopyLoc[8](Arg8: &mut TxContext)
+	11: FreezeRef
+	12: Call pay::keep<Ty0>(Coin<Ty0>, &TxContext)
+	13: MutBorrowLoc[3](Arg3: Coin<Ty1>)
+	14: MoveLoc[4](Arg4: u64)
+	15: CopyLoc[8](Arg8: &mut TxContext)
+	16: Call coin::split<Ty1>(&mut Coin<Ty1>, u64, &mut TxContext): Coin<Ty1>
+	17: StLoc[10](loc1: Coin<Ty1>)
+	18: MoveLoc[3](Arg3: Coin<Ty1>)
+	19: CopyLoc[8](Arg8: &mut TxContext)
+	20: FreezeRef
+	21: Call pay::keep<Ty1>(Coin<Ty1>, &TxContext)
+	22: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	23: BrFalse(44)
+B1:
+	24: MoveLoc[6](Arg6: &mut Dex_Stable_Info)
+	25: Call stable_swap::get_stable_pool<Ty0, Ty1>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty0, Ty1>
+	26: MoveLoc[7](Arg7: &Clock)
+	27: MoveLoc[9](loc0: Coin<Ty0>)
+	28: MoveLoc[2](Arg2: u64)
+	29: MoveLoc[10](loc1: Coin<Ty1>)
+	30: MoveLoc[5](Arg5: u64)
+	31: MoveLoc[8](Arg8: &mut TxContext)
+	32: Call stable_swap::add_liquidity<Ty0, Ty1>(&mut Stable_Pool<Ty0, Ty1>, &Clock, Coin<Ty0>, u64, Coin<Ty1>, u64, &mut TxContext): Coin<Ty0> * Coin<Ty1> * Coin<LSP<Ty0, Ty1>>
+	33: StLoc[13](loc4: Coin<LSP<Ty0, Ty1>>)
+	34: StLoc[11](loc2: Coin<Ty1>)
+	35: CopyLoc[15](loc6: address)
+	36: Call utils::destroy_zero_coin<Ty0>(Coin<Ty0>, address)
+	37: MoveLoc[11](loc2: Coin<Ty1>)
+	38: CopyLoc[15](loc6: address)
+	39: Call utils::destroy_zero_coin<Ty1>(Coin<Ty1>, address)
+	40: MoveLoc[13](loc4: Coin<LSP<Ty0, Ty1>>)
+	41: MoveLoc[15](loc6: address)
+	42: Call transfer::public_transfer<Coin<LSP<Ty0, Ty1>>>(Coin<LSP<Ty0, Ty1>>, address)
+	43: Branch(63)
+B2:
+	44: MoveLoc[6](Arg6: &mut Dex_Stable_Info)
+	45: Call stable_swap::get_stable_pool<Ty1, Ty0>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty1, Ty0>
+	46: MoveLoc[7](Arg7: &Clock)
+	47: MoveLoc[10](loc1: Coin<Ty1>)
+	48: MoveLoc[5](Arg5: u64)
+	49: MoveLoc[9](loc0: Coin<Ty0>)
+	50: MoveLoc[2](Arg2: u64)
+	51: MoveLoc[8](Arg8: &mut TxContext)
+	52: Call stable_swap::add_liquidity<Ty1, Ty0>(&mut Stable_Pool<Ty1, Ty0>, &Clock, Coin<Ty1>, u64, Coin<Ty0>, u64, &mut TxContext): Coin<Ty1> * Coin<Ty0> * Coin<LSP<Ty1, Ty0>>
+	53: StLoc[14](loc5: Coin<LSP<Ty1, Ty0>>)
+	54: StLoc[12](loc3: Coin<Ty0>)
+	55: CopyLoc[15](loc6: address)
+	56: Call utils::destroy_zero_coin<Ty1>(Coin<Ty1>, address)
+	57: MoveLoc[12](loc3: Coin<Ty0>)
+	58: CopyLoc[15](loc6: address)
+	59: Call utils::destroy_zero_coin<Ty0>(Coin<Ty0>, address)
+	60: MoveLoc[14](loc5: Coin<LSP<Ty1, Ty0>>)
+	61: MoveLoc[15](loc6: address)
+	62: Call transfer::public_transfer<Coin<LSP<Ty1, Ty0>>>(Coin<LSP<Ty1, Ty0>>, address)
+B3:
+	63: Ret
+}
+
+entry public remove_liquidity<Ty0, Ty1>(Arg0: Coin<LSP<Ty0, Ty1>>, Arg1: u64, Arg2: u64, Arg3: u64, Arg4: &mut Dex_Stable_Info, Arg5: &Clock, Arg6: &mut TxContext) {
+L7:	loc0: Coin<Ty1>
+L8:	loc1: Coin<LSP<Ty0, Ty1>>
+L9:	loc2: address
+B0:
+	0: CopyLoc[6](Arg6: &mut TxContext)
+	1: FreezeRef
+	2: Call tx_context::sender(&TxContext): address
+	3: StLoc[9](loc2: address)
+	4: MutBorrowLoc[0](Arg0: Coin<LSP<Ty0, Ty1>>)
+	5: MoveLoc[1](Arg1: u64)
+	6: CopyLoc[6](Arg6: &mut TxContext)
+	7: Call coin::split<LSP<Ty0, Ty1>>(&mut Coin<LSP<Ty0, Ty1>>, u64, &mut TxContext): Coin<LSP<Ty0, Ty1>>
+	8: StLoc[8](loc1: Coin<LSP<Ty0, Ty1>>)
+	9: MoveLoc[0](Arg0: Coin<LSP<Ty0, Ty1>>)
+	10: CopyLoc[6](Arg6: &mut TxContext)
+	11: FreezeRef
+	12: Call pay::keep<LSP<Ty0, Ty1>>(Coin<LSP<Ty0, Ty1>>, &TxContext)
+	13: MoveLoc[4](Arg4: &mut Dex_Stable_Info)
+	14: Call stable_swap::get_stable_pool<Ty0, Ty1>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty0, Ty1>
+	15: MoveLoc[5](Arg5: &Clock)
+	16: MoveLoc[8](loc1: Coin<LSP<Ty0, Ty1>>)
+	17: MoveLoc[2](Arg2: u64)
+	18: MoveLoc[3](Arg3: u64)
+	19: MoveLoc[6](Arg6: &mut TxContext)
+	20: Call stable_swap::remove_liquidity<Ty0, Ty1>(&mut Stable_Pool<Ty0, Ty1>, &Clock, Coin<LSP<Ty0, Ty1>>, u64, u64, &mut TxContext): Coin<Ty0> * Coin<Ty1>
+	21: StLoc[7](loc0: Coin<Ty1>)
+	22: CopyLoc[9](loc2: address)
+	23: Call transfer::public_transfer<Coin<Ty0>>(Coin<Ty0>, address)
+	24: MoveLoc[7](loc0: Coin<Ty1>)
+	25: MoveLoc[9](loc2: address)
+	26: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	27: Ret
+}
+
+entry public swap_exact_input<Ty0, Ty1>(Arg0: Coin<Ty0>, Arg1: u64, Arg2: u64, Arg3: &mut Dex_Stable_Info, Arg4: &Clock, Arg5: &mut TxContext) {
+L6:	loc0: u64
+L7:	loc1: u64
+L8:	loc2: u64
+L9:	loc3: u64
+L10:	loc4: Coin<Ty0>
+L11:	loc5: Coin<Ty1>
+L12:	loc6: Coin<Ty1>
+L13:	loc7: address
+B0:
+	0: MutBorrowLoc[0](Arg0: Coin<Ty0>)
+	1: CopyLoc[1](Arg1: u64)
+	2: CopyLoc[5](Arg5: &mut TxContext)
+	3: Call coin::split<Ty0>(&mut Coin<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	4: StLoc[10](loc4: Coin<Ty0>)
+	5: MoveLoc[0](Arg0: Coin<Ty0>)
+	6: CopyLoc[5](Arg5: &mut TxContext)
+	7: FreezeRef
+	8: Call pay::keep<Ty0>(Coin<Ty0>, &TxContext)
+	9: CopyLoc[5](Arg5: &mut TxContext)
+	10: FreezeRef
+	11: Call tx_context::sender(&TxContext): address
+	12: StLoc[13](loc7: address)
+	13: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	14: BrFalse(32)
+B1:
+	15: CopyLoc[3](Arg3: &mut Dex_Stable_Info)
+	16: Call stable_swap::get_stable_pool<Ty0, Ty1>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty0, Ty1>
+	17: MoveLoc[4](Arg4: &Clock)
+	18: MoveLoc[10](loc4: Coin<Ty0>)
+	19: MoveLoc[2](Arg2: u64)
+	20: CopyLoc[5](Arg5: &mut TxContext)
+	21: Call stable_swap::swap_exact_x_to_y<Ty0, Ty1>(&mut Stable_Pool<Ty0, Ty1>, &Clock, Coin<Ty0>, u64, &mut TxContext): Coin<Ty1>
+	22: StLoc[11](loc5: Coin<Ty1>)
+	23: ImmBorrowLoc[11](loc5: Coin<Ty1>)
+	24: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	25: StLoc[7](loc1: u64)
+	26: MoveLoc[11](loc5: Coin<Ty1>)
+	27: MoveLoc[13](loc7: address)
+	28: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	29: MoveLoc[7](loc1: u64)
+	30: StLoc[6](loc0: u64)
+	31: Branch(48)
+B2:
+	32: CopyLoc[3](Arg3: &mut Dex_Stable_Info)
+	33: Call stable_swap::get_stable_pool<Ty1, Ty0>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty1, Ty0>
+	34: MoveLoc[4](Arg4: &Clock)
+	35: MoveLoc[10](loc4: Coin<Ty0>)
+	36: MoveLoc[2](Arg2: u64)
+	37: CopyLoc[5](Arg5: &mut TxContext)
+	38: Call stable_swap::swap_exact_y_to_x<Ty1, Ty0>(&mut Stable_Pool<Ty1, Ty0>, &Clock, Coin<Ty0>, u64, &mut TxContext): Coin<Ty1>
+	39: StLoc[12](loc6: Coin<Ty1>)
+	40: ImmBorrowLoc[12](loc6: Coin<Ty1>)
+	41: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	42: StLoc[8](loc2: u64)
+	43: MoveLoc[12](loc6: Coin<Ty1>)
+	44: MoveLoc[13](loc7: address)
+	45: Call transfer::public_transfer<Coin<Ty1>>(Coin<Ty1>, address)
+	46: MoveLoc[8](loc2: u64)
+	47: StLoc[6](loc0: u64)
+B3:
+	48: MoveLoc[6](loc0: u64)
+	49: StLoc[9](loc3: u64)
+	50: MoveLoc[1](Arg1: u64)
+	51: LdU64(0)
+	52: LdU64(0)
+	53: MoveLoc[9](loc3: u64)
+	54: MoveLoc[3](Arg3: &mut Dex_Stable_Info)
+	55: MoveLoc[5](Arg5: &mut TxContext)
+	56: Call stable_swap::add_stable_swap_event_internal<Ty0, Ty1>(u64, u64, u64, u64, &mut Dex_Stable_Info, &mut TxContext)
+	57: Ret
+}
+
+public swap_exact_input_<Ty0, Ty1>(Arg0: Coin<Ty0>, Arg1: u64, Arg2: u64, Arg3: &mut Dex_Stable_Info, Arg4: &Clock, Arg5: &mut TxContext): Coin<Ty1> {
+L6:	loc0: u64
+L7:	loc1: Coin<Ty1>
+L8:	loc2: Coin<Ty1>
+L9:	loc3: u64
+L10:	loc4: Coin<Ty0>
+L11:	loc5: Coin<Ty1>
+L12:	loc6: Coin<Ty1>
+B0:
+	0: MutBorrowLoc[0](Arg0: Coin<Ty0>)
+	1: CopyLoc[1](Arg1: u64)
+	2: CopyLoc[5](Arg5: &mut TxContext)
+	3: Call coin::split<Ty0>(&mut Coin<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	4: StLoc[10](loc4: Coin<Ty0>)
+	5: MoveLoc[0](Arg0: Coin<Ty0>)
+	6: CopyLoc[5](Arg5: &mut TxContext)
+	7: FreezeRef
+	8: Call pay::keep<Ty0>(Coin<Ty0>, &TxContext)
+	9: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	10: BrFalse(25)
+B1:
+	11: CopyLoc[3](Arg3: &mut Dex_Stable_Info)
+	12: Call stable_swap::get_stable_pool<Ty0, Ty1>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty0, Ty1>
+	13: MoveLoc[4](Arg4: &Clock)
+	14: MoveLoc[10](loc4: Coin<Ty0>)
+	15: MoveLoc[2](Arg2: u64)
+	16: CopyLoc[5](Arg5: &mut TxContext)
+	17: Call stable_swap::swap_exact_x_to_y<Ty0, Ty1>(&mut Stable_Pool<Ty0, Ty1>, &Clock, Coin<Ty0>, u64, &mut TxContext): Coin<Ty1>
+	18: StLoc[11](loc5: Coin<Ty1>)
+	19: ImmBorrowLoc[11](loc5: Coin<Ty1>)
+	20: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	21: MoveLoc[11](loc5: Coin<Ty1>)
+	22: StLoc[7](loc1: Coin<Ty1>)
+	23: StLoc[6](loc0: u64)
+	24: Branch(38)
+B2:
+	25: CopyLoc[3](Arg3: &mut Dex_Stable_Info)
+	26: Call stable_swap::get_stable_pool<Ty1, Ty0>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty1, Ty0>
+	27: MoveLoc[4](Arg4: &Clock)
+	28: MoveLoc[10](loc4: Coin<Ty0>)
+	29: MoveLoc[2](Arg2: u64)
+	30: CopyLoc[5](Arg5: &mut TxContext)
+	31: Call stable_swap::swap_exact_y_to_x<Ty1, Ty0>(&mut Stable_Pool<Ty1, Ty0>, &Clock, Coin<Ty0>, u64, &mut TxContext): Coin<Ty1>
+	32: StLoc[12](loc6: Coin<Ty1>)
+	33: ImmBorrowLoc[12](loc6: Coin<Ty1>)
+	34: Call coin::value<Ty1>(&Coin<Ty1>): u64
+	35: MoveLoc[12](loc6: Coin<Ty1>)
+	36: StLoc[7](loc1: Coin<Ty1>)
+	37: StLoc[6](loc0: u64)
+B3:
+	38: MoveLoc[6](loc0: u64)
+	39: MoveLoc[7](loc1: Coin<Ty1>)
+	40: StLoc[8](loc2: Coin<Ty1>)
+	41: StLoc[9](loc3: u64)
+	42: MoveLoc[1](Arg1: u64)
+	43: LdU64(0)
+	44: LdU64(0)
+	45: MoveLoc[9](loc3: u64)
+	46: MoveLoc[3](Arg3: &mut Dex_Stable_Info)
+	47: MoveLoc[5](Arg5: &mut TxContext)
+	48: Call stable_swap::add_stable_swap_event_internal<Ty0, Ty1>(u64, u64, u64, u64, &mut Dex_Stable_Info, &mut TxContext)
+	49: MoveLoc[8](loc2: Coin<Ty1>)
+	50: Ret
+}
+
+entry public swap_exact_output<Ty0, Ty1>(Arg0: Coin<Ty0>, Arg1: u64, Arg2: u64, Arg3: &mut Dex_Stable_Info, Arg4: &Clock, Arg5: &mut TxContext) {
+L6:	loc0: u64
+L7:	loc1: u64
+L8:	loc2: u64
+L9:	loc3: Coin<Ty0>
+L10:	loc4: address
+B0:
+	0: MutBorrowLoc[0](Arg0: Coin<Ty0>)
+	1: MoveLoc[1](Arg1: u64)
+	2: CopyLoc[5](Arg5: &mut TxContext)
+	3: Call coin::split<Ty0>(&mut Coin<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	4: StLoc[9](loc3: Coin<Ty0>)
+	5: MoveLoc[0](Arg0: Coin<Ty0>)
+	6: CopyLoc[5](Arg5: &mut TxContext)
+	7: FreezeRef
+	8: Call pay::keep<Ty0>(Coin<Ty0>, &TxContext)
+	9: CopyLoc[5](Arg5: &mut TxContext)
+	10: FreezeRef
+	11: Call tx_context::sender(&TxContext): address
+	12: StLoc[10](loc4: address)
+	13: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	14: BrFalse(28)
+B1:
+	15: CopyLoc[3](Arg3: &mut Dex_Stable_Info)
+	16: Call stable_swap::get_stable_pool<Ty0, Ty1>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty0, Ty1>
+	17: MoveLoc[4](Arg4: &Clock)
+	18: MoveLoc[9](loc3: Coin<Ty0>)
+	19: CopyLoc[2](Arg2: u64)
+	20: CopyLoc[5](Arg5: &mut TxContext)
+	21: Call stable_swap::swap_x_to_exact_y<Ty0, Ty1>(&mut Stable_Pool<Ty0, Ty1>, &Clock, Coin<Ty0>, u64, &mut TxContext): Coin<Ty1> * u64
+	22: StLoc[7](loc1: u64)
+	23: MoveLoc[10](loc4: address)
+	24: Call utils::destroy_zero_coin<Ty1>(Coin<Ty1>, address)
+	25: MoveLoc[7](loc1: u64)
+	26: StLoc[6](loc0: u64)
+	27: Branch(40)
+B2:
+	28: CopyLoc[3](Arg3: &mut Dex_Stable_Info)
+	29: Call stable_swap::get_stable_pool<Ty1, Ty0>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty1, Ty0>
+	30: MoveLoc[4](Arg4: &Clock)
+	31: MoveLoc[9](loc3: Coin<Ty0>)
+	32: CopyLoc[2](Arg2: u64)
+	33: CopyLoc[5](Arg5: &mut TxContext)
+	34: Call stable_swap::swap_y_to_exact_x<Ty1, Ty0>(&mut Stable_Pool<Ty1, Ty0>, &Clock, Coin<Ty0>, u64, &mut TxContext): Coin<Ty1> * u64
+	35: StLoc[8](loc2: u64)
+	36: MoveLoc[10](loc4: address)
+	37: Call utils::destroy_zero_coin<Ty1>(Coin<Ty1>, address)
+	38: MoveLoc[8](loc2: u64)
+	39: StLoc[6](loc0: u64)
+B3:
+	40: MoveLoc[6](loc0: u64)
+	41: LdU64(0)
+	42: LdU64(0)
+	43: MoveLoc[2](Arg2: u64)
+	44: MoveLoc[3](Arg3: &mut Dex_Stable_Info)
+	45: MoveLoc[5](Arg5: &mut TxContext)
+	46: Call stable_swap::add_stable_swap_event_internal<Ty0, Ty1>(u64, u64, u64, u64, &mut Dex_Stable_Info, &mut TxContext)
+	47: Ret
+}
+
+public swap_exact_output_<Ty0, Ty1>(Arg0: Coin<Ty0>, Arg1: u64, Arg2: u64, Arg3: &mut Dex_Stable_Info, Arg4: &Clock, Arg5: &mut TxContext): Coin<Ty1> {
+L6:	loc0: u64
+L7:	loc1: Coin<Ty1>
+L8:	loc2: u64
+L9:	loc3: u64
+L10:	loc4: Coin<Ty0>
+L11:	loc5: Coin<Ty1>
+L12:	loc6: Coin<Ty1>
+L13:	loc7: Coin<Ty1>
+B0:
+	0: MutBorrowLoc[0](Arg0: Coin<Ty0>)
+	1: MoveLoc[1](Arg1: u64)
+	2: CopyLoc[5](Arg5: &mut TxContext)
+	3: Call coin::split<Ty0>(&mut Coin<Ty0>, u64, &mut TxContext): Coin<Ty0>
+	4: StLoc[10](loc4: Coin<Ty0>)
+	5: MoveLoc[0](Arg0: Coin<Ty0>)
+	6: CopyLoc[5](Arg5: &mut TxContext)
+	7: FreezeRef
+	8: Call pay::keep<Ty0>(Coin<Ty0>, &TxContext)
+	9: Call utils::sort_token_type<Ty0, Ty1>(): bool
+	10: BrFalse(25)
+B1:
+	11: CopyLoc[3](Arg3: &mut Dex_Stable_Info)
+	12: Call stable_swap::get_stable_pool<Ty0, Ty1>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty0, Ty1>
+	13: MoveLoc[4](Arg4: &Clock)
+	14: MoveLoc[10](loc4: Coin<Ty0>)
+	15: CopyLoc[2](Arg2: u64)
+	16: CopyLoc[5](Arg5: &mut TxContext)
+	17: Call stable_swap::swap_x_to_exact_y<Ty0, Ty1>(&mut Stable_Pool<Ty0, Ty1>, &Clock, Coin<Ty0>, u64, &mut TxContext): Coin<Ty1> * u64
+	18: StLoc[8](loc2: u64)
+	19: StLoc[11](loc5: Coin<Ty1>)
+	20: MoveLoc[8](loc2: u64)
+	21: MoveLoc[11](loc5: Coin<Ty1>)
+	22: StLoc[7](loc1: Coin<Ty1>)
+	23: StLoc[6](loc0: u64)
+	24: Branch(38)
+B2:
+	25: CopyLoc[3](Arg3: &mut Dex_Stable_Info)
+	26: Call stable_swap::get_stable_pool<Ty1, Ty0>(&mut Dex_Stable_Info): &mut Stable_Pool<Ty1, Ty0>
+	27: MoveLoc[4](Arg4: &Clock)
+	28: MoveLoc[10](loc4: Coin<Ty0>)
+	29: CopyLoc[2](Arg2: u64)
+	30: CopyLoc[5](Arg5: &mut TxContext)
+	31: Call stable_swap::swap_y_to_exact_x<Ty1, Ty0>(&mut Stable_Pool<Ty1, Ty0>, &Clock, Coin<Ty0>, u64, &mut TxContext): Coin<Ty1> * u64
+	32: StLoc[9](loc3: u64)
+	33: StLoc[12](loc6: Coin<Ty1>)
+	34: MoveLoc[9](loc3: u64)
+	35: MoveLoc[12](loc6: Coin<Ty1>)
+	36: StLoc[7](loc1: Coin<Ty1>)
+	37: StLoc[6](loc0: u64)
+B3:
+	38: MoveLoc[6](loc0: u64)
+	39: MoveLoc[7](loc1: Coin<Ty1>)
+	40: StLoc[13](loc7: Coin<Ty1>)
+	41: LdU64(0)
+	42: LdU64(0)
+	43: MoveLoc[2](Arg2: u64)
+	44: MoveLoc[3](Arg3: &mut Dex_Stable_Info)
+	45: MoveLoc[5](Arg5: &mut TxContext)
+	46: Call stable_swap::add_stable_swap_event_internal<Ty0, Ty1>(u64, u64, u64, u64, &mut Dex_Stable_Info, &mut TxContext)
+	47: MoveLoc[13](loc7: Coin<Ty1>)
+	48: Ret
+}
+
+Constants [
+	0 => address: 0x85bf745a737a34bf73f360c22d5c8aea1f1767f3c458f5269a7c2f821b9d3781
+	1 => address: 0x049cc391ab4d3503e03dbb24c4f9e28f3cdd2ddf8a459e0d43012c3868ffefa1
+	2 => u64: 1
+]
+}

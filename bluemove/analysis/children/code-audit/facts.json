@@ -1,0 +1,125 @@
+{
+  "audit": "bluemove-amm-sui-phase2-code-audit",
+  "date": "2026-10-12",
+  "method": "disassembly of parent-provided .disasm + on-chain moduleBcs re-disassembly (sui move disassemble) + read-only public GraphQL reads/simulations",
+  "line_refs_note": "line numbers refer to files in /home/heisenberg/CA/bluemove/analysis/ unless prefixed modules/",
+  "version_mapping": {
+    "V1": {"package": "0xb24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9", "obj_version": 1, "files": ["pkg_swap.disasm", "pkg_router.disasm"], "version_gate": null, "expected_version_constant": null, "store": "Pool.token_x/token_y (T)", "status_live": "CALLABLE, used in live tx 9rjCSkLRWRjxKXLsLiCtWDpPzRzh2zkXSmCBNMYk5k3y -> 0xb24b::router::swap_exact_input_"},
+    "v2": {"package": "0xdc8437d021efc026249b796ce5375ce60433a5dd9c05cf6aee8668dc2191a8ad", "obj_version": 2, "version_gate": null, "core_semantics": "identical to V1 (diff only constant indexes)", "extra": "entry public withdraw_fee_(u64,&mut Pool,ctx) gated to 5 operator addresses, abort 999; drains token*amount/supply without burning LP"},
+    "v3": {"package": "0xdf87af8c63ce5991058fdd45fa4d79c9952f8191030a9737884afec79dab76cc", "obj_version": 3, "version_gate": null, "extra": "public withdraw_fee_direct(u64,&mut Dex_Info,ctx) 5-operator gate (abort 999) -> withdraw_fee_ pro-rata drain"},
+    "v4": {"package": "0xb574a776a50fb2f867ea1a35f37f3362a30aa2f6768cc72035c69d5624e5e3a4", "obj_version": 4, "version_gate": null, "extra": "same as v3"},
+    "v5": {"package": "0x941f5ee6d336545a2ae00ef763725ce826168bbc914d00ba95a87af076af0b7a", "obj_version": 5, "version_gate": null, "extra": "same as v3"},
+    "v6": {"package": "0xa00faab58ff6876dce096d5e0591200b84a14f4033319d27c48b781a37aa2ed7", "obj_version": 6, "version_gate": null, "extra": "withdraw_fee_ and withdraw_fee_direct are silent no-ops (empty Ret)"},
+    "vmid": {"package": "0x08cd33481587d4c4612865b164796d937df13747d8c763b8a178c87e3244498f", "obj_version": 7, "files": ["vmid_swap.disasm", "vmid_router.disasm"], "version_gate": "assert_version_contract", "expected_version_constant": 8, "constant_source": "vmid_utils.disasm:29-33 LdU64(8); modules/v7_utils.mv re-disassembly", "store": "dynamic object field EscownCoins (EM)", "status_live": "GATED OFF (sim abort 25 vs live VersionManage.version=12)"},
+    "v8": {"package": "0x0cdcbc6a7c5b8d10c265a715d6d007dceadd561c41a3e038ef9aaeae419d79b7", "obj_version": 8, "expected_version_constant": 8},
+    "v9": {"package": "0x7be61b62d902f3fe78d0a5e20b81b4715a47ff06cae292db8991dfea422cf57e", "obj_version": 9, "expected_version_constant": 8},
+    "v10": {"package": "0xc396a92a74917ae414dee481c74f4a013ab88ce11aae48c337ac4e6dc95f513b", "obj_version": 10, "expected_version_constant": 10, "has_sync_pool": false, "has_skim_pool": true, "has_create_and_freeze_pool": true},
+    "v11": {"package": "0xf72bd3b3277929f315b793b669774580baa1e1a32af4740dc797a1c5f5bfd656", "obj_version": 11, "expected_version_constant": 10, "has_sync_pool": true},
+    "vlatest": {"package": "0x35f3190a41b98da22c997c9266143523816d73a902123dde6f60fac2e0f656d7", "obj_version": 12, "files": ["vlatest_swap.disasm", "vlatest_router.disasm"], "expected_version_constant": 11, "constant_source": "vlatest_utils.disasm:29-33 LdU64(11); modules/v12_utils.mv re-disassembly", "store": "dynamic object field EscrowCoinsV2 (E2)", "status_live": "GATED OFF (sim abort 25 vs live VersionManage.version=12)"}
+  },
+  "live": {
+    "dex_info": {"id": "0x3f2d9f724f4a1ce5e71676448dc452be9a6243dac9c5b975a588c8c867066e92", "shared_initial_version": 1587827, "fee_to": "0x85bf745a737a34bf73f360c22d5c8aea1f1767f3c458f5269a7c2f821b9d3781", "dev": "0x049cc391ab4d3503e03dbb24c4f9e28f3cdd2ddf8a459e0d43012c3868ffefa1", "total_pool_created": 16739},
+    "version_manage": {"object": "0x41d5f1c14825d92c93cdae3508705cc31582c8aaaca501aaa4970054fd3b5b2d", "type": "0x08cd33481587d4c4612865b164796d937df13747d8c763b8a178c87e3244498f::swap::VersionManage", "version": 12, "last_writer_tx": "EanzxUeSmRyG5x8cFRjDFSRtRC4hQ6rqJVP325ZsPvDS", "last_writer_function": "0x35f3190a...::swap::migrate_contract_version", "last_writer_time": "2026-07-12T01:24:51.964Z"},
+    "version_constant_table": {"v1": null, "v2": null, "v3": null, "v4": null, "v5": null, "v6": null, "v7": 8, "v8": 8, "v9": 8, "v10": 10, "v11": 10, "v12": 11},
+    "gate_simulations": [
+      {"call": "0x35f3190a...::swap::assert_version_contract(&Dex_Info)", "result": "FAILURE abort 25", "proof": "instruction 19 matches vlatest_swap.disasm:148-149"},
+      {"call": "0x08cd3348...::swap::assert_version_contract(&Dex_Info)", "result": "FAILURE abort 25"},
+      {"call": "0xb24b6789...::swap::create_new_pool_admin<SUI,PAULY>", "result": "FAILURE abort 17 (dev gate; V1 executable)"},
+      {"call": "0x08cd3348...::swap::withdraw_fee_direct(0,&mut Dex_Info)", "result": "FAILURE abort 1 (dead stub)"},
+      {"call": "0x35f3190a...::swap::skim_pool(0,&mut Dex_Info)", "result": "FAILURE abort 26 (dead stub)"},
+      {"call": "0x35f3190a...::swap::sync_pool<SUI,PAULY>(&mut Dex_Info)", "result": "FAILURE abort 25 at gate (before escrow lookup)"}
+    ],
+    "last_swap_event_utc": "2026-10-12T12:24:43.820Z",
+    "stable_registry": {"id": "0x5a7eca40df453efe6bb1feae99e5b8fc072d1252cbd1979eb187d625dc9b47c9", "fee_to": "0x85bf745a...", "dev": "0x049cc391...", "pools": 1, "pool": "0xf47f15e09e8a32cc7a515928bd7a78d94e3c3dbdcd3513771ec294f504dd70fc", "is_freeze": false, "token_x": 57116689, "token_y": 67997970, "lsp_supply": 61712014, "fee": 4, "dao_fee": 30}
+  },
+  "formulas": {
+    "vlatest_mint": {"file": "vlatest_swap.disasm", "def": "2758", "dx": "2771-2778 = balance_x - reserve_x (u128; underflow = Move arithmetic abort)", "dy": "2779-2786", "mint_fee_call": "2787-2789", "supply0_branch": "2795-2835: LP=sqrt(dx*dy)-1000, require sqrt>1000 else abort 4 (2816-2817), minimum_liq += 1000", "supply_gt0": "2837-2855: LP=min(dx*S/reserve_x, dy*S/reserve_y)", "lp_pos_check": "2856-2868 abort 4", "update": "2883-2886 sets reserve_x=balance_x, reserve_y=balance_y", "k_last": "2887-2898 = reserve_x*reserve_y"},
+    "vlatest_burn": {"file": "vlatest_swap.disasm", "def": "2608", "reads": "2622-2630 shared reserve_x/reserve_y", "lp_pos": "2640-2646 abort 7", "out": "2658-2677 out_x=reserve_x*lp/S, out_y=reserve_y*lp/S", "out_pos": "2696-2702 abort 10", "split_from": "2709-2731 EscrowCoinsV2", "update": "2732-2739 reserves=escrow remaining", "k_last": "2740-2751"},
+    "vlatest_add_liquidity_direct": {"def": "1213-1496", "zero_reserves_branch": "1253-1278", "quote_abort8": "1316-1321", "used_gt_input_abort6": "1344-1349, 1358-1363", "escrow_exists_check": "1389-1394 (EscrowCoinsV2)", "create_escrow": "1420-1424", "mint_call": "1429 (create) / 1473 (join existing)"},
+    "vlatest_swap": {"def": "1978-2597", "both_zero_abort13": "2043-2048", "out_lt_reserve_abort7": "2050-2078", "escrow_path": "2096-2346", "k_check": "2227-2339 (skew 20/10000, u256 fallback, threshold 2^128-1)", "k_abort15": "2333-2336", "update": "2338-2341", "no_escrow_fallback_uses_token_x_y": "2348-2592", "update_fallback": "2584-2588"},
+    "vlatest_update": {"def": "3000-3011", "sets": "reserve_x=Arg0; reserve_y=Arg1"},
+    "vlatest_mint_fee": {"def": "2904-2998", "skip_if_k_last0": "2914-2919", "formula": "fee=S*(sqrt(rx*ry)-sqrt(k_last))*40/(60*sqrt(k_last)+40*sqrt(rx*ry))", "credit": "fee_amount 2970-2981"},
+    "vlatest_sync_pool": {"def": "3207-3301", "gate": "3218-3221 assert_version_contract", "borrow_E2": "3224-3236", "update": "3245-3248 reserves:=E2", "k_last": "3249-3260 = E2x*E2y", "reversed_pair_branch": "3262-3298", "note": "public; no dev gate; requires EscrowCoinsV2 field to exist (borrow_mut aborts otherwise)"},
+    "vlatest_skim_pool": {"def": "3201-3205", "body": "abort 26 (dead stub)"},
+    "vlatest_withdraw_fee_direct": {"def": "3303-3307", "body": "abort 1 (dead stub)"},
+    "v1_mint": {"file": "pkg_swap.disasm", "def": "1766", "dx": "1780-1796 = token_x_value - reserve_x", "dy": "1797-1804", "supply0": "1813-1835 abort 4 if sqrt<=1000", "lp": "1855-1886 LP=min(dx*S/reserve_x,dy*S/reserve_y), abort 4 if 0", "update": "1901-1904 reserves=token balances", "k_last": "1905-1916"},
+    "v1_burn": {"def": "1627", "reads": "1640-1647 token_x/token_y values", "lp_pos": "1651-1663 abort 7", "out": "1668-1694 out_x=token_x_value*lp/S, out_y=token_y_value*lp/S (STORE multiplier, NOT reserves)", "out_pos": "1695-1719 abort 10", "split_from": "1726-1739 token_x/token_y", "update": "1740-1747", "k_last": "1748-1759"},
+    "v1_add_liquidity_direct": {"def": "633-812", "quote_abort8": "725-726", "used_gt_input_abort6": "753-754, 767-768", "mint_call": "800-802"},
+    "v1_swap": {"def": "1293-1616", "both_zero_abort13": "1342-1343", "out_lt_reserve_abort7": "1372-1373", "store_read": "1417-1421 token_balances", "k_check": "1494-1605", "k_abort15": "1606-1607", "update": "1609-1612"},
+    "v1_update": {"def": "2018-2029"},
+    "v1_mint_fee": {"def": "1922", "weights": "10/20 (LdU128(10) 1968, LdU128(20) 1972)"},
+    "vmid_mint": {"file": "vmid_swap.disasm", "def": "2436", "dx": "2448-2456", "dy": "2457-2464", "abort4": "2490-2495, 2541-2546", "update": "2561-2564"},
+    "vmid_burn": {"def": "2286", "out": "2336-2355 out=reserves*lp/S", "abort7": "2318-2323", "abort10": "2374-2379", "split_from": "2391-2408 EscownCoins", "update": "2410-2416", "k_last": "2417-2428"},
+    "vmid_add_liquidity_direct": {"def": "966-1174", "quote_abort8": "1062-1063", "used_abort6": "1090-1091, 1104-1105", "BUG": "unconditional dynamic_object_field::add of new EscownCoins at 1159; aborts (EFieldAlreadyExists) if the pool already has one; v12 fixed via exists check at 1389-1394"},
+    "vmid_swap": {"def": "1656-2275", "abort13": "1720-1725", "abort7": "1750-1755", "escrow_exists_check": "1764-1772", "k_abort15": "2260-2261", "update": "2262-2266"},
+    "vmid_migrate_pool": {"def": "203-326", "dev_gate": "221-227 abort 17", "gate": "231", "moves": "T -> EscownCoins if absent (248-271, 293-317)"},
+    "v1_admin": {"freeze_pool": "248, dev abort 17 at 263-266", "set_fee_to": "313, dev abort 17 at 326-329", "withdraw_fee": "338, fee_to|dev abort 17 at 377-383, drains 100% of fee_amount/fee_x/fee_y"},
+    "vlatest_admin": {"withdraw_fee": "827, allowed fee_to(836-840)|dev(846-851)|0x85bf const(857-860), abort 17 at 871-872", "unfreeze_and_add_liquidity": "router 114-218 (public, gate at 123; LP to const 0x1937f2c5ce1cbab08893b63945c20cde349e4a7850eea317b965ff8da383c80e)", "create_and_freeze_pool": "397-448 dev/0x049c gate abort 17 at 430-431", "set_new_dev": "321-360 dev/0x049c", "migrate_escrow_coins": "209-293 dev abort 17 at 232-233"}
+  },
+  "lp_inflation_preconditions": {
+    "supply_gt_0": true,
+    "reserves_both_gt_0": "else division by zero in LP formula; r=(0,0) blocks mints (DoS, not drain)",
+    "is_freeze_false": "abort 24 otherwise",
+    "store_covers_reserves": "B_x + d_x >= r_x and B_y + d_y >= r_y (u128 underflow abort otherwise)",
+    "deposit_ratio_check": "quote-based; abort 8 if neither direction fits; used<=input abort 6",
+    "lp_gt_0": "abort 4",
+    "inflation_condition": "B_x > r_x AND B_y > r_y (store exceeds reserves both sides); profit ~= B - r after same-version mint+burn; LP minted = min((B+d-r)*S/r)",
+    "minimum_liq": "only in supply==0 branch (1000 LSP lock; sqrt(dx*dy)>1000 else abort 4)",
+    "k_last_in_swaps": "never compared in any version's swap; swaps use the 20/10000-skewed product check (abort 15) and out<reserve (abort 7)",
+    "burn_constraints": "lp>0 abort 7; out_x>0 and out_y>0 abort 10; payout store must cover out or balance::split aborts; is_freeze abort 24"
+  },
+  "desync": {
+    "shared_fields": ["reserve_x", "reserve_y", "k_last"],
+    "stores": {"V1": "Pool.token_x/token_y", "vmid": "EscownCoins dynamic field", "vlatest": "EscrowCoinsV2 dynamic field"},
+    "writers": {"V1 ops": "r := T post-op", "vmid ops": "r := EM post-op", "vlatest ops": "r := E2 post-op", "vlatest sync_pool": "r := E2 (forced) and k_last := E2x*E2y (public, gate-only)"},
+    "unprivileged_trigger": "0x35f3 (v12) / v11 swap::sync_pool - public, requires existing EscrowCoinsV2 field; currently abort 25 by gate",
+    "profitable_pattern": "sync_pool sets r:=E2 small; then swap (V1, ungated) quotes at r and the k-check uses r (lax), splitting payouts from the larger store T/EM; can be re-armed by calling sync_pool again between swaps; mint-inflation leg additionally possible when store>reserves both sides",
+    "vmid_mint_leg_blocked": "vmid add_liquidity aborts via unconditional dynamic_object_field::add when EscownCoins already exists",
+    "dead_stubs": {"skim_pool": "abort 26", "withdraw_fee_direct": "abort 1 (v7/v12)", "withdraw_fee_": "abort 1 (v7/v12)", "migrate_pool(v12)": "abort 1", "v6 withdraw_fee_/direct": "silent no-op"}
+  },
+  "lp_type_identity": {
+    "LSP": "0xb24b6789e088b876afabca733bed2299fbc9e2d6369be4d1acfa17d8145454d9::swap::LSP<T0,T1>",
+    "declared_in": ["pkg_swap.disasm:67", "vmid_swap.disasm:67", "vlatest_swap.disasm:67"],
+    "accepted_by_v1_remove_liquidity": "pkg_router.disasm:111 (Coin<LSP<Ty0,Ty1>>)",
+    "same_type_across_versions": true,
+    "live_normalized_signature": "sim-poc/evidence/function_signatures.json: vlatest::router::add_liquidity_returns returns Coin<0xb24b6789...::swap::LSP<$0,$1>>",
+    "distinct_types": {"stable_LSP": "0xb24b6789...::stable_swap::LSP (vlatest_stable_swap.disasm:17)", "EscownCoins": "0x08cd3348...::swap::EscownCoins (live escrow type repr)", "EscrowCoinsV2": "0x35f3190a...::swap::EscrowCoinsV2"}
+  },
+  "primed_pools": {
+    "source": "parent's escrow_sample.json (600 pools scanned 2026-10-12)",
+    "count_both_stores_populated": 12,
+    "ratio_divergence_range": "1.2e5x to 9.0e7x",
+    "list": [
+      {"addr": "0x2cb35fc6f8e772ed06bca0029a77085baed774608fd32545f9806f044890b50a", "stores": "T,EM", "r": [332972177084, 8590576303868379], "T": [65, 64668658687638], "EM": [332972177084, 8590576303868379], "ratio_divergence": 38562585.3, "last_writer": "vmid"},
+      {"addr": "0xcdc590d3bde8888fe1fd11fac8ad7e727f837668c2b0249a99f82b2d92b0e360", "stores": "T,E2", "r": [6472, 459074203217169], "T": [6472, 459074203217169], "E2": [59459649, 49543333886], "ratio_divergence": 85129776.6, "last_writer": "V1"},
+      {"addr": "0x40dce7f19b0433711bd484eea62d3f9144aa3748d3a7ec686d65bea4a88757cb", "stores": "T,E2", "ratio_divergence": 80767349.9, "last_writer": "V1"},
+      {"addr": "0x54e40e4b458d78c168a3225f187598eb8b6e30a72e0fcaac8f0313b657987a91", "stores": "T,E2", "ratio_divergence": 81880510.8, "last_writer": "V1"},
+      {"addr": "0x1edd2fb4b9d56d36d5651edc08213de997f8eec5701952a15062758e7647b372", "stores": "T,E2", "ratio_divergence": 175679.5, "last_writer": "V1"},
+      {"addr": "0x3d1bf3a7f5da64b88978ac1cde3fac97848f2344db41a0a16b45eee2659dcac0", "stores": "T,E2", "ratio_divergence": 126568.1, "last_writer": "V1"},
+      {"addr": "0x9ccd518097f791c8d134b9d7f5784ec677f69a222873fcf241c7c452d4bf15f3", "stores": "T,E2", "ratio_divergence": 89737795.4, "last_writer": "V1"},
+      {"addr": "0x592494b3c6efaa3b470863200a214dd6f7da4b29bd03f45678943b31d7bb067d", "stores": "T,EM", "ratio_divergence": 2.73, "last_writer": "vmid"},
+      {"addr": "0x4ac0309f1e26bb6552300002c34b811bdf2388c94a3b032ac9bc279a045a7207", "stores": "T,E2", "ratio_divergence": 89135929.5, "last_writer": "V1"},
+      {"addr": "0x52a561689e33f25e429c1e3aa4b8ef6414e9b72a21f3600bf855ebf7fbcc62b5", "stores": "T,E2", "ratio_divergence": 84267699.4, "last_writer": "V1"},
+      {"addr": "0x6d26fca4e7a4130b736b584c7a05e098c868140eb024182dd6771d084d8b84f5", "stores": "T,E2", "ratio_divergence": 28419023.7, "last_writer": "V1"},
+      {"addr": "0xf2ae3b093b453027eb516a574e91ce583af0050363540f1529ba1c8b5defc577", "stores": "T,E2", "ratio_divergence": 179257.3, "last_writer": "V1"}
+    ],
+    "exploit_note": "when a sync_pool-bearing version is gate-open, sync_pool sets r:=E2 then V1 swaps (always callable) extract from T at the E2 price; ratio_divergence estimates the mispricing factor; per-iteration extraction bounded by ~r, re-armable via repeated sync_pool"
+  },
+  "stable_module": {
+    "version_gates": "none in any of v1..v12 (stable_router pkg==vmid byte-identical; vmid==vlatest stable_swap byte-identical; pkg differs only in update_oracle)",
+    "create_stable_pool": "dev-only abort 1 (all versions)",
+    "is_freeze_abort": 111,
+    "mint_aborts": {"sqrt<=1000": 102, "lp==0": 103},
+    "burn_abort": {"out==0": 106},
+    "live": {"pools": 1, "pool": "0xf47f15e09e8a32cc7a515928bd7a78d94e3c3dbdcd3513771ec294f504dd70fc", "inactive_since_approx": "2026-07-31"},
+    "same_bug_class": false,
+    "note": "single-store design (no reserve mirror) so the AMM desync class does not apply; swap_coin_for_coin_unchecked is friend-only and unused by routers (dead code)"
+  },
+  "files_created": [
+    "audit.md", "facts.json",
+    "live_check.py ... live_check14.py (read-only GraphQL probes)",
+    "sim_gate.py / sim_gate2.py (read-only simulations; first format attempt failed with unknown ArgumentKind, second is the working sui.rpc.v2 proto-JSON)",
+    "bcs_scan.py, extract_modules.py, version_constants.py, check_v2v6.py, diff_v1_v6.py, divergence_analysis.py",
+    "modules/ (raw .mv + CLI disassembly for v1..v12 utils/swap)"
+  ]
+}

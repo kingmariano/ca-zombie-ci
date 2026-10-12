@@ -1,0 +1,56 @@
+{
+  "finding": "L2-Phase2-bluemove",
+  "title": "BlueMove DEX (Sui) — external unprivileged extraction after the July-2026 exploit",
+  "chains": ["sui"],
+  "headline_extractable_usd": 0.05,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.05,
+    "H-O": 116.43,
+    "P": 14707.55,
+    "S": 202138.4
+  },
+  "latest_block": 333206268,
+  "block_numbers": {
+    "sui_checkpoint": 333206268
+  },
+  "targets_checked": 16751,
+  "live_targets": 16739,
+  "closed_reasons": [
+    "2026-07-12T01:24:51Z dev tx EanzxUeS...PvDs set VersionManage.version=12; no deployed package expects 12 (vmid const=8, v12 const=11) -> every escrow-owning function aborts assert_version_contract (25) [verified live by simulation s1/s2/s6]",
+    "The July-2026 escrow LP-inflation primitive requires a callable escrow package; full scan of 16,739 pools: v2-escrow drainable = 0",
+    "Only ungated v1-v6 packages remain callable; they touch only legacy stores (token_x/token_y): 104.93 SUI + 0.66 USDC + 0 USDT (~$116.43) after the July drain + faucet bots",
+    "V1 swaps on escrow-only pools revert: 0x2::balance::split abort 2 (legacy store empty) [simulation s3]",
+    "V1 mint on escrow-only pools reverts: utils::quote abort 2 [simulation s4]",
+    "skim_pool / withdraw_fee_direct are abort/no-op stubs in vmid/v12 and v6; all admin+version functions are sender==dev / fee_to gated",
+    "Residual faucet path (V1 swaps on imbalanced legacy stores) succeeds (simulation s5 on SUI/SUITRUMP pool) but yields dead meme tokens: 0 of the top-200 imbalanced pools' big-side tokens have any DefiLlama price"
+  ],
+  "poc": {
+    "tests_passed": 6,
+    "tests_total": 6,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38261640532"
+    ]
+  },
+  "key_facts": [
+    "Sui AMM; 12 package versions of 0xb24b6789...5454d9; latest 0x35f3190a...f656d7 (v12); registry Dex_Info 0x3f2d9f72...66e92 (shared, dev=0x049cc391...ffefa1, fee_to=0x85bf745a...9d3781)",
+    "VersionManage object 0x41d5f1c1...3b5b2d: version=12, last written 2026-07-12T01:24:51Z by dev (tx EanzxUeS...PvDs), ~3h after the July-11 exploit",
+    "Contract-version constants: v7-v9=8, v10-v11=10, v12=11; v1-v6 have no gate -> only v1-v6 callable today (live sims: vmid/v12 abort 25)",
+    "July-2026 exploit = cross-version reserve desync + LP-inflation (v1 writes reserve=pool.token_x; v12 writes reserve=escrow.token_x; mint LP=min((balance-reserve)*S/reserve) then burn against the larger store)",
+    "FULL SCAN (CI, checkpoint 333,206,268): 16,739 pools; frozen=0; 15,945 vmid-escrow-only, 399 v12-escrow-only, 0 both, 395 no-escrow; reserves match legacy for 784, EscownCoins for 15,942, EscrowCoinsV2 for 13",
+    "Extractability: v12-escrow drainable = 0 pools; V1-mint drainable = 2 pools worth $0.054 (0x99c63597df15c372...: T=(49138522,352081588), r=(43319,5277399), 0.049 SUI + memes; 0x2e56b6b056433383...: memes only)",
+    "Live value: EscownCoins $181,753.52 (164,559.95 SUI), EscrowCoinsV2 $20,384.88 (18,488.50 SUI; top pool 0x127bd40c = 18,407.28 SUI + SUIJAK), legacy stores $116.43, fees $14,707.55 (13,336.28 SUI) - reserves total $202,164.39",
+    "LP distribution (top pools): 4/5 largest >=99.9% of LP burned at 0x000...000 (SUI/SUIJAK pool: 99.9825% burned) -> even a dev version-switch cannot return most escrow value",
+    "Live traffic: latest Dex_Info txs (2026-10-12 11:08-12:24 UTC) are third-party V1 router::swap_exact_input_ bot PTBs (successes+failures); zero vmid/v12 calls",
+    "Stable pool registry 0x5a7eca40... has 1 pool (~$125); same gating situation",
+    "Fees are team-gated: v1/v2/v4/v6 withdraw_fee requires sender in {fee_to, dev, 0x9c8c82..., 0x97a745...}; vmid/v12 withdraw_fee_direct are abort stubs"
+  ],
+  "caveats": [
+    "USD uses major-token prices at scan time (SUI ~$1.10); the long tail (~14.9k meme tokens) is unpriced and counted as $0",
+    "LP-holder analysis sampled (top pools), not exhaustive; the S vs P split of escrow value assumes the sampled burn pattern generalizes",
+    "Simulation != execution, but abort codes are deterministic and the successful faucet path is corroborated by live bot txs",
+    "A future/undeployed constant-12 package could re-enable escrow functions; none exists today (packageVersions lists 12 versions)",
+    "If the dev re-activates vmid (version=8) while any pool has reserve<escrow (creatable by V1 swaps), the July LP-inflation primitive returns instantly - single-tx-away latent risk"
+  ],
+  "one_liner": "External unprivileged extraction is effectively $0 (exactly $0.05 across 2 desynced pools, high confidence): the 2026-07-12 version bump to 12 disables both escrow-owning packages (abort 25 verified live), the v12-escrow inflation path is drainable on 0/16,739 pools, and the only callable v1-v6 code touches legacy stores holding just $116.43 in majors (dead-meme faucets) while $202.1K sits frozen in escrows behind the dev's version switch (fees $14.7K team-only; >=99.9% of top pools' LP burned at 0x0)."
+}
