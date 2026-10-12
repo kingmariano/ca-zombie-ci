@@ -1,0 +1,520 @@
+==================== contracts/AugurDividendsV1.sol
+// SPDX-License-Identifier: Augury Finance
+// COPIED FROM https://github.com/compound-finance/compound-protocol/blob/master/contracts/Governance/GovernorAlpha.sol
+// Copyright Augury Finance, 2021. Do not re-use without permission.
+// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+// 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+// 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+
+pragma solidity ^0.6.12;
+
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/access/Ownable.sol';
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/math/SafeMath.sol';
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/token/ERC20/SafeERC20.sol';
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/utils/ReentrancyGuard.sol';
+
+import './libs/IDividends.sol';
+import './Operators.sol';
+
+contract AugurDividendsV1 is Ownable, ReentrancyGuard, Operators, IDividends {
+    using SafeMath for uint256;
+    using SafeERC20 for IERC20;
+
+    struct EpochInfo {
+        uint256 lpOmenStaked_d18;
+        uint256 nlpOmenStaked_d18;
+
+        uint256 lpUsdcToDistribute_d6;
+        uint256 nlpUsdcToDistribute_d6;
+    }
+
+    struct UserInfo {
+        uint256 lastNlpPositiveStakedTime;
+        uint256 lastNlpZeroStakedTime;
+        
+        uint256 lastLpPositiveStakedTime;
+        uint256 lastLpZeroStakedTime;
+
+        uint256 lastEpochClaimed;
+
+        uint256 lpOmenStaked_d18;
+        uint256 nlpOmenStaked_d18;
+
+        uint256 lastEpochPended;
+        uint256 pendingUsdc_d6;
+    }
+
+    uint256 public constant MAX_UINT_256 = uint256(-1);
+
+    IERC20 public dividendToken;
+
+    uint256 public epochDurationSeconds;
+    uint256 public epochDurationSecondsOffset;
+    uint256 public lastClosedEpoch;
+    uint256 public lastFundedEpoch;
+    uint256 public lastFundedAtUtcSeconds;
+
+    uint256 public totalLpOmenStaked_d18;
+    uint256 public totalNlpOmenStaked_d18;
+
+    mapping(uint256 => EpochInfo) public epochInfos;
+    mapping(address => UserInfo) public userInfos;
+    mapping(address => mapping(uint256 => uint256)) public userStakeHistories_nlp;
+    mapping(address => mapping(uint256 => uint256)) public userStakeHistories_lp;
+    mapping(uint256 => bool) public pidIsNlpPool;
+    mapping(uint256 => bool) public pidIsLpPool;
+    address[] public stakedUserAddresses;
+
+    event DividendsCollected(address indexed user, uint256 amount);
+
+    constructor(IERC20 _dividendToken) public {
+        dividendToken = _dividendToken;
+
+        // 1 week
+        epochDurationSeconds = 1 weeks;
+        // Fri May 28 2021 09:00:00 GMT-0500 (Central Daylight Time)
+        epochDurationSecondsOffset = 1622210400;
+
+        // staging:
+        // 1 hours
+        // epochDurationSeconds = 1 hours;
+        // Tue Jun 15 2021 06:00:00 GMT-0500 (Central Daylight Time)
+        // epochDurationSecondsOffset = 1623754800;
+
+        require((now - 2 * epochDurationSeconds) > epochDurationSecondsOffset, 'epochDurationSecondsOffset must be at least two epochs in the past.');
+
+        lastClosedEpoch = secondsToEpoch(getNow()) - 1;
+        lastFundedEpoch = secondsToEpoch(getNow()) - 1;
+
+        totalLpOmenStaked_d18 = 0;
+        totalNlpOmenStaked_d18 = 0;
+    }
+
+    function getNow() public virtual view returns (uint256) {
+        return now;
+    }
+
+    function getUserLastNlpStakedTime(address _user) public view returns (uint256) {
+        return userInfos[_user].lastNlpPositiveStakedTime > userInfos[_user].lastNlpZeroStakedTime ? userInfos[_user].lastNlpPositiveStakedTime
+            : userInfos[_user].lastNlpZeroStakedTime;
+    }
+
+    function getUserLastLpStakedTime(address _user) public view returns (uint256) {
+        return userInfos[_user].lastLpPositiveStakedTime > userInfos[_user].lastLpZeroStakedTime ? userInfos[_user].lastLpPositiveStakedTime
+            : userInfos[_user].lastLpZeroStakedTime;
+    }
+
+    function hasUserStaked(address _user) public view returns (bool) {
+        return userInfos[_user].lastLpPositiveStakedTime > 0 ||
+            userInfos[_user].lastNlpPositiveStakedTime > 0;
+    }
+
+    // Calculations...
+    function calculateEpochUsdcAmount_d6(uint256 _epochUsdcTotal_d6, uint256 _epochTotalStakedOmen_d18, uint256 _userStakedOmen_d18) public pure returns (uint256) {
+        if(_userStakedOmen_d18 == 0 || _epochTotalStakedOmen_d18 == 0) {
+            return 0;
+        }
+
+        uint256 _numerator= _epochUsdcTotal_d6.mul(_userStakedOmen_d18).mul(1e18);
+        uint256 _denominator = _epochTotalStakedOmen_d18;
+
+        return _numerator.div(_denominator).div(1e18);
+    }
+    
+    function secondsToEpoch(uint25
+==================== contracts/MasterAugur.sol
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.6.12;
+
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/access/Ownable.sol';
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/math/SafeMath.sol';
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/token/ERC20/SafeERC20.sol';
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/utils/ReentrancyGuard.sol';
+
+import './OmenToken.sol';
+import './Operators.sol';
+import './libs/IDividends.sol';
+import './libs/IReferral.sol';
+import './AugurDividendsV1.sol';
+
+// MasterAugur sees all within Augury.
+// Eventually, this will be governed by our community.
+// Have fun reading it. Hopefully it's bug-free. God bless. :)
+
+contract MasterAugur is Ownable, ReentrancyGuard, Operators {
+    using SafeMath for uint256;
+    using SafeERC20 for IERC20;
+
+    // Info of each user.
+    struct UserInfo {
+        uint256 amount;         // How many LP tokens the user has provided.
+        uint256 rewardDebt;     // Reward debt. See explanation below.
+        //
+        // We do some fancy math here. Basically, any point in time, the amount of OMEN
+        // entitled to a user but is pending to be distributed is:
+        //
+        //   pending reward = (user.amount * pool.accOmenPerShare) - user.rewardDebt
+        //
+        // Whenever a user deposits or withdraws LP tokens to a pool. Here's what happens:
+        //   1. The pool's `accOmenPerShare` (and `lastRewardBlock`) gets updated.
+        //   2. User receives the pending reward sent to his/her address.
+        //   3. User's `amount` gets updated.
+        //   4. User's `rewardDebt` gets updated.
+    }
+
+    // Info of each pool.
+    struct PoolInfo {
+        IERC20 lpToken;           // Address of LP token contract.
+        uint256 allocPoint;       // How many allocation points assigned to this pool. OMEN to distribute per block.
+        uint256 lastRewardBlock;  // Last block number that OMEN distribution occurs.
+        uint256 accOmenPerShare;   // Accumulated OMEN per share, times 1e18. See below.
+        uint16 depositFeeBP;      // Deposit fee in basis points
+    }
+
+    /* Augury: Omen */
+    OmenToken public omen;
+    IDividends public dividends;
+
+    /**
+        Advisors, Partners and Developers have a vesting schedule on their tokens (see below)
+    **/
+    address public communityAddress;
+    address public devAddress;
+
+    // OMEN tokens created per block.
+    uint256 public maxSupply = 777777777 ether; // 777m
+    uint256 public omenPerBlock = 17777 finney; // 17.777
+
+    // Info of each pool.
+    PoolInfo[] public poolInfo;
+    // Info of each user that stakes LP tokens.
+    mapping(uint256 => mapping(address => UserInfo)) public userInfo;
+    // Total allocation points. Must be the sum of all allocation points in all pools.
+    uint256 public totalAllocPoint = 0;
+    // The block number when OMEN mining starts.
+    uint256 public startBlock;
+
+    // Omen referrals contract address.
+    IReferral public referral;
+    // Referral commission rate in basis points.
+    uint16 public referralCommissionRate = 0;
+    // Max referral commission rate: 5%.
+    uint16 public constant MAXIMUM_REFERRAL_COMMISSION_RATE = 500;
+
+    // dividends
+    address public dividendsContractAddress;
+
+    /************************
+        Addresses 
+    *************************/
+
+    // Vesting:
+    event SetCommunityAddress(address indexed user, address indexed newAddress);
+    event SetDevAddress(address indexed user, address indexed newAddress);
+
+    // Other/Misc:
+    event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
+    event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
+    event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
+
+    // Referral bonuses:
+    event SetReferralAddress(address indexed user, IReferral indexed newAddress);
+    event ReferralCommissionPaid(address indexed user, address indexed referrer, uint256 commissionAmount);
+
+    // Allows us to change the emission rate (see gitbook)
+    event UpdateEmissionRate(address indexed user, uint256 omenPerBlock);
+    
+    // Watched by our Sentinel Auditing System. This function should only be used if the community requires it. 
+    event UpdateMaxSupply(address indexed user, uint256 maxSupply);
+    
+    constructor(
+        OmenToken _omen,
+        IERC20 _usdc,
+        uint256 _startBlock,
+        address _communityAddress,
+        address _devAddress
+    ) public {
+        omen = _omen;
+        startBlock = _startBlock;
+
+        communityAddress = _communityAddress;
+        devAddress = _devAddress;
+        
+        dividends = new AugurDividendsV1(_usdc);
+        // TODO: Determine which of these we should use...
+        dividends.updateOperator(_devAddress, true);
+        dividends.updateOperator(msg.sender, true);
+        dividends.updateOperator(address(this), true);
+        
+        dividendsContractAddress = address(dividends);
+    }
+
+    function poolLength() external view returns (uint256) {
+        return poolInfo.length;
+    }
+
+    mapping(IERC20 => bool) public poolExistence;
+    modifier nonDuplicated(IERC20 _lpToken) {
+        require(poolExistence[_lpToken] == false, 'nonDuplicated: duplicated');
+        _;
+    }
+
+    // Add a new lp to the pool. Can only be called by the owner.
+    function _addPool(uint256 _allocPoint, IERC20 _lpToken, uint16 _depositFeeBP) private {
+        require(_depositFeeBP <= 10000, 'add: invalid deposit fee basis points');
+        uint256 lastRewardBlock = block.number > startBlock ? block.number : startBlock;
+        totalAllocPoint = totalAllocPoint.add(_allocPoint);
+        poolExistence[_lpToken] = true;
+        poolInfo.push(PoolInfo({
+            lpToken: _lpToken,
+            allocPoint: _allocPoint,
+            lastRewardBlock: lastRewardBlock,
+            accO
+==================== contracts/OmenToken.sol
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.6.12;
+
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/access/Ownable.sol';
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/token/ERC20/ERC20.sol';
+
+contract OmenToken is ERC20('Augury Finance', 'OMEN'), Ownable {
+    
+    function mint(address _to, uint256 _amount) public onlyOwner {
+        _mint(_to, _amount);
+        _moveDelegates(address(0), _delegates[_to], _amount);
+    }
+
+    // Copied and modified from YAM code:
+    // https://github.com/yam-finance/yam-protocol/blob/master/contracts/token/YAMGovernanceStorage.sol
+    // https://github.com/yam-finance/yam-protocol/blob/master/contracts/token/YAMGovernance.sol
+    // Which is copied and modified from COMPOUND:
+    // https://github.com/compound-finance/compound-protocol/blob/master/contracts/Governance/Comp.sol
+
+    /// @dev A record of each accounts delegate
+    mapping (address => address) internal _delegates;
+
+    /// @dev A checkpoint for marking number of votes from a given block
+    struct Checkpoint {
+        uint32 fromBlock;
+        uint256 votes;
+    }
+
+    /// @dev A record of votes checkpoints for each account, by index
+    mapping (address => mapping (uint32 => Checkpoint)) public checkpoints;
+
+    /// @dev The number of checkpoints for each account
+    mapping (address => uint32) public numCheckpoints;
+
+    /// @dev The EIP-712 typehash for the contract's domain
+    bytes32 public constant DOMAIN_TYPEHASH = keccak256('EIP712Domain(string name,uint256 chainId,address verifyingContract)');
+
+    /// @dev The EIP-712 typehash for the delegation struct used by the contract
+    bytes32 public constant DELEGATION_TYPEHASH = keccak256('Delegation(address delegatee,uint256 nonce,uint256 expiry)');
+
+    /// @dev A record of states for signing / validating signatures
+    mapping (address => uint) public nonces;
+
+    /// @dev An event thats emitted when an account changes its delegate
+    event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
+
+    /// @dev An event thats emitted when a delegate account's vote balance changes
+    event DelegateVotesChanged(address indexed delegate, uint previousBalance, uint newBalance);
+
+    /**
+     * @dev Delegate votes from `msg.sender` to `delegatee`
+     * @param delegator The address to get delegatee for
+     */
+    function delegates(address delegator)
+        external
+        view
+        returns (address)
+    {
+        return _delegates[delegator];
+    }
+
+   /**
+    * @dev Delegate votes from `msg.sender` to `delegatee`
+    * @param delegatee The address to delegate votes to
+    */
+    function delegate(address delegatee) external {
+        return _delegate(msg.sender, delegatee);
+    }
+
+    /**
+     * @dev Delegates votes from signatory to `delegatee`
+     * @param delegatee The address to delegate votes to
+     * @param nonce The contract state required to match the signature
+     * @param expiry The time at which to expire the signature
+     * @param v The recovery byte of the signature
+     * @param r Half of the ECDSA signature pair
+     * @param s Half of the ECDSA signature pair
+     */
+    function delegateBySig(
+        address delegatee,
+        uint nonce,
+        uint expiry,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    )
+        external
+    {
+        bytes32 domainSeparator = keccak256(
+            abi.encode(
+                DOMAIN_TYPEHASH,
+                keccak256(bytes(name())),
+                getChainId(),
+                address(this)
+            )
+        );
+
+        bytes32 structHash = keccak256(
+            abi.encode(
+                DELEGATION_TYPEHASH,
+                delegatee,
+                nonce,
+                expiry
+            )
+        );
+
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                '\x19\x01',
+                domainSeparator,
+                structHash
+            )
+        );
+
+        address signatory = ecrecover(digest, v, r, s);
+        require(signatory != address(0), 'EGG::delegateBySig: invalid signature');
+        require(nonce == nonces[signatory]++, 'EGG::delegateBySig: invalid nonce');
+        require(now <= expiry, 'EGG::delegateBySig: signature expired');
+        return _delegate(signatory, delegatee);
+    }
+
+    /**
+     * @dev Gets the current votes balance for `account`
+     * @param account The address to get votes balance
+     * @return The number of current votes for `account`
+     */
+    function getCurrentVotes(address account)
+        external
+        view
+        returns (uint256)
+    {
+        uint32 nCheckpoints = numCheckpoints[account];
+        return nCheckpoints > 0 ? checkpoints[account][nCheckpoints - 1].votes : 0;
+    }
+
+    /**
+     * @dev Determine the prior number of votes for an account as of a block number
+     * @dev Block number must be a finalized block or else this function will revert to prevent misinformation.
+     * @param account The address of the account to check
+     * @param blockNumber The block number to get the vote balance at
+     * @return The number of votes the account had as of the given block
+     */
+    function getPriorVotes(address account, uint blockNumber)
+        external
+        view
+        returns (uint256)
+    {
+        require(blockNumber < block.number, 'EGG::getPriorVotes: not yet determined');
+
+        uint32 nCheckpoints = numCheckpoints[account];
+        if (nCheckpoints == 0) {
+            return 0;
+        }
+
+        // First check most recent balance
+        if (checkpoints[account][nCheckpoints - 1].fromBlock <= blockNumber) {
+            return checkpoints[account][nCheckpoints - 1].votes;
+        }
+
+        // Next check implicit zero balance
+        if (checkpoints[account][0].fromBlock > blockNumber) {
+            return 0;
+        }
+
+        uint32 lower = 0;
+        uint32 upper = nCheckpoints - 1;
+        while (upper > 
+==================== contracts/Operators.sol
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.6.12;
+
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/token/ERC20/SafeERC20.sol';
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/access/Ownable.sol';
+
+import './libs/IOperable.sol';
+
+contract Operators is Ownable, IOperable {
+    mapping(address => bool) public operators;
+
+    event OperatorUpdated(address indexed operator, bool indexed status);
+
+    constructor () internal {
+        operators[msg.sender] = true;
+        emit OperatorUpdated(msg.sender, true);
+    }
+
+    modifier onlyOperator() {
+        require(operators[msg.sender], 'Operator: caller is not the operator');
+        _;
+    }
+
+    // Update the status of the operator
+    function updateOperator(address _operator, bool _status) external override onlyOwner {
+        operators[_operator] = _status;
+        emit OperatorUpdated(_operator, _status);
+    }
+}
+
+==================== contracts/libs/IDividends.sol
+// SPDX-License-Identifier: MIT
+
+// Referral Interface
+
+pragma solidity ^0.6.12;
+
+import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.1.0/contracts/access/Ownable.sol';
+
+import './IOperable.sol';
+
+interface IDividends is IOperable {
+  function setUserStakedAmount(uint256 _pid, address _userAddress, uint256 _omenTotalStakedAmount_d18) external;
+}
+
+==================== contracts/libs/IOperable.sol
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.6.12;
+
+interface IOperable {
+    // Update the status of the operator
+    function updateOperator(address _operator, bool _status) external;
+}
+
+==================== contracts/libs/IReferral.sol
+// SPDX-License-Identifier: MIT
+
+// Referral Interface
+
+pragma solidity ^0.6.12;
+
+interface IReferral {
+    /**
+     * @dev Record referral.
+     */
+    function recordReferral(address user, address referrer) external;
+
+    /**
+     * @dev Get the referrer address that referred the user.
+     */
+    function getReferrer(address user) external view returns (address);
+}
