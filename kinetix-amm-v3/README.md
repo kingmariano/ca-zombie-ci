@@ -120,10 +120,16 @@ Foundry project: `poc/` (forge-std vendored; solc 0.8.24). Tests fork **live Kav
 
 Heavy CI job (`ci/run.sh`) additionally re-derives, from live RPCs: the CREATE2 proof for all 176 pools, the factory/NFPM bytecode-provenance proofs, and the live valuation (`ci-out/`).
 
-**CI run(s):** see `ci-log.txt` / `ci-artifacts/` — run URL(s) recorded in `summary.json` and below.
+**CI run(s)** (all heavy work ran on GitHub Actions; `ci-log.txt` / `ci-artifacts/` downloaded):
 
-- Run URL: *(filled by CI run — see summary.json)*
-- Result: *(tests x/y PASS — filled after run)*
+- **Run 3 — full green**: https://github.com/kingmariano/ca-zombie-ci/actions/runs/38308071054
+  - `ci/run.sh` proofs: **155/155 Kava pools + 21/21 Base pools canonical**; factory + NFPM bytecode identical to canonical Uniswap after normalising immutables; live Kava funded-pool total **$184,266.32** (matches this report).
+  - `forge test`: **8 passed; 0 failed; 0 skipped** (10.9 s).
+- **Run 4 — final green**: https://github.com/kingmariano/ca-zombie-ci/actions/runs/38308657197
+  - `ci/run.sh`: same provenance proofs; Kava **$184,266.32**; Base (live DefiLlama prices) **$26.40**; position spot-checks.
+  - `forge test`: **8 passed; 0 failed** (4.1 s). Outputs in `ci-out/` (`create2-proof.txt`, `bytecode-proof.txt`, `valuation.txt/.json`, `position-checks.txt`, `run-info.txt`).
+
+(An earlier run failed only on a valuation helper bug — fixed; its proofs were already green.)
 
 ---
 
