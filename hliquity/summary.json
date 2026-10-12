@@ -1,0 +1,43 @@
+{
+  "finding": "hliquity",
+  "title": "HLiquity (Hedera) — Liquity CDP: Supra-oracle manipulation window closed, $0 live extractable",
+  "chains": ["hedera"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 251846.98, "P": 0, "S": 0},
+  "latest_block": 101036523,
+  "block_numbers": {"hedera": 101036523},
+  "targets_checked": 16,
+  "live_targets": 16,
+  "closed_reasons": [
+    "No liquidatable troves: 11 active troves, min ICR 313.1% vs MCR 110% (TCR 365.2%, recovery mode off); liquidate() reverts 'nothing to liquidate'",
+    "Redemption arbitrage negative: 1,780 HCHF redeemed for 23,031.69 HBAR net (0.948% fee) = $1.188/HCHF vs market $1.207 → -150.9 bps; borrow-and-dump also negative",
+    "Oracle manipulation closed: Supra verifier proxy 0.0.4323006 upgraded 2026-07-11 07:08 UTC to fixed impl 0x02ebd882…; exact Bonzo zero-signature exploit calldata reverts now (DataNotVerified 0x40ef6502) and succeeded at pre-fix block 0x5cfcda5",
+    "Supra S-Value storage direct write guarded: restrictedSetSupraStorage() reverts UnauthorisedAccess() (0x1a1a6da9) for external callers",
+    "HCHF mint/burn and HLQT mint/burn revert for external callers; all 16 protocol contract owners renounced to 0x0; setAddresses on TM/BO/SP/PF all revert; core contracts immutable (no proxies)",
+    "StabilityPool gains (227,976 HBAR), CollSurplusPool (63,613 HBAR), staking rewards (18,417 HBAR) and SaucerSwapPool LP are snapshot/claim-gated to existing users only (H-O, no permissionless drain)"
+  ],
+  "poc": {
+    "tests_passed": 18,
+    "tests_total": 18,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38259984555"
+    ]
+  },
+  "key_facts": [
+    "ActivePool 0.0.6070027 holds 2,279,875.29 HBAR (2,279,844.90 HBAR accounted collateral); TroveManager 0.0.6070118; StabilityPool 0.0.6070108 holds 227,976.35 HBAR unclaimed liquidation gains + 24,455.90 HCHF deposits; CollSurplusPool 0.0.6070030 holds 63,613.16 HBAR; HLQTStaking 0.0.6070064 holds 18,417.35 HBAR",
+    "PriceFeed 0.0.6070082 status()=3 (usingSupraPythFrozen): Pyth feeds frozen since 2025 (age ~1.57 years), Supra pair 75/5012 fresh hourly; fetchPrice()=0.07655201 HCHF/HBAR = live Supra; no deviation sanity bound applies in this state (guard is Pyth-only)",
+    "HLiquity reads the same Supra S-Value storage contract as Bonzo Lend (0.0.4322850 = 0xd02cc7a6…); the 2026-07-11 00:51 UTC zero-signature exploit window (Bonzo lost $9.05M) left HLiquity's price attacker-writable for ~6 hours; verifier patched 07:08 UTC same day",
+    "Trove set: 11 troves, debt 47,788.04 HCHF, collateral 2,279,844.90 HBAR; lowest ICR 313.1% (0xe09D3c…6611), highest 931.3%; redemption fee 0.948% (baseRate 0.448% + 0.5% floor)",
+    "HCHF HTS token 0.0.6070123 (8 dec, supply 47,788.035, controller 0.0.6070122); HLQT HTS token 0.0.6070128 (8 dec, supply 100M, controller 0.0.6070127); HCHF market $1.207-1.210 with ~$26K SaucerSwap liquidity; HBAR $0.09208",
+    "Deployed source pinned at commit 30f7253f635f6015267b0fcdb5554d259b76e5db (SwisscoastAG/HLiquity, docs.hliquity.org); immutable, governance-free, all owners renounced at deployment"
+  ],
+  "caveats": [
+    "Point-in-time at block 101,036,523 (2026-10-12 ~15:02 UTC); oracle price updates hourly via Supra.",
+    "A/B replay proves the specific zero-signature vector is rejected; no exhaustive audit of the fixed Supra verifier implementation was performed. Other unknown Supra bugs cannot be excluded (main latent risk).",
+    "Anvil/forge cannot fork Hedera via public relays (EIP-1898 block-object rejection); verification used raw eth_call simulations of the exact transactions (equivalent for single-call checks; both price-write paths proven closed).",
+    "USD values from SaucerSwap spot (HBAR $0.09208353, HCHF $1.20973) and DefiLlama (HCHF $1.20996) at scan time; H-O gross value includes borrower collateral before $57,810.73 of HCHF debt repayment.",
+    "Read-only: no transactions signed or sent; no secrets used; public endpoints only."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from HLiquity: no liquidatable troves (min ICR 313%), redemption arbitrage is -151 bps, and the only real attack path — manipulating the Supra feed that is now the sole live oracle (Pyth frozen since 2025) — was patched on 2026-07-11 (zero-signature verifier fix proven by A/B eth_call replay); the $251.8K of live value is holder-recoverable only."
+}
