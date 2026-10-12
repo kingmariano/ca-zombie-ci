@@ -45,15 +45,15 @@
     "Dominant position: NFPM #511 (WAGMI/WKAVA 1% pool 0xc81Fde7F...), liquidity 15,663,710,217,888,675,764,825,981, owned by Gnosis Safe 0x7D5CEA2e5fBDFecca8CcfbFe85AC021C817a7f38, value $147,262",
     "Staker 0x011C835aBF4BCeD2ECb51C466E157f467F6dB5AD: 0 NFTs, 0 tokens, no deposits (older 4-word deposit variant)",
     "Kinetix USDt/WKAVA LP share-vault 0xFf05fA6e5b1B19FfdCA00392E6eAe9C696270a6D residual position value < $1; its only pool-facing function found is collect(); no deposit/withdraw resolved",
-    "Base pools all canonical; largest Base pool value $15.93 (WETH/AERO); total $25.79",
-    "Triage headline $175,793 was DefiLlama-derived (graph-frozen); on-chain token amounts are the ground truth and are unchanged"
+    "Base pools all canonical; largest Base pool value $15.93 (WETH/AERO); total $25.79 (local) / $26.40 (CI live DefiLlama prices)",
+    "Triage headline $175,793 was DefiLlama-derived (its Kava subgraph adapter endpoint is unreachable; number appears carried-forward); on-chain token amounts are the ground truth and are essentially unchanged"
   ],
   "caveats": [
-    "WAGMI/HOV/KAI prices are illiquid micro-cap estimates; WAGMI's only market is the very Kinetix pool that holds it (circular pricing). Liquid-asset value is ~$99.1k.",
+    "WAGMI/HOV/KAI prices are illiquid micro-cap estimates; WAGMI's only market is the very Kinetix pool that holds it (circular pricing). Liquid-asset value is ~$97.7k of the $184.3k.",
     "Third-party vault internals (Steer/ICHI) not audited (out of finding scope); Arrakis vault withdraw gate verified to reject non-holders; vault liveness not fully proven.",
     "Kinetix AMM V1/V2, perps and airdrop contracts are separate findings and were not audited here.",
     "Kava has no third-party-usable explorer API (Kavascan 403 / Routescan unsupported); deployment enumeration done via events + CREATE2 math, which is exhaustive for this factory but cannot prove no other factory exists outside the official deployment set.",
-    "Base block number in this file is approximate (recorded in ci-out/run-info.txt on each run)."
+    "Block numbers recorded in block_numbers and ci-out/run-info.txt; Kava values move slowly (lightly active pools)."
   ],
   "one_liner": "External unprivileged attacker can extract $0 live from Kinetix AMM V3: the $184.3k residual (Kava $184.3k + Base $26) sits in pools provably running canonical Uniswap V3 bytecode, owned by EOA/Gnosis-Safe LP positions and share-gated third-party vaults, with only $18 of protocol fees (owner-only)."
 }
