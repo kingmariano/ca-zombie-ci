@@ -1,0 +1,32 @@
+{
+  "finding": "L2-Triage-A/geist-finance",
+  "title": "Geist Finance (Fantom) — zombie lending market, frozen oracle, unbacked Multichain assets",
+  "chains": ["fantom"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "pending",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0, "S": 0},
+  "latest_block": 123677183,
+  "block_numbers": {"fantom": 123677183},
+  "targets_checked": 12,
+  "live_targets": 10,
+  "closed_reasons": [
+    "all 9 reserves frozen (deposit/borrow disabled); withdraw/repay/liquidate only",
+    "oracle frozen at lastGoodPrice (Chainlink dead, Band stale since 2024-12-03); updatePrice() is a no-op",
+    "cash is held by aToken contracts; only aToken holders can withdraw (H-O)",
+    "WFTM market has zero cash -> aWFTM unbacked (S)"
+  ],
+  "poc": {"tests_passed": 0, "tests_total": 0, "ci_run_urls": []},
+  "key_facts": [
+    "pool 0x9FAD24f572045c7869117160A571B2e50b10d068 (impl 0x3104ad2aadb6fe9df166948a5e3a547004862f90), paused()==false",
+    "9 reserves all isActive=1,isFrozen=1; oracle 0xC466e3FeE82C6bdc2E17f2eaF2c6F1E91AD10FD3 returns frozen lastGoodPrice for all 9 assets",
+    "aToken cash: DAI 632,692.86; ETH 488.33; WFTM 0; BTC 113.4801; fUSDT 7,634,561.11; USDC 469,779.98; CRV 107,517.02; MIM 173,780.29; LINK 6,119.62",
+    "cash is worth ~$18.0M at frozen oracle prices but only ~$100-146k at live local DEX prices (SpookySwap+SpiritSwap) because reserves are unbacked Multichain tokens",
+    "DefiLlama fantom LINK price == ethereum LINK price exactly (canonical mapping, not local market)",
+    "treasury aTokens held by staking contract 0x49c93a95 (aLINK 228.56, aCRV 105.75M nominal, aMIM 1.175M nominal, aDAI 269,124.64, aETH 31.2); staking rewards = these aTokens but streams are finished -> fresh staker earns ~0"
+  ],
+  "caveats": [
+    "local DEX prices are the only realisable market for these unbacked tokens; a recovery/bridge re-backing would raise value",
+    "liquidation profitability depends on live borrowers (scan results below)"
+  ],
+  "one_liner": "pending liquidation scan"
+}
