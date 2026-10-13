@@ -1,0 +1,40 @@
+No files changed, compilation skipped
+
+Ran 19 tests for test/ConvergenceFiQc.t.sol:ConvergenceFiQc
+[PASS] test_qc01_blackhole_direct_drain_reverts() (gas: 53281)
+[PASS] test_qc02_blackhole_gate_rejects_registered_nonservices() (gas: 144852)
+[PASS] test_qc03_foreign_withdraw_reverts_owner_gate() (gas: 410891)
+[PASS] test_qc04_wrong_staking_cross_service_reverts() (gas: 250692)
+[PASS] test_qc05_distributor_gates_revert() (gas: 306411)
+[PASS] test_qc06_owner_and_init_gates_revert() (gas: 150118)
+[PASS] test_qc07_manager_burn_and_lock_foreign_revert() (gas: 267188)
+[PASS] test_qc08_gauge_claim_redirect_reverts() (gas: 115159)
+[PASS] test_qc09_holder_self_withdraw_positive_control() (gas: 782200)
+[PASS] test_qc10_withdraw_callinfo_all_services() (gas: 1020567)
+[PASS] test_qc11_no_custody_allowances() (gas: 191755)
+[PASS] test_qc12_claimer_initialized_no_keyless_takeover() (gas: 48344)
+[PASS] test_qc13_LATENT_P_claimer_can_redirect_pending_rewards() (gas: 249011)
+Logs:
+  P-path: rewards pulled to claimer (CRV+crvUSD units): 0
+
+[PASS] test_qc14_deposit_overwithdraw_roundtrip() (gas: 1684432)
+[PASS] test_qc15_keeper_fee_capped_no_double_dip() (gas: 425720)
+Logs:
+  processSdtRewards succeeded, caller SDT gained (wei): 0
+
+[PASS] test_qc16_weekly_heartbeat_rate_limited() (gas: 43775)
+Logs:
+  heartbeat window closed at fork head
+
+[PASS] test_qc17_sdt_utilities_unregistered_and_empty() (gas: 57910)
+[PASS] test_qc18_registered_set_snapshot() (gas: 2985968)
+Logs:
+  note: distributor self-registration is latent (no self-call path exists)
+
+[PASS] test_qc19_live_backing_recount() (gas: 2704279)
+Logs:
+  services with non-zero staked (backed): 17
+
+Suite result: ok. 19 passed; 0 failed; 0 skipped; finished in 156.73s (437.61s CPU time)
+
+Ran 1 test suite in 156.75s (156.73s CPU time): 19 tests passed, 0 failed, 0 skipped (19 total tests)

@@ -1,0 +1,106 @@
+{
+  "finding": "L2-Phase2-ConvergenceFi-QC2",
+  "title": "Convergence Fi - QC-2 adversarial re-audit of the $0 E-U closure (Ethereum)",
+  "qc_role": "QC-2 adversarial re-audit (L2 Phase-2 quality control)",
+  "reviewed_finding": "L2-Phase2-ConvergenceFi (prior: E-U $0, high)",
+  "verdict": "closure stands",
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "chains": ["ethereum"],
+  "categories": {
+    "E-U": 0,
+    "H-O": 1268000,
+    "P": 0,
+    "S": 0
+  },
+  "latest_block": 26184256,
+  "value_snapshot_block": 26182359,
+  "targets_checked": 53,
+  "counter_evidence": [
+    "Fresh completeness: exactly 37 SdtStakingCreated events ever, all from the current factory 0x15A2d424 (full Etherscan log scan); isSdtStaking = those 37 only (mapping set solely by factory-gated insertNewSdtStaking, never removed) - no hidden/stale/migration service",
+    "Fresh pivot hunt: isStakingContract set = 37 Sdt services + cvgSDT service + 3 CvxAssetStakingService proxies + the distributor itself; cvx services never call claimCvgSdtSimple (source scan); distributor has no self-call path to claimCvgSdtSimple (self-registration is latent only); SdtUtilities/claimers/stkCVG/cvgCVX not registered",
+    "Fresh storage audit: all 37 gauge services' withdrawCallInfo = (SdtBlackHole, 0xf3fef3a3 withdraw(address,uint256)); cvgSDT service = (cvgSDT, 0xa9059cbb transfer(address,uint256)) - read from proxy slots 160/161; no misconfigured call target",
+    "Fresh stale-approval audit (keyless drain class): zero Approval events by the blackhole / 37 services / cvgSDT service on any of the 38 custody tokens (Etherscan logs; positive control on same query path); spot-checked in PoC test_qc11",
+    "Fresh claimer deep-dive: 0x539e6519 is a UUPS proxy (impl 0x4153f858, ClaimRewardsV1); initialize consumed (governance = 3-of-5 Safe 0xB0552b68, re-init reverts) - no keyless takeover; redirecting blackhole pending rewards requires governance upgrade or the 1-of-1 gauge admin Safe (P, not keyless)",
+    "Vyper gauge (LGV4 0.2.16) has no withdraw_for; withdraw is msg.sender-only; transferFrom of staked balances needs an allowance that the blackhole never granted -> principal cannot be moved by third parties",
+    "Fresh keeper-fee quantification: processSdtRewards permissionless but 1% capped (buffer 1000/100000, setter max 3%), once per service per cycle (second call reverts SDT_REWARDS_ALREADY_PROCESSED, PoC test_qc15); callable bounty ~$0.16 now (1% of ~15.8 CRV across 12 processable services; blackhole bribe balances 0), ~$6.1 at the next weekly window via sdCRV pending 292 CRV + 315 crvUSD - designed bounty, not E-U",
+    "Fresh accounting round-trip: deposit real gauge tokens into a new position then withdraw amount+1 reverts WITHDRAW_EXCEEDS_STAKED_AMOUNT; exact round trip nets zero for attacker and blackhole (PoC test_qc14)",
+    "Fresh cross-service check: owner of a service-A position calling service B reverts WRONG_STAKING (PoC test_qc04)",
+    "Blackhole gate rejects all registered-but-non-service callers (cvgSDT svc, distributor, utilities) with ONLY_SD_ASSET_STAKING (PoC test_qc02)",
+    "Impl drift check at QC head: tower bdbddc4b, blackhole f13797bf, manager fbb73de2, distributor 2af5ae07, factory 1a10085b, service beacon impl dba75359, cvgSDT svc dba75359, cvgSdtBuffer 4df0a305 - identical to the audited verified sources; storage layout resolves exactly (OZ-4.9 gaps; fields at slot 151+, bool+address packed in 151)",
+    "37/37 positions backed at head (blackhole balance >= cycleInfo totalStaked; CI state dump + PoC test_qc19); weekly heartbeat rate-limited (reverts NEED_WAIT_7_DAYS at head, window opens 2026-10-15 ~08:00 UTC)",
+    "19/19 fork PoCs pass (prior 16 gates re-run + fresh tests); H-O path live (real owner self-withdraw positive control)"
+  ],
+  "conditional_paths": [
+    {
+      "id": "C1",
+      "path": "processSdtRewards() 1% keeper fee (permissionless, designed)",
+      "precondition": "be first to call while a cycle is unprocessed; pays gas",
+      "value": "~$0.16 now; ~$6.1 at next weekly window (sdCRV); $0 bribes pending",
+      "class": "designed bounty (not E-U)"
+    },
+    {
+      "id": "C2",
+      "path": "ClaimRewardsV1 UUPS upgrade -> gauge.claim_rewards_for(blackhole, claimer)",
+      "precondition": "3-of-5 Safe 0xB0552b68 signs upgrade (or key compromise)",
+      "value": "pending gauge rewards only (~$607 at QC block)",
+      "class": "P-latent"
+    },
+    {
+      "id": "C3",
+      "path": "gauge set_claimer -> redirect blackhole pending gauge rewards",
+      "precondition": "1-of-1 gauge-admin Safe 0xe5d6D047 owner key",
+      "value": "pending gauge rewards only",
+      "class": "P-latent (prior-flagged)"
+    },
+    {
+      "id": "C4",
+      "path": "SdtUtilities convertAndStake* stakes balanceOf(address(this)) -> stray-token capture",
+      "precondition": "tokens must be strayed/donated to SdtUtilities first",
+      "value": "0 today (balances 0, PoC test_qc17)",
+      "class": "conditional (not protocol funds)"
+    },
+    {
+      "id": "C5",
+      "path": "distributor self-registration (isStakingContract[distributor]=true) reaches claimCvgSdtSimple only if a future upgrade adds a self-call",
+      "precondition": "future upgrade introduces distributor->claimCvgSdtSimple self-call; unreachable today",
+      "value": "0 today",
+      "class": "latent footgun"
+    },
+    {
+      "id": "C6",
+      "path": "user footguns: sdtRewardCount too small drops rewards (stay in distributor unclaimable); user-set minCvgSdtAmountOut swap slippage MEV-able",
+      "precondition": "user error / MEV on the user's own claim",
+      "value": "no attacker gain beyond user-side MEV",
+      "class": "footgun"
+    }
+  ],
+  "what_would_change_verdict": [
+    "owner/ProxyAdmin (3-of-6 Safe 0x0af81536) or claimer governance (3-of-5 Safe 0xB0552b68) or gauge admin (1-of-1 Safe 0xe5d6D047) key compromise (P)",
+    "a governance upgrade adding a permissionless call path to withdraw/claim/register",
+    "StakeDAO-side gauge/proxy change affecting rewards delivery (third-party)"
+  ],
+  "poc": {
+    "tests_passed": 19,
+    "tests_total": 19,
+    "tests_failed": 0,
+    "local_run": "ci-out/local-forge-test.log (19/19 pass, fork head 2026-10-13)",
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "37 Sdt staking services (687 position NFTs / ~400 owners) with blackhole custody; 37/37 backed at QC head; no new registrations since the prior audit",
+    "Registered set fully enumerated: 37 Sdt services + cvgSDT service + 3 cvx services + distributor (isStakingContract); only Sdt services can reach the blackhole and only they call claimCvgSdtSimple (all NFT-gated)",
+    "withdrawCallInfo byte-audited for all 38 services from storage; gauge services -> blackhole.withdraw, cvgSDT svc -> cvgSDT.transfer",
+    "Zero custody approvals on all 38 tokens (blackhole/services/cvgSDT svc), verified via full Approval log scan + PoC",
+    "Keeper fee: 1% cap, no double-dip, ~$0.16 callable now / ~$6.1 next weekly window; designed incentive",
+    "Distributor reward pot at QC head ~ $31k equivalent (crvUSD 11.9k + CRV 10.3k + USDT 2.7k + wstETH 0.731 + cvgSDT 46.3k + SDT 192.6); sdCRV leg claimed by stakers since prior audit",
+    "H-O ~ $1.27M: principal $1,095,949 (unchanged) + cvgSDT pool $141,116 + distributor ~$31k; owners can still self-withdraw (positive control)"
+  ],
+  "caveats": [
+    "Pricing not re-run at QC head; H-O headline carries the prior pricing with a noted distributor-reward drawdown",
+    "Keeper-bounty figures are point-in-time; weekly accrual changes them",
+    "Designed-bounty classification follows the framework treatment of intended permissionless incentives (no steering/repeat/upsize possible)",
+    "Approval audit queried approvals granted by the listed custody owners; spenders not enumerable on-chain but event-scan covers all grants by those owners"
+  ],
+  "one_liner": "QC-2 adversarial re-audit finds no fresh keyless path on Convergence Fi: closure stands at E-U $0 (high) - the $1.1M blackhole custody remains gated by isSdtStaking + position-NFT ownership, registered-set and stale-approval audits are clean, and the only keyless value flow is the designed ~$0.16-$6.1 1% keeper bounty."
+}
