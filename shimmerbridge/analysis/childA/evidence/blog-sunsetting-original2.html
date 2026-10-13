@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Shimmer is Sunsetting</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="preload" href="/assets/css/app.css?v=2d790086b2" as="style" />
+    <link rel="preload" href="/assets/js/manifest.js?v=2d790086b2" as="script" />
+    <link rel="preload" href="/assets/js/vendor.js?v=2d790086b2" as="script" />
+    <link rel="preload" href="/assets/js/app.js?v=2d790086b2" as="script" />
+
+    <link rel="stylesheet" href="https://webassets.iota.org/fonts/css/metropolis-combined.css" />
+    <link rel="stylesheet" href="https://webassets.iota.org/fonts/css/inter.css" />
+
+      <link rel="preload" href="/assets/css/post.css?v=2d790086b2" as="style" />
+  <link rel="preload" href="/assets/js/post.js?v=2d790086b2" as="script" />
+
+
+    <style>
+      /* These font-faces are here to make fonts work if the Ghost instance is installed in a subdirectory */
+
+      /* source-sans-pro-regular */
+      @font-face {
+        font-family: 'Source Sans Pro';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: local('SourceSansPro-Regular'),
+            url("/assets/fonts/source-sans-pro/latin/source-sans-pro-regular.woff2?v=2d790086b2") format('woff2'),
+            url("/assets/fonts/source-sans-pro/latin/source-sans-pro-regular.woff?v=2d790086b2") format('woff');
+      }
+
+      /* source-sans-pro-600 */
+      @font-face {
+        font-family: 'Source Sans Pro';
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: local('SourceSansPro-SemiBold'),
+            url("/assets/fonts/source-sans-pro/latin/source-sans-pro-600.woff2?v=2d790086b2") format('woff2'),
+            url("/assets/fonts/source-sans-pro/latin/source-sans-pro-600.woff?v=2d790086b2") format('woff');
+      }
+
+      /* source-sans-pro-700 */
+      @font-face {
+        font-family: 'Source Sans Pro';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: local('SourceSansPro-Bold'),
+            url("/assets/fonts/source-sans-pro/latin/source-sans-pro-700.woff2?v=2d790086b2") format('woff2'),
+            url("/assets/fonts/source-sans-pro/latin/source-sans-pro-700.woff?v=2d790086b2") format('woff');
+      }
+
+      /* iconmoon */
+      @font-face {
+        font-family: 'icomoon';
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+        src: url("/assets/fonts/icomoon/icomoon.eot?101fc3?v=2d790086b2");
+        src: url("/assets/fonts/icomoon/icomoon.eot?101fc3?v=2d790086b2#iefix") format('embedded-opentype'),
+        url("/assets/fonts/icomoon/icomoon.ttf?101fc3?v=2d790086b2") format('truetype'),
+        url("/assets/fonts/icomoon/icomoon.woff?101fc3?v=2d790086b2") format('woff'),
+        url("/assets/fonts/icomoon/icomoon.svg?101fc3?v=2d790086b2#icomoon") format('svg');
+      }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/app.css?v=2d790086b2" media="screen" />
+
+      <link rel="stylesheet" type="text/css" href="/assets/css/post.css?v=2d790086b2" media="screen" />
+
+
+    
+
+    <link rel="icon" href="https://blog.shimmer.network/content/images/size/w256h256/2021/12/favicon.png" type="image/png">
+    <link rel="canonical" href="https://blog.shimmer.network/shimmer-is-sunsetting/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Shimmer Network Blog">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Shimmer is Sunsetting">
+    <meta property="og:description" content="TL;DR:
+
+
+Shimmer L1 and ShimmerEVM are sunsetting. Shimmer has served its purpose as an early playground that helped prove and expedite IOTA’s technology through L1&#x27;s launch and later ShimmerEVM&#x27;s DeFi ecosystem. Bridging ends August 29, 2026. Full sunset: September 30, 2026.
+
+
+
+
+
+
+
+Shimmer was built as a place to">
+    <meta property="og:url" content="https://blog.shimmer.network/shimmer-is-sunsetting/">
+    <meta property="og:image" content="https://blog.shimmer.network/content/images/size/w1200/2026/07/-2560-Sunset-of-Shimmer-v1_16x9.png">
+    <meta property="article:published_time" content="2026-07-23T12:55:11.000Z">
+    <meta property="article:modified_time" content="2026-07-27T13:23:32.000Z">
+    <meta property="article:tag" content="Announcements">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Shimmer is Sunsetting">
+    <meta name="twitter:description" content="TL;DR:
+
+
+Shimmer L1 and ShimmerEVM are sunsetting. Shimmer has served its purpose as an early playground that helped prove and expedite IOTA’s technology through L1&#x27;s launch and later ShimmerEVM&#x27;s DeFi ecosystem. Bridging ends August 29, 2026. Full sunset: September 30, 2026.
+
+
+
+
+
+
+
+Shimmer was built as a place to">
+    <meta name="twitter:url" content="https://blog.shimmer.network/shimmer-is-sunsetting/">
+    <meta name="twitter:image" content="https://blog.shimmer.network/content/images/size/w1200/2026/07/-2560-Sunset-of-Shimmer-v1_16x9.png">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Shimmer">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Announcements">
+    <meta name="twitter:site" content="@shimmernet">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="675">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Shimmer Network Blog",
+        "url": "https://blog.shimmer.network/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://blog.shimmer.network/content/images/2021/12/Meta_Image_Blog-1-1.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Shimmer",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://blog.shimmer.network/content/images/2021/12/shimmer_fav_200x200.png",
+            "width": 200,
+            "height": 200
+        },
+        "url": "https://blog.shimmer.network/author/if-2/",
+        "sameAs": []
+    },
+    "headline": "Shimmer is Sunsetting",
+    "url": "https://blog.shimmer.network/shimmer-is-sunsetting/",
+    "datePublished": "2026-07-23T12:55:11.000Z",
+    "dateModified": "2026-07-27T13:23:32.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://blog.shimmer.network/content/images/size/w1200/2026/07/-2560-Sunset-of-Shimmer-v1_16x9.png",
+        "width": 1200,
+        "height": 675
+    },
+    "keywords": "Announcements",
+    "description": "\n\n\n\n\nTL;DR:\n\n\nShimmer L1 and ShimmerEVM are sunsetting. Shimmer has served its purpose as an early playground that helped prove and expedite IOTA’s technology through L1&#x27;s launch and later ShimmerEVM&#x27;s DeFi ecosystem. Bridging ends August 29, 2026. Full sunset: September 30, 2026.\n\n\n\n\n\n\n\nShimmer was built as a place to test, break, and prove new technology before it was ready for prime time. That job is done, and we&#x27;re announcing the sunset of Shimmer L1 and ShimmerEVM.\n\nBridging assets from Shi",
+    "mainEntityOfPage": "https://blog.shimmer.network/shimmer-is-sunsetting/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.37">
+    <link rel="alternate" type="application/rss+xml" title="Shimmer Network Blog" href="https://blog.shimmer.network/rss/">
+    
+    <script defer src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="102cf0d19fe14a1b6218caaf8d" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://blog.shimmer.network/" data-locale="en" crossorigin="anonymous"></script>
+    
+    <link href="https://blog.shimmer.network/webmentions/receive/" rel="webmention">
+    <script defer src="/public/cards.min.js?v=2d790086b2"></script><style>:root {--ghost-accent-color: #15171A;}</style>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=2d790086b2">
+    <!-- Cookiebot -->
+<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="9f37b7c4-d5eb-4f75-af0a-fae187b2b99c" data-blockingmode="auto" type="text/javascript"></script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z37261WNFE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Z37261WNFE');
+</script>
+
+<! -- activate search -->
+<script>
+    const typesenseApiKey = '<redacted-public-search-key>'
+</script>
+
+<! -- activate Prism for code highlighting -->
+<link href="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css" rel="stylesheet"/>
+<link href="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet"/>
+
+<! -- Resolve mixed content errors by forcing browsers to upgrade insecure requests -->
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+<! -- change main font to Inter and reduce navbar fontsize -->
+<style>
+    body { font-family: 'Inter', Helvetica, Arial, sans-serif; !important}
+</style>
+<style>
+    .m-nav__left li { font-size: 1rem; !important}
+</style>
+
+<! -- reverse logo colour in light mode (otherwise white logo invisible) and other tweaks -->
+
+<style>
+    .m-logo img {
+        filter: invert(1);
+    }
+    [data-theme="light"] .m-logo img {
+        filter: invert(1);
+    }
+    [data-theme="dark"] .m-logo img {
+        filter: none;
+    }
+    @media (prefers-color-scheme: dark) {
+        .m-logo img {
+            filter: none;
+        }
+        [data-theme="light"] .m-logo img {
+            filter: invert(1);
+         }
+    }
+    /* 
+	* Theme
+    * ------------------
+    */
+    /* 
+    :root, [data-theme=light] {
+        --primary-subtle-color: #0FC1B7;
+        --link-color: #0FC1B7;
+        --footer-background-color: #485776;
+    }
+    [data-theme=dark]{
+        --primary-subtle-color: #00E0CA;
+        --link-color: #00E0CA;
+        --footer-background-color: #080808;
+    }
+    */
+    /* 
+    * Post Page
+    * ------------------
+    */
+    .post-template .m-hero.with-picture {
+        min-height: unset;
+        padding: 0;
+        padding-bottom: 45%;
+        margin-top: 50px;
+    }
+    @media only screen and (min-width: 48rem){
+        .post-template .m-hero.with-picture {
+            margin-top: 65px;
+        }
+    }
+    /* 
+    * Index page
+    * ------------------
+    */
+    .m-article-card__picture {
+        width: 100%;
+        padding-bottom: 50%;
+    }
+    @media only screen and (min-width: 64rem){
+        .m-article-card__picture {
+            height: unset !important;
+        }
+    }
+    /* 
+    [data-theme=dark] .m-article-card__info {
+        background-color: var(--primary-border-color);
+    }
+    */
+    .m-article-card__author {
+        top: 20px;
+        right: 20px;
+        left: unset;
+    }
+    @media only screen and (min-width: 48rem){
+        .m-article-card__author {
+            top: 25px;
+            right: 25px;
+            left: unset;
+        }
+    }
+    .m-article-card__featured {
+        top: unset;
+        bottom: 20px;
+    }
+    @media only screen and (min-width: 48rem){
+        .m-article-card__featured {
+            top: unset;
+            bottom: 25px;
+        }
+    }
+    /* 
+    * Remove hero from posts that have the "noheader" tag
+    * ------------------
+    */
+    .post-template.tag-noheader .m-hero {
+        display: none;
+    }
+    .post-template.tag-noheader .main-wrap {
+        padding-top: 60px;
+    }
+        /* 
+    * MP4
+    * ------------------
+    */
+    video {
+        max-width: 100%;
+        margin-bottom: 30px;
+    }
+        /* 
+    * Cookie Declaration
+    * ------------------
+    */
+    .CookieDeclaration td {
+        padding: 10px 2px !important;
+        text-align: left !important;
+        font-size: 12px;
+	}
+    .CookieDeclaration tr {
+        padding: 10px 2px !important;
+        text-align: left !important;
+        font-size: 12px;
+        background-color: inherit !important;
+    }
+</style>
+
+    <style>
+      :root {
+        --primary-subtle-color: var(--ghost-accent-color) !important;
+      }
+    </style>
+
+    <script>
+      // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt Expat
+      const ghostHost = "https://blog.shimmer.network"
+      // @license-end
+    </script>
+
+
+
+
+    <script>
+      if (typeof Storage !== 'undefined') {
+        const currentSavedTheme = localStorage.getItem('theme')
+
+        if (currentSavedTheme && currentSavedTheme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark')
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light')
+        }
+      }
+    </script>
+  </head>
+  <body class="post-template tag-announcements">
+    
+
+
+
+  
+<header class="m-header with-picture js-header"  data-animate="fade-down">
+  <div class="m-mobile-topbar">
+    <button class="m-icon-button in-mobile-topbar js-open-menu" aria-label="Open menu">
+      <span class="icon-menu" aria-hidden="true"></span>
+    </button>
+      <a href="https://blog.shimmer.network" class="m-logo in-mobile-topbar">
+        <svg width="274" height="72" viewBox="0 0 274 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M53.2247 18.588C45.1232 9.96876 31.8087 9.78298 23.4861 18.1732C15.1635 26.5634 14.9843 40.3522 23.0858 48.9714L28.4119 43.6023C23.1871 38.0099 23.313 29.0897 28.7009 23.6581C34.0888 18.2264 42.7023 18.3362 47.9596 23.8958L53.2247 18.588Z" fill="#00E0CA"/>
+          <path d="M17.8442 54.2694C25.9457 62.8885 39.26 63.0741 47.5825 54.684C55.9051 46.2938 56.0844 32.5051 47.983 23.8859L42.6574 29.2547C47.8822 34.8471 47.7563 43.7672 42.3684 49.1989C36.9805 54.6306 28.367 54.5208 23.1097 48.9612L17.8442 54.2694Z" fill="#00E0CA"/>
+          <path class="letter" d="M77.2522 44.2281L73.6375 47.7301C76.9881 50.7668 80.7597 52.2851 84.9521 52.2851C88.0386 52.2525 90.5723 51.5504 92.5529 50.179C94.5501 48.8403 95.5652 46.9383 95.5982 44.473C95.5982 42.3669 95.0453 40.6282 93.9394 39.2568C92.751 37.8527 90.8198 37.0527 88.1459 36.8568L83.8875 36.5384C82.6331 36.4078 81.7583 36.1058 81.2631 35.6323C80.7184 35.2079 80.4626 34.7099 80.4956 34.1385C80.4956 33.2405 80.834 32.5059 81.5107 31.9344C82.1544 31.363 83.285 31.0773 84.9026 31.0773C86.3221 31.0773 87.5765 31.2814 88.6659 31.6895C89.7717 32.1467 90.8198 32.7263 91.8102 33.4283L95.004 29.7304C93.7496 28.6529 92.3301 27.7957 90.7456 27.159C89.9203 26.8651 89.0372 26.6366 88.0964 26.4733C87.1556 26.3264 86.091 26.2529 84.9026 26.2529C82.1627 26.2529 79.9014 26.9059 78.1188 28.212C76.2867 29.5181 75.3541 31.4773 75.3211 34.0895C75.3541 36.2609 76.0638 37.9507 77.4503 39.1588C78.8038 40.3996 80.5616 41.118 82.7238 41.3139L87.2794 41.7057C88.2367 41.7384 89.0042 41.9424 89.5819 42.3179C90.1431 42.6771 90.4237 43.3138 90.4237 44.2281C90.4237 45.2567 89.9533 46.0567 89.0125 46.6281C88.0717 47.1995 86.8585 47.4852 85.373 47.4852C82.0554 47.4852 79.3484 46.3995 77.2522 44.2281Z" fill="white"/>
+          <path class="letter" d="M99.3257 51.9913H104.5V36.8568C104.5 35.0772 104.987 33.7222 105.961 32.7916C106.918 31.8446 108.14 31.3712 109.625 31.3712C111.111 31.3712 112.324 31.8446 113.265 32.7916C114.222 33.7222 114.701 35.0772 114.701 36.8568V51.9913H119.875V35.0936C119.793 32.1875 118.877 29.9834 117.127 28.4814C115.361 26.9957 113.413 26.2529 111.284 26.2529C108.528 26.2529 106.299 27.257 104.599 29.2651H104.5V16.2857H99.3257V51.9913Z" fill="white"/>
+          <path class="letter" d="M125.187 51.9913H130.362V26.5713H125.187V51.9913ZM125.187 21.404H130.362V16.2857H125.187V21.404Z" fill="white"/>
+          <path class="letter" d="M135.996 51.9913H141.17V36.8568C141.17 35.0772 141.666 33.7222 142.656 32.7916C143.597 31.8446 144.81 31.3712 146.295 31.3712C147.781 31.3712 149.002 31.8446 149.96 32.7916C150.901 33.7222 151.371 35.0772 151.371 36.8568V51.9913H156.545V36.8568C156.545 35.0772 157.032 33.7222 158.006 32.7916C158.964 31.8446 160.185 31.3712 161.67 31.3712C163.156 31.3712 164.369 31.8446 165.31 32.7916C166.251 33.7222 166.721 35.0772 166.721 36.8568V51.9913H171.896V35.0936C171.83 32.1875 170.922 29.9834 169.172 28.4814C167.406 26.9957 165.458 26.2529 163.329 26.2529C159.946 26.2202 157.247 27.3304 155.233 29.5835C154.342 28.6039 153.36 27.7957 152.287 27.159C151.198 26.5876 149.762 26.2855 147.979 26.2529C145.206 26.2529 142.97 27.257 141.27 29.2651H141.17V26.5713H135.996V51.9913Z" fill="white"/>
+          <path class="letter" d="M177.703 51.9913H182.878V36.8568C182.878 35.0772 183.373 33.7222 184.363 32.7916C185.304 31.8446 186.517 31.3712 188.002 31.3712C189.488 31.3712 190.709 31.8446 191.667 32.7916C192.608 33.7222 193.078 35.0772 193.078 36.8568V51.9913H198.252V36.8568C198.252 35.0772 198.739 33.7222 199.713 32.7916C200.671 31.8446 201.892 31.3712 203.377 31.3712C204.863 31.3712 206.076 31.8446 207.017 32.7916C207.958 33.7222 208.428 35.0772 208.428 36.8568V51.9913H213.603V35.0936C213.537 32.1875 212.629 29.9834 210.879 28.4814C209.113 26.9957 207.165 26.2529 205.036 26.2529C201.653 26.2202 198.954 27.3304 196.94 29.5835C196.049 28.6039 195.067 27.7957 193.994 27.159C192.905 26.5876 191.469 26.2855 189.686 26.2529C186.913 26.2529 184.677 27.257 182.977 29.2651H182.878V26.5713H177.703V51.9913Z" fill="white"/>
+          <path class="letter" d="M239.043 41.2159V37.0037C239.01 33.6569 237.962 31.0283 235.899 29.1182C233.869 27.2406 231.385 26.2855 228.447 26.2529C227.225 26.2529 225.987 26.4733 224.733 26.9141C223.462 27.3549 222.315 28.0733 221.292 29.0692C220.285 30.0488 219.46 31.3875 218.816 33.0854C218.172 34.7507 217.85 36.8405 217.85 39.3547C217.85 41.9669 218.222 44.0893 218.964 45.722C219.641 47.4199 220.524 48.7423 221.614 49.6893C222.175 50.1464 222.777 50.5301 223.421 50.8403C224.032 51.1994 224.659 51.4851 225.303 51.6974C226.59 52.0892 227.91 52.2851 229.264 52.2851C232.813 52.3178 235.899 50.9464 238.523 48.1709L234.785 45.0118C233.134 46.6607 231.261 47.4852 229.165 47.4852C227.366 47.4852 225.913 46.9464 224.807 45.8689C223.619 44.8077 223.025 43.2567 223.025 41.2159H239.043ZM223.025 37.0037C223.124 35.0283 223.66 33.5344 224.634 32.5222C225.624 31.5589 226.895 31.0773 228.447 31.0773C229.998 31.0773 231.269 31.5589 232.26 32.5222C233.266 33.5344 233.803 35.0283 233.869 37.0037H223.025Z" fill="white"/>
+          <path class="letter" d="M242.944 51.9913H248.119V36.6854C248.152 34.8242 248.697 33.4773 249.753 32.6446C250.694 31.7957 251.824 31.3712 253.145 31.3712C254.317 31.3712 255.447 31.7957 256.537 32.6446L260.3 28.212C258.765 26.9386 256.966 26.2855 254.903 26.2529C252.146 26.2529 249.918 27.257 248.218 29.2651H248.119V26.5713H242.944V51.9913Z" fill="white"/>
+        </svg>
+      </a>
+    <button class="m-icon-button in-mobile-topbar js-open-search"  aria-label="Open search">
+      <span class="icon-search" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div class="m-menu js-menu">
+    <button class="m-icon-button outlined as-close-menu js-close-menu" aria-label="Close menu">
+      <span class="icon-close"></span>
+    </button>
+    <div class="m-menu__main">
+      <div class="l-wrapper">
+        <div class="m-nav js-main-nav">
+          <nav class="m-nav__left js-main-nav-left" role="navigation" aria-label="Main menu">
+            <ul>
+                <li class="only-desktop">
+                <a href="https://blog.shimmer.network" class="m-logo">
+                  <svg width="274" height="72" viewBox="0 0 274 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M53.2247 18.588C45.1232 9.96876 31.8087 9.78298 23.4861 18.1732C15.1635 26.5634 14.9843 40.3522 23.0858 48.9714L28.4119 43.6023C23.1871 38.0099 23.313 29.0897 28.7009 23.6581C34.0888 18.2264 42.7023 18.3362 47.9596 23.8958L53.2247 18.588Z" fill="#00E0CA"/>
+                    <path d="M17.8442 54.2694C25.9457 62.8885 39.26 63.0741 47.5825 54.684C55.9051 46.2938 56.0844 32.5051 47.983 23.8859L42.6574 29.2547C47.8822 34.8471 47.7563 43.7672 42.3684 49.1989C36.9805 54.6306 28.367 54.5208 23.1097 48.9612L17.8442 54.2694Z" fill="#00E0CA"/>
+                    <path class="letter" d="M77.2522 44.2281L73.6375 47.7301C76.9881 50.7668 80.7597 52.2851 84.9521 52.2851C88.0386 52.2525 90.5723 51.5504 92.5529 50.179C94.5501 48.8403 95.5652 46.9383 95.5982 44.473C95.5982 42.3669 95.0453 40.6282 93.9394 39.2568C92.751 37.8527 90.8198 37.0527 88.1459 36.8568L83.8875 36.5384C82.6331 36.4078 81.7583 36.1058 81.2631 35.6323C80.7184 35.2079 80.4626 34.7099 80.4956 34.1385C80.4956 33.2405 80.834 32.5059 81.5107 31.9344C82.1544 31.363 83.285 31.0773 84.9026 31.0773C86.3221 31.0773 87.5765 31.2814 88.6659 31.6895C89.7717 32.1467 90.8198 32.7263 91.8102 33.4283L95.004 29.7304C93.7496 28.6529 92.3301 27.7957 90.7456 27.159C89.9203 26.8651 89.0372 26.6366 88.0964 26.4733C87.1556 26.3264 86.091 26.2529 84.9026 26.2529C82.1627 26.2529 79.9014 26.9059 78.1188 28.212C76.2867 29.5181 75.3541 31.4773 75.3211 34.0895C75.3541 36.2609 76.0638 37.9507 77.4503 39.1588C78.8038 40.3996 80.5616 41.118 82.7238 41.3139L87.2794 41.7057C88.2367 41.7384 89.0042 41.9424 89.5819 42.3179C90.1431 42.6771 90.4237 43.3138 90.4237 44.2281C90.4237 45.2567 89.9533 46.0567 89.0125 46.6281C88.0717 47.1995 86.8585 47.4852 85.373 47.4852C82.0554 47.4852 79.3484 46.3995 77.2522 44.2281Z" fill="white"/>
+                    <path class="letter" d="M99.3257 51.9913H104.5V36.8568C104.5 35.0772 104.987 33.7222 105.961 32.7916C106.918 31.8446 108.14 31.3712 109.625 31.3712C111.111 31.3712 112.324 31.8446 113.265 32.7916C114.222 33.7222 114.701 35.0772 114.701 36.8568V51.9913H119.875V35.0936C119.793 32.1875 118.877 29.9834 117.127 28.4814C115.361 26.9957 113.413 26.2529 111.284 26.2529C108.528 26.2529 106.299 27.257 104.599 29.2651H104.5V16.2857H99.3257V51.9913Z" fill="white"/>
+                    <path class="letter" d="M125.187 51.9913H130.362V26.5713H125.187V51.9913ZM125.187 21.404H130.362V16.2857H125.187V21.404Z" fill="white"/>
+                    <path class="letter" d="M135.996 51.9913H141.17V36.8568C141.17 35.0772 141.666 33.7222 142.656 32.7916C143.597 31.8446 144.81 31.3712 146.295 31.3712C147.781 31.3712 149.002 31.8446 149.96 32.7916C150.901 33.7222 151.371 35.0772 151.371 36.8568V51.9913H156.545V36.8568C156.545 35.0772 157.032 33.7222 158.006 32.7916C158.964 31.8446 160.185 31.3712 161.67 31.3712C163.156 31.3712 164.369 31.8446 165.31 32.7916C166.251 33.7222 166.721 35.0772 166.721 36.8568V51.9913H171.896V35.0936C171.83 32.1875 170.922 29.9834 169.172 28.4814C167.406 26.9957 165.458 26.2529 163.329 26.2529C159.946 26.2202 157.247 27.3304 155.233 29.5835C154.342 28.6039 153.36 27.7957 152.287 27.159C151.198 26.5876 149.762 26.2855 147.979 26.2529C145.206 26.2529 142.97 27.257 141.27 29.2651H141.17V26.5713H135.996V51.9913Z" fill="white"/>
+                    <path class="letter" d="M177.703 51.9913H182.878V36.8568C182.878 35.0772 183.373 33.7222 184.363 32.7916C185.304 31.8446 186.517 31.3712 188.002 31.3712C189.488 31.3712 190.709 31.8446 191.667 32.7916C192.608 33.7222 193.078 35.0772 193.078 36.8568V51.9913H198.252V36.8568C198.252 35.0772 198.739 33.7222 199.713 32.7916C200.671 31.8446 201.892 31.3712 203.377 31.3712C204.863 31.3712 206.076 31.8446 207.017 32.7916C207.958 33.7222 208.428 35.0772 208.428 36.8568V51.9913H213.603V35.0936C213.537 32.1875 212.629 29.9834 210.879 28.4814C209.113 26.9957 207.165 26.2529 205.036 26.2529C201.653 26.2202 198.954 27.3304 196.94 29.5835C196.049 28.6039 195.067 27.7957 193.994 27.159C192.905 26.5876 191.469 26.2855 189.686 26.2529C186.913 26.2529 184.677 27.257 182.977 29.2651H182.878V26.5713H177.703V51.9913Z" fill="white"/>
+                    <path class="letter" d="M239.043 41.2159V37.0037C239.01 33.6569 237.962 31.0283 235.899 29.1182C233.869 27.2406 231.385 26.2855 228.447 26.2529C227.225 26.2529 225.987 26.4733 224.733 26.9141C223.462 27.3549 222.315 28.0733 221.292 29.0692C220.285 30.0488 219.46 31.3875 218.816 33.0854C218.172 34.7507 217.85 36.8405 217.85 39.3547C217.85 41.9669 218.222 44.0893 218.964 45.722C219.641 47.4199 220.524 48.7423 221.614 49.6893C222.175 50.1464 222.777 50.5301 223.421 50.8403C224.032 51.1994 224.659 51.4851 225.303 51.6974C226.59 52.0892 227.91 52.2851 229.264 52.2851C232.813 52.3178 235.899 50.9464 238.523 48.1709L234.785 45.0118C233.134 46.6607 231.261 47.4852 229.165 47.4852C227.366 47.4852 225.913 46.9464 224.807 45.8689C223.619 44.8077 223.025 43.2567 223.025 41.2159H239.043ZM223.025 37.0037C223.124 35.0283 223.66 33.5344 224.634 32.5222C225.624 31.5589 226.895 31.0773 228.447 31.0773C229.998 31.0773 231.269 31.5589 232.26 32.5222C233.266 33.5344 233.803 35.0283 233.869 37.0037H223.025Z" fill="white"/>
+                    <path class="letter" d="M242.944 51.9913H248.119V36.6854C248.152 34.8242 248.697 33.4773 249.753 32.6446C250.694 31.7957 251.824 31.3712 253.145 31.3712C254.317 31.3712 255.447 31.7957 256.537 32.6446L260.3 28.212C258.765 26.9386 256.966 26.2855 254.903 26.2529C252.146 26.2529 249.918 27.257 248.218 29.2651H248.119V26.5713H242.944V51.9913Z" fill="white"/>
+                  </svg>
+                </a>
+              </li>
+                
+    <li class="nav-tags">
+      <a href="https://blog.shimmer.network/tags/">Tags</a>
+    </li>
+
+              <li class="submenu-option js-submenu-option">
+                <div class="js-toggle-submenu">Recent</div>
+                <div class="m-submenu js-submenu">
+                  <div class="l-wrapper in-submenu">
+                    <section class="m-recent-articles">
+                      <h3 class="m-submenu-title in-recent-articles">Recent articles</h3>
+                          <div class="swiper js-recent-slider">
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide">
+                                  <a href="/shimmer-is-sunsetting/" class="m-recent-article">
+                                    <div class="m-recent-article__picture ">
+                                        <img src="/content/images/size/w300/2026/07/-2560-Sunset-of-Shimmer-v1_16x9.png" loading="lazy" alt="">
+                                    </div>
+                                    <h3 class="m-recent-article__title js-recent-article-title" title="Shimmer is Sunsetting">
+                                      Shimmer is Sunsetting
+                                    </h3>
+                                    <span class="m-recent-article__date">2 months ago</span>
+                                  </a>
+                                </div>
+                                <div class="swiper-slide">
+                                  <a href="/governance-votes-results-june-2024/" class="m-recent-article">
+                                    <div class="m-recent-article__picture ">
+                                        <img src="/content/images/size/w300/2024/07/-888-Vote-results-blog.png" loading="lazy" alt="">
+                                    </div>
+                                    <h3 class="m-recent-article__title js-recent-article-title" title="Shimmer Governance Votes Results June 2024">
+                                      Shimmer Governance Votes Results June 2024
+                                    </h3>
+                                    <span class="m-recent-article__date">2 years ago</span>
+                                  </a>
+                                </div>
+                                <div class="swiper-slide">
+                                  <a href="/governance-votes-june-2024/" class="m-recent-article">
+                                    <div class="m-recent-article__picture ">
+                                        <img src="/content/images/size/w300/2024/06/-829-16_9.png" loading="lazy" alt="">
+                                    </div>
+                                    <h3 class="m-recent-article__title js-recent-article-title" title="Shimmer Governance Votes June 2024">
+                                      Shimmer Governance Votes June 2024
+                                    </h3>
+                                    <span class="m-recent-article__date">2 years ago</span>
+                                  </a>
+                                </div>
+                                <div class="swiper-slide">
+                                  <a href="/airdrop-rewards/" class="m-recent-article">
+                                    <div class="m-recent-article__picture ">
+                                        <img src="/content/images/size/w300/2024/04/item902_header_v06-2.png" loading="lazy" alt="">
+                                    </div>
+                                    <h3 class="m-recent-article__title js-recent-article-title" title="The Shimmer Liquidity Mining Campaign Airdrop Begins">
+                                      The Shimmer Liquidity Mining Campaign Airdrop Begins
+                                    </h3>
+                                    <span class="m-recent-article__date">2 years ago</span>
+                                  </a>
+                                </div>
+                            </div>
+                          </div>
+                    </section>
+                    <section class="m-tags">
+                      <h3 class="m-submenu-title">Tags</h3>
+                        <ul>
+                            <li>
+                              <a href="/tag/announcements/">Announcements</a>
+                            </li>
+                            <li>
+                              <a href="/tag/audit/">Auditor</a>
+                            </li>
+                            <li>
+                              <a href="/tag/bankless/">Bankless</a>
+                            </li>
+                            <li>
+                              <a href="/tag/campaign/">Campaign</a>
+                            </li>
+                            <li>
+                              <a href="/tag/dao/">DAO</a>
+                            </li>
+                            <li>
+                              <a href="/tag/defi/">DeFi</a>
+                            </li>
+                            <li>
+                              <a href="/tag/ecosystem/">Ecosystem</a>
+                            </li>
+                            <li>
+                              <a href="/tag/evm/">EVM</a>
+                            </li>
+                            <li>
+                              <a href="/tag/gaming/">Gaming</a>
+                            </li>
+                        </ul>
+                    </section>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </nav>
+          <div class="m-nav__right">
+            <button class="m-icon-button in-menu-main js-open-search"  aria-label="Open search">
+              <span class="icon-search" aria-hidden="true"></span>
+            </button>
+            <div class="m-toggle-darkmode js-tooltip" data-tippy-content="Toggle light/dark mode" tabindex="0">
+              <label for="toggle-darkmode" class="sr-only">
+                Toggle light/dark mode
+              </label>
+              <input id="toggle-darkmode" type="checkbox" class="js-toggle-darkmode">
+              <div>
+                <span class="icon-moon moon" aria-hidden="true"></span>
+                <span class="icon-sunny sun" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+
+<main class="main-wrap">
+    
+  <section class="m-hero with-picture" data-animate="fade">
+    <div class="m-hero__picture in-post">
+      <img
+        srcset="
+          /content/images/size/w300/2026/07/-2560-Sunset-of-Shimmer-v1_16x9.png 300w,
+          /content/images/size/w600/2026/07/-2560-Sunset-of-Shimmer-v1_16x9.png 600w,
+          /content/images/size/w1000/2026/07/-2560-Sunset-of-Shimmer-v1_16x9.png 1000w,
+          /content/images/size/w2000/2026/07/-2560-Sunset-of-Shimmer-v1_16x9.png 2000w
+        "
+        sizes="(max-width: 600px) 600px, (max-width: 1000px) 1000px, 2000px"
+        src="/content/images/size/w1000/2026/07/-2560-Sunset-of-Shimmer-v1_16x9.png"
+        alt=""
+      />
+    </div>
+    </section>
+  
+  <article>
+    <div class="l-content in-post">
+        <div class="l-wrapper in-post  js-animation-wrapper" data-animate="fade-up">
+          <div
+            class="l-post-content js-progress-content">
+            <header id="header" class="m-heading">
+              <h1 class="m-heading__title in-post">Shimmer is Sunsetting</h1>
+              <div class="m-heading__meta">
+                  <a href="https://blog.shimmer.network/tag/announcements/" class="m-heading__meta__tag">Announcements</a>
+                  <span class="m-heading__meta__divider" aria-hidden="true">&bull;</span>
+                <span class="m-heading__meta__time js-date-published">Jul 23, 2026</span>
+              </div>
+            </header>
+            <div class="pos-relative js-post-content">
+              <div class="m-share">
+                <div class="m-share__content js-sticky">
+                  <a href="https://www.facebook.com/sharer/sharer.php?u=https://blog.shimmer.network/shimmer-is-sunsetting/"
+                    class="m-icon-button filled in-share" target="_blank" rel="noopener" aria-label="Facebook">
+                    <span class="icon-facebook" aria-hidden="true"></span>
+                  </a>
+                  <a href="https://twitter.com/intent/tweet?text=Shimmer%20is%20Sunsetting&url=https://blog.shimmer.network/shimmer-is-sunsetting/"
+                    class="m-icon-button filled in-share" target="_blank" rel="noopener" aria-label="Twitter">
+                    <span class="icon-twitter" aria-hidden="true"></span>
+                  </a>
+                  <button class="m-icon-button filled in-share progress js-scrolltop" aria-label="Scroll to top">
+                    <span class="icon-arrow-top" aria-hidden="true"></span>
+                    <svg aria-hidden="true">
+                      <circle class="progress-ring__circle js-progress" fill="transparent" r="0" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              
+<!--kg-card-begin: html-->
+<p
+ style="
+    padding: 12px;
+    background: var(--button-shadow-color-normal);
+    border-radius: 8px;
+"
+>
+ <strong>TL;DR:</strong>
+ <br />
+Shimmer L1 and ShimmerEVM are sunsetting. Shimmer has served its purpose as an early playground that helped prove and expedite IOTA’s technology through L1's launch and later ShimmerEVM's DeFi ecosystem. Bridging ends August 29, 2026. Full sunset: September 30, 2026.
+ </a>
+<br /><br />
+<!--kg-card-end: html-->
+<p>Shimmer was built as a place to test, break, and prove new technology before it was ready for prime time. That job is done, and we're announcing the sunset of Shimmer L1 and ShimmerEVM.</p><p>Bridging assets from Shimmer will no longer be possible after August 29, 2026.</p><h3 id="what-this-means-and-when">What This Means, and When</h3><p>Shimmer was launched as an early staging ground,&nbsp; a network where new technology could be tested and proven at speed, without the constraints of a live production environment. It served that role well, supporting the launch of Stardust and IOTA EVM before they went live on IOTA.</p><p>That role has now been fulfilled. Shimmer is no longer needed, and it will no longer be maintained.</p><p>Here's the timeline:</p><ul><li><strong>Saturday, August 29, 2026:</strong> <a href="https://layerzero.network/blog/support-update-july-24-2026?ref=blog.shimmer.network" rel="noreferrer">LayerZero</a> external liquidity bridge for ShimmerEVM is shut down. After this date, there is no viable way to bridge assets in or out of Shimmer.</li><li><strong>Wednesday, September 30, 2026:</strong> Shimmer and ShimmerEVM will stop block production and officially sunset. The block explorer will fade out alongside the network. The Shimmer website will be discontinued.</li></ul><p>We encourage anyone with assets on Shimmer or ShimmerEVM to take action well ahead of August 29, 2026, to ensure a smooth transition.</p><p>Thank you to everyone who built on, tested, and pushed Shimmer forward. What you proved here made a lasting difference.</p><hr>
+                <div>
+                  <div>Follow us on our official channels for the latest updates:</div>
+                    <a href=https://discord.shimmer.network/ target='_blank' rel='noopener'>Discord</a> |
+                  <a href=https://twitter.com/shimmernet target='_blank' rel='noopener'>Twitter</a> |
+                  <a href=https://www.linkedin.com/company/shimmernet target='_blank' rel='noopener'>LinkedIn</a> |
+                  <a href=https://www.reddit.com/r/shimmer/ target='_blank' rel='noopener'>Reddit</a> |
+                  <a href=https://coinmarketcap.com/currencies/shimmer/ target='_blank' rel='noopener'>CoinMarketCap</a>
+                </div>
+                <section class="m-tags in-post">
+                  <h3 class="m-submenu-title">Tags</h3>
+                  <ul>
+                      <li>
+                        <a href="/tag/announcements/" title="Announcements">Announcements</a>
+                      </li>
+                  </ul>
+                </section>
+            </div>
+          </div>
+        </div>
+        <section class="m-author">
+          <div class="m-author__content">
+            <div class="m-author__picture">
+              <a href="https://blog.shimmer.network/author/if-2/" class="m-author-picture" aria-label="Shimmer">
+                  <div style="background-image: url(https://blog.shimmer.network/content/images/2021/12/shimmer_fav_200x200.png);"></div>
+              </a>
+            </div>
+            <div class="m-author__info">
+              <h4 class="m-author__name">
+                <a href="https://blog.shimmer.network/author/if-2/">Shimmer</a>
+              </h4>
+                <p class="m-author__bio">Official posts from the Shimmer Network.</p>
+              <ul class="m-author-links">
+              </ul>
+            </div>
+          </div>
+        </section>
+            <section class="m-recommended">
+              <div class="l-wrapper in-recommended">
+                <h3 class="m-section-title in-recommended">Recommended for you</h3>
+                <div class="m-recommended-articles">
+                  <div class="m-recommended-slider swiper js-recommended-slider">
+                    <div class="swiper-wrapper">
+                      
+    <div class="m-recommended-slider__item swiper-slide">
+  <article class="m-article-card  post tag-announcements tag-defi tag-ecosystem">
+    <div class="m-article-card__picture">
+      <a href="/layerzero-integrates-with-shimmerevm/" class="m-article-card__picture-link" aria-hidden="true" tabindex="-1"></a>
+        <img class="m-article-card__picture-background" src="/content/images/size/w600/2023/11/Item778-shimmer_evm_layer0-Blogpost-2.png" loading="lazy" alt="">
+      <a href="https://blog.shimmer.network/author/if-2/" class="m-article-card__author js-tooltip" aria-label="Shimmer" data-tippy-content="Posted by Shimmer ">
+          <div style="background-image: url(/content/images/size/w100/2021/12/shimmer_fav_200x200.png);"></div>
+      </a>
+    </div>
+      <div class="m-article-card__info">
+        <a href="https://blog.shimmer.network/tag/announcements/" class="m-article-card__tag announcements">Announcements</a>
+      <a href="/layerzero-integrates-with-shimmerevm/" class="m-article-card__info-link" aria-label="LayerZero Integrates with ShimmerEVM">
+        <div>
+          <h2 class="m-article-card__title js-article-card-title " title="LayerZero Integrates with ShimmerEVM">
+            LayerZero Integrates with ShimmerEVM
+          </h2>
+        </div>
+        <div class="m-article-card__timestamp">
+          <span>Dec 27, 2023</span>
+          <span> </span>
+          <span>2 min read</span>
+        </div>
+      </a>
+    </div>
+  </article>
+    </div>
+    <div class="m-recommended-slider__item swiper-slide">
+  <article class="m-article-card  post tag-evm tag-announcements">
+    <div class="m-article-card__picture">
+      <a href="/shimmerevm-chain-launch/" class="m-article-card__picture-link" aria-hidden="true" tabindex="-1"></a>
+        <img class="m-article-card__picture-background" src="/content/images/size/w600/2023/09/Item-256-shimmer-tw.png" loading="lazy" alt="">
+      <a href="https://blog.shimmer.network/author/if-2/" class="m-article-card__author js-tooltip" aria-label="Shimmer" data-tippy-content="Posted by Shimmer ">
+          <div style="background-image: url(/content/images/size/w100/2021/12/shimmer_fav_200x200.png);"></div>
+      </a>
+    </div>
+      <div class="m-article-card__info">
+        <a href="https://blog.shimmer.network/tag/evm/" class="m-article-card__tag evm">EVM</a>
+      <a href="/shimmerevm-chain-launch/" class="m-article-card__info-link" aria-label="Launch of the ShimmerEVM Public Smart Contract Chain">
+        <div>
+          <h2 class="m-article-card__title js-article-card-title " title="Launch of the ShimmerEVM Public Smart Contract Chain">
+            Launch of the ShimmerEVM Public Smart Contract Chain
+          </h2>
+        </div>
+        <div class="m-article-card__timestamp">
+          <span>Sep 28, 2023</span>
+          <span> </span>
+          <span>6 min read</span>
+        </div>
+      </a>
+    </div>
+  </article>
+    </div>
+    <div class="m-recommended-slider__item swiper-slide">
+  <article class="m-article-card  post tag-identity tag-announcements tag-stardust">
+    <div class="m-article-card__picture">
+      <a href="/iota-identity-is-coming-to-layer-1/" class="m-article-card__picture-link" aria-hidden="true" tabindex="-1"></a>
+        <img class="m-article-card__picture-background" src="/content/images/size/w600/2023/09/Item435_tw.png" loading="lazy" alt="">
+      <a href="https://blog.shimmer.network/author/if-2/" class="m-article-card__author js-tooltip" aria-label="Shimmer" data-tippy-content="Posted by Shimmer ">
+          <div style="background-image: url(/content/images/size/w100/2021/12/shimmer_fav_200x200.png);"></div>
+      </a>
+    </div>
+      <div class="m-article-card__info">
+        <a href="https://blog.shimmer.network/tag/identity/" class="m-article-card__tag identity">Identity</a>
+      <a href="/iota-identity-is-coming-to-layer-1/" class="m-article-card__info-link" aria-label="IOTA Identity is Coming to Layer 1">
+        <div>
+          <h2 class="m-article-card__title js-article-card-title " title="IOTA Identity is Coming to Layer 1">
+            IOTA Identity is Coming to Layer 1
+          </h2>
+        </div>
+        <div class="m-article-card__timestamp">
+          <span>Sep 30, 2022</span>
+          <span> </span>
+          <span>10 min read</span>
+        </div>
+      </a>
+    </div>
+  </article>
+    </div>
+                    </div>
+                    <button class="m-icon-button filled in-recommended-articles swiper-button-prev" aria-label="Previous">
+                      <span class="icon-arrow-left" aria-hidden="true"></span>
+                    </button>
+                    <button class="m-icon-button filled in-recommended-articles swiper-button-next" aria-label="Next">
+                      <span class="icon-arrow-right" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+    </div>
+  </article>
+</main>
+
+
+
+      
+<div class="m-search js-search" role="dialog" aria-modal="true" aria-label="Search">
+  <button class="m-icon-button outlined as-close-search js-close-search" aria-label="Close search">
+    <span class="icon-close" aria-hidden="true"></span>
+  </button>
+  <div class="m-search__content">
+    <form class="m-search__form">
+      <div class="pos-relative">
+        <span class="icon-search m-search-icon" aria-hidden="true"></span>
+        <label for="search-input" class="sr-only">
+          Type to search
+        </label>
+        <input id="search-input" type="text" class="m-input in-search js-input-search" placeholder="Type to search">
+      </div>
+    </form>
+    <div class="js-search-results hide"></div>
+    <p class="m-not-found align-center hide js-no-results">
+      No results for your search, please try with something else.
+    </p>
+  </div>
+</div>
+
+    <footer class='m-footer'>
+    <div class='m-footer__content'>
+     <div class="m-footer__logo">
+      <a href=https://shimmer.network/ target="_blank" rel="noopener" aria-label="Website">
+        <img src=/assets/images/Shimmer_Logo.svg?v=2d790086b2>
+      </a>
+    </div>
+    <nav class="m-footer-social">
+        <a href=https://shimmer.network/ target='_blank' rel='noopener' aria-label='Website'>
+          <span class='icon-globe' aria-hidden='true'></span>
+        </a>
+        <a href=https://twitter.com/shimmernet target='_blank' rel='noopener' aria-label='Twitter'>
+            <span class='icon-twitter' aria-hidden='true'></span>
+        </a>
+        <a href=https://discord.shimmer.network/ target='_blank' rel='noopener' aria-label='Discord'>
+            <span class='icon-discord' aria-hidden='true'></span>
+        </a>
+        <a href=https://www.linkedin.com/company/shimmernet target='_blank' rel='noopener' aria-label='Linkedin'>
+            <span class='icon-linkedin' aria-hidden='true'></span>
+        </a>
+        <a href=https://www.reddit.com/r/shimmer/ target='_blank' rel='noopener' aria-label='Reddit'>
+            <span class='icon-reddit' aria-hidden='true'></span>
+        </a>
+        <a href="https://shimmer.network//rss" aria-label="RSS">
+          <span class="icon-rss" aria-hidden="true"></span>
+        </a>
+        <a href=https://coinmarketcap.com/currencies/shimmer/ target="_blank" rel="noopener" aria-label="CoinMarketCap">
+          <img src=/assets/images/coinmarketcap-logo.svg?v=2d790086b2 />
+        </a>
+     </nav>
+
+        <p class='m-footer-copyright' id='foundationLegal'></p>
+        <p class='m-footer-copyright' id='foundationRegisteredAddress'></p>
+
+    </div>
+</footer>
+    <script defer src="/assets/js/manifest.js?v=2d790086b2"></script>
+    <script defer src="/assets/js/vendor.js?v=2d790086b2"></script>
+    <script defer src="/assets/js/app.js?v=2d790086b2"></script>
+    <script type="module"src="/assets/js/fetchFooter.js?v=2d790086b2"></script>
+
+      <script defer src="/assets/js/post.js?v=2d790086b2"></script>
+
+
+    <! -- configure Prism -->
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/toolbar/prism-toolbar.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/show-language/prism-show-language.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-c.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-cpp.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-latex.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-markup.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-markdown.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-go.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-rust.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-python.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-java.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-bash.min.js"></script>
+
+<! -- activate and configure MathJax -->
+<script type="text/javascript" async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [["$", "$"], ["\\(", "\\)"]],
+            processEscapes: true
+        } 
+    });
+</script>
+  <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"eced2fbfbe804375a0a387254494ccf4","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

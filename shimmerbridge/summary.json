@@ -1,0 +1,57 @@
+{
+  "finding": "L2-Phase2-ShimmerBridge",
+  "title": "ShimmerBridge (LayerZero EndpointV1 lock/mint bridge) — live extractability",
+  "chains": ["ethereum", "bsc", "polygon", "arbitrum", "base", "optimism", "avalanche", "fantom"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 0, "P": 0.0013, "S": 184841.94},
+  "latest_block": 26185157,
+  "block_numbers": {
+    "ethereum": 26185157,
+    "bsc": 127441435,
+    "polygon": 95471075,
+    "arbitrum": 514495775,
+    "base": 52561295,
+    "optimism": 158156583,
+    "avalanche": 97462318,
+    "fantom": 123677136
+  },
+  "targets_checked": 8,
+  "live_targets": 8,
+  "closed_reasons": [
+    "Unlock requires a LayerZero message from EID 230 (ShimmerEVM); the chain halted 2026-09-30 and LayerZero DVN/Executor support ended 2026-08-28 — no new message can exist",
+    "Receive path needs 4-of-4 LayerZero DVN attestations (3-of-3 on Fantom) + the default executor; commitVerification is permissionless but useless without the DVN quorum (fork-proven)",
+    "App-level trusted-remote check (40-byte path) + srcChainId==230 + PT_UNLOCK; wrong sender / wrong srcEid are stored, not executed (fork-proven)",
+    "Replay closed by endpoint sequential inboundNonce and attestation deletion in _verifyAndReclaimStorage",
+    "No in-flight funds: hasStoredPayload(230, path)=false and failedMessages(230, path) empty on all 8 chains (529 nonces scanned on Ethereum)",
+    "Owner cannot take principal (withdrawFee bounded by accrued fees = $0.0013 dust); contract not upgradeable; renounceOwnership disabled",
+    "Bridge uses DEFAULT endpoint library versions/config (uaConfigLookup=0, getAppUlnConfig=0); no custom weaker gate exists"
+  ],
+  "poc": {
+    "tests_passed": 15,
+    "tests_total": 15,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "OriginalTokenBridge 0x9C6D5a71FdD306329287a835e9B8EDb7F0F17898, deployed 2023-11-30 (ETH block 18,680,563), verified, not a proxy; same address on all 8 chains",
+    "remoteChainId=230 (ShimmerEVM, LZ chain id/EID 230); trustedRemoteLookup(230)=0x9c6d…7898 ++ 0x9c6d…7898 on every chain",
+    "Receive library ReceiveUln301 (E1): Ethereum 0x245B6e8F…, 4 required DVNs 0x3802…F20D/0x589d…236b/0xa4fE…5c2cd/0xa59B…0BA5, confirmations 21, executor 0x1732…3059; Avalanche has its own 4-DVN set/executor; Fantom 3 DVNs",
+    "Live custody $184,841.94 across 8 chains (ETH $75,455.20, BSC $25,086.00, Polygon $8,428.81, Arbitrum $7,129.16, Base $205.79, Optimism $10,036.77, Avalanche $57,552.53, Fantom $947.67), priced 2026-10-13 DefiLlama",
+    "Triage headline $126,237 covered 6 chains; Avalanche (+$57,552.53) and Fantom (+$947.67) add the difference; matches DefiLlama ~$184,930",
+    "Owner on all 8 chains = Safe v1.3.0 multisig, 3-of-5, identical 5 signers (analysis/owners.json)",
+    "Only owner-extractable value = accrued fees: 0.001 USDT (ETH) + 0.000264 USDT (BSC) = $0.0013; principal unreachable by anyone",
+    "Sunset: blog.shimmer.network 2026-07-23; LayerZero notice 2026-08-22 (DVN/Executor end for 15 chains incl. Shimmer); LZ bridge shut down 2026-08-29; last bridge message 2026-08-30 22:57 UTC (ShimmerEVM block 8,026,990); L1 final milestone 24,359,373 ~07:44 UTC 2026-09-30; ShimmerEVM RPCs dead",
+    "WrappedTokenBridge (remote side) = LayerZero-Labs/wrapped-asset-bridge @ d89dc70dbfb9576601e4f9d69a4b2c210c256afd, byte-identical to the verified OriginalTokenBridge source",
+    "Independent audit (childC) recompiled the verified sources and byte-diffed eth_getCode: identical except immutable patches; no hidden logic; all candidate bugs non-exploitable",
+    "Strongest conditional path (not E-U): compromise of the 4-of-4 DVN keys + executor, or LayerZero endpoint/lib-owner repointing the default library/config; or the 3-of-5 bridge Safe attaching a custom 1-of-1 DVN config — all require keys/privilege"
+  ],
+  "caveats": [
+    "Verdict depends on LayerZero DVN/executor honesty (off-chain trust), unverifiable on-chain; stated as conditional (P) path",
+    "Fantom leg holds L0-bridged USDC.e marked at $0.897 (depegged); Fantom not fork-tested (gate config verified live: 3 DVNs)",
+    "USD marks at 2026-10-13; nothing is realizable anyway (S)",
+    "Exact last ShimmerEVM block not retrievable (all RPCs dead); last bridge message + L1 final milestone used as anchors",
+    "Child C described the bridge owner as an EOA; corrected here — all owners are 3-of-5 Safes",
+    "No mainnet transactions; DVN/executor impersonation only inside local fork tests"
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from ShimmerBridge: the only unlock route needs 4-of-4 LayerZero DVN attestations + executor and a message from ShimmerEVM, which was shut down 2026-08-29 and halted 2026-09-30 — the $184,841.94 locked across 8 chains is permanently stuck (S); owner-extractable fees are $0.0013."
+}
