@@ -1,0 +1,53 @@
+{
+  "finding": "L2-Phase2 / burgerswap (triage row: BurgerSwap, BSC)",
+  "title": "BurgerSwap (Demax AMM, BSC) — live extractability of a zombie DEX",
+  "chains": ["bsc"],
+  "headline_extractable_usd": 16.45,
+  "headline_confidence": "medium",
+  "headline_note": "high confidence on the $9.9 fork-proven surplus capture; medium on the $6.55 stale-price-dump model (top cases re-executed in the CI PoC); the free-mint drain is $0 live (mechanism proven with a mock token).",
+  "categories": {"E-U": 16.45, "H-O": 133144.08, "P": 7.67, "S": 33.9},
+  "latest_block": 127360678,
+  "block_numbers": {"bsc": 127360678, "bsc_local_reverify": 127365811, "bsc_triage": 126994409},
+  "targets_checked": 922,
+  "live_targets": 177,
+  "closed_reasons": [
+    "All 922 pairs route to the same post-exploit-patched DemaxPlatform 0xB099D7dbC415bf5491B0ca6fdCcFddF8b7EDCE12 (per-hop kBefore<=kAfter check + nonReentrant); no old/unpatched platform reachable (full CONFIG() scan of 922/922 pairs).",
+    "pair.swap/mint/burn/swapFee are onlyPlatform; sync() is permissionless but transfers nothing.",
+    "Free-mint balance-inflation drain: all 296 tokens with mint-like selectors reject an unprivileged mint (309 simulated eth_calls + fork probe of top-12 candidates); no live pair has a freely-mintable side.",
+    "LP reserves and DGAS reward pools are LP-owned: removeLiquidity (REMOVE_LIQUIDITY_DURATION=1 block) and pair.mintReward() are live and unpaused; pool.claimReward requires LP balance; governance staking withdraws after lockTime.",
+    "Privileged surfaces (pause, migrateLiquidity, config changes, BURGER upgradeImpl/upgradeGovernance, factory.updateConfig) are owner/governor/impl-gated."
+  ],
+  "poc": {
+    "tests_passed": 11,
+    "tests_total": 11,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38313990650",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38361196543",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38366535667"
+    ],
+    "key_tests": {
+      "test_06_excess_dilution": "LIVE profit 11.14 USDT (95% of the 11.7 USDT surplus in USDT/UNI pair 0x03b89d51...) via addLiquidity(20x reserves)+removeLiquidity; net ~$9.9 after a 0.09% flash fee",
+      "test_08_mechanism_positive_control": "mock freely-mintable token + third-party victim LP: stale-reserve balance-inflation drains the victim's WBNB side (mechanism live; no live token qualifies)",
+      "test_10_stale_price_dump_live": "PancakeSwap buy -> dead-pair dump on live targets (net-of-gate accounting)"
+    }
+  },
+  "key_facts": [
+    "922 pairs enumerated at block 127360678: priced reserve value $132,992.90 (49/573 tokens DefiLlama-priced; unpriced valued 0); DefiLlama live $190,805.45 + $60.76 staking.",
+    "Total surplus (balance - reserve) across all 922 pairs: $11.69 — concentrated in USDT/UNI 0x03b89d517fe95478d9DE3aF60E4332Fd3BDDED8b (11.7 USDT; reserves 24.716 USDT/5.988 UNI vs balances 36.416/5.988 at block 127365811).",
+    "Stale-price dump model (ci/pancake_arb.py, both venues constant-product): 11 candidates gross $27.49; net after swapPrecondition gate cost $6.55 (QAA/WBNB $4.30, XRP/WBNB $0.98, CHEF/WBNB $0.85, WBNB/MXC $0.32, ...); BCH/WBNB and ETH/WBNB go net-negative after the 0.2004%-of-WBNB-side gate cost.",
+    "296/573 tokens carry mint-like selectors; 309 simulated mint calls from an unprivileged address and a fork probe of the top 12 candidates found 0 public mints (JNTR/b gateway-gated, SHLIAPA/MXC/BONUM/LUNAR/UnionPay Ownable, bBPAL/bWHF/bCHBS/bIMTY FORBIDDEN, USDX ONLY_OWNER, RICK finished, USDT/BUSD/ETH/BCH/DOT/XRP/BTCB owner-gated).",
+    "Pair DGAS reward pools (remainReward) total 28,263.04 BURGER ($18.53); BURGER token-level pending across pairs 116,964.04 BURGER ($76.69, 90% LP / 10% dev); BURGER token contract holds 143,480.55 BURGER.",
+    "DemaxGovernance 0x9154c268...: 92,637.02 BURGER (stakingSupply 77,373.88, withdraw after lockTime 17,280 blocks), 16.5 USDT stranded (no transfer path). DemaxPool 0x86A327...: 4,407.20 BURGER.",
+    "Platform isPause=false, SWAP_FEE_PERCENT=0 (only the 0.3% AMM fee), REMOVE_LIQUIDITY_DURATION=1; BURGER amountPerBlock=0 (no new emissions).",
+    "Historical May-2021 $7.2M exploit (fake token + reentrancy) is closed by the deployed patch: per-hop k-check + nonReentrant on add/remove/_swap.",
+    "Measurement trap corrected: the Foundry default test address 0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496 holds 26.5 USDT on BSC — an early apparent USDT drain was the test contract spending its own tokens; all drain tests now use a fresh attacker address."
+  ],
+  "caveats": [
+    "524 of 573 tokens are unpriced by DefiLlama, so $132,992.90 is a lower bound for pair reserves (DefiLlama's $190,805.45 is the protocol-consistent figure).",
+    "Stale-price-dump figures are AMM-exact model outputs; the top cases are re-executed in CI (test_10), but realised profit depends on PancakeSwap liquidity and on the 0.2004%-of-WBNB-side swapPrecondition gate cost.",
+    "Surplus capture is dilutive (existing LPs lose pro-rata) and capital-intensive (flash-loanable); net figure assumes a 0.09% flash fee.",
+    "Some LP/reward claims may be unreachable in practice (lost keys) — classification stays H-O per holder-recoverability.",
+    "BURGER-denominated values are marked at DefiLlama $0.0006557; exit liquidity is thin (BURGER/WBNB pair holds only 0.0798 WBNB), so H-O BURGER claims are not realisable at that mark in size."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$16 net live from BurgerSwap (BSC): $9.9 fork-proven capture of the 11.7 USDT surplus in one pair (pairs have no skim(); a fresh LP captures balance-reserve surplus pro-rata) plus $6.55 of stale-price dumps of dead pairs via PancakeSwap; the $133k-$191k pair value is LP-owned (H-O), the free-mint drain is $0 live although the mechanism is proven live, and the 2021 reentrancy exploit is patched."
+}
