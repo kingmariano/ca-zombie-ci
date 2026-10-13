@@ -14,7 +14,7 @@ GaugeV2 / FeeDistributor / FeeCollector code, and the pool math entry points are
 
 | Item | Live (priced, 2026-10-13) | Who can move it | Notes |
 |---|---|---|---|
-| CL pool LP principal (391 pools) | **$145,096** | position owners via NFP manager (`decreaseLiquidity`+`collect`) | attacker path closed: `isAuthorizedForToken` + pool-level `collect` keys by `msg.sender` |
+| CL pool LP principal (391 pools) | **$145,096** | position owners via NFP manager (`decreaseLiquidity`+`collect`); share-gated vaults; lock-owner-gated lockers | attacker path closed: `isAuthorizedForToken` + pool-level `collect` keys by `msg.sender`; **4,258 live NFP positions** (top owner is an EOA with 1,078; two `FreeUniV3LPLocker`s hold 132+6, both owner/collector-gated) plus Gamma-style `NileHypervisor` vaults and one `TeaVaultV3Pair`, all with gated pull/withdraw |
 | Protocol fees uncollected in pools | **$456** | anyone can *push* them, but only to `feeCollector.treasury()` (BribeHolder → ETHEREX Safe) | `collectProtocol` gated to `factory.feeCollector()`; FeeCollector pays treasury (treasuryFees=100%) |
 | FeeDistributor rewards (vote fees) | **$9,407** (1.711 WETH, 3,294 USDC, 0.146 wrsETH, 0.0044 WBTC, 1,147 FXS, 352 USDT, 0.070 ezETH, …) | veNFT voters, pro-rata per period, claim-gated by `isApprovedOrOwner` on the veNFT | per-(period,tokenId) `userClaimed` cap; Σ`userVotes` ≤ `votes` invariant; no cross-tokenId inflation found |
 | CL gauge reward tokens | **$239** (59,271 NILE ≈ $234, 4.18 USDC, 5,564 xNILE unpriced) | NFP owners (`GaugeV2.getReward`, owner/approved) | `retrieveLeftovers` is permissionless but pays `feeCollector.treasury()` only; capped at period ≤ 2830 (bricked for all live periods) |
@@ -40,7 +40,8 @@ Deployed suite verified on-chain at Linea blocks **32,313,343 – 32,313,730** (
 | Timelock (OZ TimelockController) | `0xbabe7a170A764C8367bFFB35EbDe8E97AA72c3aA` | — | minDelay **86,400 s**; PROPOSER/EXECUTOR/CANCELLER = governor Safe `0x44376f8F…4652B` (GnosisSafeProxy); **no open roles, no CallScheduled events in the last 1M blocks** |
 | Factory `owner()` / `feeSetter()` / `feeCollector()` | Timelock / `0xAAA11500dDdB2B67a90d1a154dfB7eaBB518EAE6` (CommandCenter) / `0xAAA2A49958a443Dc9d19FdDEe873B5D1d6e84A2f` (FeeCollector) | — | `feeProtocol()` = **100** (%) |
 | Pool implementation (beacon target) | `0xeD48f13B3525B39B0b8E1a9FF95a78e77ab8e33f` | verified `ClPool`, solc 0.7.6 | pools are `ClBeaconProxy` clones (beacon = factory) |
-| NFP manager (proxy) | `0xAAA78E8C4241990B4ce159E105dA08129345946A` | impl `0xeae6e36d4e405c2dc4172d49720732a985df69f6` | `NonfungiblePositionManager` (verified), **8,282** NFTs total |
+| NFP manager (proxy) | `0xAAA78E8C4241990B4ce159E105dA08129345946A` | impl `0xeae6e36d4e405c2dc4172d49720732a985df69f6` | `NonfungiblePositionManager` (verified); **8,282 existing NFTs** (ids 5–202,828 of ~203k minted; **4,258 non-empty positions** at CI block 32,314,289) |
+| LP-side vaults (non-NFT holders) | `0xf07c6760cf104fade420cfc0bad1d040205803ca` (xezETH-WETH05), `0x5045f48f1665654b7ab52f1eb281674484d5ecf4` (xUSDC-WETH05), `0x1adc5e10933b696fa5311db5339f9a15e959e2b5` (PL-WRSETH-WETH-500) | `NileHypervisor` / `TeaVaultV3Pair` | hold pool-level positions in pools `0x6ba5ccc7`, `0x64bccad8`, `0xce6f03c4`; deposits whitelisted (Hypervisor) / open (TeaVault); `pullLiquidity`/`rebalance`/`addLiquidity`/`removeLiquidity` are `onlyOwner`/`onlyManager`; `withdraw` burns caller's own shares |
 | Voter (proxy) | `0xAAAf3D9CDD3602d117c67D80eEC37a160C8d9869` | impl `0x891d28ea942bb2c48808967af8b579591d45141c` | `governor()` = Gnosis Safe; 143 registered pools; **13 alive gauges** |
 | ClGauge factory / GaugeV2 impl | `0xAAA2D4987EEd427Ba5E2c933EeFCD75C84b446B7` / `0xEB4AA37ce9A1C260C178493140908773302174b1` | verified | rewards computed from live pool position data (no NFT custody in gauges) |
 | FeeDistributor factory / impl | `0xAAA1c31Cc1d1C2da7e634130DeD0ea2043271744` / `0xc2b256f2977B4C7eFf6D39E35Dbe245eFd767B7C` | verified | `pairFees` = FeeCollector on all checked instances |
@@ -54,7 +55,8 @@ proxy (`analysis/pool_list.json`).
 
 All balances re-read at latest block (local reads block **32,313,730**; CI re-verifies independently):
 
-* **391 pools, all `factory()`-verified.** Priced principal **$145,096.44** (triage $144,257 at an
+* **391 pools, all `factory()`-verified.** Priced principal **$145,096.44** (local reads, block
+  32,313,730; CI cross-check **$144,962.73** at block 32,314,289; triage $144,257 at an
   earlier block — consistent; differences are price drift and one newly-priced memecoin).
   Top pools: `0xce6f03c4…B61f` **$52,500** (WETH/wrsETH), `0x183903bd…3739` **$33,629** (WETH/foxy),
   `0x6ba5ccc7…5314` **$28,064** (WETH/ezETH), `0x64bccad8…CD03` **$16,409** (USDC/WETH),
@@ -111,8 +113,7 @@ The deployed code is the **Ramses V2** lineage, not stock Uniswap V3:
   from the factory: `feeProtocol = 100` → **100% of swap fees accrue as protocol fees** (LP fee = 0).
   Anyone can call it; it only *moves fees away from LPs toward the treasury* — griefing, no attacker gain
   (verified S15; this mirrors `factory.feeProtocol()==100` read live).
-* **GaugeV2 (CL gauge) claims** compute rewards from stored per-period data and cap per position:
-  `cachePeriodEarned()` = `baseRewards×secondsInside/(WEEK<<96) + boostedRewards×boostedSeconds/(WEEK<<96)` minus
+* **GaugeV2 (CL gauge) claims** compute rewards from stored per-period data and cap per position:  `cachePeriodEarned()` = `baseRewards×secondsInside/(WEEK<<96) + boostedRewards×boostedSeconds/(WEEK<<96)` minus
   `periodClaimedAmount[period][positionHash][token]`; `secondsInside` comes from
   `Position.positionPeriodSecondsInRange()` (period-frozen accumulators, sanity cap `1 week`),
   and claims are gated to `_nfpManager.ownerOf(tokenId)` / approved. `retrieveLeftovers` pays
@@ -131,6 +132,16 @@ The deployed code is the **Ramses V2** lineage, not stock Uniswap V3:
   (`_switchAttached`) requires veNFT ownership/approval (or the NFP manager, which pre-checks);
   boost magnitude is capped (`veNftUncapThreshold`, hypothetical-liquidity caps) and only affects
   *reward share*, never principal.
+* **Non-NFT position holders (vaults/lockers) are gated too.** Two `FreeUniV3LPLocker`s hold 138 of the
+  live positions (top holders): `collect(lockId, recipient, …)` requires `msg.sender == lock.owner ||
+  lock.collector`, `unlock` requires the lock owner and an elapsed `endTime`, and only the locker owner
+  can add position managers. Two Gamma-style `NileHypervisor` vaults hold the ezETH/WETH and USDC/WETH
+  pool positions with `deposit` restricted to a whitelisted address and `pullLiquidity`/`rebalance`/
+  `addLiquidity`/`compound` `onlyOwner`; `withdraw` only burns the caller's own shares. One
+  `TeaVaultV3Pair` ("PL-WRSETH-WETH-500") holds the wrsETH/WETH position with all liquidity/swap
+  functions `onlyManager` and `withdraw` share-gated; its `multicall` uses `delegatecall` but preserves
+  `msg.sender`, so manager gates still hold. `ramsesV2MintCallback`/`ramsesV2SwapCallback` require
+  `msg.sender == pool`.
 
 ## 5. What an attacker can and cannot do (exact paths, preconditions, costs)
 
@@ -167,16 +178,21 @@ Files: `poc/test/NileClClosure.t.sol`, `poc/src/Ifaces.sol` (Foundry, solc 0.8.2
   S10 fee-distributor share conservation (`userVotes ≤ votes`, `claimed ≤ share`), S11 factory/proxy-admin
   gates, S12 timelock roles closed (minDelay 86,400; proposer/executor = Safe only), S13 BribeHolder
   owner-gated, S14 price re-init blocked, S15 protocol fee 100% + permissionless sync.
-* Heavy CI job (`ci/scan.py`): full NFP enumeration (all **8,282** tokenIds → positions/owners, EOA vs
-  contract, live liquidity + `tokensOwed` aggregates) and balance scan of NPM/FeeCollector/Voter/
-  factory/timelock for every pool token, with DefiLlama+GeckoTerminal pricing. Results in
-  `ci-out/ci_state.json` (+`ci-out/scan.log`).
+* Heavy CI job (`ci/scan.py`): enumerates **all 8,282 existing NFP ids via `tokenByIndex`** (ids are
+  **not** 1..totalSupply — the id space is 5–202,828 because ~195k ids were minted and burned; an early
+  bug that scanned 1..8282 was caught and fixed), then reads every position (liquidity/`tokensOwed`),
+  owner (EOA vs contract), and the balances of NPM/FeeCollector/Voter/factory/timelock for every pool
+  token, priced via DefiLlama+GeckoTerminal. Result: **4,258 non-empty positions**; results in
+  `ci-out/ci_state.json` (+`ci-out/scan.log`). Independent adversarial review of the Ramses-specific
+  boost/period/reward math in `analysis/child-boost-review.md` (all five question areas **NOT
+  exploitable**; two share-only boost bookkeeping bugs found, moot for live periods > 2830).
 
 ### CI runs
 
 | Run | URL | Result |
 |---|---|---|
-| GitHub Actions `poc.yml`, branch `nile-cl` | _filled after dispatch_ | _filled_ |
+| GitHub Actions `poc.yml`, branch `nile-cl` (final; corrected enumeration) | https://github.com/kingmariano/ca-zombie-ci/actions/runs/38435970075 | **success** — `forge test` **15/15 PASS** (S01–S15, gas in log), heavy scan rc=0, artifact `result-nile-cl` |
+| earlier run (same 15/15 tests; heavy-scan artifact superseded by the id-range fix) | https://github.com/kingmariano/ca-zombie-ci/actions/runs/38429387359 | success — 15/15 PASS; scan artifact superseded |
 
 ## 7. Verdict, residual / latent risk
 
@@ -191,11 +207,16 @@ Files: `poc/test/NileClClosure.t.sol`, `poc/src/Ifaces.sol` (Foundry, solc 0.8.2
   (billions of tokens, ~$0).
 
 **Latent risks (materialize only under changed conditions — record for future sweeps):**
-* **L1 — pool math:** the delegated audit of the boost/period math (`analysis/child-boost-review.md`)
-  found no extraction path, but the deployed source was verified against the Ramses V2 code lineage
-  (Ra on Fraxtal runs a *different, older* Position/Oracle — no clean upstream diff available), so a
-  novel arithmetic bug in `LiquidityMath`/`Position`/`Oracle` cannot be 100% excluded by inspection
-  alone. It would pay out of LP principal (~$145k) or gauge rewards (~$0.24k).
+* **L1 — pool math:** the independent adversarial review of the boost/period/reward math
+  (`analysis/child-boost-review.md`) found **no extraction path** in all five areas (boost
+  attach/detach, period seconds-in-range, gauge claims, fee distributor, fee collector). It did find two
+  genuine *share-only* bookkeeping bugs — an unchecked `timesAttached - 1` underflow (`Position.sol:757-766`,
+  solc 0.7.6 unchecked) and `veNftAmount`/`totalVeNftAmount` drift (re-read `balanceOfNFT` at
+  `Position.sol:791-792` vs subtraction at :761-766) — which can corrupt boosted-reward *share* inside
+  the gauge's per-period supply cap but can never move principal; they are also moot for live periods
+  (> 2830 pay base seconds only). A novel arithmetic bug elsewhere cannot be 100% excluded by
+  inspection alone (no byte-exact upstream diff of this build); its upside would be LP principal
+  (~$145k) or gauge rewards (~$0.24k).
 * **L2 — NPM `sweepToken`/`refundETH` are permissionless** (upstream-compatible; the NPM is the
   pool-level position owner). They only touch *tokens resting in the NPM*, which is $0 today. Any
   future `NPM.collect(recipient=0)` (a documented convenience that routes tokens *to the NPM*) would be
@@ -216,14 +237,16 @@ Files: `poc/test/NileClClosure.t.sol`, `poc/src/Ifaces.sol` (Foundry, solc 0.8.2
 **Method.** (1) Re-verified the triage target on-chain; enumerated and `factory()`-verified all 391
 pools; scanned 300k recent blocks for new pools. (2) Fetched and read the *verified deployed sources*
 of every relevant contract (factory, ClPool impl, NFP manager, Voter, GaugeV2, FeeDistributor,
-FeeCollector, CommandCenter, Timelock) from Lineascan/Etherscan V2 and compared structure with the
-Ramses V2 lineage. (3) Measured live value: per-pool balances + `protocolFees()`, all gauges and fee
+FeeCollector, CommandCenter, Timelock, plus the LP-side vaults `NileHypervisor`/`TeaVaultV3Pair` and
+the `FreeUniV3LPLocker` holders) from Lineascan/Etherscan V2 and compared structure with the Ramses V2
+lineage. (3) Measured live value: per-pool balances + `protocolFees()`, all gauges and fee
 distributors (reward tokens enumerated via `getRewardTokens()`), per-contract residues; priced with
 DefiLlama + GeckoTerminal. (4) Manual trace of every value-moving entry point and its gates; (5) 15
-fork tests on Linea (keyless RPC) proving the closure; (6) independent adversarial review of the
-custom boost/period math by a child subagent.
+fork tests on Linea (keyless RPC) proving the closure, plus a heavy CI enumeration of all 8,282
+existing NFP ids (`tokenByIndex`) → 4,258 live positions with owners; (6) independent adversarial
+review of the custom boost/period math by a child subagent.
 
-**Sources.** On-chain reads (blocks 32,313,134–32,313,730, 2026-10-13); explorer-verified sources;
+**Sources.** On-chain reads (blocks 32,313,134–32,314,289, 2026-10-13); explorer-verified sources;
 DefiLlama/GeckoTerminal prices; Ramses V2 lineage (Velodrome Slipstream-derived CL); `l2-triage-b`
 provisional scan (superseded where they differ); SolidityScan's Oct-24-2024 Ramses reward-hack
 post-mortem (used to test for the analogous bug — the vulnerable accumulator variant is **not** the
@@ -245,11 +268,13 @@ nile-cl/
 │   ├── pools_state.json           (per-pool tokens/slot0/liquidity/protocolFees/balances)
 │   ├── gauges_state.json          (143 pools: gauge, isAlive, feeDistributor, reward tokens+balances)
 │   ├── nfp_summary.json           (NFP totalSupply)
+│   ├── nfp_positions.json         (29 early-id live positions from the first pass; superseded by the CI full enumeration)
+│   ├── dump_positions.py          (first-pass dumper; id-range bug documented in README §6)
 │   ├── child-boost-review.md      (independent adversarial boost/period math review)
 │   ├── enumerate_state.py, fetch_src.py (keyless, read-only helpers)
-│   └── src_files/                 (verified deployed sources per contract, incl. ClPool, Position, GaugeV2, FeeDistributor, FeeCollector)
+│   └── src_files/                 (verified deployed sources per contract, incl. ClPool, Position, GaugeV2, FeeDistributor, FeeCollector, NileHypervisor, TeaVaultV3Pair, FreeUniV3LPLocker)
 ├── poc/                           (Foundry: src/Ifaces.sol, test/NileClClosure.t.sol)
 ├── ci/run.sh, ci/scan.py          (heavy CI job: full NFP/owner scan + pricing)
-├── ci-out/                        (CI results: ci_state.json, scan.log)
+├── ci-out/                        (CI results: ci_state.json, scan.log — from run 38435970075)
 └── ci-log.txt, ci-artifacts/      (helper outputs; CI URLs recorded above)
 ```

@@ -1,6 +1,6 @@
 {
   "finding": "L2-nile-cl",
-  "title": "Nile CL (Linea) — Ramses V2 CL fork: no unprivileged extraction; LP principal + vote fees are owner-gated",
+  "title": "Nile CL (Linea) — Ramses V2 CL fork: no unprivileged extraction; LP principal + vote fees are owner/share-gated",
   "chains": ["linea"],
   "headline_extractable_usd": 0,
   "headline_confidence": "high",
@@ -10,12 +10,13 @@
     "P": 456.06,
     "S": 0
   },
-  "latest_block": 32313730,
-  "block_numbers": {"linea": 32313730},
+  "latest_block": 32314289,
+  "block_numbers": {"linea": 32314289, "linea_local_cross_check": 32313730},
   "targets_checked": 683,
   "live_targets": 391,
   "closed_reasons": [
-    "pool principal: NFP manager gates decreaseLiquidity/collect/burn with _isApprovedOrOwner; pool-level collect keys positions by msg.sender only; pool positions are custodied by the NFP manager",
+    "pool principal: NFP manager gates decreaseLiquidity/collect/burn with _isApprovedOrOwner; pool-level collect keys positions by msg.sender only; pool positions are custodied by the NFP manager (or by gated vaults/lockers)",
+    "non-NFT holders: NileHypervisor vaults (deposit whitelisted; pullLiquidity/rebalance/compound onlyOwner; withdraw burns own shares), TeaVaultV3Pair (liquidity/swap onlyManager; callbacks require msg.sender==pool; multicall delegatecall preserves msg.sender), FreeUniV3LPLocker (collect/unlock require lock owner or collector)",
     "protocol fees: ClPool.collectProtocol onlyFeeCollector; FeeCollector.collectProtocolFees (permissionless) pays treasury (BribeHolder, treasuryFees=100%) / feeDistributor only, never the caller",
     "gauge rewards: GaugeV2.getReward/ForOwner require NFP owner/approved or voter; retrieveLeftovers pays treasury and reverts for period > 2830 (all live periods)",
     "fee distributor rewards: claims require veNFT isApprovedOrOwner; per-(period,tokenId) userClaimed caps claims; deposit/withdraw keep sum(userVotes)<=votes; the deployed variant is NOT the Oct-2024 Ramses vulnerable accumulator",
@@ -26,26 +27,32 @@
   "poc": {
     "tests_passed": 15,
     "tests_total": 15,
-    "ci_run_urls": []
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38435970075",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38429387359"
+    ]
   },
   "key_facts": [
     "Nile CL factory proxy 0xAAA32926fcE6bE95ea2c51cB4Fcb60836D320C42 on Linea; impl ClPoolFactory 0xf9c440d309dd3f6044d5c87db68135625968c9af; pool impl ClPool 0xeD48f13B3525B39B0b8E1a9FF95a78e77ab8e33f",
     "391 pools all factory()-verified; 0 new pools in last 300k blocks; 0 uninitialized pools",
-    "Priced live custody: pools principal $145,096.44; uncollected protocol fees $456.06; fee distributors $9,406.97 (1.711 WETH, 3,294 USDC, 0.146 wrsETH, 0.0044 WBTC, 1,147 FXS, 352 USDT, 0.070 ezETH + NILE/memecoins); CL gauges $238.57 (59,271 NILE + 4.18 USDC)",
+    "NFP manager: 8,282 existing NFTs (id space 5–202,828; ~203k minted, most burned); 4,258 non-empty positions at CI block 32,314,289; top owners: EOA 0xf1e8976ae3e3ed6b96384642af4d85f4529b8149 (1,078 positions), FreeUniV3LPLocker 0x0000bf531058ee5ec27417f96ebb1d7bb8ccf4db (132) and 0x1ec9a98615d4c24541e6ac9b71aa97d30f3c4314 (6), EOAs thereafter; all holders' paths owner/share-gated",
+    "Priced live custody (CI block 32,314,289): pools principal $144,962.73; uncollected protocol fees $456.23; fee distributors $9,406.97 (1.711 WETH, 3,294 USDC, 0.146 wrsETH, 0.0044 WBTC, 1,147 FXS, 352 USDT, 0.070 ezETH + NILE/memecoins); CL gauges $238.57 (59,271 NILE + 4.18 USDC)",
+    "LP-side vaults hold top pools' positions: NileHypervisor xezETH-WETH05 0xf07c6760cf104fade420cfc0bad1d040205803ca (pool 0x6ba5ccc7), xUSDC-WETH05 0x5045f48f1665654b7ab52f1eb281674484d5ecf4 (pool 0x64bccad8); TeaVaultV3Pair PL-WRSETH-WETH-500 0x1adc5e10933b696fa5311db5339f9a15e959e2b5 (pool 0xce6f03c4)",
     "factory.feeProtocol()=100 (100% of swap fees to protocol); ClPool.setFeeProtocol() permissionless (sync only); FeeCollector.treasuryFees=10000 (100% to treasury)",
     "owner=Timelock 0xbabe7a170A764C8367bFFB35EbDe8E97AA72c3aA (minDelay 86400, roles only to governor Safe 0x44376f8F52407ed66E6D3356535410A7DCd4652B); ProxyAdmin owner=Timelock",
     "feeCollector treasury = BribeHolder 0xF7a8b3770f661059F4eA0D79aD7Fe8d642F9ea9b, owned by ETHEREX Safe 0xde4B22Eb9F9c2C55e72e330C87663b28e9d388f7; fetch/execute onlyOwner",
-    "NFP manager totalSupply=8282 positions; primary pool-position owner on-chain is the NFP manager; decrease/collect owner-gated and verified by fork revert tests",
-    "FeeDistributor claim math conserves: d/dP of userVotes and votes only for period=getPeriod()+WEEK; sum(userVotes[P])==votes[P]; per-tokenId userClaimed caps claims; no cross-NFT inflation path found",
-    "GaugeV2.retrieveLeftovers sends leftover boosted rewards to feeCollector.treasury() only and reverts Nope for period>2830 (all current periods); normal NFP-owner claims still work",
-    "NPM.sweepToken/unwrapWETH9/refundETH are permissionless (upstream design) but NPM holds $0 today (latent only)"
+    "FeeDistributor claim math conserves: d/dP of userVotes and votes only for period=getPeriod()+WEEK; sum(userVotes[P])==votes[P]; per-tokenId userClaimed caps claims; no cross-NFT inflation path found (independent review concurred)",
+    "Independent adversarial boost/period review (analysis/child-boost-review.md): all 5 areas NOT exploitable; 2 share-only boost bookkeeping bugs found (unchecked timesAttached-1 underflow Position.sol:757-766; veNftAmount drift :791-792 vs :761-766), moot for live periods > 2830 (base seconds only)",
+    "GaugeV2.retrieveLeftovers sends leftover boosted rewards to feeCollector.treasury() only and reverts Nope for period>2830; normal NFP-owner claims still work",
+    "NPM.sweepToken/unwrapWETH9/refundETH are permissionless (upstream design) but NPM holds $0 today (latent only); PositionManagerAux external library directly callable but reverts (library-own empty storage, owns no positions)"
   ],
   "caveats": [
+    "First heavy scan enumerated ids 1..totalSupply and undercounted (29 positions); the id space is 5–202,828 because ~195k ids were minted and burned. Fixed by enumerating via tokenByIndex; final CI run 38435970075 (success) carries the corrected 4,258-position scan. Test suite 15/15 in both runs.",
     "No byte-exact upstream diff for this V2 build (sibling deployment on Fraxtal is a different, older build). Analysis is on explorer-verified source matching deployed bytecode.",
     "Pool-math/boost code was reviewed manually and by an independent subagent; a novel arithmetic bug cannot be excluded with 100% certainty (would pay out of the $145k LP principal).",
     "NILE priced via GeckoTerminal ($0.0039547); xNILE and most memecoins unpriced (treated as $0, amounts recorded).",
     "NPM sweepToken latent path only matters if tokens ever rest in the NPM (collect(recipient=0)); $0 exposure measured today.",
     "All values are reads at the recorded blocks; no transactions were sent."
   ],
-  "one_liner": "External unprivileged attacker can extract ~$0 from Nile CL (Linea, $145k pools): every valued token is behind NFP/veNFT ownership gates or timelock/role-gated admin, the permissionless FeeCollector/gauge leftover paths only pay the protocol treasury, and the deployed reward accounting is the non-vulnerable Ramses variant."
+  "one_liner": "External unprivileged attacker can extract ~$0 from Nile CL (Linea, $145k pools): every valued token is behind NFP/veNFT ownership, vault-share or lock-owner gates, or timelock/role-gated admin; the permissionless FeeCollector/gauge leftover paths only pay the protocol treasury, and the deployed reward accounting is the non-vulnerable Ramses variant."
 }
