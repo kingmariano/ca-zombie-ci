@@ -1,0 +1,67 @@
+{
+  "finding": "RELATED — Velocore V1 (L2 watchlist row; H-47 covered Velocore V2)",
+  "title": "Velocore V1 (zkSync Era): permissionless gauge emission capture (~$2k E-U) and 67.8M VC permanently stranded in the Voter",
+  "chains": ["zksync-era"],
+  "headline_extractable_usd": 2000,
+  "headline_confidence": "medium",
+  "headline_range_usd": [1000, 8000],
+  "categories": {"E-U": 2000, "H-O": 170837, "P": 0, "S": 75029},
+  "category_notes": {
+    "E-U": "Create pair + gauge (permissionless for whitelisted tokens) -> buy/lock VC -> vote -> Voter.distribute pays the gauge the attacker's share of the 414,941 VC/week mint -> Gauge.getReward -> sell VC. Realizable amount bounded by VC exit liquidity (~$7.8k hard-asset side across VC/WETH + VC/USDC pools). Fork-proven end-to-end (215,687.57 VC to the gauge; 92,438.60 VC claimed by the attacker).",
+    "H-O": "LP positions in the 171 V1 pools (~$125.3k), locked veVC in VotingEscrow (39,677,494 VC ~ $43.9k), legacy gauge rewards for historical stakers (831,441 VC ~ $920), RewardsDistributor claims by veNFT owners (651,725 VC ~ $721).",
+    "P": "Governor/emergencyCouncil EOA 0x1234561fEd41DD2D867a038bBdB857f291864225: killGauge/reviveGauge/setGovernor/setEmergencyCouncil/whitelist + swap-fee stream (0.5% of F2 swaps, 0.25% of F1 swaps) paid directly to that EOA.",
+    "S": "Voter balance 67,837,832.79 VC (~$75.0k notional) permanently stranded: all 46 gauges are isAlive=false and _updateFor skips dead gauges (supplyIndex := index, no accrual); new gauges start at the current index (no retroactive capture); no rescue/sweep; Voter is not a proxy."
+  },
+  "latest_block": 72471542,
+  "block_numbers": {"zksync-era": 72471542, "pool_census_block": 72470026, "fork_tests_blocks": [72471100, 72471127, 72471480]},
+  "targets_checked": 199,
+  "live_targets": 194,
+  "targets_detail": {
+    "pools_enumerated": 171,
+    "pools_with_reserves": 166,
+    "factories": 2,
+    "system_contracts_checked": 28,
+    "v1_tvl_usd_census": 125313,
+    "v2_zksync_vault_eth": 0.000407
+  },
+  "closed_reasons": [
+    "June-2024 Velocore V2 defect (missing vault check on velocore__execute + uncapped feeMultiplier/fee1e9 + unchecked fee underflow) is absent from V1 pools: velocore__execute/fee1e9/feeMultiplier/lastWithdrawTimestamp all revert on live V1 pools.",
+    "V2-on-zkSync vault holds only 0.000407 ETH and no tokens (nothing to extract even if the fee bug persisted there).",
+    "Voter's 67.8M VC is unreachable: all gauges dead; _updateFor destroys accrual; no rescue function; not a proxy (fork-verified with a 52%-weight attacker vote: gauge payout 0).",
+    "Legacy gauge rewards (831k VC) only claimable by accounts staked during the 2023 reward periods; earned() = 0 for new stakers.",
+    "RewardsDistributor claim(tokenId) pays only the veNFT owner; a freshly created veNFT claimed 0 (no retroactive accrual).",
+    "skim() excess across all 171 pools = 0 for priced tokens (pool balances == reserves); only 4.18e-9 LIBERA dust.",
+    "Pool swap fees (0.5%/0.25% of input) are routed directly to the owner EOA on every swap (privileged revenue, not extractable)."
+  ],
+  "poc": {
+    "tests_passed": 3,
+    "tests_total": 3,
+    "method": "anvil-zksync v0.7.1 fork of zkSync Era mainnet (keyless public RPC); ci/run.sh + ci/fork_test.py",
+    "key_numbers": {
+      "T1_distribute_legacy_gauge_received_vc": 0,
+      "T1_voter_received_vc": 414941.22,
+      "T2_gauge_received_vc": 215687.57,
+      "T2_attacker_claimed_vc": 92438.60,
+      "T2_attacker_weight_share_pct": 52,
+      "T3_skim_excess_usd": 0
+    },
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "V1 = 171 Solidly/Velodrome-V1-family pools on zkSync Era: official factory 0xE140EaC2bB748c8F456719a457F26636617Bb0E9 (167 pairs) + old POAP factory 0xF5719b1Ea3C9bF6491E22C49379E31060d0FbFc1 (4 pairs); TVL ~$125.3k at block 72,471,542 (DefiLlama $126.3k / watchlist $131.9k).",
+    "Largest pools: F2 USDC.e/WETH 26,772.40 USDC + 10.6819 WETH (~$53.5k) and F1 USDC.e/old-WETH 20,462.95 USDC + 8.1515 oldWETH (~$40.9k; old-WETH is fully ETH-backed: supply == contract ETH balance).",
+    "Minter 0x8f0b4B3e211c84061ab5959Bd3D49C6B3EeC1d7D still mints 419,132.5 VC/week; update_period() is permissionless and was last advanced 2025-09-04; ~414,941 VC/week reaches the Voter, ~17,290 VC goes to the governor EOA.",
+    "Voter 0xe09A60FAe6d77658b9767A70e2f361b46Dd3f16A: 67,837,832.79 VC balance, 46 gauges (all isAlive=false), totalWeight 4,565,832.7 veVC, governor/emergencyCouncil = EOA 0x1234561fEd41DD2D867a038bBdB857f291864225; no EIP-1967 slots; no rescue functions.",
+    "createPair / createGauge / distribute / Gauge.getReward are all permissionless; whitelist at block 72,471,542 = {VC, WETH, USDC.e, USD+, ZKDOGE}.",
+    "VotingEscrow 0xbdE345771Eb0c6adEBc54F41A169ff6311fE096F holds 39,677,494.5 VC locked; MAXTIME 4 years; create_lock(amount, duration) permissionless.",
+    "VC price $0.001106; DEX exit liquidity: VC/WETH 2.4003 WETH + 5.45M VC ($12.06k), VC/USDC ~$796, SpaceFi $18; hard-asset side sellable ~$7.8k."
+  ],
+  "caveats": [
+    "V1 pool/gauge/Voter sources are unverified; behaviour established by selector probing, raw storage reads and fork execution rather than source review.",
+    "The exact internal reason _updateFor skips accrual on dead gauges (isAlive short-circuit vs. mis-keyed weights) is not distinguishable without source, but the no-payout outcome is directly proven for both a dead gauge and a fresh alive gauge.",
+    "E-U USD is bounded by DEX exit liquidity (~$7.8k hard-asset side) and depends on the attacker's capital/VC purchase size; the headline $2k is a realistic mid-point, confidence medium.",
+    "Fork cheats (storage write for attacker VC, account impersonation for token funding) model attacker capital only; all protocol interactions are real mainnet bytecode.",
+    "Stable-pool rounding math (54 stable pools, ~$5k TVL) was not fuzzed; volatile pools (~$110k) were spot-checked."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$2k live (range $1k-$8k) from Velocore V1 on zkSync by creating a pool+gauge, buying and locking VC, voting, calling distribute() to route the 414,941 VC/week emission to their gauge and selling it into the ~$7.8k exit liquidity; the 67.8M VC sitting in the Voter is permanently stuck (S) and the June-2024 V2 fee-accounting defect does not exist in V1."
+}

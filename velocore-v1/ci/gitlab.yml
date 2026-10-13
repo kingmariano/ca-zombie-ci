@@ -1,0 +1,19 @@
+stages: [poc]
+
+poc:
+  stage: poc
+  image: debian:bookworm-slim
+  timeout: 1h
+  script:
+    - apt-get update -qq && apt-get install -y -qq curl git python3 ca-certificates tar procps
+    - curl -L https://foundry.paradigm.xyz | bash
+    - export PATH="$HOME/.foundry/bin:$PATH"
+    - foundryup -i stable
+    - forge --version && cast --version
+    - cd velocore-v1
+    - bash ci/run.sh
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - velocore-v1/ci-out/

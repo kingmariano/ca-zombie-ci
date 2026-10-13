@@ -1,0 +1,52 @@
+{
+ "call": "Voter.distribute([0xb3120Ad6C3285fc4E422581d9ad003277802CC47]) via debug_traceCall on live zkSync Era",
+ "note": "decoded key sub-calls: Minter.update_period mints VC, pays governor fee, notifies Voter; gauge only gets left(VC) read (no payout)",
+ "calls": [
+  {
+   "fn": "mint",
+   "from": "0x8f0b4b3e211c84061ab5959bd3d49c6b3eec1d7d",
+   "to": "0x85d84c774cf8e9ff85342684b0e795df72a24908",
+   "arg1": "0x8f0b4b3e211c84061ab5959bd3d49c6b3eec1d7d",
+   "arg2": "432243710189315195497500"
+  },
+  {
+   "fn": "transfer",
+   "from": "0x8f0b4b3e211c84061ab5959bd3d49c6b3eec1d7d",
+   "to": "0x85d84c774cf8e9ff85342684b0e795df72a24908",
+   "arg1": "0x1234561fed41dd2d867a038bbdb857f291864225",
+   "arg2": "17289748407572607819900"
+  },
+  {
+   "fn": "transfer",
+   "from": "0x8f0b4b3e211c84061ab5959bd3d49c6b3eec1d7d",
+   "to": "0x85d84c774cf8e9ff85342684b0e795df72a24908",
+   "arg1": "0xd7107a47b4fbbc585b25bbee3777b2edc11d156c",
+   "arg2": "12739422850936816356"
+  },
+  {
+   "fn": "approve",
+   "from": "0x8f0b4b3e211c84061ab5959bd3d49c6b3eec1d7d",
+   "to": "0x85d84c774cf8e9ff85342684b0e795df72a24908",
+   "arg1": "0xe09a60fae6d77658b9767a70e2f361b46dd3f16a",
+   "arg2": "414941222358891650861244"
+  },
+  {
+   "fn": "transferFrom",
+   "from": "0xe09a60fae6d77658b9767a70e2f361b46dd3f16a",
+   "to": "0x85d84c774cf8e9ff85342684b0e795df72a24908",
+   "arg1": "0x8f0b4b3e211c84061ab5959bd3d49c6b3eec1d7d",
+   "arg2": "414941222358891650861244",
+   "note": "Minter -> Voter (notifyRewardAmount), 414,941.22 VC"
+  },
+  {
+   "fn": "gauge.left(address)",
+   "from": "0xe09a60fae6d77658b9767a70e2f361b46dd3f16a",
+   "to": "0xb3120ad6c3285fc4e422581d9ad003277802cc47"
+  },
+  {
+   "fn": "gauge.left(address)",
+   "from": "0xe09a60fae6d77658b9767a70e2f361b46dd3f16a",
+   "to": "0xb3120ad6c3285fc4e422581d9ad003277802cc47"
+  }
+ ]
+}
