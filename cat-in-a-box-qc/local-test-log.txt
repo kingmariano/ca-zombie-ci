@@ -1,0 +1,70 @@
+  QC2 buy WETH: 5000000000000000000
+    boxETH bought: 2600303142560864104
+    avg buy price (wei/boxETH): 1922852731345713585
+    stETH redeemed: 2587506810860908160
+    NET stETH: -2412493189139091840
+
+[PASS] test_QC2b_wsteth_pool_sweep_unprofitable() (gas: 21174905)
+Logs:
+  QC fork block: 26184251
+  QC2b stETH spent: 499992768074234153
+    boxETH bought: 445742699024521778
+    stETH redeemed: 444428511842650349
+  QC2b stETH spent: 1999970478749856671
+    boxETH bought: 1367032149431642281
+    stETH redeemed: 1361214080908772820
+
+[PASS] test_QC2c_both_pools_combined_unprofitable() (gas: 11887131)
+Logs:
+  QC fork block: 26184251
+  QC2c combined bought: 1662598210637597942
+    spent (WETH + stETH-equivalent): 1999985437223935411
+    stETH redeemed: 1655307804097144456
+
+[PASS] test_QC3_liquidate_cycle_is_unprofitable() (gas: 13837898)
+Logs:
+  QC fork block: 26184251
+  QC3 psm collateral gained: 2939956022086438672
+  QC3 walk-away NET stETH: -15017871277878237
+
+[PASS] test_QC4_boxfee_vault_roundtrips_all_lose() (gas: 588014)
+Logs:
+  QC fork block: 26184251
+  QC4 vault TA: 248305216825501340412
+  QC4 vault TS: 2336485518175851558340
+  QC4 deposit 1e18 -> redeem: 106655298989854892
+  QC4 mint 1e18 shares cost 1e18 -> redeem: 107037480908871572
+  QC4 shares needed to withdraw 1 boxETH: 9342521811134263563
+
+[PASS] test_QC5_all_secondary_pools_are_dust() (gas: 66145)
+Logs:
+  QC fork block: 26184251
+  QC5 boxFEE pool100 boxFEE: 662
+  QC5 boxFEE pool3000 boxFEE: 234249476514
+  QC5 boxFEE pool1pct boxFEE: 4382750921559644
+
+[PASS] test_QC6_pto_boxeth_not_cheap() (gas: 499516)
+Logs:
+  QC fork block: 26184251
+  QC6 PTO shares for 0.1 ETH: 86463979703889054755
+  QC6 previewRedeem: 89552450911142418
+  QC6 actual boxETH out: 89552450911142418 89552450911142418
+
+[PASS] test_QC7_gross_overhang_requires_boxeth() (gas: 289681618)
+Logs:
+  QC fork block: 26184251
+  QC7 gross stETH with free boxETH: 301552885200947836175
+  QC7 v1.1 debt left: 2959572840848276
+  QC7 v1 debt left: 73049927741756
+
+[PASS] test_QC8_conditional_unlock_quantified() (gas: 283243)
+Logs:
+  QC fork block: 26184251
+  QC8 total redeemable debt (stETH): 302031297458617408483
+  QC8 debt at marginal fee <0.5%: 6679530079712453366
+  QC8 live pool depth (boxETH): 9758186516850652916
+  QC8 pool005 marginal WETH/boxETH: 994722157613654988
+
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 77.60s (163.65s CPU time)
+
+Ran 1 test suite in 77.61s (77.60s CPU time): 10 tests passed, 0 failed, 0 skipped (10 total tests)

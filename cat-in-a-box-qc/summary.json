@@ -1,0 +1,89 @@
+{
+  "qc": {
+    "id": "QC-3",
+    "kind": "adversarial re-audit (L2 Phase-2 QC)",
+    "target": "Cat in a Box (Ethereum)",
+    "date": "2026-10-13",
+    "prior_result": "E-U $0 (high) — CI branch cat-in-a-box (block 26176576)",
+    "verdict": "closure stands",
+    "confidence": "high"
+  },
+  "finding": "L2-Triage-A #22 (cat-in-a-box)",
+  "title": "Cat in a Box (Ethereum) — QC-3 adversarial re-audit: closure stands (E-U today <= $0.08 gross; latent 302 stETH overhang needs boxETH <= 0.9568)",
+  "chains": ["ethereum"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 523697.04, "P": 10872.42, "S": 0},
+  "latest_block": 26182236,
+  "block_numbers": {"ethereum": 26182236},
+  "counter_evidence": [
+    "Full pool sweep with globally optimal redemption order (cheapest marginal friction fee first, debt/4-cap loops): global max extractable = +0.0000312 stETH (~$0.08) for a 0.01 WETH buy (2.17M gas); 0.1 WETH -> -0.000647, 0.5 -> -0.0378, 1 -> -0.1501, 3 -> -1.0699, 5 -> -2.4125 stETH.",
+    "NEW path not tested by prior: mint on CDP v1 (no minting fee) -> self-liquidate (collateral sent to PSM, boxETH NOT burned) -> redeem boxETH against other borrowers: PSM gained 2.940 stETH, attacker walk-away = -0.0150 stETH. Converting own collateral into boxETH costs 1:1, worse than the market. No value creation.",
+    "Deployed-bytecode dispatcher selectors == verified source for all six core contracts (no hidden/unguarded functions); all 12 deployer contract creations enumerated (CDP0 = 223 wei; 5 MortgageFi contracts = unrelated, $26.31 USDC dust).",
+    "boxFEE vault: deposit mints 1:1 shares worth 0.10666 boxETH each; mint costs 1 boxETH/share; withdraw(1 boxETH) needs 9.3425 shares - every entry/exit combination loses ~89%. All 3 boxFEE pools are dust (662 wei / 234e9 wei / 0.0044 boxFEE; liquidity 0/0/6e14).",
+    "3rd-party perpetualTokenOffering (holds 9.11 boxETH): depositCheapeth(0.1 ETH) -> 0.08955 boxETH (10% haircut); shares are minted at NAV - no cheap boxETH route.",
+    "Venue census: UniV3 factory (all fee tiers x WETH/stETH/wstETH/USDC/USDT/DAI) -> only the 3 known pools; Sushi V2/V3 none; Curve none; Balancer Vault 0 boxETH. boxETH supply 304.135 = vault 248.31 + pools 9.758 + feeSplit 1.469 + PSM 0.662 + EOAs ~34.4 + misc contracts ~0.46 (all big holders EOAs).",
+    "NEW VENUE the prior missed: Trader Joe LB pair 0x184d768d... (boxETH/WETH, tickSpacing 50). Live until ~block 26.13M: at block 26066190 a keyless bot bought 2.039 boxETH for 2.027 WETH (0.9941 - below break-even), redeemed via stabilisePeg (2.03186 stETH, 0.00731 fee) and sold the stETH for 2.03169 WETH = +0.00459 WETH gross (~$11.7). The pair was then wound down/swept to the Safe and deployer EOA (2.97 + 0.098 + 3.14 boxETH, blocks 26126975-26131840); residual 0.1228 boxETH + 0.2957 WETH (dust).",
+    "Conditional quantification: full-drain blended break-even = 0.956771 stETH/boxETH (315.6776 boxETH in for 302.0313 stETH out; total friction 13.6463). Realisable today is bounded by ~9.758 boxETH of pool depth at marginal 0.99472: the measured global optimum is the +$0.08 above. Debt at marginal fee <0.5% = only 6.6795 stETH, all of it behind pool depth that cannot supply it profitably.",
+    "Roles re-verified fresh (block 26182236): CONVERTER = Safe 0x98e6475C + deployer EOA 0x56C40ade + 2 owner EOAs (feeSplit); boxETH ADMIN = only the two CDPs; PSM.trade / synthToFeeToken / feeSplit.trade revert for outsiders. Zero transactions on all six core contracts since the prior audit block.",
+    "Gross overhang re-proven: 301.5529 stETH extractable with free (vm.deal'ed) boxETH; residual debt 0.00296 + 0.00007."
+  ],
+  "conditional_analysis": {
+    "gross_ceiling_steth": 302.0313,
+    "gross_ceiling_usd": 767950,
+    "full_drain_break_even_steth_per_boxeth": 0.956771,
+    "full_drain_cost_boxeth": 315.6776,
+    "profit_if_flat_price": {
+      "0.9947": 0.0014,
+      "0.99": 0.0154,
+      "0.98": 0.5463,
+      "0.97": 1.5685,
+      "0.9568": 3.2550,
+      "0.95": 4.3847,
+      "0.90": 17.9215,
+      "0.80": 49.4892,
+      "0.50": 144.1925
+    },
+    "profit_if_flat_price_usd": {
+      "0.9947": 3.5,
+      "0.99": 39,
+      "0.98": 1389,
+      "0.97": 3987,
+      "0.9568": 8274,
+      "0.95": 11146,
+      "0.90": 45556,
+      "0.80": 125802,
+      "0.50": 366537
+    },
+    "preconditions_to_flip": [
+      "Any live venue selling boxETH with depth at <= ~0.996 stETH/boxETH (e.g. ~$1.4k at 0.98, ~$8.3k at 0.9568, ~$45k at 0.90 with sufficient depth).",
+      "A large holder dump of boxETH into the thin pools (the arb captures only the residual spread left in the pool).",
+      "boxFEE shares trading below 0.1016 boxETH-equivalent (0.9568 x NAV 0.10627) - no market exists today.",
+      "Any new/revived venue (the Trader Joe LB pair is the template; it is now drained)."
+    ],
+    "current_gap": "~315.7 boxETH needed at <=0.9568 for the full unlock vs ~0.01 boxETH profitably priced today (~30,000x depth gap); all remaining supply sits with EOAs / vault shares that have no market."
+  },
+  "poc": {
+    "tests_passed": 10,
+    "tests_total": 10,
+    "suite": "poc/test/QcCatInABox.t.sol",
+    "ci_branch": "cat-in-a-box-qc",
+    "ci_run_urls": ["RUN_URL"],
+    "local": "10/10 pass on archival fork at block 26184251 (see local-test-log.txt)"
+  },
+  "key_facts": [
+    "Live custody unchanged at block 26182236: v1 83.72 + v1.1 427.78 + PSM 2.17 + feeSplit 2.11 stETH = 515.78 stETH (~$1.31M); total redeemable debt 302.0313 stETH.",
+    "Only permissionless value-out remains stabilisePeg (permissionless, hard-capped by each borrower's debt/4 per call, total = debt). It requires the caller to burn their own boxETH plus a friction fee paid in boxETH to the PSM.",
+    "Best friction fee at the best victim is 0.19% (6.68 stETH of debt sits at marginal fee <0.5%); full-drain blended fee 4.52% (13.6463 stETH).",
+    "Market depth 9.758 boxETH across the two live UniV3 pools; marginal price 0.99472 WETH/boxETH; measured average buy prices 1.078/1.172/1.547/1.923 for 0.5/1/3/5 WETH.",
+    "The prior audit's specific claim 'only two boxETH pools' was incomplete: a Trader Joe LB pair (0x184d768d) also traded boxETH and briefly sold below break-even, enabling a ~$11.7 gross keyless extraction at block 26066190. It is now drained (0.123 boxETH residual). Headline conclusion unchanged.",
+    "CoW production order book was not verifiable from this environment (403); documented as the single residual check gate. On-chain CoW boxETH trades stopped ~block 24.5M."
+  ],
+  "caveats": [
+    "USD values use stETH $2,542.62 (as prior); price moves scale the USD figures.",
+    "The flat-price conditional table is an upper bound (unlimited depth); realisable extraction is measured on-fork (QC2/2b/2c) and is <= $0.08 gross.",
+    "The +0.00459 WETH historical arb at block 26066190 is gross of gas; at ~2M gas it was marginal/possibly gas-negative, and it occurred at a venue that no longer holds liquidity.",
+    "Read-only: no mainnet transactions were signed or sent; no secrets printed or stored."
+  ],
+  "one_liner": "Adversarial re-audit of Cat in a Box: closure stands - today no keyless route extracts more than $0.08 gross (global optimum across every live venue and all 45 borrowers), the 302 stETH / $767,950 overhang needs ~315.7 boxETH at <=0.9568 stETH vs 9.76 boxETH of pool depth today (~30,000x gap), and the one fresh lead (a Trader Joe LB pair the prior missed) was a ~$11.7 gross bot arb that has since been drained."
+}
