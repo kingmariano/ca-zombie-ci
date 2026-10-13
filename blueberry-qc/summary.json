@@ -1,0 +1,171 @@
+{
+  "finding": "Blueberry",
+  "qc_pass": "QC-4 adversarial re-audit (L2 Phase-2)",
+  "triage_ref": "l2-triage-a row #2 (slug: blueberry)",
+  "title": "Blueberry QC-4 \u2014 closure STANDS: fresh-attacker E-U ~$0.84 dust; prior missed 3 of 5 reward auctions but magnitude unchanged",
+  "verdict": "closure stands",
+  "verdict_confidence": "high",
+  "chains": [
+    "monad",
+    "ethereum",
+    "hyperevm"
+  ],
+  "headline_extractable_usd": 0.84,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.84,
+    "H-O": 1232850.45,
+    "P": 9802.1,
+    "S": 0.0
+  },
+  "e_u_breakdown": [
+    {
+      "lot": "opt2 active auction",
+      "cmon": 30.638665528169387,
+      "gross_usd": 0.78084,
+      "min_payment_usd": 0.00737,
+      "net_usd": 0.77347
+    },
+    {
+      "lot": "q1 orphan auction",
+      "cmon": 7.655780076492398,
+      "gross_usd": 0.19511,
+      "min_payment_usd": 0.15368,
+      "net_usd": 0.04143
+    },
+    {
+      "lot": "q3 orphan auction",
+      "cmon": 4.880710818980593,
+      "gross_usd": 0.12439,
+      "min_payment_usd": 0.10138,
+      "net_usd": 0.02301
+    },
+    {
+      "lot": "q2 orphan auction",
+      "cmon": 0.44364746084290607,
+      "gross_usd": 0.0113,
+      "min_payment_usd": 0.1105,
+      "net_usd": 0.0,
+      "note": "unprofitable: per-token floor 0.025 unreachable inside 24h window"
+    }
+  ],
+  "block_numbers": {
+    "monad_prior_pin": 112485700,
+    "monad_qc_measured": 113070305,
+    "monad_qc_poc": 113075181,
+    "ethereum_prior": 26169797,
+    "hyperevm_prior": 48263074,
+    "hyperevm_qc": 48441218
+  },
+  "prices": {
+    "MON_usd": 0.02440883840087672,
+    "cWMON_rate": 1.0440983041033585,
+    "source": "DefiLlama coins API + on-chain cWMON totalAssets/totalSupply, 2026-10-13",
+    "prior_MON_usd": 0.02575
+  },
+  "targets_checked": 46,
+  "live_targets": 14,
+  "changes_vs_prior": [
+    "kickAuction() is PERMISSIONLESS in the deployed AuctionSwapper (no onlyKeepers): anyone can kick enabled tokens and anyone can re-kick expired auctions. Gated only by protectedTokens (asset/self/markets[]) and the Auction governance enable-list.",
+    "Prior census missed 3 of 5 live auctions: q1 (7.6558 cWMON), q2 (0.4436), q3 (4.8807) \u2014 orphan strategies in the vault queues with debt=0, totalSupply=0, vaults hold 0 shares; lots expired ~6 days before QC and were never re-kicked.",
+    "Total auctioned cWMON = 43.62 (prior counted 31.31), gross value ~$1.11; net after per-token price floors ~$0.84.",
+    "Auction minimumPrice applies PER TOKEN (not per lot): q1/q3 floor 0.02/token caps their net to $0.041/$0.023; q2 floor 0.025 is unreachable in-window -> q2 lot not extractable.",
+    "HyperEVM router owner is a 2-of-3 Gnosis Safe 0x08be6a541f511d5ea90536792b17346ef49741d1 (prior treated as plain owner; it is a Safe, feeRecipient = same Safe).",
+    "Vaults are 45-byte EIP-1167 minimal proxies with zero EIP-1967 slots (fork-verified); strategy proxy -> canonical TokenizedStrategy 0xD377919FA87120584B21279a491F82D5265A139c with admin slot 0.",
+    "ETH remnant live-change: the Unitroller 0xcb0D9fF5... has a pending comptroller implementation 0x327e45b3444cca9ce1559780cfd44181a175e83c (verified 'Comptroller', 22,129 bytes) queued by the admin Safe (observed 2026-10-13 CI block 26,184,476); comptrollerImplementation still 0xffadb0bb...; attacker _setPendingImplementation denied (UNAUTHORIZED)"
+  ],
+  "conditional_paths": [
+    {
+      "id": "C1",
+      "path": "HyperEVM router deposit->redeem share-price manipulation via HL L1 spot oracles",
+      "preconditions": "attacker can move a supported asset's HL spot mid; deposit is open (verified); deposit >= $10 minDeposit; redemption <= escrow liquid withdraw asset",
+      "value_usd_cap": 498.24,
+      "note": "escrows 0xba3b516c... (37.68 USDT0) + 0x56522c35... (460.55 USDT0) = maxWithdrawable() 498,236,518; reclassifies existing H-O, adds no new value; capital-intensive and economically marginal",
+      "confidence": "low-medium feasibility"
+    },
+    {
+      "id": "C2",
+      "path": "profit-unlock capture around keeper report()",
+      "preconditions": "predict keeper report timing with a gain; deposit before report; hold through unlock",
+      "value_usd_cap": "proportional share of reported yield (not principal)",
+      "note": "report()/tend() are onlyKeepers (fork-proven revert); value is real yield participation, not extraction",
+      "confidence": "n/a (not E-U)"
+    },
+    {
+      "id": "C3",
+      "path": "privileged role compromise",
+      "preconditions": "compromise Monad mgmt Safe 3-of-4 0x72d19f7c... (all 14 vault roles) or HyperEVM 2-of-3 Safe 0x08be6a54...",
+      "value_usd_cap": 1231367.0,
+      "note": "P/trust; no timelock observed; no unprivileged route to roles (RoleManager governance=Safe, pending=0, management position holder=address(0) inert)",
+      "confidence": "n/a"
+    },
+    {
+      "id": "C4",
+      "path": "AUSD issuer mint/freeze/upgrade",
+      "preconditions": "AUSD issuer action (upgradeable proxy impl 0xc1e3c7d486d6a92fbe920232e439eec2ceb112da)",
+      "value_usd_cap": 1159072.18,
+      "note": "issuer trust (Agora); no unguarded upgrade reachable by outsiders found",
+      "confidence": "n/a"
+    },
+    {
+      "id": "C5",
+      "path": "Curvance market illiquidity/solvency",
+      "preconditions": "Curvance market freeze/insolvency event",
+      "value_usd_cap": 1206018.75,
+      "note": "losses socialize to holders; all positions liquid at pins; not attacker-extractable",
+      "confidence": "n/a"
+    }
+  ],
+  "counter_evidence": [
+    "PoC qc03: whole opt2 lot 30.638665528169386568 cWMON taken by EOA for 7,369 USDC-units ($0.00737) at kick+86,390s; value $0.78084 -> net $0.77347",
+    "PoC qc04: q1 lot taken for $0.15368 (value $0.19511, net $0.04143); q3 lot taken for $0.10138 (value $0.12439, net $0.02301)",
+    "PoC qc02: EOA re-kicks expired q1 auction (isActive true after); kickAuction(asset), kickAuction(market), kickAuction(non-enabled USDC) all revert",
+    "PoC qc05: q2 best in-window payment $0.1105 vs value $0.0113 -> not profitable",
+    "PoC qc06: donations leave totalAssets/pps/convertToShares unchanged; deposit->redeem sizes {2,1000,123456,1e10} never profit; attack donation+sandwich is a pure loss",
+    "PoC qc07: 16 privileged calls revert for an attacker (vault process_report/update_debt/set_role/set_accountant/set_default_queue/setPaused/shutdown_vault/buy_debt; strategy report/tend/shutdownStrategy/emergencyWithdraw/setKeeper/setPendingManagement/setPerformanceFee/setAuction/setUseAuction; re-init vault+strategy; accountant redeemUnderlying/distribute/acceptFeeManager; RoleManager setPositionHolder/acceptGovernance)",
+    "PoC qc08: vault 45-byte minimal proxies, EIP-1967 slots zero; strategy impl slot = canonical TokenizedStrategy, admin slot = 0",
+    "ETH CI test: Unitroller _setPendingImplementation returns UNAUTHORIZED(1) (admin=Safe, pending=0); 13/13 cToken admins set with pending 0 and attacker _reduceReserves denied; bank liquidate(38/39) reverts, execute(38,attacker,...) reverts, bank token balances 0",
+    "Live: all 5 auctions have exactly one enabled token (cWMON); governanceOnlyKick=false; opt2 minute-by-minute decay measured (need falls to $0.00737 at expiry); q1/q3 floors 0.02 and q2 floor 0.025 per token",
+    "Live: RoleManager getGovernance=mgmt Safe, getPendingGovernance=0; Accountant feeManager=mgmt Safe; HL router owner/feeRecipient = 2-of-3 Safe"
+  ],
+  "closed_reasons": [
+    "Only cWMON is enabled for auction on all five strategy auctions; the strategies' assets and Curvance markets are in protectedTokens() and kick reverts (fork-proven)",
+    "Per-token minimumPrice floors and the 24h auction window cap the extractable discount; q2 is unprofitable entirely; total net E-U ~$0.84",
+    "Vaults are canonical Yearn V3.1.0 behind immutable 45-byte minimal proxies; strategy proxies point at the canonical TokenizedStrategy with no admin; re-init and all role/admin/emergency paths revert (fork-proven)",
+    "Stored accounting (total_idle+total_debt) blocks donation/inflation; deposit->redeem round-trips never profit (fork-proven across 4 sizes)",
+    "Strategy deposits are closed (allowed = vault only); report/tend are onlyKeepers; keeper EOA has only REPORTING",
+    "Curvance positions are supply-only (no borrows, nothing to liquidate); market donations don't move stored market accounting",
+    "ETH: Unitroller admin = mgmt Safe (no pending), _setPendingImplementation returns UNAUTHORIZED; cToken admins set and attacker _reduceReserves denied; bank positions not liquidatable and bank token balances zero",
+    "HyperEVM: redeem capped by escrow liquidity ($498.24 = maxWithdrawable, exact across 2 escrows); owner/feeRecipient = 2-of-3 Safe; L1 pull remains LIQUIDITY_ADMIN-gated"
+  ],
+  "poc": {
+    "monad_tests_passed": 9,
+    "monad_tests_total": 9,
+    "eth_tests_passed": 4,
+    "eth_tests_total": 4,
+    "local_monad_suite": "ok. 9 passed; 0 failed (DRPC fork, block 113075181+)",
+    "ci_run_urls": [
+      "{{CI_RUN_URL}}"
+    ]
+  },
+  "key_facts": [
+    "Monad vault1 Blueberry AUSD 0xC2ddc1004CA0d6cC4bFd1dCD03Dcf855bED8E670 totalAssets 1,159,072.177819 AUSD (QC fork); vault2 Blueberry USDC 0x215394B5677Cb7a18B6fA8cc2cD155C024ee6b2E totalAssets 46,946.566805 USDC",
+    "AUCTIONS: 5 live auctions (opt1 0x86422afe..., opt2 0xd84472f8..., q1 0xe0fc85ef..., q2 0xc338586b..., q3 0xbca2a27a...), each with exactly one enabled token cWMON 0xe01d426b...; governanceOnlyKick=false everywhere; opt2 starts at 10 USDC/lot, q1/q3 10, q2 150; decay 0.5%/min, AUCTION_LENGTH 1 day",
+    "kickAuction(address) is permissionless (no keeper gate) in this deployed AuctionSwapper version; re-kick of expired auctions works from an EOA (fork-proven)",
+    "Total auctioned cWMON at QC = 43.618691526455137260 = $1.1116 gross; net extractable ~$0.838 = opt2 $0.773 + q1 $0.041 + q3 $0.023",
+    "Auction minimumPrice is per-token: q1/q3 0.02, q2 0.025; q2's floor is unreachable in-window (startingPrice 150 over a 0.4436-token lot)",
+    "q1/q2/q3 are orphan strategies: in vault queues but debt=0, totalSupply=0, vaults hold 0 shares; cWMON lots expired in their auctions for ~6 days",
+    "H-O: largest value remains holder-redemption only; vault withdrawals pull from Curvance via strategy redeem (default maxLoss=MAX_BPS) with loss charged to the redeemer",
+    "HyperEVM router 0x647a4D7F1F20Cf237C27b39fB6924f5a7691BB4b: withdrawAsset 0xb8ce59fc... (6dp), escrow balances 37.68 + 460.55 = maxWithdrawable 498.24; minDeposit 10e18; owner+feeRecipient = 2-of-3 Safe 0x08be6a54...",
+    "ETH bank 0xa34F59F634d48E2c3606048f2367326c46a4B5fA owner=mgmt Safe, status 15, positions 38/39 risk 0 not liquidatable; Unitroller 0xcb0D9fF5... admin=mgmt Safe; 13 markets admin=0xd94b367b... (m12=0x6b52f09f...)",
+    "ETH Unitroller admin = mgmt Safe (Gnosis Safe proxy), pendingAdmin 0, pendingComptrollerImplementation = 0x327e45b3444cca9ce1559780cfd44181a175e83c (admin-queued verified Comptroller) at block 26,184,485"
+  ],
+  "caveats": [
+    "Point-in-time values (2026-10-13); the deployment is actively managed and auction lots can be taken by anyone at any moment",
+    "USD uses MON $0.02440884 and cWMON rate 1.04410; AUSD counted at face in H-O",
+    "Orphan-strategy histography (why q1-q3 exist with 0 supply) inferred from on-chain state + keeper activity; not from team docs",
+    "ETH and HyperEVM totals carried from the prior dossier apart from re-verified live items",
+    "Curvance internals beyond the strategy boundary remain out of scope (only screened at the integration boundary)"
+  ],
+  "one_liner": "QC-4 could not break the Blueberry closure: the deployed auction kick is permissionless and the prior census missed 3 of 5 reward auctions (43.62 cWMON gross), but per-token price floors and the 24h window leave a net fresh-attacker E-U of ~$0.84 dust on Monad; every vault/strategy/admin/proxy/ETH/HL remnant path re-tested reverts or is holder/privileged-only."
+}
