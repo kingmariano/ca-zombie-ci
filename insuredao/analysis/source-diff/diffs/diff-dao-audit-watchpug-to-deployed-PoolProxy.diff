@@ -1,0 +1,37 @@
+--- versions/dao-audit-watchpug/contracts/PoolProxy.sol	2022-02-19 10:37:16.000000000 +0100
++++ versions/dao-deployed/contracts/PoolProxy.sol	2022-02-25 17:49:23.000000000 +0100
+@@ -605,6 +605,21 @@
+         );
+     }
+ 
++    function pool_apply_bounty(
++        address _pool,
++        uint256 _amount,
++        address _contributor,
++        uint256[] calldata _ids
++    ) external {
++        require(msg.sender == default_reporting_admin || msg.sender == reporting_admin[_pool], "Access denied");
++
++        IPoolTemplate(_pool).applyBounty(
++            _amount,
++            _contributor,
++            _ids
++        );
++    }
++
+     //Index
+     function index_set_leverage(address _index, uint256 _target) external {
+         require(msg.sender == parameter_admin, "Access denied");
+@@ -625,10 +640,10 @@
+     }
+ 
+     //CDS
+-    function defund(address _cds, uint256 _amount) external {
++    function defund(address _cds, address _to, uint256 _amount) external {
+         require(msg.sender == ownership_admin, "Access denied");
+ 
+-        ICDSTemplate(_cds).defund(_amount);
++        ICDSTemplate(_cds).defund(_to, _amount);
+     }
+ 
+     //Vault

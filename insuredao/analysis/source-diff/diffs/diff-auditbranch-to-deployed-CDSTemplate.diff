@@ -1,0 +1,82 @@
+--- versions/audit-code4rena/CDSTemplate.sol	2022-02-07 08:32:11.000000000 +0100
++++ versions/deployed/CDSTemplate.sol	2026-10-13 20:15:17.093271700 +0100
+@@ -28,7 +28,7 @@
+     event WithdrawRequested(
+         address indexed withdrawer,
+         uint256 amount,
+-        uint256 time
++        uint256 unlockTime
+     );
+     event Withdraw(address indexed withdrawer, uint256 amount, uint256 retVal);
+     event Compensated(address indexed index, uint256 amount);
+@@ -104,7 +104,7 @@
+ 
+         initialized = true;
+ 
+-        initializeToken("InsureDAO-CDS", "iCDS", IERC20Metadata(_references[0]).decimals());
++        initializeToken("InsureDAO-Reserve", "iReserve", IERC20Metadata(_references[0]).decimals());
+ 
+         parameters = IParameters(_references[2]);
+         vault = IVault(parameters.getVault(_references[0]));
+@@ -137,7 +137,7 @@
+             _mintAmount = _amount;
+         }
+ 
+-    emit Deposit(msg.sender, _amount, _mintAmount);
++        emit Deposit(msg.sender, _amount, _mintAmount);
+ 
+         //mint iToken
+         _mint(msg.sender, _mintAmount);
+@@ -162,13 +162,13 @@
+         emit Fund(msg.sender, _amount, _attribution);
+     }
+ 
+-    function defund(uint256 _amount) external override onlyOwner {
++    function defund(address _to, uint256 _amount) external override onlyOwner {
+         require(!paused, "ERROR: PAUSED");
+ 
+-        uint256 _attribution = vault.withdrawValue(_amount, msg.sender);
++        uint256 _attribution = vault.withdrawValue(_amount, _to);
+         surplusPool -= _attribution;
+ 
+-        emit Defund(msg.sender, _amount, _attribution);
++        emit Defund(_to, _amount, _attribution);
+     }
+ 
+     /**
+@@ -179,9 +179,12 @@
+         require(_amount != 0, "ERROR: REQUEST_ZERO");
+         require(balanceOf(msg.sender) >= _amount, "ERROR: REQUEST_EXCEED_BALANCE");
+ 
+-        withdrawalReq[msg.sender].timestamp = block.timestamp;
++        uint256 _unlocksAt = block.timestamp + parameters.getLockup(address(this));
++
++        withdrawalReq[msg.sender].timestamp = _unlocksAt;
+         withdrawalReq[msg.sender].amount = _amount;
+-        emit WithdrawRequested(msg.sender, _amount, block.timestamp);
++
++        emit WithdrawRequested(msg.sender, _amount, _unlocksAt);
+     }
+ 
+     /**
+@@ -194,17 +197,15 @@
+         require(_amount != 0, "ERROR: WITHDRAWAL_ZERO");
+         
+         Withdrawal memory request = withdrawalReq[msg.sender];
+-        uint256 _lockup = parameters.getLockup(msg.sender);
+-        uint256 unlocksAt = request.timestamp + _lockup;
+         
+         require(
+-            unlocksAt <
++            request.timestamp <
+                 block.timestamp,
+             "ERROR: WITHDRAWAL_QUEUE"
+         );
+         require(
+-            unlocksAt +
+-                parameters.getWithdrawable(msg.sender) >
++            request.timestamp +
++                parameters.getWithdrawable(address(this)) >
+                 block.timestamp,
+             "WITHDRAWAL_NO_ACTIVE_REQUEST"
+         );

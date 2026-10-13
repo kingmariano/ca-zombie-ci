@@ -1,0 +1,181 @@
+--- versions/latest-main/implementations/CDSTemplate.sol	2022-09-26 03:01:27.000000000 +0100
++++ versions/deployed/CDSTemplate.sol	2026-10-13 20:15:17.093271700 +0100
+@@ -1,4 +1,4 @@
+-pragma solidity 0.8.12;
++pragma solidity 0.8.10;
+ 
+ /**
+  * @author InsureDAO
+@@ -6,12 +6,12 @@
+  * SPDX-License-Identifier: GPL-3.0
+  */
+ 
+-import "../interfaces/IUniversalMarket.sol";
++import "./interfaces/IUniversalMarket.sol";
+ import "./InsureDAOERC20.sol";
+-import "../interfaces/IVault.sol";
+-import "../interfaces/IRegistry.sol";
+-import "../interfaces/IParameters.sol";
+-import "../interfaces/ICDSTemplate.sol";
++import "./interfaces/IVault.sol";
++import "./interfaces/IRegistry.sol";
++import "./interfaces/IParameters.sol";
++import "./interfaces/ICDSTemplate.sol";
+ 
+ contract CDSTemplate is InsureDAOERC20, ICDSTemplate, IUniversalMarket {
+     /**
+@@ -19,9 +19,17 @@
+      */
+     event Deposit(address indexed depositor, uint256 amount, uint256 mint);
+     event Fund(address indexed depositor, uint256 amount, uint256 attribution);
+-    event Defund(address indexed depositor, uint256 amount, uint256 attribution);
+-
+-    event WithdrawRequested(address indexed withdrawer, uint256 amount, uint256 unlockTime);
++    event Defund(
++        address indexed depositor,
++        uint256 amount,
++        uint256 attribution
++    );
++
++    event WithdrawRequested(
++        address indexed withdrawer,
++        uint256 amount,
++        uint256 unlockTime
++    );
+     event Withdraw(address indexed withdrawer, uint256 amount, uint256 retVal);
+     event Compensated(address indexed index, uint256 amount);
+     event Paused(bool paused);
+@@ -54,7 +62,10 @@
+      * @notice Throws if called by any account other than the owner.
+      */
+     modifier onlyOwner() {
+-        require(msg.sender == parameters.getOwner(), "ERROR: ONLY_OWNER");
++        require(
++            msg.sender == parameters.getOwner(),
++            "ERROR: ONLY_OWNER"
++        );
+         _;
+     }
+ 
+@@ -81,7 +92,7 @@
+         string calldata _metaData,
+         uint256[] calldata _conditions,
+         address[] calldata _references
+-    ) external override {
++    ) external override{
+         require(
+             !initialized &&
+                 bytes(_metaData).length != 0 &&
+@@ -140,7 +151,11 @@
+         require(!paused, "ERROR: PAUSED");
+ 
+         //deposit and pay fees
+-        uint256 _attribution = vault.addValue(_amount, msg.sender, address(this));
++        uint256 _attribution = vault.addValue(
++            _amount,
++            msg.sender,
++            address(this)
++        );
+ 
+         surplusPool += _attribution;
+ 
+@@ -180,15 +195,24 @@
+     function withdraw(uint256 _amount) external returns (uint256 _retVal) {
+         require(!paused, "ERROR: PAUSED");
+         require(_amount != 0, "ERROR: WITHDRAWAL_ZERO");
+-
++        
+         Withdrawal memory request = withdrawalReq[msg.sender];
+-
+-        require(request.timestamp < block.timestamp, "ERROR: WITHDRAWAL_QUEUE");
++        
+         require(
+-            request.timestamp + parameters.getWithdrawable(address(this)) > block.timestamp,
++            request.timestamp <
++                block.timestamp,
++            "ERROR: WITHDRAWAL_QUEUE"
++        );
++        require(
++            request.timestamp +
++                parameters.getWithdrawable(address(this)) >
++                block.timestamp,
+             "WITHDRAWAL_NO_ACTIVE_REQUEST"
+         );
+-        require(request.amount >= _amount, "WITHDRAWAL_EXCEEDED_REQUEST");
++        require(
++            request.amount >= _amount,
++            "WITHDRAWAL_EXCEEDED_REQUEST"
++        );
+ 
+         //Calculate underlying value
+         uint256 _totalSupply = totalSupply();
+@@ -196,6 +220,7 @@
+             _retVal = (vault.attributionValue(crowdPool) * _amount) / _totalSupply;
+         }
+ 
++
+         //reduce requested amount
+         withdrawalReq[msg.sender].amount -= _amount;
+ 
+@@ -215,9 +240,13 @@
+      * @notice Compensate the shortage if an index is insolvent
+      * @param _amount amount of underlier token to compensate shortage within index
+      */
+-    function compensate(uint256 _amount) external override returns (uint256 _compensated) {
++    function compensate(uint256 _amount)
++        external
++        override
++        returns (uint256 _compensated)
++    {
+         require(registry.isListed(msg.sender), "ERROR:UNREGISTERED");
+-
++        
+         uint256 _available = vault.underlyingValue(address(this));
+         uint256 _crowdAttribution = crowdPool;
+         uint256 _attributionLoss;
+@@ -227,7 +256,9 @@
+         _attributionLoss = vault.transferValue(_compensated, msg.sender);
+         emit Compensated(msg.sender, _compensated);
+ 
+-        uint256 _crowdPoolLoss = (_crowdAttribution * _attributionLoss) / (_crowdAttribution + surplusPool);
++        uint256 _crowdPoolLoss =
++            (_crowdAttribution * _attributionLoss) /
++            (_crowdAttribution + surplusPool);
+ 
+         crowdPool -= _crowdPoolLoss;
+         surplusPool -= (_attributionLoss - _crowdPoolLoss);
+@@ -252,7 +283,8 @@
+     function rate() external view returns (uint256) {
+         uint256 _totalSupply = totalSupply();
+         if (_totalSupply != 0) {
+-            return (vault.attributionValue(crowdPool) * MAGIC_SCALE_1E6) / _totalSupply;
++            return
++                (vault.attributionValue(crowdPool) * MAGIC_SCALE_1E6) / _totalSupply;
+         }
+     }
+ 
+@@ -264,9 +296,9 @@
+     function valueOfUnderlying(address _owner) external view returns (uint256) {
+         uint256 _balance = balanceOf(_owner);
+         uint256 _totalSupply = totalSupply();
+-
++        
+         if (_balance != 0 || _totalSupply != 0) {
+-            return (_balance * vault.attributionValue(crowdPool)) / _totalSupply;
++            return _balance * vault.attributionValue(crowdPool) / _totalSupply;
+         }
+     }
+ 
+@@ -278,7 +310,11 @@
+      * @notice Change metadata string
+      * @param _metadata new metadata string
+      */
+-    function changeMetadata(string calldata _metadata) external override onlyOwner {
++    function changeMetadata(string calldata _metadata)
++        external
++        override
++        onlyOwner
++    {
+         metadata = _metadata;
+         emit MetadataChanged(_metadata);
+     }
