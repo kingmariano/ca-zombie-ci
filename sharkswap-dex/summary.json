@@ -1,0 +1,51 @@
+{
+  "finding": "sharkswap-dex",
+  "title": "SharkSwap DEX (Base) — V2 zombie; ~91% of TVL behind burned LP, fresh-attacker extractable $0",
+  "chains": [
+    "base"
+  ],
+  "headline_extractable_usd": 0.0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0.0,
+    "H-O": 260.38,
+    "P": 12196.3,
+    "S": 124294.38
+  },
+  "latest_block": 52558491,
+  "block_numbers": {
+    "base": 52558491
+  },
+  "targets_checked": 52,
+  "live_targets": 52,
+  "closed_reasons": [
+    "all 52 pairs: token balance == reserve (excess 0 wei) -> skim() pulls nothing",
+    "pair code is verified stock UniV2 (0.5.16) with only the 2/3 protocol-fee tweak in _mintFee; all 52 pairs byte-identical",
+    "99.98% of WETH/DAI LP and 98.23% of WETH/USDbC LP sit at dormant EOA 0x1239660af62d515bfecd4ee09c58d2cd32504605 (no code, nonce 0, no approvals ever, 0 ETH) -> burned",
+    "no farm/staking/locker contract holds any LP (all holders code-checked; only EIP-7702 smart-EOAs + team EOAs)",
+    "side-token mint scan (38 tokens, incl. bytecode selector scan): only mxapemx has a public mint; its only pool's other side (TOP) has no usable exit liquidity (all venues dust: Maverick counter-side 4 wei USDC) -> drain value $0",
+    "wDAI#1 mint = AccessControl role, wDAI#2 mint = onlyOwner EOA; upgradeTo/setFeeTo/initialize/transferFrom(burn-LP) all revert for fresh attacker",
+    "no lending/oracle integrations reference the factory (GitHub code search: only DefiLlama/Dune/aggregator registries)"
+  ],
+  "poc": {
+    "tests_passed": 0,
+    "tests_total": 8,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Factory 0x57592D44eb60011500961EF177BFf8D8691D5a8B verified SharkswapFactory solc 0.5.16; 52 pairs; feeTo 0xBe4ec6286bF4b557D098e303Fa3570584BDa1EB9 (EOA), feeToSetter 0x9973EdDb50D3F22C2523862eA8A415f7f43D5Cd7 (EOA)",
+    "Total pair TVL $136,751 at block 52,558,491 (DefiLlama prices) — matches triage $136,554 and DefiLlama $146,635 (Oct 11)",
+    "Top pairs: WETH/DAI 0xaE45F7Eb… $63,015; WETH/USDbC 0x9ccc7afE… $62,390; WETH/wDAI 0x6bCc3e76… $5,010; WETH/wDAI 0xD4990e03… $3,931",
+    "LP transferred (ERC-20 transfer, 0xa9059cbb) by team EOA 0x27160d3b618ee073efaaEe596b6Be37018D18e4A to dormant address 0x1239660aF62D515bFeCd4eE09C58D2cd32504605 on 2023-10-25 (txs 0x7c07554fd29252b3… = 549,901.03678 WETH/DAI LP; 0xef6bd26794f600af… = 550,074.45517 WETH/USDbC LP); balances unchanged since -> deliberate burn",
+    "wDAI#1 0x5D0aF35B… is TransparentUpgradeableProxy (admin contract owned by team); wDAI#2 0x73EA1656… owner = EOA 0xe69f4903…; neither holds DAI/WETH backing",
+    "mxapemx 0xFEF74FBA… public mint(address,uint256) succeeds from fresh caller (balance credit fork-proven); TOP 0x9dba38E9… has no usable exit liquidity (GeckoTerminal price null, volume 0; all nominal venues dust) -> $0 drain",
+    "4 pools have LP totalSupply == 1000 (all user LP burned; reserves permanently locked, dust value)"
+  ],
+  "caveats": [
+    "The dormant LP EOA may in theory be team-controlled (key custody unknown, nonce 0 for ~3 years); treated as S with a P caveat",
+    "USD values are DefiLlama off-chain prices at the block; junk tokens unpriced -> $0 (conservative)",
+    "GoldRush holder census (tip 52,558,619) cross-checked against direct balanceOf reads",
+    "CI fork RPC latest block may differ slightly; re-check artifact ci-out/live_recheck.json"
+  ],
+  "one_liner": "external unprivileged attacker can extract ~$0 live: SharkSwap's $136.7k is pool liquidity that is 90.9% burned to a dormant keyless-looking EOA and 8.9% owned by team EOAs, with zero skim excess, stock V2 math, role/owner-gated mints and no farm — the only public mint (mxapemx) drains an untradeable token"
+}

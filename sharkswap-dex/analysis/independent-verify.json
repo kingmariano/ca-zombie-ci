@@ -1,0 +1,128 @@
+{
+  "block": 52559481,
+  "pairs_checked": 52,
+  "max_excess_wei": "0",
+  "falsified": false,
+  "counterexamples": [],
+  "claim_tested": "An external unprivileged attacker (no roles/keys/whitelist) can extract $0 live from SharkSwap: all 52 Uniswap-V2 pairs have zero token excess above reserves; 96.2% of LP is burned at dormant EOA 0x1239660af62d515bfecd4ee09c58d2cd32504605 (no code, nonce 0, no approvals, 0 ETH); rest of LP is team EOAs / third parties; only mxapemx has a public mint but its pool's other side (TOP) is unpriced/untraded; everything else is role/owner-gated.",
+  "verdict": "NOT FALSIFIED at live block 52559481. No live unprivileged value-extraction path found. Two factual corrections to the claim's rationale (aggregate '96.2%' not reproduced; TOP does have nominal dust markets), neither of which creates extraction >$0 at current state.",
+  "independent_checks": {
+    "chain_id": 8453,
+    "rpc_used": ["https://base-rpc.publicnode.com", "https://base.drpc.org", "https://mainnet.base.org"],
+    "block_hex": "0x321fe79",
+    "factory": "0x57592D44eb60011500961EF177BFf8D8691D5a8B",
+    "factory_feeTo": "0xbe4ec6286bf4b557d098e303fa3570584bda1eb9",
+    "factory_feeToSetter": "0x9973eddb50d3f22c2523862ea8a415f7f43d5cd7",
+    "allPairsLength": 52,
+    "pairs_enumerated": 52,
+    "all_pairs_factory_ok": true,
+    "balance_reserve_slots_checked": 104,
+    "pairs_with_nonzero_excess": 0,
+    "pairs_with_balance_lt_reserve": 0,
+    "top4_lp": {
+      "0xae45f7eb428eb6403f2567c3a3ec47e9230bc823": {
+        "symbols": "WETH/DAI",
+        "totalSupply": "549958667623406279680",
+        "dormant_balance": "549901036781258816259",
+        "dormant_share_pct": 99.989521,
+        "feeTo": "0",
+        "0x27160d3b618ee073efaaee596b6be37018d18e4a": "0",
+        "0x68586610448bb167d56b92d6b25dc7f196042679": "0"
+      },
+      "0x9ccc7afe654b9c842a792e9567a30031c1943a1d": {
+        "symbols": "WETH/USDbC",
+        "totalSupply": "559977273825232",
+        "dormant_balance": "550074455174827",
+        "dormant_share_pct": 98.231568,
+        "feeTo": "7629095755403",
+        "0x27160d3b618ee073efaaee596b6be37018d18e4a": "0",
+        "0x68586610448bb167d56b92d6b25dc7f196042679": "0"
+      },
+      "0x6bcc3e76c1f01a0526c73a7207110475ce126164": {
+        "symbols": "WETH/wDAI_1 (0x5d0af35b)",
+        "totalSupply": "86956521739130435739",
+        "holder_0x27160d3b618ee073efaaee596b6be37018d18e4a": "86956521739130434739",
+        "note": "100% minus 1000 wei MINIMUM_LIQUIDITY; holder is EOA nonce 216"
+      },
+      "0xd4990e033e19292672467e670462b8908061fa8e": {
+        "symbols": "WETH/wDAI_2 (0x73ea1656)",
+        "totalSupply": "178984850942459928900",
+        "feeTo_balance": "178984850942459927900",
+        "note": "100% minus 1000 wei MINIMUM_LIQUIDITY; feeTo is EOA nonce 9"
+      }
+    },
+    "dormant_wallet": {
+      "address": "0x1239660af62d515bfecd4ee09c58d2cd32504605",
+      "code": "0x",
+      "has_eip7702_delegation": false,
+      "nonce": 0,
+      "eth_balance_wei": "0",
+      "lp_held_in_pairs": 2,
+      "lp_held_in_pairs_list": ["0xae45f7eb428eb6403f2567c3a3ec47e9230bc823", "0x9ccc7afe654b9c842a792e9567a30031c1943a1d"]
+    },
+    "lp_allowances_from_dormant": {
+      "lp_tokens_checked": 4,
+      "spenders_checked_per_token": 12,
+      "spenders": ["0x4752ba5dbc23f44d87826276bf6f6d1c372ad24 (UniV2 R02 Base)", "0x7a250d5630b4cf539739df2c5dacb4c659f2488d (UniV2 R02 mainnet)", "0xbe4ec6286bf4b557d098e303fa3570584bda1eb9 (feeTo)", "0x27160d3b618ee073efaaee596b6be37018d18e4a", "0x68586610448bb167d56b92d6b25dc7f196042679", "0x9973eddb50d3f22c2523862ea8a415f7f43d5cd7 (feeToSetter)", "0x1239660af62d515bfecd4ee09c58d2cd32504605 (self)", "0x0000000000000000000000000000000000000000", "pair0xae45", "pair0x9ccc", "pair0x6bcc", "pair0xd499"],
+      "nonzero_found": 0,
+      "permit_supported_domain_separator_nonzero": true,
+      "permit_nonces_of_dormant": 0,
+      "conclusion": "approve() impossible (nonce 0, no outbound tx ever) and no permit ever consumed (token-level nonces 0 on all 4 LP tokens) -> no on-chain allowance exists or can be consumed; only unobservable risk is an unused pre-signed EIP-712 permit if the key was not destroyed."
+    },
+    "approval_logs_owner_dormant": {
+      "window_blocks": 10000,
+      "events": 0,
+      "note": "free public RPCs reject larger historical eth_getLogs ranges ('archive'); 10k-block window ~5.5h is a spot check only."
+    },
+    "lp_holder_contracts_top_pairs": [
+      {"address": "0xa7768d9c692a4d486d100b8fb63c87573fd99154", "type": "EIP-7702 delegated EOA", "delegate": "0x7702cb554e6bfb442cb743a7df23154544a7176c", "delegate_code_bytes": 3318, "lp": "WETH/USDbC", "lp_balance": "21226142175"},
+      {"address": "0x5c8e02921ba4b59908079566dc8cf4f6d8e108e0", "type": "EIP-7702 delegated EOA", "delegate": "0x63c0c19a282a1b52b07dd5a65b58948a07dae32b", "delegate_code_bytes": 11185, "lp": "WETH/USDbC", "lp_balance": "1727819280"},
+      {"address": "0x2f044cf6dd5f8dcf7ab93dd19f88a98903846894", "type": "EIP-7702 delegated EOA", "delegate": "0x63c0c19a282a1b52b07dd5a65b58948a07dae32b", "delegate_code_bytes": 11185, "lp": "WETH/USDbC", "lp_balance": "529512480"},
+      {"address": "0xd73b4d093e3d8be30eb69c7ab0f1eed9f82aac01", "type": "EIP-7702 delegated EOA", "delegate": "0x7702cb554e6bfb442cb743a7df23154544a7176c", "delegate_code_bytes": 3318, "lp": "WETH/DAI", "lp_balance": "4202795261882114"},
+      {"address": "0xd501204f415c5a58b8e85c4854e6d678f4e39c03", "type": "EIP-7702 delegated EOA", "delegate": "0x7702cb554e6bfb442cb743a7df23154544a7176c", "delegate_code_bytes": 3318, "lp": "TOP/mxapemx", "lp_balance": "7071067811865475244007443"},
+      {"address": "0x9e6d58454dfc44c748d480d6adf9133aede933e2", "type": "EIP-7702 delegated EOA", "delegate": "0x63c0c19a282a1b52b07dd5a65b58948a07dae32b", "delegate_code_bytes": 11185, "lp": "WETH/BTCBR", "lp_balance": "1590735494920513"}
+    ],
+    "lp_holder_contract_note": "All 6 'contract' LP holders in/near top pairs are 23-byte EIP-7702 delegations to ERC-1271 smart-account implementations (selector 1626ba7e isValidSignature / 84b0196e eip712Domain present). No permissionless pull/redeem path found; aggregate value at stake <= ~$2.4 and it is key-controlled.",
+    "public_mint_audit": {
+      "tokens_in_pairs": 38,
+      "selectors_probed_per_token": ["mint(address,uint256)=0x40c10f19", "mint(uint256)=0xa0712d68", "mint()=0x1249c58b"],
+      "extra_selectors_bytecode_scanned": ["mint(address)=0x6a627842", "mintTo(address,uint256)=0x449a52f8", "mintFor(address,uint256)=0xda1919b3", "issue(uint256)=0xcc872b66", "mintTokens(uint256)=0x97304ced", "freeMint(uint256)=0x7c928fe9", "mint(address,uint256,bytes)=0x94d008ef", "mintReward()=0x174f57af"],
+      "extra_selector_hits": 0,
+      "only_public_mint": "mxapemx 0xfef74fba99089cc033529ed18025a07fb18507ad",
+      "mxapemx_mint_semantics_verified": "eth_call + stateOverride injected helper executed on live state: mint(address,uint256) with to=fresh credits +1e18 to recipient and increases totalSupply; mint(uint256) credits +1e24; no payment required; SARF control reverts (callSuccess=0).",
+      "notable_reverts": {
+        "wDAI_1 0x5d0af35b4f6f4715961b56168de93bf0062b173d": "AccessControl: account missing role 0x02adb246... (role-gated)",
+        "wDAI_2 0x73ea165665d3a8c8df77970251291d8ad6015b66": "Ownable: caller is not the owner",
+        "fakeWETH 0x38fd349d..., 0x031cc60b...": "Ownable: caller is not the owner",
+        "TOP 0x9dba38e9...": "TaxToken.sol::onlyAuthorized()",
+        "SARF 0xb18eaa70...": "execution reverted (no mint)",
+        "WETH 0x4200...0006": "empty success = payable fallback deposit(), not a mint"
+      }
+    },
+    "mxapemx_drain_economics": {
+      "pair": "0x95238e1396ffca391ab6b5ee50e28c1734e5c258",
+      "reserves": {"TOP": "5000000000000000000000000", "mxapemx": "10000000000000000000000000"},
+      "swap_out_for_1e27_mxapemx_in": "4950347567030784508440913 wei TOP (~4,950,348 TOP, UniswapV2 formula)",
+      "TOP_sell_venues_onchain_verified": {
+        "maverick_TOP_USDC_pool_0x657ed2d54c1b88340a481e21390f68069b9f127c": "USDC balance = 4 wei; TOP balance = 43.96 TOP (GeckoTerminal's ~$16.9M reserve for this pool is NOT backed on-chain)",
+        "iziswap_TOP_MT_pool_0x8adc6a609c55f935d549bc37af42cc54f3d6330d": "10,025.15 TOP + 0.0098 MT; MT is real (llama $0.002384) => counter-side value ~$0.0000234 (max extractable by selling any amount of TOP)"
+      },
+      "TOP_sell_venues_gt_unverified": {"univ4 TOP/WETH pool": "~$5.63", "curve pool": "~$0.83", "all other TOP pools": "<= $0.05 each"},
+      "defillama_TOP_price": "none (no price entry)",
+      "mxapemx_other_pools": {"9mm mxapemx/WETH 0x71ff10d3...": "WETH balance 0.000000000017 ETH (~$4.3e-8)", "alien BENTO/mxapemx": "~$3e-7"},
+      "verdict": "mxapemx-mint drain yields ~$0: provable on-chain bound < $0.0001; < ~$10 even if every unverified GT dust venue is real. No valuable counterparty pool exists for minted mxapemx."
+    },
+    "pair_code_standard": "Verified source in evidence is verbatim UniswapV2Pair fork (error strings 'Sharkswap: *'; mint/burn/swap/skim/sync/permit only; no extra privileged functions). skim() is stock and would transfer balance-reserve excess to any caller-chosen address, but excess = 0 wei everywhere."
+  },
+  "corrections_to_claim": [
+    "Aggregate '96.2% of LP burned at dormant EOA' not reproduced: by current USD-weighting (DefiLlama prices) dormant share is ~85%; using prior ownership.json totals it is ~90.9% ($124,294/$136,751); per-pool figures are exact (99.9895% / 98.2316%). Valuation-dependent, not material to extractability.",
+    "TOP is not literally unpriced/untraded: it has nominal listings (Maverick/iziswap/UniV4/Curve; GeckoTerminal quotes), but all on-chain sellable liquidity is dust (largest-looking venue holds 4 wei USDC), so the '$0 drain' conclusion stands while the stated reason is imprecise."
+  ],
+  "limitations": [
+    "Unused pre-signed EIP-712 permite signatures are unobservable on-chain; if the dormant key was NOT destroyed, a valid permit could still move its LP. No evidence of any; normal burn assumption applies.",
+    "eth_getLogs approved-owner scan limited to 10,000 blocks (~5.5h) on free public RPCs; longer ranges rejected as archive requests.",
+    "A few small venues (UniV4 ~$5.63, Curve ~$0.83) taken from GeckoTerminal without direct on-chain balance verification; all <= ~$6.5 and cannot change the verdict.",
+    "Some balancing reads were 'latest' between blocks 52559481 and 52560002; core pair/LP/allowance reads pinned to 52559481.",
+    "All work was read-only (eth_call/eth_getCode/eth_getLogs/eth_getTransactionCount/eth_getBalance + HTTP GETs). Mint semantics were verified with an eth_call stateOverride helper (no transaction sent)."
+  ]
+}
