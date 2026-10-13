@@ -1,0 +1,82 @@
+From 23974eeb8770b79697e88387cd9ea604c7a8a031 Mon Sep 17 00:00:00 2001
+From: illusioncoder7 <shubh.tiwari512@gmail.com>
+Date: Wed, 8 Feb 2023 10:47:29 +0545
+Subject: [PATCH] replace oToken address with reserve address as param for
+ redeem flow
+
+---
+ .../core/lendingpool/LendingPoolImpl.java     | 26 +++++++++++--------
+ 1 file changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/core-contracts/LendingPool/src/main/java/finance/omm/score/core/lendingpool/LendingPoolImpl.java b/core-contracts/LendingPool/src/main/java/finance/omm/score/core/lendingpool/LendingPoolImpl.java
+index 6ba9721c..58a3e849 100644
+--- a/core-contracts/LendingPool/src/main/java/finance/omm/score/core/lendingpool/LendingPoolImpl.java
++++ b/core-contracts/LendingPool/src/main/java/finance/omm/score/core/lendingpool/LendingPoolImpl.java
+@@ -1,22 +1,21 @@
+ package finance.omm.score.core.lendingpool;
+ 
++import static finance.omm.utils.math.MathUtils.exaDivide;
++
+ import com.eclipsesource.json.Json;
+ import com.eclipsesource.json.JsonObject;
+ import com.eclipsesource.json.JsonValue;
+ import finance.omm.libs.address.Contracts;
+ import finance.omm.score.core.lendingpool.exception.LendingPoolException;
++import java.math.BigInteger;
++import java.util.List;
++import java.util.Map;
+ import score.Address;
+ import score.Context;
+ import score.annotation.External;
+ import score.annotation.Optional;
+ import score.annotation.Payable;
+ 
+-import java.math.BigInteger;
+-import java.util.List;
+-import java.util.Map;
+-
+-import static finance.omm.utils.math.MathUtils.exaDivide;
+-
+ public class LendingPoolImpl extends AbstractLendingPool {
+ 
+     public LendingPoolImpl(Address addressProvider) {
+@@ -72,7 +71,7 @@ public List<Address> getBorrowWallets(int _index) {
+     public void deposit(BigInteger _amount) {
+         BigInteger icxValue = Context.getValue();
+         // check this condition
+-        if (! icxValue.equals(_amount)) {
++        if (!icxValue.equals(_amount)) {
+             throw LendingPoolException.unknown(TAG + " : Amount in param " +
+                     _amount + " doesnt match with the icx sent " + icxValue + " to the Lending Pool");
+         }
+@@ -83,13 +82,18 @@ public void deposit(BigInteger _amount) {
+     }
+ 
+     @External
+-    public void redeem(Address _oToken, BigInteger _amount, @Optional boolean _waitForUnstaking) {
++    public void redeem(Address _reserve, BigInteger _amount, @Optional boolean _waitForUnstaking) {
+         checkAndEnableFeeSharing();
+         Address caller = Context.getCaller();
+-        Map<String, Object> redeemParams = call(Map.class, _oToken, "redeem", caller, _amount);
++        Address oToken = call(Address.class, Contracts.LENDING_POOL_CORE,
++                "getReserveOTokenAddress", _reserve);
++        if (oToken == null) {
++            throw LendingPoolException.reserveNotValid(TAG + " " + _reserve.toString() + " is not valid");
++        }
++        Map<String, Object> redeemParams = call(Map.class, oToken, "redeem", caller, _amount);
+         Address reserve = (Address) redeemParams.get("reserve");
+         BigInteger amount = (BigInteger) redeemParams.get("amountToRedeem");
+-        redeemUnderlying(reserve, caller, _oToken, amount, _waitForUnstaking);
++        redeemUnderlying(reserve, caller, oToken, amount, _waitForUnstaking);
+     }
+ 
+     @External
+@@ -222,7 +226,7 @@ public void tokenFallback(Address _from, BigInteger _value, byte[] _data) {
+             String reserve = param.getString("_reserve", null);
+             String user = param.getString("_user", null);
+ 
+-            if (collateral== null || reserve == null || user == null) {
++            if (collateral == null || reserve == null || user == null) {
+                 throw LendingPoolException.unknown(TAG + " Invalid data: Collateral: " + collateral +
+                         " Reserve: " + reserve + " User: " + user);
+             }

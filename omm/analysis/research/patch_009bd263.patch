@@ -1,0 +1,37 @@
+From 009bd263b0b0d1191cf9b812e6aeb808f2392a5f Mon Sep 17 00:00:00 2001
+From: illusioncoder7 <shubh.tiwari512@gmail.com>
+Date: Wed, 8 Feb 2023 10:46:23 +0545
+Subject: [PATCH] add exception for invalid reserve
+
+---
+ .../core/lendingpool/exception/LendingPoolException.java  | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/core-contracts/LendingPool/src/main/java/finance/omm/score/core/lendingpool/exception/LendingPoolException.java b/core-contracts/LendingPool/src/main/java/finance/omm/score/core/lendingpool/exception/LendingPoolException.java
+index 44bf941d..ef4b6296 100644
+--- a/core-contracts/LendingPool/src/main/java/finance/omm/score/core/lendingpool/exception/LendingPoolException.java
++++ b/core-contracts/LendingPool/src/main/java/finance/omm/score/core/lendingpool/exception/LendingPoolException.java
+@@ -17,18 +17,20 @@ public static LendingPoolException unknown(String message) {
+     }
+ 
+     public static LendingPoolException notOwner() {
+-        return new LendingPoolException(Code.NotOwner, "require owner access" );
++        return new LendingPoolException(Code.NotOwner, "require owner access");
+     }
+ 
+     public static LendingPoolException reserveNotActive(String msg) {
+         return new LendingPoolException(Code.ReserveNotActive, msg);
+     }
+ 
+-
++    public static LendingPoolException reserveNotValid(String msg) {
++        return new LendingPoolException(Code.ReserveNotValid, msg);
++    }
+ 
+ 
+     public enum Code implements Coded {
+-        Unknown(0),NotOwner(1),ReserveNotActive(2);
++        Unknown(0), NotOwner(1), ReserveNotActive(2), ReserveNotValid(3);
+ 
+         final int code;
+ 
