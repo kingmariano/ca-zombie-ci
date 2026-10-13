@@ -1,0 +1,45 @@
+{
+  "finding": "L2-silostake",
+  "title": "SiloStake (iSEI) Sei CosmWasm liquid-staking hub — deployed-bytecode extraction audit",
+  "chains": ["sei"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {"E-U": 0, "H-O": 224794.17, "P": 0, "S": 1.25},
+  "latest_block": 237384817,
+  "block_numbers": {"sei": 237384817},
+  "targets_checked": 4,
+  "live_targets": 1,
+  "closed_reasons": [
+    "queue_unbond requires exactly 1 coin of the stake token (iSEI); shares == funds -> no free claim minting (S1/S2 revert)",
+    "withdraw_unbonded has only `receiver`; request owner is info.sender -> no third-party or user-spoofed extraction (S4/S5/S5b/S13/S15 revert)",
+    "all owner functions (update_config/add_validator/transfer_ownership/tune_delegations/claim) revert for non-owner (S6/S7/S8/S9/S10b)",
+    "vote requires vote_operator (unset) (S10c); donate disabled (S16b)",
+    "permissionless keepers (reconcile/submit_batch/harvest) transfer no value to caller (S12/S18/S19; attacker balance strictly decreases by fees)",
+    "iSEI supply is fully backed: iSEI claim 2,262,427.267269 + batch claims 1,184,872.730218 + unharvested rewards 148,658.685390 = assets 3,595,978.683014 (delta +20.000137 SEI dust)"
+  ],
+  "poc": {
+    "tests_passed": 18,
+    "tests_total": 18,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38432218933",
+      "<RUN 2 URL>"
+    ],
+    "method": "local single-node Sei chain (seid v6.7.1) executing the exact deployed wasm (local chain code data_hash == on-chain 4EBD7DA3920F3EF5914F76B229DA29F8251DBCFB6F32C3FEEE1626A5BAD71F90)"
+  },
+  "key_facts": [
+    "Hub sei1e3gttzq5e5k49f9f5gzvrl0rltlav65xu6p9xc0aj7e84lantdjqp7cncc, code_id 4485, label silohub; owner=operator=admin=EOA sei1wg3jpdr4zl59mqh2ptwv678tefjvqfjl32mf4y; vote_operator unset",
+    "Live assets at sei block 237384817 (2026-10-13): bank 1,251,270.729485 + delegated 2,262,427.267269 (7 validators) + unbonding 82,280.686260 = 3,595,978.683014 SEI (=$224,795.42 @ $0.062513)",
+    "iSEI supply 2,094,398.807228 (EVM pointer 0x5cf6826140c1c56ff49c808a1a75407cd1df9423), rate 1.080227538070168563; outstanding batch claims 1,184,872.730218 SEI across 278 batches; unharvested rewards 148,658.685390 SEI",
+    "PoC on deployed bytecode: attacker ends with 983 of 1000 SEI (fees only, zero extracted); legitimate holder bond/queue/withdraw works exactly 1:1",
+    "Admin `migrate` SUCCEEDS on deployed code (proven locally) and the mainnet hub was migrated once (code 761 -> 4485) -> owner EOA is a standing privileged risk over the full $224.8k pool (P, not E-U)",
+    "Silo announced shutdown 2025-11-11; iSEI trades at ~-26% vs NAV ($0.04998 vs $0.06753); batches/withdrawals still function (batch 284/285 queue txs Sep-Oct 2026; unbonding completes 2026-10-18 and 2026-10-28)"
+  ],
+  "caveats": [
+    "Owner EOA key liveness is unknowable; if live/compromised, migration allows full drain of the holder pool (privileged)",
+    "H-O realization requires holders to act (queue_unbond + withdraw_unbonded); keepers are permissionless so no owner cooperation is needed",
+    "Unharvested rewards (148,658.685390 SEI) accrue to iSEI holders only via a permissionless harvest call; if no harvest ever happens and all iSEI exit, that portion becomes stuck",
+    "USD at $0.062513 SEI (2026-10-13); triage basis $0.06723 would give $241,756.30 H-O",
+    "Latent effectively-stuck value in dormant wallets (old batches) cannot be quantified on-chain"
+  ],
+  "one_liner": "external unprivileged attacker can extract ~$0 live from SiloStake — 3.6M SEI ($224.8k) is fully backed holder value; all 18 attack paths revert on the exact deployed bytecode; the only real risk is the owner EOA's live code-migration right."
+}

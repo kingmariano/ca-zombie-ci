@@ -1,0 +1,78 @@
+[16:39:02] == 0. setup
+[16:39:02] downloading seid v6.7.1
+/tmp/silostake-ci/seid.tar.gz: OK
+v6.7.1
+[16:39:04] verifying deployed wasm bytes (sha256 must equal on-chain data_hash)
+[16:39:04] wasm sha256 OK: 4EBD7DA3920F3EF5914F76B229DA29F8251DBCFB6F32C3FEEE1626A5BAD71F90
+[16:39:04] == 1. init single-node chain (solo validator pinned in genesis)
+VAL=sei1huapwl5047s34yfz2xcannk8a0gdk083as4ggs
+USER=sei1dpveqpcf4zrpdx6yc60a72dlxxce9y3fh84l8p
+ATK=sei195s7fc4sgal9hfat7kecscn58wzn3f5uw38w3p
+[16:39:05] starting seid (single node)
+[16:39:07] chain up at height 3
+[16:39:07] == 2. store the DEPLOYED wasm (4EBD7DA3920F3EF5914F76B229DA29F8251DBCFB6F32C3FEEE1626A5BAD71F90)
+[16:39:10] TX store => code=0 log=[{"events":[{"type":"message","attributes":[{"key":"action","value":"/cosmwasm.wasm.v1.MsgStoreCode"},{"key":"module","value":"wasm"},{"key":"sender","value":"sei1huapwl5047s34yfz2xcannk8a0gdk083as4ggs"}]},{"type":"store_code","attributes":[{"key":"code_id","v
+[16:39:10] CODE=4
+[16:39:10] == 3. instantiate hub (mirrors live params: utoken=usei, denom=isei, 5% fee, 1 validator)
+[16:39:13] TX inst => code=0 log=[{"events":[{"type":"create_denom","attributes":[{"key":"creator","value":"sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau"},{"key":"new_token_denom","value":"factory/sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau/isei"}]},{"type
+[16:39:16] HUB=sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau
+[16:39:18] Q state0 => {"data":{"total_ustake":"0","total_utoken":"0","exchange_rate":"1","unlocked_coins":[],"unbonding":"0","available":"0","tvl_utoken":"0"}} 
+[16:39:18] Q config0 => {"data":{"owner":"sei1huapwl5047s34yfz2xcannk8a0gdk083as4ggs","new_owner":null,"utoken":"usei","stake_token":"factory/sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau/isei","epoch_period":5,"unbond_period":10,"validators":["seivaloper1huapwl5047s34yfz2xcannk8a0gdk083rlyxfq"],"fee_confi
+[16:39:18] BAL user_initial = [{"denom":"usei","amount":"1000000000"}]
+[16:39:18] BAL attacker_initial = [{"denom":"usei","amount":"1000000000"}]
+[16:39:18] == 4. attacker probes (unprivileged, no iSEI)
+[16:39:18] S1 attacker queue_unbond, no funds
+[16:39:21] TX s1_atk_queue_nofunds => code=5 log=failed to execute message; message index: 0: Expecting only single coin: execute wasm contract failed
+[16:39:21] S2 attacker queue_unbond, wrong denom (usei)
+[16:39:25] TX s2_atk_queue_wrongdenom => code=5 log=failed to execute message; message index: 0: Expecting stake token, received usei: execute wasm contract failed
+[16:39:25] S4 attacker withdraw_unbonded, no own requests
+[16:39:28] TX s4_atk_withdraw => code=5 log=failed to execute message; message index: 0: withdrawable amount can't be zero: execute wasm contract failed
+[16:39:28] S5 attacker withdraw_unbonded {receiver:<victim>} (redirect probe)
+[16:39:31] TX s5_atk_withdraw_receiver => code=5 log=failed to execute message; message index: 0: withdrawable amount can't be zero: execute wasm contract failed
+[16:39:31] S5b attacker withdraw_unbonded {user:<victim>} (arbitrary-user probe)
+[16:39:34] TX s5b_atk_withdraw_userfield => code=5 log=failed to execute message; message index: 0: Error parsing into type silo::hub::ExecuteMsg: unknown field `user`, expected `receiver`: execute wasm contract failed
+[16:39:34] S6 attacker update_config
+[16:39:37] TX s6_atk_update_config => code=5 log=failed to execute message; message index: 0: Unauthorized: sender is not owner: execute wasm contract failed
+[16:39:37] S7 attacker add_validator
+[16:39:40] TX s7_atk_add_validator => code=5 log=failed to execute message; message index: 0: Unauthorized: sender is not owner: execute wasm contract failed
+[16:39:40] S8 attacker claim (confused-deputy probe)
+[16:39:43] TX s8_atk_claim => code=5 log=failed to execute message; message index: 0: Unauthorized: sender is not owner: execute wasm contract failed
+[16:39:43] S9 attacker tune_delegations
+[16:39:46] TX s9_atk_tune => code=5 log=failed to execute message; message index: 0: Unauthorized: sender is not owner: execute wasm contract failed
+[16:39:46] S10 attacker transfer_ownership
+[16:39:49] TX s10b_atk_transfer_ownership => code=5 log=failed to execute message; message index: 0: Unauthorized: sender is not owner: execute wasm contract failed
+[16:39:49] S10c attacker vote
+[16:39:52] TX s10_atk_vote => code=5 log=failed to execute message; message index: 0: No vote operator set: execute wasm contract failed
+[16:39:52] S16b attacker donate {} (donation mismatch probe)
+[16:39:56] TX s16b_atk_donate => code=5 log=failed to execute message; message index: 0: Donations are disabled: execute wasm contract failed
+[16:39:56] == 5. legitimate holder flow
+[16:39:56] S3 user bond 100 SEI
+[16:39:59] TX s3_user_bond => code=0 log=[{"events":[{"type":"coin_received","attributes":[{"key":"receiver","value":"sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau"},{"key":"amount","value":"100000000usei"},{"key":"receiver","value":"sei1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3chcelk"},{"key
+[16:40:01] BAL user_after_bond = [{"denom":"factory/sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau/isei","amount":"100000000"},{"denom":"usei","amount":"899000000"}]
+[16:40:01] Q state1 => {"data":{"total_ustake":"100000000","total_utoken":"100000000","exchange_rate":"1","unlocked_coins":[],"unbonding":"0","available":"0","tvl_utoken":"100000000"}} 
+[16:40:01] S11 user queue_unbond 50 iSEI
+[16:40:04] TX s11_user_queue => code=0 log=[{"events":[{"type":"burn","attributes":[{"key":"burner","value":"sei19ejy8n9qsectrf4semdp9cpknflld0j6svvmtq"},{"key":"amount","value":"50000000factory/sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau/isei"},{"key":"burn_from_address","value":"se
+[16:40:07] Q state2 => {"data":{"total_ustake":"50000000","total_utoken":"50000000","exchange_rate":"1","unlocked_coins":[],"unbonding":"50000000","available":"0","tvl_utoken":"100000000"}} 
+[16:40:07] == 6. keeper paths + claim isolation
+[16:40:07] S12 wait 25s (chain unbonding_time=10s) then attacker reconcile
+[16:40:35] TX s12_atk_reconcile => code=0 log=[{"events":[{"type":"execute","attributes":[{"key":"_contract_address","value":"sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau"}]},{"type":"message","attributes":[{"key":"action","value":"/cosmwasm.wasm.v1.MsgExecuteContract"},{"key":"module","
+[16:40:35] Q state3 => {"data":{"total_ustake":"50000000","total_utoken":"50000000","exchange_rate":"1","unlocked_coins":[],"unbonding":"0","available":"50000000","tvl_utoken":"100000000"}} 
+[16:40:35] S13 attacker withdraw_unbonded while victim's batch is claimable
+[16:40:38] TX s13_atk_withdraw2 => code=5 log=failed to execute message; message index: 0: withdrawable amount can't be zero: execute wasm contract failed
+[16:40:38] S14 user withdraw_unbonded (own claim)
+[16:40:41] TX s14_user_withdraw => code=0 log=[{"events":[{"type":"coin_received","attributes":[{"key":"receiver","value":"sei1dpveqpcf4zrpdx6yc60a72dlxxce9y3fh84l8p"},{"key":"amount","value":"50000000usei"}]},{"type":"coin_spent","attributes":[{"key":"spender","value":"sei18cszlvm6pze0x9sz32qnjq4vtd45xeh
+[16:40:43] BAL user_after_withdraw = [{"denom":"factory/sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau/isei","amount":"50000000"},{"denom":"usei","amount":"947000000"}]
+[16:40:43] BAL attacker_after_withdraw = [{"denom":"usei","amount":"986000000"}]
+[16:40:43] S15 attacker withdraw_unbonded after victim claimed
+[16:40:46] TX s15_atk_withdraw3 => code=5 log=failed to execute message; message index: 0: withdrawable amount can't be zero: execute wasm contract failed
+[16:40:46] S18 attacker submit_batch
+[16:40:49] TX s18_atk_submit => code=10 log=failed to execute message; message index: 0: dispatch: 0factory/sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau/isei: invalid coins
+[16:40:49] S19 attacker harvest
+[16:40:53] TX s19_atk_harvest => code=5 log=failed to execute message; message index: 0: dispatch: No usei, factory/sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau/isei available to be bonded: execute wasm contract failed
+[16:40:53] == 7. admin power probe
+[16:40:53] S17 admin migrate hub to same code (does deployed 4485 allow migrate?)
+[16:40:56] TX s17_migrate => code=0 log=[{"events":[{"type":"message","attributes":[{"key":"action","value":"/cosmwasm.wasm.v1.MsgMigrateContract"},{"key":"module","value":"wasm"},{"key":"sender","value":"sei1huapwl5047s34yfz2xcannk8a0gdk083as4ggs"}]},{"type":"migrate","attributes":[{"key":"code_id"
+[16:40:56] Q state4 => {"data":{"total_ustake":"50000000","total_utoken":"50000000","exchange_rate":"1","unlocked_coins":[],"unbonding":"0","available":"0","tvl_utoken":"50000000"}} 
+[16:40:56] BAL user_final = [{"denom":"factory/sei18cszlvm6pze0x9sz32qnjq4vtd45xehqs8dq7cwy8yhq35wfnn3quh5sau/isei","amount":"50000000"},{"denom":"usei","amount":"947000000"}]
+[16:40:56] BAL attacker_final = [{"denom":"usei","amount":"983000000"}]
+[16:40:56] == DONE. attacker net change: [{"denom":"usei","amount":"983000000"}]
