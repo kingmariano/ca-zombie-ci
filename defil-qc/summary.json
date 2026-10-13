@@ -1,0 +1,148 @@
+{
+  "finding": "defil-qc",
+  "title": "DeFIL (FILST/DFL/eFIL) — L2 Phase-2 QC-1 adversarial re-audit (closure-break attempt)",
+  "role": "adversarial quality control of the prior DeFIL deep-dive (E-U $0)",
+  "chains": ["ethereum", "bsc"],
+  "verdict": "closure stands",
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 1970000,
+    "P": 714488,
+    "S": 0
+  },
+  "category_notes": {
+    "E-U": "no fresh keyless attacker path found on either chain (25/25 fork tests)",
+    "H-O": "nominal custody (~$1.97M) is holder-recoverable: per-account share-gated Staking contracts + holder-gated cTokens + LP float ($122 ETH / $19 BSC)",
+    "P": "hard USDT drainable by the owner EOA if its key acted: ~$714.5K (ETH pool) + ~$139.0K (BSC pool) via setPoster -> unlimited FILST mint",
+    "S": "none newly identified; the escrowed 3,771 mining-NFT units are structurally stuck (no exit function)"
+  },
+  "block_numbers": {
+    "ethereum": 26182388,
+    "bsc": 127371202
+  },
+  "fresh_attack_attempts_closed": [
+    "mining-NFT acquisition/mint/withdraw: all 3,771 units (ETH 1,914 ids 100001-100011; BSC 1,857 ids 100001-100012) escrowed in FILSTManage; no NFT-out function; MiningNFT.burn onlyPoster; MiningNFTManage.burn balance-gated; MinerManage whitelist owner-only (fork-proven)",
+    "BSC unverified-contract gap: FILSTManage/MiningNFT/MiningNFTManage/MinerManage bytecode-IDENTICAL to verified ETH twins",
+    "FILSTManage.burn NFT return: source-read; burn() destroys only msg.sender FILST",
+    "LP unstuck: pair balances == reserves (skim==0 fork-proven); withdrawals share-gated; 1:1 shares (no rounding); no allowances",
+    "stale-oracle borrow cFILST: CollateralOnlyCErc20 -> borrow()==2 (BAD_INPUT) on ETH and BSC",
+    "stale-oracle borrow ceFIL: mechanically possible with mFIL collateral (fork-proven) but output is EFIL which has NO venue on Ethereum (no UniV2/Sushi/UniV3 pair; only dust FILST/EFIL pair 982 EFIL + 0.99 FILST) -> realized $0",
+    "BSC stale-oracle borrow: BSC mFIL supply = 0; only other collateral (FILST) is oracle-undervalued 19x (borrow = ~90% capital loss)",
+    "DFL history-capture (Compound-fork first-supplier bug class): absent on both chains (entry index == current index with zero balance; fresh supplier accrues <1e-15 DFL)",
+    "DFL claim receiver-gating: claim(victim, amount) checks msg.sender accrued (fork-proven revert)",
+    "Comptroller admin fns (unverified impl): _setPendingImplementation/_setDflKeeper/_setDflKeeperFactor return UNAUTHORIZED(1); _setTransferPaused reverts",
+    "reserve-keeper _reduceReserves: caller-gated to own historicalReserveKeeperAccrued; ceFIL keeper (PR contract, 14.2M EFIL accrued) has no function that calls the market; outsiders have 0 accrued",
+    "reward distributors: RewardPool/PR/SUP1-3/FilstMarket.claimEfil all sender-accrued-gated; BSC RewardPoolDelegator holds 0",
+    "cross-chain stale price: no public/third-party bridge (unchanged)",
+    "old->new DFL migration: 1:1, <=1.746M new DFL (~$196) left; requires old DFL whose only venue is a ~$50 dust pool at ~$0.022 (above new DFL) -> value-destroying"
+  ],
+  "conditional_paths": [
+    {
+      "id": "C1",
+      "label": "conditional (P)",
+      "path": "owner EOA 0x557EdaaF... setPoster -> unlimited FILST mint -> dump into pools",
+      "precondition": "compromise of the owner EOA key",
+      "max_usd": 853500,
+      "note": "~$714.5K ETH USDT + ~$139.0K BSC USDT (hard money); plus all admin surfaces"
+    },
+    {
+      "id": "C2",
+      "label": "conditional (H-O -> P)",
+      "path": "legacy depositor key -> withdraw staked LP/FILST and dump",
+      "precondition": "compromise of a legacy depositor key (top LP staker 0xF2Ba8F66 holds 99.88% of staked LP)",
+      "max_usd": 1430000,
+      "note": "nominal $1.43M; hard USDT ~$714K; FILST stakers 194.8K+153.2K FILST"
+    },
+    {
+      "id": "C3",
+      "label": "conditional",
+      "path": "acquire 1 mining-NFT unit -> mint 1,024 FILST (5% DFL fee) -> dump",
+      "precondition": "an mNFT unit escapes FILSTManage (no function exists today)",
+      "max_usd": 522,
+      "note": "per unit: ~$522 ETH / ~$137 BSC"
+    },
+    {
+      "id": "C4",
+      "label": "conditional",
+      "path": "mFIL collateral ($1.25 oracle vs ~$0 real) -> borrow EFIL from ceFIL",
+      "precondition": "hold >=~19 mFIL (all mFIL is EOA-held; MINTER_ROLE-gated)",
+      "max_usd": 0,
+      "note": "borrow is mechanically open (fork-proven) but EFIL has no venue -> realizable $0; BSC route impossible (mFIL supply 0)"
+    },
+    {
+      "id": "C5",
+      "label": "conditional",
+      "path": "old DFL -> new DFL 1:1 migration convert()",
+      "precondition": "hold old DFL (0x6ded0F2c)",
+      "max_usd": 196,
+      "note": "<=1.746M new DFL remaining; old DFL's only venue is a $50 dust WETH pair at ~$0.022 -> converting destroys value"
+    },
+    {
+      "id": "C6",
+      "label": "conditional",
+      "path": "farm the DFL drip by supplying EFIL to ceFIL (100% of drip)",
+      "precondition": "capital to dominate existing suppliers",
+      "max_usd": 25000,
+      "note": "ETH drip ~1.492 DFL/block (~$14.4/day pool-implied); BSC ~0.0407 DFL/block (~$5.4/day); capital-negative; exit depth $946/$10.5K"
+    },
+    {
+      "id": "C7",
+      "label": "conditional (H-O)",
+      "path": "DFL stakers claim EFIL rewards accrued from ceFIL reserves (7.1M EFIL accounting)",
+      "precondition": "be a DFL staker with historical accrued",
+      "max_usd": 0,
+      "note": "payout bounded by ceFIL 38.5K EFIL cash; PR holds 0 EFIL; EFIL unsellable -> ~$0"
+    }
+  ],
+  "live_state_highlights": {
+    "ethereum": {
+      "filst_usdt_lp": {"filst": "1396416006144015505577894", "usdt": "714487847125", "staked_pct": "99.9914"},
+      "lp_float_usd": 122.6,
+      "mining_nft_units": 1914,
+      "mining_nft_ids": "100001-100011",
+      "filst_supply": "1959936000000000000000000",
+      "staking_totals": {"lp": "979475547106670098", "filst": "374550818501781995220797", "dfl": "52202774704109883343300571"},
+      "cefil_cash_efil": "38527812069616649282557",
+      "cfilst_cash_filst": "3102080794000000000703",
+      "unitroller_dfl": "43751675010838300438078143",
+      "dfl_drip_per_block": "1491970486111111111",
+      "efil_venue": "none (UniV2/Sushi/UniV3 absent; dust FILST/EFIL pair only)"
+    },
+    "bsc": {
+      "filst_usdt_lp": {"filst": "1038182270813843752155412", "usdt": "139004731668674538987435", "staked_pct": "99.9933"},
+      "lp_float_usd": 18.7,
+      "mining_nft_units": 1857,
+      "mining_nft_ids": "100001-100012",
+      "filst_supply": "1901568000000000000000000",
+      "cefil_cash_efil": "18387372052006209152025",
+      "cfilst_cash_filst": "9087269717635222498521",
+      "mfil_supply": "0",
+      "dfl_drip_per_block": "40690104166666666"
+    }
+  },
+  "poc": {
+    "tests_passed": 25,
+    "tests_total": 25,
+    "suites": ["DeFILQC (ETH, 18 tests)", "DeFILQC_BSC (BSC, 7 tests)"],
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Fresh enumeration: ETH MiningNFT 11 mints / 1,914 units; BSC 12 mints / 1,857 units; log-netting shows every unit sits in FILSTManage on both chains",
+    "BSC FILSTManage/MiningNFT/MiningNFTManage/MinerManage are bytecode-identical to verified ETH sources (unverified-on-BSC gap closed)",
+    "FILST supply equals escrowed units x 1024 on both chains (no net burns): 1,959,936 ETH / 1,901,568 BSC",
+    "The custom reserve-keeper _reduceReserves(receiver,amount) design is caller-accrued-gated; ceFIL's keeper (PR contract, 14.2M EFIL accrued) cannot be triggered by anyone",
+    "EFIL on Ethereum has no market (checked Uni V2, Sushi V2, Uni V3, holders) - this is why the mechanically-open ceFIL borrow realizes $0",
+    "cFILST markets are CollateralOnlyCErc20 on BOTH chains (borrow returns BAD_INPUT)",
+    "The Compound-fork DFL first-supplier history-capture bug is absent on both chains (fork-proven)",
+    "LP float precision: ETH 8.4e-5 LP (~$122, EOA + smart wallet) / BSC 24.97 LP (~$19) - holder-recoverable"
+  ],
+  "caveats": [
+    "Read-only; no mainnet transactions; no secrets",
+    "BSC leg uses BSC_RPC_URL in CI with a public fallback; if the BSC RPC is unavailable, only the 7 BSC tests are affected",
+    "EFIL venue absence is as of the fork block; a newly deployed venue could change C4's realized value",
+    "USD values are pool-implied (FILST/DFL have no oracle market)"
+  ],
+  "one_liner": "Adversarial re-audit could not break the DeFIL closure: every fresh keyless route (NFT acquisition, LP unstuck, stale-oracle borrows on both chains, DFL history capture, reserve keeper, migration) resolves to $0 - closure stands, high confidence; conditional paths are all key-compromise or legacy-position gated."
+}
