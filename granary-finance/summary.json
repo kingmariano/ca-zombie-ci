@@ -1,0 +1,59 @@
+{
+  "finding": "granary-finance",
+  "title": "Granary Finance (Aave V2 fork, 8 chains) — live unprivileged extractability",
+  "chains": ["optimism", "metis", "arbitrum", "fantom", "avalanche", "bsc", "ethereum", "base"],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 171490,
+    "P": 0,
+    "S": 415415
+  },
+  "latest_block": 26181961,
+  "block_numbers": {
+    "ethereum": 26181961,
+    "optimism": 158138066,
+    "metis": 23271882,
+    "arbitrum": 514357517,
+    "fantom": 123667741,
+    "avalanche": 97425362,
+    "bsc": 127359770,
+    "base": 52542913
+  },
+  "targets_checked": 8,
+  "live_targets": 6,
+  "closed_reasons": [
+    "Ethereum: every collateral reserve holds 0 cash -> liquidations to underlying revert '45'; receiveAToken liquidations yield aWBTC/aWETH backed by ~0 (PoC-proven); $3.55k of nominal liquidation bonus unreachable",
+    "Base: pool paused -> all user paths revert '64' (only admin can unpause, P)",
+    "Fantom: all Chainlink feeds dead -> getAssetPrice reverts -> withdraw/liquidate/borrow all revert",
+    "Arbitrum: all reserves frozen; only 11 liquidatable accounts, all <= $3.65 collateral",
+    "Optimism: 1,260 live debtors (full CI scan), 208 liquidatable; best nominal collateral among them is $0.78 of RETIRED sUSD (unseizable, reserve cash 0); best seizable position $0.14 OP -> executed profit $0.01",
+    "Metis: 83 liquidatable, max $22.92 collateral (best plan ~$1.1)",
+    "Avalanche/BSC: 33 liquidatable, all zero-collateral bad debt or <= $2.30 dust",
+    "Oracles fresh and matching market (<=0.3% vs DefiLlama across 40 reserves); no manipulable spot oracle; no borrow-extraction path",
+    "Admin/init/upgrade/oracle-ownership are contract-gated (P)"
+  ],
+  "poc": {
+    "tests_passed": 11,
+    "tests_total": 11,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Granary = verbatim Aave V2 (0.6.12, rev 2, close factor 50%, flash premium 9bps); USD AaveOracle over Chainlink latestAnswer",
+    "Triage $180,076 was DefiLlama aToken sums; direct on-chain reads: supply $586,524 / cash $174,289 / debt $587,414 (local blocks); CI re-verify: supply $583,368 / cash $171,493 / debt $584,479",
+    "Ethereum pool drained (cash $1.39 vs $110.8k debt); whale 0x50e4832c has $55.6k nominal WBTC collateral vs $85.0k debt at HF 0.557 but seizure is blocked (WBTC cash = 0)",
+    "OP sUSD reserve asset is 'Synth sUSD (retired)' with totalSupply 0; its live Chainlink feed (0.3987) is irrelevant",
+    "ETH WBTC liquidityIndex inflated to 3.69e31 by max-utilization dust debt (borrow rate 307%); nominal claims vastly exceed cash",
+    "Suppliers can withdraw $171.8k cash on OP/Metis/ARB/AVAX/BSC (H-O); Base/Fantom/ETH claims are stuck (S)",
+    "Sept-2025 automated activity on ETH (unverified contracts 0x524128bfd7/0x6e1a87e5/0x7ba04257 + WETHGateway + CoW Swap) drained lendable cash; no direct-hack report exists",
+    "194+ liquidatable positions found across chains (370+ incl. full OP scan); total realizable profit after liquidity gates = $0.00"
+  ],
+  "caveats": [
+    "Public keyless RPCs used locally; CI re-verifies with separate RPCs",
+    "Holder lists from GoldRush/Blockscout may miss dust debtors (OP WBTC/BAL holders re-fetched via v1 fallback)",
+    "USD values at on-chain oracle prices (== market within 0.3%) on 2026-10-13",
+    "Reward/incentive contracts not exhaustively enumerated (per-user claims only; no unprivileged extraction path found)"
+  ],
+  "one_liner": "external unprivileged attacker can extract $0 live from Granary Finance: oracles are fresh, and all 370+ liquidatable positions are dust (best $0.01) or unseizable (Ethereum collateral reserves hold zero cash; Base paused; Fantom oracle dead); remaining value is $171.5k supplier-withdrawable cash (H-O) plus $415.4k stuck claims."
+}
