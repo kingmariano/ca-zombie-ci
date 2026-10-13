@@ -1,0 +1,80 @@
+{
+  "qc": "QC-5",
+  "protocol": "Nerve",
+  "product": "NerveSwap (Saddle fork) — BSC",
+  "chain": "bsc",
+  "date": "2026-10-13",
+  "fresh_block": 127426224,
+  "verdict": "closure stands",
+  "e_u_usd": 0,
+  "e_u_basis": "high",
+  "confidence": "high",
+  "prior_claim_checked": "E-U $0 (high): Nov-2021 MetaSwap pricing bug deployed byte-identically (0xf642f2a6); three funded metapools paused (fork-proven); 8 unpaused metapools on same impl hold only 10.38 3pool-LP (~$10.41) drainable; P $705,696; H-O $356,198",
+  "reproduced": {
+    "lp3_side_drain_bound_wei": "10381892022701008814",
+    "lp3_side_usd": 10.41,
+    "funded_metas_paused": true,
+    "pause_bypass_found": false,
+    "admin_reachable_by_outsider": false,
+    "impl_code_hashes": {
+      "0xf642f2a626a8b732619606c493abfc2433dd2d35": "keccak b30d65529d9906806b3f4700f559d1a222c3795d84123e5962d38501b271b797 (23816 bytes)",
+      "0xfa97adb530b38639a83b1890ee17942804035ddf": "second vulnerable MetaSwap impl (E6/E7), 23816 bytes",
+      "0xfcc3976ebdc240ce83e8a94bc83be5cd4ad4a053": "third impl (NRVMETA, empty/paused), 23816 bytes"
+    }
+  },
+  "new_findings": {
+    "clones_missed_by_prior": [
+      {"address": "0x877A8437e76443cFCaCD05D21C3793070637d82f", "impl": "0xf642f2a6...", "state": "empty (0 reserves, 0 LP supply), owner=Safe, unpaused, not re-initializable"},
+      {"address": "0xCB922e4A5370020ACf2D0E29754e0a995Dec5B27", "impl": "0xf642f2a6...", "state": "empty"},
+      {"address": "0xf873Ec132F38eFb86bd071234b4316878b48Fa97", "impl": "0xf642f2a6...", "state": "empty"}
+    ],
+    "enumeration_method": "adaptive eth_getLogs over full history on all 3 base LP tokens -> 8574 unique addresses -> eth_getCode -> every contract referencing any Nerve MetaSwap impl inspected (600 contracts). Complete for all value-bearing pools because every metapool holds a base LP.",
+    "live_bot_activity": {
+      "address": "0xD42fCe65B9cE5deD9d3a4EcaA20955BAB52DaA19",
+      "pool": "0x0eafAa7eD9866c1f08aC21dd0ef3395E910f7114 (EXTRA7)",
+      "blocks": "123863402-123864984 (Aug-Sep 2026)",
+      "pattern": "11 matched rUSD<->LP3 swap pairs; LP3 legs net exactly 0; rUSD legs net ~+0.0015 rUSD/cycle (dust)",
+      "materiality": "none (dust, negative after gas); bounded by EXTRA7 internal reserves",
+      "rUSD_market_price_usd": 0.05445,
+      "rUSD_market_source": "PancakeSwap rUSD/BUSD pair 0x59fac9e98479fc9979ae2a0c7422af50bcbb9b26"
+    },
+    "admin_correction": {
+      "prior_P_usd": 705696,
+      "qc_P_usd": 705709,
+      "delta_reason": "EXTRA7 (0x0eafAa7e) owner-only admin balances missed by prior: 135.3011 LP3 + 153.5165 rUSD (~$144)",
+      "fUSDT_caveat_usd": 159739,
+      "P_if_fUSDT_zero_usd": 545970
+    }
+  },
+  "counter_evidence": [
+    "14/14 fork tests pass on fresh fork (poc/test/NerveQC.t.sol): pause gate holds for every value-moving entry point; admin/ownership functions owner-only on all 14 clones; re-initialization impossible",
+    "Funded metapools are 45-byte EIP-1167 clones of the vulnerable impl -> non-upgradeable, no proxy admin, no upgrade path; impl contracts hold zero tokens",
+    "Worst-case manipulated base-price cache (vm.store slot 219 = 2e18, verified): view says over-payment (0.755 LP3 > internal1 0.3977) but the executed swap reverts SafeMath underflow -> admin balances structurally unreachable",
+    "Real upward manipulation of the 3pool vprice costs $7,050 of burned LP3 for a 136-wei vprice move (~1.4e-14 relative) -> economically impossible; vprice can only be pushed up (which hurts LP3 extraction)",
+    "Conditional unpause (fork-only, 2-of-3 Safe simulated): classic round trips LOSE at today's reserves (UST-meta 66.99->63.17 LP3; fUSDT-meta 27.01->26.91 LP3); outputs always < internal reserves",
+    "8 unpaused clones: LP3-side ceiling 10.381892022701008814 LP3 ($10.41) + E7 rUSD side $2.44 + E6 fUSDT side $0.04; E0-E5 token0s are dead Ruler RC certificates with no market/mint -> their LP3 side is unreachable; realistic fresh extraction ~ $0",
+    "MasterMind farm is standard MasterChef; outsider withdraw/emergencyWithdraw move nothing; farm LP (302,705.8 LP3 + meta-LPs) is user-staked",
+    "3 newly-found clones are empty; complete base-LP holder sweep found no other funded pool"
+  ],
+  "conditional_paths": [
+    {"id": "C1", "path": "Safe unpauses funded metapools -> reactivates known pricing bug", "precondition": "2-of-3 Safe signatures (0xD94Ac9fB78dD9B3FEB0eC39F38d86D2Ee5BA6B06, v1.2.0)", "value_today_usd": "~0 (round trips lose at current reserves; ceiling = internal reserves $455)"},
+    {"id": "C2", "path": "withdrawAdminFees() on admin-bearing pools", "precondition": "2-of-3 Safe signatures", "value_usd": 705709, "note": "fUSDT component $159,739 only if fUSDT redeems at $1"},
+    {"id": "C3", "path": "Proportional removeLiquidity while paused (fair, allowed)", "precondition": "hold metapool LP", "value": "H-O internal reserves $455 + base internals $606,603 + farm LP3 $303,460"},
+    {"id": "C4", "path": "Buy metapool LP at market discount and redeem", "precondition": "market liquidity", "value": "not actionable — USTMETA-LP/WBNB pair quotes 81% below NAV but holds only 1.21 LP"},
+    {"id": "C5", "path": "Safe signer key compromise", "precondition": "off-chain keys", "value": "= C1 + C2; no on-chain evidence"}
+  ],
+  "residual_uncertainty": [
+    "A clone that never touched a base LP could exist but would be empty by construction (no value-bearing surface missed)",
+    "fUSDT redemption value affects P only (not E-U)",
+    "2-of-3 Safe key compromise unverifiable on-chain -> conditional only"
+  ],
+  "artifacts": {
+    "tests": "poc/test/NerveQC.t.sol (14 tests, all pass)",
+    "fingerprint": "analysis/fingerprint.json",
+    "clone_sweep": "analysis/clones_full2.json",
+    "holder_universe": "analysis/lp_transfer_addrs.json",
+    "valuation": "analysis/valuation.json",
+    "bot_activity": "analysis/bot_activity.json",
+    "ci": "bash /home/heisenberg/CA/ci/ci-run.sh nerve-qc"
+  }
+}
