@@ -1,0 +1,64 @@
+{
+  "finding": "autoshark",
+  "title": "AutoShark (BSC) \u2014 L2 Phase 2 deep-dive: live funds are holder-owned; fresh-attacker extraction $0",
+  "chains": [
+    "bsc"
+  ],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 131120.97,
+    "P": 15956.2,
+    "S": 0
+  },
+  "latest_block": 127435890,
+  "block_numbers": {
+    "bsc": 127400000
+  },
+  "targets_checked": 216,
+  "live_targets": 10,
+  "closed_reasons": [
+    "All $147,077 of priced DEX liquidity is LP-token ownership: 97.1% of the top WETH/BTCB pair sits in one team-linked EOA (2,180.27 of 2,245.91 LP @127,400,000); 99.95% of the DAI/USDT pair is staked in the MasterOcean farm (user deposits); the USDT/BUSD pair is split MasterSquid 51.2% / fee-vault 42.5% / MasterOcean 5.7%",
+    "Both fee collectors (feeTo 0x593CC3, squid fee vault 0xe0B4Add5) are FeeDistributor-class proxies whose distribute/distributeSingle/burn require keeper||owner; live owners/keepers are team EOAs (impls 0xe1f153c3 / 0x45948ce5 decompiled)",
+    "No permissionless token mint: FINS/JAWS/SQUID mint are onlyOwner/onlyMinter; the only isMinters are the farms themselves; FINS cap (500M) is already reached and the MasterOcean farm holds 0 FINS",
+    "Farms are standard MasterChef accounting (deposit/withdraw exact per user, nonReentrant, fork-verified both directions); a fresh attacker cannot withdraw anyone else's LP; MasterSquid's NFT boost is inert (controller == address(0), getBoost returns 0) but its normal farm paths work",
+    "Only permissionless payout found is FinsPair.skim; live measurement across all 194 pairs shows excess balances only in unpriced zombie tokens (Kitty/Mousey/NFTART) = $0.00; value pairs have balance == reserve exactly",
+    "jawsPool custodies 0 JAWS and 0 LP despite 69.8M outstanding shares (accounting-only wreck); v1-era SHARK contracts hold $0. Launchpad: 751/753 participants already harvested (harvest pays ATLAS, not LP); the $479 LP remainder is admin-finalWithdraw-only (P)"
+  ],
+  "poc": {
+    "tests_passed": 10,
+    "tests_total": 10,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38431927753"
+    ]
+  },
+  "key_facts": [
+    "FinsFactory 0xe759Dd4B9f99392Be64f1050a6A8018f73B53a13 allPairsLength = 194 @127,400,000",
+    "Top pair 0x3942940E WETH/BTCB reserves 13.3918 WETH + 0.40222 BTCB (~$67.0k); 97.08% of LP held by EOA 0x91d6136a45c10a8567ae9e2aac193d65fd4c7e01 (codesize 0; also the fee receiver inside the squid FeeDistributor)",
+    "DAI/USDT pair 0xbD78f8Cf reserves 15,624.95 DAI + 15,629.32 USDT; MasterOcean farm holds 99.95% of its LP (user stakes)",
+    "USDT/BUSD pair 0x06347b91 reserves 10,317.88 USDT + 10,299.97 BUSD; LP split MasterSquid 51.17% / fee vault 42.53% / MasterOcean 5.66%",
+    "FeeDistributor feeTo 0x593CC303 owner 0xD9ebB6d9 (team EOA), keeper 0xa3B330220e7ae7C1616182C5a84Ba752b9d5b8cB, holds 117 LP positions worth $260",
+    "Squid fee vault 0xe0B4Add5 owner 0xbf00B8b5, keeper 0xc41E861E, holds LP worth $15,217 (incl. 42.53% of the USDT/BUSD pair)",
+    "MasterOcean 0x8857af82: 47 pools, fnsPerBlock 21e18, FINS balance 0, owner/team feeAddress 0xD9ebB6d9; FINS totalSupply 499,999,997.1 of maxSupply 500,000,000 -> emissions dead",
+    "MasterSquid 0x86a47ddd: 16 pools, squidPerBlock 20e18, controller() == address(0) -> NFT boost inert (getBoost returns 0, live-verified); deposit/withdraw/emergencyWithdraw work for a fresh user (fork-verified); SQUID farm balance = 80,902 WEI (not tokens; ~$0); massUpdatePools() reverts 'SafeMath: subtraction overflow' (pid-0 lpSupply = 80902 - squidStaked 1.7996e24); updatePool(pid>0) works; pid-0 stakers' 1,799,636 SQUID claims are unbacked/unrecoverable (~$130 out-of-scope)",
+    "jawsPool 0x5D2112Ba: totalSupply 69,837,390.478e18 shares, JAWS balance 0, rewardsToken LP balance 0, paused=false, periodFinish Jan-2024 (ended); staking token JAWS ~$0 (single shallow WBNB pair holds $105)",
+    "Launchpad 0xa9f48fee: raising token = FINS/WBNB LP, offering token = ATLAS; totalAmount 408,934.5 LP vs raisingAmount 59,701 LP; allowClaim true; holds 3,354.1 LP (~$479) + 131.4 ATLAS; all 753 participants checked - 751 hasHarvest=true, 2 remaining can still harvest (tiny ATLAS); LP only via admin finalWithdraw",
+    "FINS mint 0xa0712d68 (onlyOwner 0x0ff4436a) and 0x40c10f19 (onlyMinter, MasterOcean=true): both revert for fresh EOA; same for JAWS (owner 0x342afF01) and SQUID (isMinter MasterSquid=true)",
+    "All four protocol proxies (jawsPool, feeTo, feeVault, NFTController) are TransparentUpgradeableProxy with EIP-1967 admin = ProxyAdmin contracts owned by team EOAs 0xD9ebB6d9 / 0xbf00B8b5 (P-only upgrade path)",
+    "Historic: two 2021 'Reward Logic Flaw' hacks ($822.8k 2021-05-24, $580k 2021-10-29, DefiLlama hacks DB); the documented balance-manipulation class (tokenToSharkBNB in v1 vaults) does not exist in the live v2 farms (index-based accounting) and the v1 vaults hold $0",
+    "Independent CI re-derivation (run 38431927753, block 127435890): total priced pair value $147,077.17 with attribution team EOA $65,101.68 / MasterOcean $43,188.48 / fee vault $15,216.92 / MasterSquid $12,538.10 / launchpad $478.82 / feeTo $260.46; all 12 gated probes reverted; forge suite 10/10 passed"
+  ],
+  "caveats": [
+    "Two implementations (0xe1f153c3, 0x45948ce5, 0x73f76d34, 0x2a5d80b7) are unverified; behavior was established by decompilation (heimdall) plus live eth_call validation.",
+    "USD values depend on DefiLlama pricing; protocol-token legs (JAWS/FINS/SQUID and ~100 zombie tokens) are unpriced and treated as $0; realisable exit liquidity for those legs is near zero.",
+    "Holder-level completeness below ~$500/pair relies on the protocol-contract set enumerated from official repos + DefiLlama registry + top-holder scans; a residual ~$10.3k is spread across many EOAs.",
+    "The $65.0k team-linked EOA LP is classified H-O (privately held, self-custodial), not protocol custody; it is not attacker-reachable.",
+    "Launchpad categorization refined after on-chain participant check: 751/753 depositors already harvested; the remaining 2 can claim tiny ATLAS (unpriced); the RAISED FINS/WBNB LP ($479) is admin-withdrawable only.",
+    "Correction from machine-checked fork runs: earlier decompile-based hypothesis that MasterSquid reward claims revert (controller==0) was tested on-chain and is FALSE - getBoost returns 0 and normal withdraw works; only the NFT boost is inert.",
+    "Headline numbers are stable across three independent derivations: triage $146,818; local run $146,955 (block 127,432,152); CI run $147,077 (block 127,435,890).",
+    "Post-review corrections (confirmed on-chain): MasterSquid SQUID balance is 80,902 wei (~$0), not 80,902 tokens; massUpdatePools() reverts (pid-0 underflow) and pid-0 (SQUID single-stake) is bricked with unbacked staker claims (~$130, not part of the $147k pair TVL).",
+    "An independent adversarial review subagent re-probed every permissionless payout path (fee vaults initialize/distribute/burn/withdrawBEP20; jawsPool getReward/withdrawAll/recoverBEP20; launchpad harvest/finalWithdraw/refunds; farm update/massUpdate/emergency; pair skim/sync; farm/vault/team allowances to routers): verdict NOT REFUTED, no material (> $100) fresh-attacker path; see analysis/child-adversarial-review.md."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from AutoShark: the $146.9k of live DEX liquidity is LP owned by third parties (~97% of the top pair in one team EOA; the rest staked in the MasterOcean/MasterSquid farms or held in keeper/owner-gated fee vaults), every privileged payout path is role-gated, permissionless paths are empty or pay only unpriced zombie-token dust, FINS emissions are capped/zero, and jawsPool custodies nothing."
+}
