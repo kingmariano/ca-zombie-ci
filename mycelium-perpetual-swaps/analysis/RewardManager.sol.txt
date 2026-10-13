@@ -1,0 +1,33 @@
+{{
+  "language": "Solidity",
+  "sources": {
+    "contracts/staking/RewardManager.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n\npragma solidity 0.6.12;\n\nimport \"../access/Governable.sol\";\nimport \"../peripherals/interfaces/ITimelock.sol\";\n\ncontract RewardManager is Governable {\n    bool public isInitialized;\n\n    ITimelock public timelock;\n    address public rewardRouter;\n\n    address public mlpManager;\n\n    address public stakedMycTracker;\n    address public bonusMycTracker;\n    address public feeMycTracker;\n\n    address public feeMlpTracker;\n    address public stakedMlpTracker;\n\n    address public stakedMycDistributor;\n    address public stakedMlpDistributor;\n\n    address public esMyc;\n    address public bnMyc;\n\n    address public mycVester;\n    address public mlpVester;\n\n    function initialize(\n        ITimelock _timelock,\n        address _rewardRouter,\n        address _mlpManager,\n        address _stakedMycTracker,\n        address _bonusMycTracker,\n        address _feeMycTracker,\n        address _feeMlpTracker,\n        address _stakedMlpTracker,\n        address _stakedMycDistributor,\n        address _stakedMlpDistributor,\n        address _esMyc,\n        address _bnMyc,\n        address _mycVester,\n        address _mlpVester\n    ) external onlyGov {\n        require(!isInitialized, \"RewardManager: already initialized\");\n        isInitialized = true;\n\n        timelock = _timelock;\n        rewardRouter = _rewardRouter;\n\n        mlpManager = _mlpManager;\n\n        stakedMycTracker = _stakedMycTracker;\n        bonusMycTracker = _bonusMycTracker;\n        feeMycTracker = _feeMycTracker;\n\n        feeMlpTracker = _feeMlpTracker;\n        stakedMlpTracker = _stakedMlpTracker;\n\n        stakedMycDistributor = _stakedMycDistributor;\n        stakedMlpDistributor = _stakedMlpDistributor;\n\n        esMyc = _esMyc;\n        bnMyc = _bnMyc;\n\n        mycVester = _mycVester;\n        mlpVester = _mlpVester;\n    }\n\n    function updateEsMycHandlers() external onlyGov {\n        timelock.managedSetHandler(esMyc, rewardRouter, true);\n\n        timelock.managedSetHandler(esMyc, stakedMycDistributor, true);\n        timelock.managedSetHandler(esMyc, stakedMlpDistributor, true);\n\n        timelock.managedSetHandler(esMyc, stakedMycTracker, true);\n        timelock.managedSetHandler(esMyc, stakedMlpTracker, true);\n\n        timelock.managedSetHandler(esMyc, mycVester, true);\n        timelock.managedSetHandler(esMyc, mlpVester, true);\n    }\n\n    /**\n     * @notice set the rewardRouter as the handler for esMyc, stakedMycTracker, feeMycTracker, bnMyc, esMyc, mycVester, feeMycTracker,\n     *         mlpManager, feeMlpTracker, stakedMlpTracker, mlpVester, stakedMlpTracker\n     */\n    function enableRewardRouter() external onlyGov {\n        if (\n            esMyc != address(0) &&\n            stakedMycTracker != address(0) &&\n            feeMycTracker != address(0) &&\n            bonusMycTracker != address(0) &&\n            bnMyc != address(0) &&\n            esMyc != address(0) &&\n            mycVester != address(0) &&\n            feeMycTracker != address(0)\n        ) {\n            timelock.managedSetHandler(esMyc, rewardRouter, true);\n            timelock.managedSetHandler(stakedMycTracker, rewardRouter, true);\n            timelock.managedSetHandler(feeMycTracker, rewardRouter, true);\n            timelock.managedSetHandler(bonusMycTracker, rewardRouter, true);\n            timelock.managedSetMinter(bnMyc, rewardRouter, true);\n            timelock.managedSetMinter(esMyc, mycVester, true);\n            timelock.managedSetHandler(mycVester, rewardRouter, true);\n            timelock.managedSetHandler(feeMycTracker, mycVester, true);\n            timelock.managedSetMinter(esMyc, mlpVester, true);\n        }\n        timelock.managedSetHandler(mlpManager, rewardRouter, true);\n\n        timelock.managedSetHandler(feeMlpTracker, rewardRouter, true);\n        timelock.managedSetHandler(stakedMlpTracker, rewardRouter, true);\n\n        timelock.managedSetHandler(mlpVester, rewardRouter, true);\n\n        timelock.managedSetHandler(stakedMlpTracker, mlpVester, true);\n    }\n}\n"
+    },
+    "contracts/access/Governable.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n\npragma solidity 0.6.12;\n\ncontract Governable {\n    address public gov;\n\n    constructor() public {\n        gov = msg.sender;\n    }\n\n    modifier onlyGov() {\n        require(msg.sender == gov, \"Governable: forbidden\");\n        _;\n    }\n\n    function setGov(address _gov) external onlyGov {\n        gov = _gov;\n    }\n}\n"
+    },
+    "contracts/peripherals/interfaces/ITimelock.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n\npragma solidity 0.6.12;\n\ninterface ITimelock {\n    function setAdmin(address _admin) external;\n\n    function enableLeverage(address _vault) external;\n\n    function disableLeverage(address _vault) external;\n\n    function setIsLeverageEnabled(address _vault, bool _isLeverageEnabled) external;\n\n    function signalSetGov(address _target, address _gov) external;\n\n    function managedSetHandler(\n        address _target,\n        address _handler,\n        bool _isActive\n    ) external;\n\n    function managedSetMinter(\n        address _target,\n        address _minter,\n        bool _isActive\n    ) external;\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 1
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "devdoc",
+          "userdoc",
+          "metadata",
+          "abi"
+        ]
+      }
+    },
+    "libraries": {}
+  }
+}}

@@ -1,0 +1,60 @@
+{
+  "finding": "L2-Triage-A / mycelium-perpetual-swaps",
+  "title": "Mycelium Perpetual Swaps (GMX v1 fork, Arbitrum) \u2014 live extractability",
+  "chains": [
+    "arbitrum"
+  ],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 67774.35,
+    "P": 2271.72,
+    "S": 133986.14
+  },
+  "latest_block": 514526460,
+  "block_numbers": {
+    "arbitrum": 514523261
+  },
+  "targets_checked": 56,
+  "live_targets": 19,
+  "closed_reasons": [
+    "Vault.swap() is permissionless but every material output token is buffer-locked (buffer > pool: WBTC 33>1.2168, WETH 740>1.6012, USDC 1.378M>1437.7, LINK 13778>676.9, USDT 414309>0.30, DAI 642700>0.675); only unblocked pools (UNI 0.0000101, FRAX 0.000325, CRV 0.000847) are dust",
+    "Oracle is live Chainlink (FastPriceFeed stale since Oct-2023); all 12 feeds within 0.25% of market -> no mispricing to exploit; FRAX strict-stable $1.00 vs $0.9905 market monetises to <$0.000001 because the only unblocked output pool is dust",
+    "Vault.liquidatePosition gated by inPrivateLiquidationMode=true + isLiquidator (only PositionManager, whose liquidator set is 2 EOAs); zero liquidations ever",
+    "Vault.increasePosition requires isLeverageEnabled=false; Timelock toggles are onlyAdminOrHandler (PositionRouter only)",
+    "Vault.decreasePosition owner-gated (_validateRouter): msg.sender must be the account, Router or approved plugin",
+    "MlpManager: inPrivateMode=true blocks direct add/remove; ForAccount variants are handler-gated (RewardRouter only); and _removeLiquidity reverts because getAum() iterates dead MIM/BAL/FXS price feeds -> MLP redemption bricked (S)",
+    "OrderBook executeSwap/Increase/DecreaseOrder are permissionless but all 10 pending orders revert (Vault: reserve exceeds pool / Vault: poolAmount < buffer / Router: invalid plugin / dead BAL feed)",
+    "Reward trackers: stake() open but _updateRewards runs before stakedAmounts increase -> a fresh staker captures zero past rewards (fork-proved); claimForAccount/stakeForAccount are handler-gated; transfer of tracker tokens does not move staking accounting",
+    "PositionRouters: executeIncreasePositions/executeDecreasePositions are onlyPositionKeeper; pending request funds owner-cancellable (H-O)",
+    "Governance: Vault gov = Timelock (admin = 2-of-N Gnosis Safe, threshold 2); all admin functions onlyAdmin/onlyAdminOrHandler; MerkleTokenSale admin-only recover; RewardManager onlyGov",
+    "RewardDistributor 0xdb8cc5be holds 7.4679 WETH but is uninitialised with gov()==0 -> stuck (S)",
+    "MYC (23.4M in tracker + 196.6M in MerkleTokenSale) has ~$70k-1k Arbitrum pools and ~zero 24h volume -> not realisable"
+  ],
+  "poc": {
+    "tests_passed": 17,
+    "tests_total": 17,
+    "ci_run_urls": []
+  },
+  "key_facts": [
+    "Live value at block 514,500,782: Vault $118,781 (WBTC $102,526 + WETH $4,317 + USDC $2,997 + LINK $8,789 + stables/dust), feeMlpTracker 19.4175 WETH ($48,670), sMYC tracker 6.6624 WETH ($16,699), stuck RewardDistributor 7.4679 WETH ($18,718), pending orders/routers/vesters $2,112 \u2014 triage's $134,810 missed the feeMlpTracker and stuck-distributor WETH (full live value ~$204,981)",
+    "Vault flags (block 514,494,093): isSwapEnabled=true, isLeverageEnabled=false, inPrivateLiquidationMode=true, inManagerMode=true, 12 whitelisted tokens",
+    "MLP redemption is bricked: MlpManager.getAum(false) reverts with EMPTY data (dead MIM/BAL/FXS Chainlink aggregators); even the legitimate RewardRouter handler path reverts -> pool ~$115.3k is S (governance could fix feeds -> H-O)",
+    "15 live positions found (1,526 candidates from ~5,000 IncreasePosition events): $293.33 collateral total; owners can close (H-O)",
+    "OrderBook holds ~$698 of pending-order funds (0.00134518 WBTC, 500 USDC, 29.6 USDT, 0.0227 WETH) but all execute* revert -> no execution fees collectible by anyone; owners can cancel",
+    "Reward trackers: fresh account claim()=0 and stake-then-claim()=0 (no past-reward capture); real stakers can claim (H-O): sMYC staker 0.008367 WETH, MLP staker 0.000166 WETH (fork-proved)",
+    "feeMlpTracker lifetime: 5,339 WETH distributions from its distributor totalling 282.33 WETH; 262.9 WETH claimed; both trackers' distributors now hold 0 WETH (streaming stopped)",
+    "FRAX is valued at exactly $1.00 by the vault (strictStableTokens + maxStrictPriceDeviation 5%) while trading at $0.9905; the max monetisable amount is $0.0000006 because the only non-buffer-locked output pool (UNI) is 0.0000101 tokens",
+    "Roles: Vault gov = Timelock 0x25D390B5 (admin = Safe 0x3E2d8447, threshold 2); isManager = MlpManager; isLiquidator = PositionManager (liquidators: 2 EOAs); MlpManager handler = RewardRouterV2; PositionManager orderKeepers/liquidators EOAs",
+    "PoC: 17/17 fork tests pass; all tests are read-only simulations on an Arbitrum fork (no mainnet transactions)"
+  ],
+  "caveats": [
+    "USD values use 2026-10-13 market prices (FRAX $0.9909, UNI $7.5771, WETH $2,506.51, WBTC $83,072.83); on-chain NAV cannot be read because MlpManager.getAum() reverts",
+    "Tracker claimable totals are estimated from 200-staker samples, not full enumeration; the sMYC tracker pot (6.66 WETH) may be first-come-first-served vs nominal claims",
+    "The feeMlpTracker pot (19.42 WETH) exceeds the sampled claimable (~7.2 WETH); the excess appears undistributable except by governance withdrawToken",
+    "MYC is treated as ~$0 (no realisable liquidity); esMYC/bnMYC likewise illiquid",
+    "The 'S' classification for the MLP pool assumes no governance action; governance can repair the price feeds (P) and unlock the pool for MLP holders"
+  ],
+  "one_liner": "External unprivileged attacker can extract $0 live from Mycelium Perpetual Swaps; vault swaps are buffer-locked with a live Chainlink oracle, liquidations are private, leverage is off, MLP redemption is bricked by dead MIM/BAL/FXS feeds, and reward-tracker claims are handler-gated with no fresh-staker capture \u2014 ~$67.8k is holder-recoverable (H-O) and ~$134.0k is stuck (S)."
+}
