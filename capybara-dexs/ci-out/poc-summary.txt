@@ -1,0 +1,33 @@
+Capybara Dexs (Kaia 8217) — L2 Phase-2 fork PoC summary
+========================================================
+Fork block: 229673758 (Kaia mainnet, public RPC)
+State block: 229631779
+
+Tests: 7 passed / 0 failed (poc/test/CapybaraPoC.t.sol)
+
+E-U (fork-verified, deployed quotes):
+  KRWO stale-oracle arb  : 200 USDT -> 284,871.700641 KRWO (quote == execution)
+                           market FX 1334 KRW/USD => $213.56 vs $200 in => +$13.55
+  wGCKLAY cov-skew edge  : 30,000 WKLAY -> 24,680.589 wGCKLAY
+                           = 30,157.05 WKLAY at live GCKLAY rate 1.2219477 => +$7.33
+  plain-pool skew edges  : USDC->USDT +$0.55 @300; stgUSDC->stgUSDT +$0.60 @100;
+                           WKLAY->stgWETH +$0.38 @1000 (analysis block)
+  TOTAL E-U upper bound  : ~$22.4 (conservative ex-KRWO floor ~$9)
+
+Dead ends (fork-verified):
+  same-asset deposit->withdraw: 1000 USDT -> 1329.196 LP -> 1000.000000 USDT (neutral)
+  tip bucket owner-only (Ownable revert) / fillPool dev-only (POOL_FORBIDDEN 0xcc83193d)
+  farm dormant: allocPoint=0, no rewarders/voter, pendingTokens empty
+
+H-O (users can exit):
+  LP withdrawal works: 1000 LP-WKLAY -> 1044.348900436353695576 WKLAY
+  80-90% of LP supplies staked in MasterWombat proxy 0x3CA30C86; users withdraw weekly
+  (successful master withdraw txs 2026-10-07/09/10/12)
+
+P (owner-only):
+  ProxyAdmin 0xa1588a71 owner = EOA 0x663434b7099f17B7238291A09c6a0b3a237A4fAD
+  -> can upgrade all 9 pools + master (all underlying ~$158.7k)
+  tip buckets total ~$2,117.5 (owner-only transferTipBucket)
+
+Values at state block 229631779:
+  underlying $158,724.07 | cash $155,317.75 | LP liability $161,249.23

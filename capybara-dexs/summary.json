@@ -1,0 +1,83 @@
+{
+  "finding": "L2-P2 capybara-dexs",
+  "title": "Capybara Dexs (Kaia) — Wombat-fork DynamicPools: stale KRWO oracle + skew edges; users exiting (H-O); owner can drain (P)",
+  "chains": ["kaia"],
+  "headline_extractable_usd": 22.44,
+  "headline_confidence": "medium-high",
+  "categories": {
+    "E-U": 22.44,
+    "H-O": 155317.75,
+    "P": 158724.07,
+    "S": 0
+  },
+  "category_notes": {
+    "E-U": "Upper bound of per-path maxima measured on deployed quotes at analysis block: KRWO stale-oracle arb $13.55 (fork-verified), wGCKLAY cov-skew edge $7.33 (fork-verified), USDC->USDT $0.55, stgUSDC->stgUSDT $0.60, WKLAY->stgWETH $0.38. Conservative floor ~$9 excluding KRWO realization risk. Realistic ~$15-22.",
+    "H-O": "LP holders (80-90% of each LP supply staked in MasterWombat proxy; users actively unstaking weekly; LP->underlying exit fork-verified). Cash value $155,317.75; LP liability claims $161,249.23.",
+    "P": "ProxyAdmin 0xa1588a71 (owner EOA 0x663434b7) can upgrade all pools/master -> all pool underlying $158,724.07; plus owner-only tip buckets $2,117.5; assets owned by same EOA (setPool redirect).",
+    "S": "Only the dust pool 0x4c7216d5 (~1 gwei stKAIA) and a cosmetic tip-bucket underflow there."
+  },
+  "latest_block": 229673758,
+  "block_numbers": {
+    "kaia": 229631779
+  },
+  "fork_block": 229673758,
+  "triage_block": 229512567,
+  "targets_checked": 34,
+  "live_targets": 9,
+  "target_counts": {
+    "pools": 9,
+    "assets": 24,
+    "staking_master": 1,
+    "proxy_admin": 1
+  },
+  "live_total_underlying_usd": 158724.07,
+  "live_total_cash_usd": 155317.75,
+  "live_total_liability_usd": 161249.23,
+  "closed_reasons": [
+    "same-asset deposit->withdraw round trip neutral (deposit bonus exactly cancelled by withdrawal equilibrium haircut; fork-verified 1000 USDT in -> 1000.000000 USDT out)",
+    "swap cycles and cross-asset round trips negative after fees/cov-ratio fees (all pairs x sizes swept on deployed quotes)",
+    "tip buckets owner-only (transferTipBucket reverts Ownable) / dev-only (fillPool reverts POOL_FORBIDDEN 0xcc83193d) - fork-verified",
+    "MasterWombatV3 farm dormant: allocPoint=0, rewarders=0x0, voter=0x0, no pending rewards; master holds only user-staked LP",
+    "pool parameter setters and upgrades owner-gated (EOA 0x663434b7 via ProxyAdmin 0xa1588a71)",
+    "stale WKLAY oracles (0.1428/0.1562/0.0969 vs market 0.0466) largely cancelled by pools' out-of-equilibrium state; only small measured windows remain"
+  ],
+  "poc": {
+    "tests_passed": 7,
+    "tests_total": 7,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38364396117"
+    ],
+    "key_numbers": {
+      "krwo_swap_200usdt_out_raw": "284871700641",
+      "krwo_deposit_withdraw_other_out_raw": "284871700641",
+      "krwo_edge_usd_at_market_fx": 13.56,
+      "wgcklay_swap_30000wklay_out_wad": "24680589060152160307316",
+      "wgcklay_out_value_in_wklay": "30157054309974065703038",
+      "wgcklay_edge_usd": 7.33,
+      "same_asset_roundtrip_usdt_out_raw": "1000000000",
+      "lp_withdraw_1000lp_wklay_out_wad": "1044348900436353695576",
+      "tip_bucket_wklay_pool_5cde_wad": "11654947576168231685775",
+      "gcKLAY_rate_wad": "1221947701805343276",
+      "wkLAY_oracle_pool_6389_wad": "142813933943715732"
+    }
+  },
+  "key_facts": [
+    "Capybara Dexs is an unverified Wombat-exchange fork on Kaia: 9 EIP-1967 pools (impl 0x974205ce, solc 0.8.18, POOL_* errors), 24 LP assets, MasterWombatV3 staking proxy 0x3CA30C86 (impl 0x5953ffb5).",
+    "Live underlying $158,724.07 / pool cash $155,317.75 / LP liability $161,249.23 at block 229,631,779 (drift -5% vs triage $167,342).",
+    "E-U $22.44 upper bound: KRWO stale oracle (pool 0x4b63eC62 values KRWO at 0.000667 USDT vs market 1/1334 = 0.000750; 200 USDT -> 284,871.7 KRWO fork-verified, +$13.55) + wGCKLAY cov-skew edge (30,000 WKLAY -> 24,680.6 wGCKLAY = 30,157.05 WKLAY at live GCKLAY rate, +$7.33) + ~$1.5 small plain-pool skew edges.",
+    "H-O: 80-90% of every LP supply is staked in the master proxy; users withdraw successfully weekly (last 2026-10-12); LP->underlying withdraw fork-verified (1000 LP-WKLAY -> 1044.35 WKLAY).",
+    "P: ProxyAdmin 0xa1588a71 owner EOA 0x663434b7 can upgrade all pools (drain $158.7k); owner-only tip buckets total $2,117.5; assets owned by same EOA.",
+    "Farm dead: allocPoint=0, no rewarders/voter/WOM; no rewards claimable.",
+    "Deployed deposit math mints extra LP for under-covered assets (+47% liability for USDT in pool 0x6389) but the withdrawal haircut cancels it exactly (round trip 1.000000).",
+    "stKAIA/wGCKLAY oracles are live on-chain (wGCKLAY oracle == GCKLAY rate exactly); WKLAY and KRWO oracles are stored/stale values."
+  ],
+  "caveats": [
+    "Pool/master implementations are unverified; behavior was modelled with an exact integer WAD model validated against deployed quotes (withdraw exact; swaps exact/<=0.3%) and fork-tested, not source-diffed.",
+    "KRWO realization at ~$0.00075 (issuer redemption or DEX sale) is unproven; if not realizable the KRWO leg of E-U is ~$0.",
+    "wGCKLAY realization requires unwrap->GCKLAY->unbond (delay/permissioning unknown) or a buyer.",
+    "Per-path maxima are not simultaneously executable; E-U is an upper bound.",
+    "Prices for npKLAY/rstKAIA/wGCKLAY use oracle-consistent rates; KRWO uses USD/KRW 1334 (Oct 12-13, 2026).",
+    "USD values indicative at the stated blocks."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$22 (upper bound; ~$9 conservative) live from Capybara Dexs on Kaia via stale-oracle/skew arbitrage (KRWO $13.6 + wGCKLAY $7.3), because swaps otherwise track market, the deposit bonus is exactly cancelled by the withdrawal haircut, the farm is dormant and all admin paths (incl. $2.1k tip buckets and upgradeability of $158.7k) are owner-gated; LP holders (H-O) can withdraw ~$155k and are actively doing so."
+}
