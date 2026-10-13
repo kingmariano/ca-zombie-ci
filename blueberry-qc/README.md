@@ -206,7 +206,9 @@ V1 `totalAssets == opt1 debt`; strategy shares 100% vault-held; deposits open, s
 | `poc/` (`test/BlueberryEthQc.t.sol`) | Ethereum fork (latest) via `FORK_RPC_URL` | 4 | **4/4 PASS** (CI) |
 
 CI runs (public repo `kingmariano/ca-zombie-ci`, branch `blueberry-qc`, workflow `poc.yml`):
-- Run: `{{CI_RUN_URL}}` — logs `ci-log.txt`, artifacts `ci-artifacts/`.
+- **Run 1** (first dispatch): `https://github.com/kingmariano/ca-zombie-ci/actions/runs/38422529491` — Monad 9/9 PASS; ETH 3/4 (one over-strict assertion, fixed below).
+- **Run 2 (final)**: `https://github.com/kingmariano/ca-zombie-ci/actions/runs/38423003426` — **Monad 9/9 PASS + ETH 4/4 PASS**; logs `ci-log.txt`, artifacts `ci-artifacts/` (`ci-out/monad-qc-tests.log`).
+- ETH run-1 finding (kept, now an assertion): the admin has queued a real pending comptroller `0x327e45B3…` (verified `Comptroller`) — the attacker cannot become pending impl.
 
 Local QC run (DRPC, 2026-10-13):
 ```
