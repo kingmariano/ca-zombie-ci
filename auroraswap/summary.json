@@ -1,0 +1,61 @@
+{
+  "finding": "L2-Phase2 \u00b7 AuroraSwap (l2-triage-b rank 13)",
+  "title": "AuroraSwap (Aurora): UniV2 factory + BRLMasterChef farm \u2014 no live unprivileged extraction",
+  "chains": [
+    "aurora"
+  ],
+  "headline_extractable_usd": 0,
+  "headline_confidence": "high",
+  "categories": {
+    "E-U": 0,
+    "H-O": 130503.59,
+    "P": 40860.02,
+    "S": 0
+  },
+  "latest_block": 219725362,
+  "block_numbers": {
+    "aurora": 219725362,
+    "aurora_poc_fork": 219723846,
+    "aurora_triage": 219514157
+  },
+  "targets_checked": 162,
+  "live_targets": 127,
+  "closed_reasons": [
+    "All 125 pairs share one standard UniV2Pair template (codehash 0x24150c1125088e4c13dca8affe96771ae82e103a64542f1e085cb7d68460dfde); k-invariant enforced (revert 'Aurora: K') \u2014 fork-verified.",
+    "No pair has token balances above reserves (excess=0 on 125/125, fork-verified) so skim() yields nothing; no pair has totalSupply==0 with reserves.",
+    "LP mint/burn roundtrip returns <= deposited amounts (no inflation/rounding profit).",
+    "Protocol fee mint (kLast>0, feeTo set) is permissionless but always mints LP to feeTo 0x9F67...bcAE, never to the caller.",
+    "BRLMasterChef is the standard Goose template; pending rewards are per-user (userInfo) and a fresh stake cannot capture pre-existing gaps because deposit() calls updatePool() first (fork-verified: fresh staker gained 0 BRL while a 2,289 BRL gap was minted to existing stakers).",
+    "BRL mint is onlyOwner (owner=MasterChef, only via updatePool emission); AZFD mint onlyOwner (0xFdf4...8251); all factory/farm admin setters revert for unprivileged callers (fork-verified).",
+    "Apparent pool deviations vs DefiLlama are Aurora-wide discounts, not mispricings: Trisolaris/WannaSwap/NearPad price wNEAR within ~2-3% of AuroraSwap, BNB -86% and MATIC +97% consistently across all venues; main pairs are actively bot-arbitraged (627 swaps/200k blocks)."
+  ],
+  "poc": {
+    "tests_passed": 13,
+    "tests_total": 13,
+    "ci_run_urls": [
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38313468417",
+      "https://github.com/kingmariano/ca-zombie-ci/actions/runs/38314222755"
+    ]
+  },
+  "key_facts": [
+    "Live priced TVL at block 219722582: $159,744.84 (triage $160,077.30 at block 219514157; -0.21% drift, unchanged).",
+    "Factory 0xC5E1DaeC2ad401eBEBdd3E32516d90Ab251A3aA3: 125 pairs, feeTo=feeToSetter=0x9F678909C735001Ac6482fCCFc928e11B703bcAE (EOA), locked=false.",
+    "Top pairs: USDT.e/NEAR $126,185; NEAR/WETH $20,335; USDC.e/NEAR $7,111; USDT.e/USDC.e $3,189 (98% of TVL in 4 pairs).",
+    "~$128,996.56 of DEX liquidity is staked in BRLMasterChef 0x35CC71888DBb9FfB777337324a4A60fdBAA19DDE (96.69% of the USDT.e/NEAR LP = pid 4).",
+    "Farm holds 144,513.19 BRL; BRL.totalSupply=791,551.17; devaddr holds 22,994.60 BRL; BRLPerBlock=0.025e18 (still emitting), totalAllocPoint=101,000, 36 pools.",
+    "Pool 35 (AZFD, allocPoint 100,000 = 99.01% of emissions) is staked by the MasterChef owner 0xFdf4aF84764E67333985af2Db9b1fE57dFEc8251; stale lastRewardBlock 82,182,172 -> 3,404,496.88 BRL mintable on next updatePool(35), credited only to that owner (P).",
+    "Other farm gaps total 22,931.84 BRL, claimable only by the existing stakers of those pools (H-O).",
+    "feeTo already holds 0.6103 LP of USDT.e/NEAR (~$4,026) plus ~$1,091 unminted protocol fees (priced pairs) \u2014 all feeTo's (P), not extractable by others.",
+    "Theoretical arb bound vs DefiLlama global price: $8.43 on USDT.e/NEAR (725.32 USDT in -> 133.29 NEAR out) and $628.52 across all pairs, dominated by dead assets (NEAR/APE $555 with no other Aurora venue, BNB/NEAR $34, MATIC/NEAR $14); realizable cross-venue arb = $0.",
+    "BRL has no market feed; pool-implied price ~$0.0105. Combined BRL exit liquidity across all BRL pools = $1,606.54 (WETH $313.45 + NEAR $1,222.10 + AURORA $39.27 + USDC.e $31.58 + USDT.e $0.14)."
+  ],
+  "caveats": [
+    "BRL-denominated amounts (H-O pending <= 144,513.19 BRL nominal $1,507; P gap 3,404,496.88 BRL nominal $35,503; dev 22,994.60 BRL = $239.79) are nominal at the pool-implied price; their combined realizable value is capped by $1,606.54 of BRL exit liquidity.",
+    "H-O figure = staked LP at face ($128,996.56, withdrawable by stakers) + pending BRL nominal ($1,517); the LP's underlying is also the bulk of the $159.7k pair TVL (no double counting intended: LP claims vs pool reserves are the same value seen from two sides).",
+    "The pair template is unverified source; verification is behavioral (fork) + bytecode-string analysis, not a source audit.",
+    "Arb figures depend on the assumed exit price; DefiLlama's global NEAR price ($5.505) is ~2.8% above the Aurora-local price (~$5.36 on Trisolaris/WannaSwap/AuroraSwap alike).",
+    "Exact per-staker census not completed (explorer API DNS flakiness); analysis/stakers.py reproduces it; bound used: sum of pendings <= MC balance = 144,513.19 BRL.",
+    "PoC pins fork block 219723846; later swaps can shift reserves/deviations slightly."
+  ],
+  "one_liner": "External unprivileged attacker can extract ~$0 live from AuroraSwap: the $159,744.84 DEX TVL is LP property in a standard, k-invariant-enforced, actively-arbitraged UniV2 fork with zero skim excess, and the farm's 3.4M-BRL stale reward gap belongs to the MasterChef owner (privileged) \u2014 a fresh staker provably captures none of it (fork-verified)."
+}
